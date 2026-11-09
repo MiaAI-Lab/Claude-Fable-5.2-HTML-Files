@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Instant Film</title>
+<style>
+/* ───────────── palette & type ───────────── */
+:root{
+  --blush:#F7D6D0; --cream:#FDF6EC; --ink:#2D2A32; --teal:#7FC8C2; --apr:#F4A259;
+  --sky:#BFE3E0; --yel:#F9E2A6; --rose:#E9A6A1; --shade:#4A4350;
+  --red:#EC7A58; --cream2:#F4E8D8; --pine:#5F8E8D;
+  --display:"Arial Rounded MT Bold","Trebuchet MS",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --script:"Brush Script MT","Segoe Script","Bradley Hand",cursive;
+  --caps:"Gill Sans","Gill Sans MT","Trebuchet MS",system-ui,sans-serif;
+  --spring:cubic-bezier(.3,1.45,.45,1);
+  --soft:cubic-bezier(.2,.75,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--blush)}
+body{margin:0;background:var(--blush);color:var(--ink);font-family:var(--caps);-webkit-text-size-adjust:100%}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+/* ───────────── table & light ───────────── */
+.page{position:relative;min-height:100vh;display:grid;place-items:center;overflow:hidden;overflow:clip;isolation:isolate}
+.page::before{ /* sunlight through a window, lying across the table */
+  content:"";position:absolute;inset:-20% -10%;z-index:-2;pointer-events:none;
+  background:
+    linear-gradient(112deg,transparent 17%,rgba(253,246,236,.55) 18.5% 33%,transparent 34.5% 37.5%,rgba(253,246,236,.55) 39% 53.5%,transparent 55%),
+    linear-gradient(22deg,transparent 46.4%,rgba(247,214,208,.9) 47% 49%,transparent 49.6%);
+  animation:sun 9s ease-in-out infinite alternate;
+}
+.page::after{ /* paper grain */
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.5;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .29 0 0 0 0 .26 0 0 0 0 .31 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+@keyframes sun{from{opacity:.82}to{opacity:1}}
+
+.stage{
+  --u:min(1vw,calc(100vh / 62),21px);
+  --c:calc(var(--u)*.86);           /* camera em */
+  --pe:calc(var(--u)*1.25);         /* print em */
+  --camx:calc(var(--u)*6); --camy:calc(var(--u)*17.5);
+  --sx:calc(var(--u)*16.95); --sl:calc(var(--u)*42.44); --es:1.2; --eh:calc(var(--u)*17.4);
+  --cx:calc(var(--u)*66.7); --cy:calc(var(--u)*16.5); --zf:.45; --zfy:.5; --zs:1.85;
+  position:relative;width:calc(var(--u)*100);height:calc(var(--u)*62);flex:none;
+}
+.n1{--tx:calc(var(--u)*48.2);--ty:calc(var(--u)*7.4);--tr:-5deg}
+.n2{--tx:calc(var(--u)*60.6);--ty:calc(var(--u)*5.2);--tr:3deg}
+.n3{--tx:calc(var(--u)*73.4);--ty:calc(var(--u)*7.8);--tr:-2deg}
+.n4{--tx:calc(var(--u)*85.6);--ty:calc(var(--u)*5.6);--tr:5.5deg}
+.n5{--tx:calc(var(--u)*47.6);--ty:calc(var(--u)*26.4);--tr:4deg}
+.n6{--tx:calc(var(--u)*60.3);--ty:calc(var(--u)*24.8);--tr:-4deg}
+.n7{--tx:calc(var(--u)*72.9);--ty:calc(var(--u)*27);--tr:2.5deg}
+.n8{--tx:calc(var(--u)*85.4);--ty:calc(var(--u)*25.2);--tr:-5.5deg}
+
+/* ───────────── title ───────────── */
+.title{
+  position:absolute;left:calc(var(--u)*3.6);top:calc(var(--u)*2.9);margin:0;z-index:2;
+  font:bold calc(var(--u)*6.7)/.84 var(--display);letter-spacing:-.035em;color:var(--ink);
+  transform:rotate(-5deg);transform-origin:0 100%;
+  text-shadow:.045em .055em 0 rgba(45,42,50,.12);
+  animation:titleIn 1s .15s var(--spring) both;
+}
+.title span{display:block}
+.title span+span{padding-left:.9em;color:var(--ink)}
+.title em{
+  position:absolute;left:18.6em;top:.5em;width:8.5em;font:italic .25em/1.05 var(--script);letter-spacing:0;
+  color:var(--shade);transform:rotate(3deg);text-shadow:none;
+}
+.title em::before{content:"";display:inline-block;width:1.6em;height:.12em;background:var(--red);border-radius:1em;vertical-align:.3em;margin-right:.4em}
+@keyframes titleIn{from{opacity:0;transform:rotate(-11deg) translate(-8%,18%)}to{opacity:1;transform:rotate(-5deg)}}
+
+/* ───────────── camera ───────────── */
+.rig{position:absolute;left:var(--camx);top:var(--camy);font-size:var(--c);z-index:10;transform-origin:50% 100%;
+  animation:drop 1.15s .1s both}
+@keyframes drop{
+  0%{transform:translateY(-130%) rotate(-7deg);animation-timing-function:cubic-bezier(.5,0,.9,.6)}
+  52%{transform:translateY(0) rotate(0) scale(1.035,.955);animation-timing-function:cubic-bezier(.2,.7,.4,1)}
+  68%{transform:translateY(-4.5%) rotate(1.3deg) scale(.99,1.01);animation-timing-function:cubic-bezier(.5,0,.8,.5)}
+  82%{transform:translateY(0) rotate(0) scale(1.012,.985);animation-timing-function:cubic-bezier(.2,.7,.4,1)}
+  91%{transform:translateY(-.9%) rotate(-.3deg)}
+  100%{transform:none}
+}
+.strap{position:absolute;left:-13.5em;top:3.4em;width:33em;height:39em;border:1.5em solid var(--teal);border-radius:50%;z-index:-1;
+  transform:rotate(-17deg);transform-origin:62% 8%;
+  box-shadow:.55em .7em 0 rgba(45,42,50,.09),inset .55em .7em 0 rgba(45,42,50,.09);
+  animation:strap 2.2s .1s both}
+.strap::before{content:"";position:absolute;inset:-.86em;border:.17em dashed rgba(253,246,236,.95);border-radius:50%}
+.strap::after{content:"";position:absolute;inset:-1.5em;border-radius:50%;
+  background:repeating-conic-gradient(rgba(45,42,50,.1) 0 1.2deg,transparent 1.2deg 2.4deg);
+  -webkit-mask:radial-gradient(closest-side,transparent calc(100% - 1.5em),#000 calc(100% - 1.5em));mask:radial-gradient(closest-side,transparent calc(100% - 1.5em),#000 calc(100% - 1.5em))}
+@keyframes strap{
+  0%,48%{transform:rotate(-46deg) scale(.9,.78);animation-timing-function:cubic-bezier(.3,0,.3,1)}
+  68%{transform:rotate(-11deg) scale(1.02,1.03);animation-timing-function:cubic-bezier(.4,0,.4,1)}
+  82%{transform:rotate(-19.5deg)}
+  92%{transform:rotate(-16deg)}
+  100%{transform:rotate(-17deg)}
+}
+.camera{position:relative;width:40em;height:33.4em;counter-reset:shots 8;transform-origin:50% 100%;
+  animation:var(--recoil,none) .62s cubic-bezier(.2,.8,.3,1)}
+.camera>*,.camera i,.camera b{position:absolute;display:block}
+@keyframes recoilA{0%{transform:none}14%{transform:translateY(.75em) rotate(-1.1deg) scale(1.01,.985)}46%{transform:translateY(-.3em) rotate(.5deg)}74%{transform:translateY(.1em)}100%{transform:none}}
+@keyframes recoilB{0%{transform:none}14%{transform:translateY(.75em) rotate(-1.1deg) scale(1.01,.985)}46%{transform:translateY(-.3em) rotate(.5deg)}74%{transform:translateY(.1em)}100%{transform:none}}
+
+.shell{inset:0;border-radius:3.4em 3.4em 2.6em 2.6em;
+  background:linear-gradient(180deg,var(--cream) 0 72.8%,var(--cream2) 72.8%);
+  box-shadow:inset 0 .28em 0 #fff,inset 0 -.55em 0 rgba(45,42,50,.07),inset -.5em 0 0 rgba(45,42,50,.035),
+    1.1em 1.3em 0 rgba(45,42,50,.1),2.2em 2.6em 0 rgba(45,42,50,.06),3.4em 4em 1.6em rgba(45,42,50,.05)}
+.seam{left:0;right:0;top:24.25em;height:.2em;background:rgba(45,42,50,.16);box-shadow:0 .2em 0 rgba(255,255,255,.7)}
+.band{left:0;right:0;top:12.3em;height:3.5em;background:linear-gradient(var(--teal) 0 40%,transparent 40% 60%,var(--apr) 60%)}
+.lug{top:6.2em;width:1.5em;height:2.8em;background:var(--ink);border-radius:.5em}
+.lug.l{left:-.8em}.lug.r{right:-.8em}
+.foot{bottom:-.5em;width:4.4em;height:.9em;background:var(--ink);border-radius:0 0 .5em .5em}
+.foot.l{left:4em}.foot.r{right:4em}
+
+/* shutter */
+.shutter{left:29.6em;top:-1.55em;width:6em;height:2.2em;z-index:-1}
+.shutter .cap{left:.9em;right:.9em;top:0;height:2em;border-radius:.75em .75em .2em .2em;
+  background:linear-gradient(var(--red),#DC6448);box-shadow:inset 0 .28em 0 rgba(255,255,255,.4),inset -.5em 0 0 rgba(45,42,50,.12);
+  animation:var(--press,none) 2.3s both}
+@keyframes pressA{0%{transform:none}4%,88%{transform:translateY(.95em)}100%{transform:none}}
+@keyframes pressB{0%{transform:none}4%,88%{transform:translateY(.95em)}100%{transform:none}}
+.collar{left:5.8em;left:29.9em;top:-.5em;width:5.4em;height:.9em;background:var(--ink);border-radius:.4em .4em 0 0}
+.shots{left:28.4em;top:-4.2em;width:8.4em;height:7em;z-index:6}
+.shot{position:absolute;inset:0;border-radius:1.4em;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.shot .f{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.f:checked{counter-increment:shots -1}
+.shot:has(.f:checked){visibility:hidden;animation:none!important}
+.shot:has(.f:not(:checked)) ~ .shot{visibility:hidden}
+.shot:has(.f:checked) + .shot{animation:arm 2.2s both}
+@keyframes arm{0%,99.9%{visibility:hidden}100%{visibility:visible}}
+.shot:has(.f:focus-visible){outline:.32em solid var(--ink);outline-offset:-.5em}
+.s1{z-index:8}.s2{z-index:7}.s3{z-index:6}.s4{z-index:5}.s5{z-index:4}.s6{z-index:3}.s7{z-index:2}.s8{z-index:1}
+.empty{left:22.56em;top:-3.6em;width:7.04em;text-align:center;display:none!important;z-index:7;
+  font:bold 1.25em/1 var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--cream);
+  background:var(--ink);border-radius:.5em;padding:.42em 0 .38em;transform-origin:50% 130%;
+  animation:pop .6s 2.4s var(--spring) both}
+.empty::after{content:"";position:absolute;left:50%;top:100%;margin-left:-.4em;border:.4em solid transparent;border-top-color:var(--ink);border-bottom:0}
+body:has(#f8:checked) .empty{display:block!important}
+body:has(#f8:checked) .shutter .cap{background:linear-gradient(#C9A79B,#B8958B)}
+@keyframes pop{from{opacity:0;transform:scale(.3) rotate(-14deg)}to{opacity:1;transform:rotate(-3deg)}}
+
+.hint{left:9.3em;top:-2.5em;width:7.5em;z-index:5;font:italic 1.75em/1 var(--script);color:var(--shade);white-space:nowrap;
+  transform:rotate(-4deg);transition:opacity .5s;animation:hint 1s 1.5s both}
+.hint svg{position:absolute;left:4.35em;top:.1em;width:2.5em;height:1.5em;overflow:visible}
+.hint path{fill:none;stroke:var(--red);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+@keyframes hint{from{opacity:0;transform:rotate(-10deg) translateY(.5em)}to{opacity:1;transform:rotate(-4deg)}}
+body:has(#f1:checked) .hint{visibility:hidden}
+
+.engrave{right:4.6em;top:.42em;margin:0;font:1em/1 var(--caps);letter-spacing:.09em;color:rgba(45,42,50,.62);white-space:nowrap;
+  text-shadow:0 .09em 0 #fff}
+
+/* flash unit */
+.flashunit{left:3em;top:3.2em;width:9em;height:6em;border-radius:1em;background:var(--ink);box-shadow:.25em .3em 0 rgba(45,42,50,.14)}
+.flashunit::before{content:"";position:absolute;inset:.6em;border-radius:.55em;
+  background:linear-gradient(160deg,rgba(255,255,255,.75),transparent 55%),
+    repeating-linear-gradient(90deg,var(--cream) 0 .34em,var(--sky) .34em .56em)}
+.flashunit::after{content:"";position:absolute;left:38%;top:36%;width:24%;height:28%;border-radius:50%;background:rgba(249,226,166,.9);filter:blur(.25em)}
+.bloom{inset:.3em;border-radius:.7em;background:#fff;opacity:0;z-index:3;
+  box-shadow:0 0 2.5em 1.2em #fff,0 0 7em 3.5em rgba(255,255,255,.75);
+  animation:var(--bloom,none) .7s cubic-bezier(.1,.8,.2,1)}
+@keyframes bloomA{0%{opacity:0}6%{opacity:1}100%{opacity:0}}
+@keyframes bloomB{0%{opacity:0}6%{opacity:1}100%{opacity:0}}
+
+/* viewfinder */
+.finder{left:29.4em;top:4.6em;width:6.4em;height:5em;border-radius:.9em;background:var(--ink);box-shadow:.25em .3em 0 rgba(45,42,50,.14)}
+.finder::before{content:"";position:absolute;inset:.65em;border-radius:.4em;
+  background:linear-gradient(125deg,rgba(255,255,255,.55) 0 24%,transparent 24.5% 34%,rgba(255,255,255,.22) 34.5% 42%,transparent 42.5%),
+    linear-gradient(var(--teal),var(--shade))}
+
+/* lens */
+.lens{left:11.4em;top:5.6em;width:17.2em;height:17.2em;border-radius:50%;background:var(--ink);cursor:crosshair;
+  box-shadow:0 0 0 .75em var(--cream2),0 0 0 .95em rgba(45,42,50,.14),.9em 1.1em 0 .75em rgba(45,42,50,.12),1.8em 2.2em 0 .6em rgba(45,42,50,.06)}
+.lens .r1{inset:1.1em;border-radius:50%;border:.22em solid var(--shade);
+  background:repeating-conic-gradient(from 3deg,transparent 0 5deg,rgba(253,246,236,.13) 5deg 6deg)}
+.lens .r2{inset:2.5em;border-radius:50%;background:var(--ink);border:.34em solid var(--teal)}
+.lens .r3{inset:3.6em;border-radius:50%;background:var(--shade);box-shadow:inset 0 0 0 .3em var(--ink)}
+.glass{inset:4.2em;border-radius:50%;overflow:hidden;
+  background:radial-gradient(circle at 50% 50%,#17151b 0 22%,var(--ink) 23% 40%,#3b3642 41% 62%,var(--ink) 63%)}
+.blades{inset:0;border-radius:50%;background:repeating-conic-gradient(from 10deg,rgba(74,67,80,.9) 0 30deg,rgba(45,42,50,.9) 30deg 60deg);
+  -webkit-mask:radial-gradient(circle,transparent 0 var(--hole,34%),#000 calc(var(--hole,34%) + 2%));mask:radial-gradient(circle,transparent 0 34%,#000 36%);
+  animation:var(--iris,none) .5s cubic-bezier(.3,0,.2,1)}
+@keyframes irisA{0%{transform:none}30%{transform:rotate(55deg) scale(3)}55%{transform:rotate(55deg) scale(3)}100%{transform:none}}
+@keyframes irisB{0%{transform:none}30%{transform:rotate(55deg) scale(3)}55%{transform:rotate(55deg) scale(3)}100%{transform:none}}
+.blades{transform-origin:50% 50%}
+.glass .blink{inset:0;border-radius:50%;background:#121015;transform:scale(0);animation:var(--blink,none) .5s cubic-bezier(.3,0,.2,1)}
+@keyframes blinkA{0%{transform:scale(0)}28%,52%{transform:scale(1.05)}100%{transform:scale(0)}}
+@keyframes blinkB{0%{transform:scale(0)}28%,52%{transform:scale(1.05)}100%{transform:scale(0)}}
+.glare{inset:4.2em;border-radius:50%;overflow:hidden;pointer-events:none;
+  background:radial-gradient(circle at 31% 27%,rgba(255,255,255,.9) 0 5%,transparent 6.5%),
+    radial-gradient(circle at 39% 20%,rgba(255,255,255,.5) 0 2.2%,transparent 3%),
+    radial-gradient(circle at 72% 76%,rgba(127,200,194,.5) 0 7%,transparent 16%),
+    radial-gradient(ellipse 60% 42% at 34% 26%,rgba(191,227,224,.34),transparent 70%)}
+.glare::after{content:"";position:absolute;top:-20%;bottom:-20%;left:-70%;width:34%;transform:skewX(-22deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.6) 45%,rgba(255,255,255,.15) 60%,transparent);
+  transition:left 0s}
+.lens:hover .glare::after{left:140%;transition:left .85s cubic-bezier(.3,.1,.2,1)}
+
+/* exposure dial */
+.dial{left:4em;top:16.5em;width:6.4em;height:6.4em}
+.knob{inset:.4em;border-radius:50%;background:repeating-conic-gradient(var(--ink) 0 9deg,var(--shade) 9deg 18deg);
+  box-shadow:.3em .38em 0 rgba(45,42,50,.16);transition:transform .7s var(--spring)}
+.knob::before{content:"";position:absolute;inset:.62em;border-radius:50%;background:var(--ink);box-shadow:inset 0 .2em 0 rgba(255,255,255,.14)}
+.knob::after{content:"";position:absolute;left:50%;top:.85em;width:.42em;height:1.7em;margin-left:-.21em;border-radius:.3em;background:var(--apr)}
+.dial:has(#e-dark:checked) .knob{transform:rotate(-58deg)}
+.dial:has(#e-light:checked) .knob{transform:rotate(58deg)}
+.mk{top:-.5em;width:1.15em;height:1.15em;border-radius:50%;pointer-events:none;transition:transform .5s var(--spring)}
+.mk.d{left:-.9em;background:var(--ink);box-shadow:inset .42em 0 0 var(--cream2),inset 0 0 0 .14em var(--ink)}
+.mk.l{right:-.9em;background:var(--apr);box-shadow:0 0 0 .2em var(--cream),0 0 0 .34em var(--apr)}
+.dial:has(#e-dark:checked) .mk.d,.dial:has(#e-light:checked) .mk.l{transform:scale(1.45)}
+.dial label{position:absolute;top:-1em;bottom:-.9em;width:4.9em;z-index:2;cursor:pointer;border-radius:1em;-webkit-tap-highlight-color:transparent}
+.dial .dl{left:-1.7em}.dial .dr{right:-1.7em}
+.dial input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.dial label:has(:focus-visible){outline:.26em solid var(--ink);outline-offset:-.1em}
+
+.dial .tag{position:absolute;left:-2.2em;right:-2.2em;top:8.75em;text-align:center;font:.74em/1 var(--caps);letter-spacing:.16em;color:rgba(45,42,50,.6);pointer-events:none}
+
+/* counter */
+.counter{left:30em;top:17.3em;width:6em;height:4.5em;border-radius:.9em;background:var(--ink);box-shadow:.25em .3em 0 rgba(45,42,50,.14);overflow:hidden}
+.counter::before{content:"";position:absolute;inset:.5em;border-radius:.45em;background:#17151b;box-shadow:inset 0 .3em .3em rgba(0,0,0,.5)}
+.counter::after{content:counter(shots);position:absolute;inset:.5em;display:grid;place-items:center;
+  font:bold 2.7em/1 var(--display);color:var(--yel);animation:var(--tick,none) .5s .25s var(--spring) both}
+@keyframes tickA{from{transform:translateY(-110%)}to{transform:none}}
+@keyframes tickB{from{transform:translateY(-110%)}to{transform:none}}
+.ctag{left:38.5em;width:12.2em;top:30.3em;text-align:center;font:.74em/1 var(--caps);letter-spacing:.16em;color:rgba(45,42,50,.6)}
+
+/* chin */
+.logo{left:1.9em;top:13.2em;font:bold 1.9em/1 var(--display);letter-spacing:-.03em;color:var(--ink)}
+.logo::after{content:"";display:inline-block;width:.34em;height:.34em;border-radius:50%;background:var(--red);margin-left:.12em}
+.focus{right:3.8em;top:27.2em;font:.95em/1 var(--caps);letter-spacing:.14em;color:rgba(45,42,50,.7);white-space:nowrap}
+.focus small{font-size:.8em;letter-spacing:.2em}
+.slot{left:9.5em;top:28.3em;width:21em;height:1.45em;border-radius:.5em;background:#17151b;
+  box-shadow:inset 0 .4em .3em rgba(0,0,0,.6),0 .22em 0 rgba(255,255,255,.85),0 -.14em 0 rgba(45,42,50,.14)}
+.arrow{top:30.6em;width:0;height:0;border:.5em solid transparent;border-top:.62em solid rgba(45,42,50,.28);border-bottom:0}
+.arrow.a1{left:18.5em}.arrow.a2{left:20.9em;left:19.5em}.arrow.a3{left:20.5em}
+.whirr{left:20.9em;top:18.2em;font:italic 1.5em/1 var(--script);color:var(--shade);opacity:0;white-space:nowrap;
+  animation:var(--whirr,none) 1.5s .5s steps(12,end) both}
+@keyframes whirrA{0%{opacity:0;transform:translate(0,0) rotate(-6deg)}10%{opacity:1}50%{transform:translate(.25em,.2em) rotate(-2deg)}90%{opacity:1}100%{opacity:0;transform:translate(.1em,.5em) rotate(-9deg)}}
+@keyframes whirrB{0%{opacity:0;transform:translate(0,0) rotate(-6deg)}10%{opacity:1}50%{transform:translate(.25em,.2em) rotate(-2deg)}90%{opacity:1}100%{opacity:0;transform:translate(.1em,.5em) rotate(-9deg)}}
+
+/* ───────────── state plumbing: one checkbox per frame ───────────── */
+body:has(#f1:checked){--press:pressA;--recoil:recoilA;--bloom:bloomA;--iris:irisA;--blink:blinkA;--flash:flashA;--whirr:whirrA;--tick:tickA}
+body:has(#f2:checked){--press:pressB;--recoil:recoilB;--bloom:bloomB;--iris:irisB;--blink:blinkB;--flash:flashB;--whirr:whirrB;--tick:tickB}
+body:has(#f3:checked){--press:pressA;--recoil:recoilA;--bloom:bloomA;--iris:irisA;--blink:blinkA;--flash:flashA;--whirr:whirrA;--tick:tickA}
+body:has(#f4:checked){--press:pressB;--recoil:recoilB;--bloom:bloomB;--iris:irisB;--blink:blinkB;--flash:flashB;--whirr:whirrB;--tick:tickB}
+body:has(#f5:checked){--press:pressA;--recoil:recoilA;--bloom:bloomA;--iris:irisA;--blink:blinkA;--flash:flashA;--whirr:whirrA;--tick:tickA}
+body:has(#f6:checked){--press:pressB;--recoil:recoilB;--bloom:bloomB;--iris:irisB;--blink:blinkB;--flash:flashB;--whirr:whirrB;--tick:tickB}
+body:has(#f7:checked){--press:pressA;--recoil:recoilA;--bloom:bloomA;--iris:irisA;--blink:blinkA;--flash:flashA;--whirr:whirrA;--tick:tickA}
+body:has(#f8:checked){--press:pressB;--recoil:recoilB;--bloom:bloomB;--iris:irisB;--blink:blinkB;--flash:flashB;--whirr:whirrB;--tick:tickB}
+body:has(#f1:checked) .p1,body:has(#f2:checked) .p2,body:has(#f3:checked) .p3,body:has(#f4:checked) .p4,
+body:has(#f5:checked) .p5,body:has(#f6:checked) .p6,body:has(#f7:checked) .p7,body:has(#f8:checked) .p8{display:block}
+
+.flash{position:fixed;inset:0;z-index:200;background:#fff;opacity:0;pointer-events:none;animation:var(--flash,none) .5s cubic-bezier(.12,.7,.25,1)}
+@keyframes flashA{0%{opacity:0}7%{opacity:.96}100%{opacity:0}}
+@keyframes flashB{0%{opacity:0}7%{opacity:.96}100%{opacity:0}}
+
+/* ───────────── table marks & prints ───────────── */
+.ghost,.print{position:absolute;left:0;top:0;width:10em;height:11.6em;font-size:var(--pe);
+  transform:translate(var(--tx),var(--ty)) rotate(var(--tr));transform-origin:50% 0}
+.ghost{border:.11em dashed rgba(45,42,50,.24);border-radius:.25em;display:grid;place-items:center;
+  font-family:var(--display);font-weight:bold;color:rgba(45,42,50,.2);animation:fade .7s both}
+.ghost b{font-size:2.6em;line-height:1}
+.ghost.n1{animation-delay:1.05s}.ghost.n2{animation-delay:1.12s}.ghost.n3{animation-delay:1.19s}.ghost.n4{animation-delay:1.26s}
+.ghost.n5{animation-delay:1.33s}.ghost.n6{animation-delay:1.4s}.ghost.n7{animation-delay:1.47s}.ghost.n8{animation-delay:1.54s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+
+.print{display:none;z-index:30;transition:z-index 0s .45s;animation:eject 3.5s .42s both}
+.p2{z-index:31}.p3{z-index:32}.p4{z-index:33}.p5{z-index:34}.p6{z-index:35}.p7{z-index:36}.p8{z-index:37}
+@keyframes eject{
+  0%{transform:translate(var(--sx),calc(var(--sl) - var(--eh))) rotate(0deg) scale(var(--es));clip-path:inset(100% -400% -400% -400%);animation-timing-function:steps(10,end)}
+  40%{transform:translate(var(--sx),var(--sl)) rotate(0deg) scale(var(--es));clip-path:inset(0% -400% -400% -400%)}
+  47%{transform:translate(var(--sx),var(--sl)) rotate(0deg) scale(var(--es));clip-path:inset(0% -400% -400% -400%);animation-timing-function:cubic-bezier(.55,0,.9,.5)}
+  57%{transform:translate(var(--sx),calc(var(--sl) + var(--eh)*.09)) rotate(calc(var(--tr)*-.8)) scale(var(--es));clip-path:inset(-400% -400% -400% -400%);animation-timing-function:cubic-bezier(.25,.6,.2,1)}
+  93%{transform:translate(var(--tx),var(--ty)) rotate(calc(var(--tr)*1.25)) scale(1.02);clip-path:inset(-400% -400% -400% -400%)}
+  100%{transform:translate(var(--tx),var(--ty)) rotate(var(--tr)) scale(1);clip-path:inset(-400% -400% -400% -400%)}
+}
+.card{position:absolute;inset:0;display:block;border-radius:.2em;cursor:zoom-in;-webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  background:linear-gradient(170deg,#fff,var(--cream) 30%,#F8EFE2);
+  box-shadow:.22em .28em 0 rgba(45,42,50,.1),.5em .62em 0 rgba(45,42,50,.06),.9em 1.1em .7em rgba(45,42,50,.05);
+  transition:transform .6s var(--spring),box-shadow .5s}
+.card .z{position:absolute;left:0;top:0;width:1px;height:1px;opacity:0;margin:0}
+.card:has(.z:focus-visible){outline:.22em solid var(--ink);outline-offset:.25em}
+.card:has(.z:checked){cursor:zoom-out}
+.print:has(.z:checked),.print:has(.z:focus-visible){z-index:90;transition:none}
+.print:has(.z:checked) .card,.print:has(.z:focus-visible) .card{
+  transform:translate(calc((var(--cx) - var(--tx))*var(--zf)),calc((var(--cy) - var(--ty))*var(--zfy))) rotate(calc(var(--tr)*-1)) scale(var(--zs));
+  box-shadow:.3em .4em 0 rgba(45,42,50,.08),.9em 1.2em 0 rgba(45,42,50,.05),1.6em 2.2em 1.6em rgba(45,42,50,.1)}
+@media (hover:hover){
+  .print:hover{z-index:91;transition:none}
+  .print:hover .card{
+    transform:translate(calc((var(--cx) - var(--tx))*var(--zf)),calc((var(--cy) - var(--ty))*var(--zfy))) rotate(calc(var(--tr)*-1)) scale(var(--zs));
+    box-shadow:.3em .4em 0 rgba(45,42,50,.08),.9em 1.2em 0 rgba(45,42,50,.05),1.6em 2.2em 1.6em rgba(45,42,50,.1)}
+}
+.photo{position:absolute;left:.7em;top:.7em;width:8.6em;height:8.6em;overflow:hidden;border-radius:.07em;background:#C6D2C6;
+  filter:brightness(1) contrast(1) sepia(0) saturate(1) hue-rotate(0deg);transition:filter .9s var(--soft)}
+body:has(#e-light:checked) .photo{filter:brightness(1.1) contrast(.96) sepia(.3) saturate(1.25) hue-rotate(-4deg)}
+body:has(#e-dark:checked) .photo{filter:brightness(.88) contrast(1.1) sepia(0) saturate(.82) hue-rotate(14deg)}
+.photo::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.2),transparent 38%);box-shadow:inset 0 0 .5em rgba(74,67,80,.3)}
+.pic{position:absolute;left:0;top:0;width:100em;height:100em;font-size:.086em;overflow:hidden;animation:develop 12s 1.4s linear both}
+.pic i,.pic b{position:absolute;display:block}
+@keyframes develop{ /* shadows first, then warm tones, then everything */
+  0%{opacity:0;filter:grayscale(1) sepia(0) saturate(1) contrast(2.2) brightness(1.9)}
+  20%{opacity:.62;filter:grayscale(1) sepia(0) saturate(1) contrast(1.9) brightness(1.5)}
+  45%{opacity:.78;filter:grayscale(.55) sepia(.75) saturate(1.3) contrast(1.15) brightness(1.3)}
+  72%{opacity:.94;filter:grayscale(.1) sepia(.4) saturate(.95) contrast(.95) brightness(1.12)}
+  100%{opacity:1;filter:grayscale(0) sepia(0) saturate(1) contrast(1) brightness(1)}
+}
+.milk{position:absolute;inset:0;opacity:0;pointer-events:none;
+  background:radial-gradient(circle at 40% 35%,#E3EAE0,#C6D2C6 75%);animation:milk 12s 1.4s cubic-bezier(.3,0,.6,1) both}
+@keyframes milk{0%{opacity:1}35%{opacity:.62}100%{opacity:0}}
+.capt{position:absolute;left:.45em;right:.45em;bottom:.05em;height:2.2em;display:flex;align-items:center;justify-content:center;text-align:center;
+  font:italic .86em/1 var(--script);color:var(--ink);transform:rotate(-1.4deg);
+  animation:write 1.5s 9.5s cubic-bezier(.4,0,.5,1) both}
+@keyframes write{from{clip-path:inset(-20% 100% -20% 0);opacity:.2}to{clip-path:inset(-20% -5% -20% 0);opacity:.9}}
+
+/* ───────────── the eight photographs (100 × 100 units each) ───────────── */
+/* 1 · seaside horizon, striped parasol */
+.sea{background:linear-gradient(var(--sky) 0 22%,var(--cream) 52%)}
+.sea .sun{left:66em;top:11em;width:15em;height:15em;border-radius:50%;background:var(--yel);box-shadow:0 0 0 4.5em rgba(249,226,166,.4)}
+.sea .water{left:0;top:50em;width:100em;height:22em;background:repeating-linear-gradient(180deg,transparent 0 3.6em,rgba(253,246,236,.55) 3.6em 4.3em),linear-gradient(var(--teal),#9AD3CD)}
+.sea .boat{left:16em;top:42.4em;width:7em;height:8em;background:var(--cream);clip-path:polygon(50% 0,100% 82%,100% 100%,0 100%,0 82%,44% 82%)}
+.sea .sand{left:-6em;top:67em;width:112em;height:40em;background:var(--yel);border-radius:60% 40% 0 0/14% 10% 0 0;box-shadow:0 -1.5em 0 var(--cream)}
+.sea .shade{left:52em;top:83em;width:42em;height:8em;border-radius:50%;background:rgba(74,67,80,.26);transform:rotate(-4deg)}
+.sea .pole{left:47em;top:42em;width:1.5em;height:46em;background:var(--shade);transform:rotate(8deg);transform-origin:50% 100%}
+.sea .brolly{left:28.4em;top:21.5em;width:50em;height:25em;border-radius:25em 25em 0 0;transform:rotate(8deg);transform-origin:50% 100%;
+  background:conic-gradient(from -90deg at 50% 100%,var(--rose) 0 22.5deg,var(--cream) 0 45deg,var(--rose) 0 67.5deg,var(--cream) 0 90deg,var(--rose) 0 112.5deg,var(--cream) 0 135deg,var(--rose) 0 157.5deg,var(--cream) 0 180deg,transparent 0)}
+.sea .ball{left:17em;top:79em;width:9em;height:9em;border-radius:50%;background:conic-gradient(var(--apr) 0 60deg,var(--cream) 0 120deg,var(--teal) 0 180deg,var(--cream) 0 240deg,var(--apr) 0 300deg,var(--cream) 0);box-shadow:3em 1.6em 0 -1.8em rgba(74,67,80,.25)}
+
+/* 2 · cat on a windowsill */
+.cat{background:linear-gradient(transparent 79%,rgba(74,67,80,.2) 79%),repeating-linear-gradient(90deg,transparent 0 9em,rgba(253,246,236,.22) 9em 10.2em),var(--rose)}
+.cat .win{left:17em;top:7em;width:68em;height:64em;border:3.2em solid var(--cream);background:linear-gradient(var(--sky) 40%,var(--yel))}
+.cat .win::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:3em;margin-left:-1.5em;background:var(--cream)}
+.cat .win::after{content:"";position:absolute;top:38%;left:0;right:0;height:2.6em;background:var(--cream)}
+.cat .cloud{left:24em;top:16em;width:16em;height:5em;border-radius:3em;background:var(--cream);box-shadow:7em 3em 0 -1em var(--cream)}
+.cat .hill{left:20em;top:52em;width:62em;height:26em;border-radius:50%;background:var(--teal)}
+.cat .sill{left:9em;top:70em;width:84em;height:6.5em;background:var(--cream);box-shadow:0 3em 0 rgba(74,67,80,.25)}
+.cat .body{left:53em;top:41em;width:25em;height:30em;background:var(--shade);border-radius:55% 45% 26% 30%/72% 62% 24% 28%}
+.cat .head{left:52em;top:28em;width:19em;height:16.5em;background:var(--shade);border-radius:50%}
+.cat .ear{top:22.5em;width:7.5em;height:10em;background:var(--shade)}
+.cat .ear.l{left:52.4em;clip-path:polygon(0 100%,26% 0,100% 62%)}
+.cat .ear.r{left:63em;clip-path:polygon(0 62%,74% 0,100% 100%)}
+.cat .tail{left:73em;top:65em;width:5em;height:24em;border-radius:3em;background:var(--shade);transform:rotate(-7deg);transform-origin:50% 0}
+.cat .curtain{left:0;top:0;width:21em;height:80em;border-radius:0 0 70% 0/0 0 22% 0;
+  background:repeating-linear-gradient(90deg,transparent 0 4em,rgba(74,67,80,.14) 4em 5.4em),var(--apr)}
+.cat .pot{left:24em;top:58em;width:12em;height:12em;background:var(--apr);clip-path:polygon(0 0,100% 0,84% 100%,16% 100%)}
+.cat .leaf{left:28.4em;top:38em;width:5em;height:21em;border-radius:50%;background:var(--pine);transform-origin:50% 100%}
+.cat .leaf.a{transform:rotate(-24deg)}.cat .leaf.c{transform:rotate(26deg)}
+.cat .ray{left:0;top:0;width:100em;height:100em;background:rgba(249,226,166,.3);clip-path:polygon(58% 0,84% 0,44% 100%,14% 100%)}
+
+/* 3 · breakfast: boiled egg, coffee, steam */
+.egg{background:linear-gradient(105deg,transparent 52%,rgba(253,246,236,.55) 52% 74%,transparent 74%),var(--yel)}
+.egg .table{left:-12em;top:52em;width:124em;height:70em;border-radius:50%/22% 22% 0 0;
+  background:repeating-linear-gradient(90deg,rgba(253,246,236,.38) 0 6em,transparent 6em 12em),repeating-linear-gradient(0deg,rgba(253,246,236,.38) 0 6em,transparent 6em 12em),var(--teal)}
+.egg .sh{border-radius:50%;background:rgba(74,67,80,.22)}
+.egg .sh.a{left:20em;top:74em;width:30em;height:6.5em;transform:rotate(8deg)}
+.egg .sh.b{left:56em;top:78em;width:44em;height:9em;transform:rotate(7deg)}
+.egg .ov{left:17.5em;top:36em;width:15em;height:22em;border-radius:50%/60% 60% 40% 40%;background:radial-gradient(circle at 34% 26%,#fff 0 9%,var(--cream) 30%);box-shadow:inset -2.4em -1em 0 rgba(233,166,161,.5)}
+.egg .bowl{left:15.5em;top:53em;width:19em;height:13em;border-radius:0 0 9.5em 9.5em;background:var(--apr);box-shadow:inset -3em 0 0 rgba(74,67,80,.14)}
+.egg .stem{left:22.4em;top:65em;width:5.2em;height:9em;background:var(--apr)}
+.egg .base{left:16.5em;top:72.5em;width:17em;height:4.6em;border-radius:50%;background:var(--apr)}
+.egg .saucer{left:45em;top:75em;width:42em;height:9em;border-radius:50%;background:var(--cream);box-shadow:inset 0 -1.6em 0 rgba(74,67,80,.12)}
+.egg .handle{left:76em;top:57em;width:13em;height:13em;border:3em solid var(--cream);border-radius:50%}
+.egg .cup{left:52em;top:53em;width:28em;height:27em;border-radius:1.5em 1.5em 14em 14em/1.5em 1.5em 21em 21em;
+  background:linear-gradient(transparent 30%,var(--rose) 30% 40%,transparent 40%),linear-gradient(90deg,var(--cream) 62%,#EFE3D3 62%)}
+.egg .coffee{left:52em;top:49.4em;width:28em;height:7.6em;border-radius:50%;background:var(--shade);border:1.3em solid var(--cream)}
+.egg .spoon{left:30em;top:88em;width:24em;height:1.9em;border-radius:1em;background:var(--shade);transform:rotate(-9deg)}
+.egg .spoon::after{content:"";position:absolute;right:-7em;top:-1.7em;width:9em;height:5.2em;border-radius:50%;background:var(--shade)}
+.egg .st{top:24em;width:4.6em;height:24em;border-radius:50%;background:rgba(253,246,236,.95);filter:blur(1.5em);animation:steam 3.6s ease-in-out infinite}
+.egg .st.a{left:58em}.egg .st.b{left:65em;animation-delay:-1.2s}.egg .st.c{left:71em;animation-delay:-2.4s}
+@keyframes steam{0%{transform:translate(0,9em) scale(.7,.5);opacity:0}30%{opacity:.85}60%{transform:translate(2.5em,-6em) scale(1.1,1)}100%{transform:translate(-2em,-20em) scale(1.7,1.25);opacity:0}}
+
+/* 4 · caravan under pines */
+.van{background:linear-gradient(var(--sky) 20%,var(--cream) 66%)}
+.van .sun{left:40em;top:28em;width:20em;height:20em;border-radius:50%;background:var(--yel);box-shadow:0 0 0 5em rgba(249,226,166,.4)}
+.van .pine{clip-path:polygon(50% 0,72% 28%,60% 28%,82% 56%,66% 56%,94% 87%,56% 87%,56% 100%,44% 100%,44% 87%,6% 87%,34% 56%,18% 56%,40% 28%,28% 28%)}
+.van .pine.a{left:-7em;top:3em;width:38em;height:76em;background:var(--shade)}
+.van .pine.b{left:66em;top:-3em;width:42em;height:83em;background:var(--shade)}
+.van .pine.c{left:22em;top:22em;width:22em;height:52em;background:var(--pine)}
+.van .pine.d{left:52em;top:14em;width:24em;height:60em;background:var(--pine)}
+.van .grass{left:-10em;top:71em;width:120em;height:40em;border-radius:50%/16% 20% 0 0;background:var(--teal)}
+.van .path{left:10em;top:84em;width:60em;height:30em;border-radius:50%;background:var(--yel);transform:rotate(-6deg)}
+.van .sh{left:24em;top:76em;width:66em;height:8em;border-radius:50%;background:rgba(74,67,80,.3)}
+.van .hitch{left:74em;top:70em;width:14em;height:1.7em;background:var(--shade)}
+.van .hitch::after{content:"";position:absolute;right:1em;top:0;width:1.5em;height:9em;background:var(--shade)}
+.van .shell2{left:24em;top:45em;width:54em;height:28em;border-radius:13em 9em 4em 4em/14em 11em 4em 4em;
+  background:linear-gradient(transparent 55%,var(--apr) 55% 68%,transparent 68%),linear-gradient(var(--cream),#F3E6D4);box-shadow:inset -3em 0 0 rgba(74,67,80,.08)}
+.van .w1{left:32em;top:50.5em;width:16em;height:9.5em;border-radius:2.4em;background:linear-gradient(135deg,var(--cream) 0 22%,var(--sky) 23%);border:1.1em solid var(--shade)}
+.van .door{left:57em;top:50.5em;width:11em;height:21em;border-radius:2.4em 2.4em 0 0;border:1em solid var(--rose);background:#F7EBDB}
+.van .door::after{content:"";position:absolute;left:1.7em;top:1.8em;width:5.5em;height:5.5em;border-radius:50%;background:var(--sky)}
+.van .wheel{left:40em;top:68em;width:11em;height:11em;border-radius:50%;background:radial-gradient(circle,var(--cream) 0 24%,var(--ink) 26%)}
+.van .flag{left:6em;top:43em;width:22em;height:6em;background:conic-gradient(from -30deg at 50% 100%,var(--rose) 0 60deg,transparent 0) 0 0/5.5em 6em repeat-x;transform:rotate(9deg)}
+
+/* 5 · bicycle against a wall */
+.bike{background:linear-gradient(transparent 62%,var(--rose) 62% 81%,var(--cream) 81%),
+  radial-gradient(circle at 22% 20%,rgba(253,246,236,.6) 0 9%,transparent 10%),radial-gradient(circle at 44% 46%,rgba(253,246,236,.5) 0 5%,transparent 6%),var(--yel)}
+.bike .shut{left:57em;top:7em;width:32em;height:36em;border:2em solid var(--cream);
+  background:linear-gradient(90deg,transparent 48%,var(--shade) 48% 52%,transparent 52%),repeating-linear-gradient(180deg,var(--teal) 0 3em,#6AB3AE 3em 4.2em)}
+.bike .ledge{left:54em;top:43em;width:38em;height:3.4em;background:var(--cream);box-shadow:0 1.6em 0 rgba(74,67,80,.18)}
+.bike .gsh{left:8em;top:80em;width:90em;height:7em;border-radius:50%;background:rgba(74,67,80,.26)}
+.bike .wsh{left:14em;top:26em;width:74em;height:62em;background:rgba(74,67,80,.1);clip-path:polygon(18% 44%,36% 20%,80% 18%,100% 62%,92% 100%,4% 100%,0 70%)}
+.bike .wh{top:52em;width:30em;height:30em;border-radius:50%;border:2.1em solid var(--ink);
+  background:radial-gradient(circle,var(--ink) 0 8%,transparent 9%),repeating-conic-gradient(rgba(45,42,50,.6) 0 1.6deg,transparent 1.6deg 30deg)}
+.bike .wh.r{left:10em}.bike .wh.f{left:54em}
+.bike .tb{left:calc(var(--x)*1em);top:calc(var(--y)*1em - 1em);width:calc(var(--l)*1em);height:2em;border-radius:1em;background:var(--pine);transform:rotate(var(--a));transform-origin:0 50%}
+.bike .tb.k{background:var(--ink);height:1.5em}
+.bike .saddle{left:29.5em;top:39.4em;width:12.5em;height:3.8em;border-radius:2.4em 1em 1em 2.4em;background:var(--ink)}
+.bike .bar{left:55em;top:35.6em;width:10em;height:2.2em;border-radius:1.2em;background:var(--ink)}
+.bike .basket{left:63.5em;top:38.5em;width:14.5em;height:10em;border-radius:.6em .6em 2.6em 2.6em;
+  background:repeating-linear-gradient(90deg,transparent 0 1.6em,rgba(74,67,80,.3) 1.6em 2.1em),repeating-linear-gradient(0deg,transparent 0 1.6em,rgba(74,67,80,.22) 1.6em 2.1em),var(--apr)}
+.bike .bloom2{left:66em;top:32.5em;width:4.6em;height:4.6em;border-radius:50%;background:var(--rose);box-shadow:4.6em -1.4em 0 var(--cream),7.6em 1.2em 0 -.4em var(--rose),2.2em -3.6em 0 -.6em var(--cream)}
+.bike .crank{left:39.8em;top:64.8em;width:4.4em;height:4.4em;border-radius:50%;background:var(--ink);box-shadow:3.6em 3.6em 0 -1.2em var(--ink)}
+
+/* 6 · lighthouse */
+.light{background:linear-gradient(var(--sky) 6%,var(--yel) 50%,var(--rose) 72%)}
+.light .sun{left:10em;top:57em;width:24em;height:24em;border-radius:50%;background:var(--cream);box-shadow:0 0 0 5em rgba(253,246,236,.35)}
+.light .water{left:0;top:70em;width:100em;height:30em;background:repeating-linear-gradient(180deg,transparent 0 4.4em,rgba(253,246,236,.5) 4.4em 5.1em),linear-gradient(var(--teal),var(--pine))}
+.light .glint{left:13em;top:72.5em;width:18em;height:22em;background:repeating-linear-gradient(180deg,rgba(253,246,236,.85) 0 1.4em,transparent 1.4em 4.3em);clip-path:polygon(0 0,100% 0,70% 100%,30% 100%)}
+.light .beam{left:-30em;top:1em;width:99em;height:36em;background:linear-gradient(90deg,transparent 5%,rgba(253,246,236,.85));clip-path:polygon(100% 50%,0 0,0 100%);animation:beam 4.5s ease-in-out infinite}
+@keyframes beam{0%,100%{opacity:.25;transform:scaleY(.6)}50%{opacity:1;transform:scaleY(1)}}
+.light .rock{left:36em;top:76em;width:80em;height:34em;border-radius:46% 54% 0 0/60% 44% 0 0;background:var(--shade)}
+.light .cot{left:44em;top:69.4em;width:14em;height:9em;background:var(--cream)}
+.light .cot::before{content:"";position:absolute;left:-1.4em;right:-1.4em;top:-5.6em;height:5.8em;background:var(--apr);clip-path:polygon(18% 0,82% 0,100% 100%,0 100%)}
+.light .cot::after{content:"";position:absolute;left:3em;top:2.6em;width:3em;height:3.4em;background:var(--shade);box-shadow:5.4em 0 0 var(--shade)}
+.light .tower{left:58em;top:27em;width:22em;height:54em;clip-path:polygon(23% 0,77% 0,100% 100%,0 100%);
+  background:linear-gradient(90deg,transparent 62%,rgba(74,67,80,.2) 62%),repeating-linear-gradient(180deg,var(--cream) 0 9em,var(--rose) 9em 18em)}
+.light .tdoor{left:66.4em;top:72em;width:5.2em;height:9em;border-radius:2.6em 2.6em 0 0;background:var(--ink)}
+.light .twin{left:67.4em;top:41em;width:3.2em;height:4.4em;border-radius:1.6em 1.6em 0 0;background:var(--ink);box-shadow:0 15em 0 var(--ink)}
+.light .gal{left:60em;top:24.6em;width:18em;height:2.8em;background:var(--ink)}
+.light .lamp{left:63.5em;top:14.4em;width:11em;height:10.4em;background:var(--yel);border:1.1em solid var(--ink);box-shadow:0 0 9em 4em rgba(249,226,166,.85)}
+.light .roof{left:61.5em;top:6.6em;width:15em;height:8em;border-radius:7.5em 7.5em 0 0;background:var(--ink)}
+.light .roof::after{content:"";position:absolute;left:50%;top:-4em;width:1em;height:5em;margin-left:-.5em;background:var(--ink)}
+.light .gull{width:9em;height:4em}
+.light .gull::before,.light .gull::after{content:"";position:absolute;top:0;width:5em;height:5em;border-top:1em solid var(--shade);border-radius:50%}
+.light .gull::before{left:0}.light .gull::after{left:4.2em}
+.light .gull.a{left:20em;top:26em}.light .gull.b{left:34em;top:38em;transform:scale(.7)}.light .gull.c{left:86em;top:20em;transform:scale(.6) rotate(8deg)}
+
+/* 7 · birthday cake, three candles */
+.cake{background:radial-gradient(circle at 16% 34%,var(--cream) 0 1.3em,transparent 1.5em),radial-gradient(circle at 84% 42%,var(--yel) 0 1.5em,transparent 1.7em),
+  radial-gradient(circle at 74% 24%,var(--rose) 0 1.1em,transparent 1.3em),radial-gradient(circle at 26% 54%,var(--apr) 0 1.2em,transparent 1.4em),
+  radial-gradient(circle at 50% 44%,rgba(249,226,166,.75),transparent 46%),var(--sky)}
+.cake .bunt{left:-2em;top:0;width:104em;height:11em;
+  background:conic-gradient(from -30deg at 50% 100%,var(--apr) 0 60deg,transparent 0) 0 0/26em 11em repeat-x,
+    conic-gradient(from -30deg at 50% 100%,var(--rose) 0 60deg,transparent 0) 13em 0/26em 11em repeat-x;border-top:1em solid var(--shade)}
+.cake .table{left:0;top:83em;width:100em;height:17em;background:repeating-linear-gradient(90deg,var(--yel) 0 8em,var(--cream) 8em 16em)}
+.cake .sh{left:22em;top:86em;width:80em;height:8em;border-radius:50%;background:rgba(74,67,80,.2)}
+.cake .plate{left:12em;top:80em;width:76em;height:8em;border-radius:50%;background:var(--cream);box-shadow:inset 0 -1.6em 0 rgba(74,67,80,.13)}
+.cake .tier{left:22em;top:54em;width:56em;height:30em;border-radius:3em 3em 6em 6em/3em 3em 3.4em 3.4em;
+  background:linear-gradient(transparent 60%,var(--yel) 60% 68%,transparent 68%),linear-gradient(90deg,var(--rose) 66%,#DC9792 66%)}
+.cake .ice{left:21em;top:50em;width:58em;height:10em;border-radius:5em/4em 4em 1em 1em;background:var(--cream)}
+.cake .drip{left:21em;top:58.5em;width:58em;height:9em;background:radial-gradient(ellipse 3.3em 8.6em at 50% 0,var(--cream) 97%,transparent 100%) 0 0/9.67em 9em repeat-x}
+.cake .berry{top:46.5em;width:5.6em;height:5.6em;border-radius:50%;background:var(--red);box-shadow:inset -1.2em -1em 0 rgba(74,67,80,.2)}
+.cake .berry.a{left:25em}.cake .berry.b{left:69.4em}
+.cake .cd{top:32em;width:3.4em;height:19em;border-radius:.6em;background:repeating-linear-gradient(135deg,var(--teal) 0 1.5em,var(--cream) 1.5em 3em)}
+.cake .cd.a{left:36em}.cake .cd.b{left:48.3em;top:30em;height:21em}.cake .cd.c{left:60.6em}
+.cake .fl{top:21.5em;width:6em;height:10em;border-radius:50%/62% 62% 38% 38%;transform-origin:50% 100%;
+  background:radial-gradient(ellipse at 50% 72%,var(--cream) 0 22%,var(--yel) 24% 50%,var(--apr) 78%);box-shadow:0 0 5em 2em rgba(249,226,166,.7);
+  animation:flick .5s ease-in-out infinite alternate}
+.cake .fl.a{left:34.7em}.cake .fl.b{left:47em;top:19.5em;animation-duration:.37s;animation-delay:-.2s}.cake .fl.c{left:59.3em;animation-duration:.61s;animation-delay:-.4s}
+@keyframes flick{0%{transform:rotate(-5deg) scale(1,.92)}35%{transform:rotate(3deg) scale(.92,1.08)}70%{transform:rotate(-2deg) scale(1.05,.97)}100%{transform:rotate(6deg) scale(.95,1.1)}}
+
+/* 8 · feet at the end of a towel, facing the sea */
+.feet{background:linear-gradient(var(--sky) 6%,var(--cream) 27%)}
+.feet .water{left:0;top:26em;width:100em;height:19em;background:repeating-linear-gradient(180deg,transparent 0 3.2em,rgba(253,246,236,.55) 3.2em 3.9em),linear-gradient(var(--pine),var(--teal))}
+.feet .boat{left:70em;top:19.2em;width:7em;height:7.6em;background:var(--cream);clip-path:polygon(50% 0,100% 82%,100% 100%,0 100%,0 82%,44% 82%)}
+.feet .sand{left:-6em;top:42em;width:112em;height:64em;border-radius:40% 60% 0 0/7% 9% 0 0;background:var(--yel);box-shadow:0 -1.4em 0 var(--cream)}
+.feet .dune{left:-10em;top:60em;width:50em;height:10em;border-radius:50%;background:rgba(244,162,89,.22);box-shadow:76em 14em 0 rgba(244,162,89,.2)}
+.feet .towel{left:12em;top:55em;width:76em;height:46em;clip-path:polygon(15% 0,85% 0,100% 100%,0 100%);
+  background:repeating-linear-gradient(180deg,var(--teal) 0 5em,var(--cream) 5em 8em,var(--apr) 8em 9.4em,var(--cream) 9.4em 12.4em)}
+.feet .fringe{left:23.4em;top:53.2em;width:53.2em;height:2.2em;background:repeating-linear-gradient(90deg,var(--cream) 0 .9em,transparent .9em 1.8em)}
+.feet .leg{top:74em;width:15em;height:30em;background:linear-gradient(90deg,var(--blush) 60%,var(--rose) 60%)}
+.feet .leg.l{left:28em;transform:rotate(3deg)}.feet .leg.r{left:57em;transform:rotate(-3deg) scaleX(-1)}
+.feet .foot{top:53em;width:16em;height:28em;border-radius:8em 8em 6em 6em/9em 9em 6em 6em;background:var(--blush);box-shadow:inset -3.4em 0 0 var(--rose)}
+.feet .foot.l{left:27.5em;transform:rotate(-7deg)}.feet .foot.r{left:56.5em;transform:rotate(7deg) scaleX(-1)}
+.feet .toes{left:9.6em;top:-4.6em;width:6.4em;height:6.4em;border-radius:50%;background:var(--blush);
+  box-shadow:inset -1.3em 0 0 var(--rose),-5.2em .9em 0 -.75em var(--blush),-9em 2.2em 0 -1.1em var(--blush),-12.3em 3.8em 0 -1.4em var(--blush),-15em 5.7em 0 -1.7em var(--blush)}
+.feet .book{left:4em;top:70em;width:14em;height:18em;background:var(--red);transform:rotate(-16deg);box-shadow:1.4em 1.2em 0 var(--cream),2.6em 2.4em 0 rgba(74,67,80,.22)}
+.feet .book::after{content:"";position:absolute;left:2.4em;right:2.4em;top:3em;height:1.5em;background:var(--cream);box-shadow:0 3.2em 0 var(--cream)}
+
+/* ───────────── film box & note ───────────── */
+.filmbox{position:absolute;left:calc(var(--u)*84);top:calc(var(--u)*48.4);width:11em;height:8.6em;font-size:var(--u);z-index:20;
+  transform:rotate(5deg);animation:boxIn .8s 1.25s var(--spring) both}
+@keyframes boxIn{from{opacity:0;transform:rotate(16deg) translateY(-2em)}to{opacity:1;transform:rotate(5deg)}}
+.filmbox .face{position:absolute;inset:0;border-radius:.25em;background:linear-gradient(115deg,transparent 66%,var(--teal) 66% 74%,transparent 74% 78%,var(--apr) 78% 86%,transparent 86%),var(--cream);
+  box-shadow:.5em .6em 0 rgba(45,42,50,.08),1em 1.2em 0 rgba(45,42,50,.05)}
+.filmbox .top{position:absolute;left:0;right:0;bottom:100%;height:1.5em;background:var(--cream2);transform:skewX(-45deg);transform-origin:0 100%}
+.filmbox .side{position:absolute;left:100%;top:0;bottom:0;width:1.5em;background:#E8D9C5;transform:skewY(-45deg);transform-origin:0 0}
+.filmbox .name{position:absolute;left:.4em;top:.36em;font:bold 2em/1 var(--display);letter-spacing:-.03em}
+.filmbox .kind{position:absolute;left:1.15em;top:4.75em;font:.74em/1.35 var(--caps);letter-spacing:.1em;text-transform:uppercase;color:var(--shade)}
+.filmbox .eight{position:absolute;right:.2em;bottom:.08em;font:bold 3.2em/1 var(--display);color:var(--ink)}
+.reload{display:none;position:absolute;left:-2.3em;top:-2.4em;width:6.6em;height:6.6em;border-radius:50%;border:0;padding:0 .5em;margin:0;
+  -webkit-appearance:none;appearance:none;cursor:pointer;white-space:normal;
+  font:bold 1.12em/1.02 var(--display);color:var(--cream);background:var(--red);
+  box-shadow:inset 0 0 0 .22em var(--red),inset 0 0 0 .36em rgba(253,246,236,.75),.3em .4em 0 rgba(45,42,50,.18);
+  transform:rotate(-13deg);transition:transform .45s var(--spring);animation:sticker .7s 4.4s var(--spring) both}
+.reload:hover{transform:rotate(-4deg) scale(1.1)}
+.reload:active{transform:rotate(-13deg) scale(.94)}
+.reload:focus-visible{outline:.24em solid var(--ink);outline-offset:.2em}
+body:has(#f8:checked) .reload{display:block}
+@keyframes sticker{from{opacity:0;transform:rotate(40deg) scale(.2)}to{opacity:1;transform:rotate(-13deg)}}
+
+.note{position:absolute;left:calc(var(--u)*48.4);top:calc(var(--u)*48.2);width:calc(var(--u)*31);margin:0;animation:fade 1s 1.4s both}
+.note h2{margin:0 0 .7em;font:bold clamp(10px,calc(var(--u)*.86),15px)/1 var(--caps);letter-spacing:.22em;text-transform:uppercase}
+.note h2::after{content:"";display:block;width:3.2em;height:.42em;margin-top:.8em;background:linear-gradient(90deg,var(--teal) 50%,var(--apr) 50%)}
+.note p{margin:0;font:clamp(12.5px,calc(var(--u)*1.06),18px)/1.5 Georgia,"Palatino Linotype",Palatino,serif;color:var(--shade)}
+.note p+p{margin-top:.5em}
+.note i{font-style:italic}
+
+/* ───────────── phones & portrait ───────────── */
+@media (max-width:760px),(max-aspect-ratio:1/1){
+  .page{place-items:start center}
+  .stage{--u:1vw;--c:calc(var(--u)*2.1);--pe:calc(var(--u)*2.9);
+    --camx:calc(var(--u)*8);--camy:calc(var(--u)*32);
+    --sx:calc(var(--u)*35.5);--sl:calc(var(--u)*92.9);--es:1.38;--eh:calc(var(--u)*46.4);
+    --cx:calc(var(--u)*35.5);--zf:1;--zfy:0;--zs:3;
+    height:calc(var(--u)*250)}
+  .n1{--tx:calc(var(--u)*3.6);--ty:calc(var(--u)*107);--tr:-4deg}
+  .n2{--tx:calc(var(--u)*35.6);--ty:calc(var(--u)*105.4);--tr:3deg}
+  .n3{--tx:calc(var(--u)*67.4);--ty:calc(var(--u)*107.6);--tr:-2.5deg}
+  .n4{--tx:calc(var(--u)*3.2);--ty:calc(var(--u)*142.4);--tr:3.5deg}
+  .n5{--tx:calc(var(--u)*35.8);--ty:calc(var(--u)*141);--tr:-3deg}
+  .n6{--tx:calc(var(--u)*67.6);--ty:calc(var(--u)*143);--tr:4.5deg}
+  .n7{--tx:calc(var(--u)*4);--ty:calc(var(--u)*178);--tr:-4.5deg}
+  .n8{--tx:calc(var(--u)*36);--ty:calc(var(--u)*176.6);--tr:3deg}
+  .title{left:calc(var(--u)*5);top:calc(var(--u)*4.5);font-size:calc(var(--u)*11.4);transform:rotate(-4deg)}
+  .title span{display:inline}
+  .title span+span{padding-left:0}
+  .title em{left:.4em;top:2.7em;width:auto;white-space:nowrap;font-size:.4em}
+  @keyframes titleIn{from{opacity:0;transform:rotate(-9deg) translate(-6%,20%)}to{opacity:1;transform:rotate(-4deg)}}
+  .strap{left:-19em;top:-1em;transform-origin:62% 30%}
+  .filmbox{left:calc(var(--u)*70);top:calc(var(--u)*186);font-size:calc(var(--u)*2.3)}
+  .note{left:calc(var(--u)*7);top:calc(var(--u)*218);width:calc(var(--u)*86)}
+}
+
+/* ───────────── calmer version ───────────── */
+@media (prefers-reduced-motion:reduce){
+  .page::before,.rig,.strap,.title,.hint,.ghost,.filmbox,.note,.camera,.shutter .cap,.bloom,.blades,.glass .blink,.whirr,.counter::after,
+  .print,.pic,.milk,.capt,.empty,.reload,.egg .st,.light .beam,.cake .fl{animation:none!important}
+  .flash{display:none}
+  .shot:has(.f:checked) + .shot{animation:none}
+  .egg .st{opacity:.6}
+  .card,.knob,.mk,.photo,.reload{transition-duration:.01s}
+  .lens:hover .glare::after{transition:none;left:-70%}
+}
+</style>
+</head>
+<body>
+<form id="pack" autocomplete="off" aria-label="Film pack"></form>
+<div class="flash" aria-hidden="true"></div>
+
+<main class="page">
+<div class="stage">
+
+  <h1 class="title"><span>Instant</span> <span>Film</span><em>a pack of eight, in no hurry</em></h1>
+
+  <!-- where the prints will land -->
+  <div class="ghost n1" aria-hidden="true"><b>1</b></div>
+  <div class="ghost n2" aria-hidden="true"><b>2</b></div>
+  <div class="ghost n3" aria-hidden="true"><b>3</b></div>
+  <div class="ghost n4" aria-hidden="true"><b>4</b></div>
+  <div class="ghost n5" aria-hidden="true"><b>5</b></div>
+  <div class="ghost n6" aria-hidden="true"><b>6</b></div>
+  <div class="ghost n7" aria-hidden="true"><b>7</b></div>
+  <div class="ghost n8" aria-hidden="true"><b>8</b></div>
+
+  <!-- the camera -->
+  <div class="rig">
+    <div class="strap" aria-hidden="true"></div>
+    <div class="camera">
+      <div class="shutter" aria-hidden="true"><i class="cap"></i></div>
+      <i class="collar" aria-hidden="true"></i>
+      <i class="lug l" aria-hidden="true"></i><i class="lug r" aria-hidden="true"></i>
+      <i class="foot l" aria-hidden="true"></i><i class="foot r" aria-hidden="true"></i>
+      <div class="shell" aria-hidden="true"></div>
+      <div class="band" aria-hidden="true"></div>
+      <i class="seam" aria-hidden="true"></i>
+
+      <div class="hint" aria-hidden="true">press here
+        <svg viewBox="0 0 50 30"><path d="M2 8 C 16 -4, 36 0, 42 20"/><path d="M33 15 L42 21 L47 11"/></svg>
+      </div>
+
+      <div class="shots">
+        <label class="shot s1"><input class="f" id="f1" type="checkbox" form="pack"><span class="vh">Shutter: take photograph 1 of 8</span></label>
+        <label class="shot s2"><input class="f" id="f2" type="checkbox" form="pack"><span class="vh">Shutter: take photograph 2 of 8</span></label>
+        <label class="shot s3"><input class="f" id="f3" type="checkbox" form="pack"><span class="vh">Shutter: take photograph 3 of 8</span></label>
+        <label class="shot s4"><input class="f" id="f4" type="checkbox" form="pack"><span class="vh">Shutter: take photograph 4 of 8</span></label>
+        <label class="shot s5"><input class="f" id="f5" type="checkbox" form="pack"><span class="vh">Shutter: take photograph 5 of 8</span></label>
+        <label class="shot s6"><input class="f" id="f6" type="checkbox" form="pack"><span class="vh">Shutter: take photograph 6 of 8</span></label>
+        <label class="shot s7"><input class="f" id="f7" type="checkbox" form="pack"><span class="vh">Shutter: take photograph 7 of 8</span></label>
+        <label class="shot s8"><input class="f" id="f8" type="checkbox" form="pack"><span class="vh">Shutter: take photograph 8 of 8</span></label>
+      </div>
+      <span class="empty">empty</span>
+
+      <p class="engrave">press. wait. don&rsquo;t shake it.</p>
+      <div class="flashunit" aria-hidden="true"><i class="bloom"></i></div>
+      <div class="finder" aria-hidden="true"></div>
+
+      <div class="lens" aria-hidden="true">
+        <i class="r1"></i><i class="r2"></i><i class="r3"></i>
+        <i class="glass"><i class="blades"></i><i class="blink"></i></i>
+        <i class="glare"></i>
+      </div>
+
+      <fieldset class="dial">
+        <legend class="vh">Exposure dial</legend>
+        <i class="knob" aria-hidden="true"></i>
+        <b class="mk d" aria-hidden="true"></b><b class="mk l" aria-hidden="true"></b>
+        <label class="dl"><input type="radio" name="exposure" id="e-dark" form="pack"><span class="vh">Darken: cooler pictures</span></label>
+        <label class="dr"><input type="radio" name="exposure" id="e-light" form="pack"><span class="vh">Lighten: warmer pictures</span></label>
+        <span class="tag" aria-hidden="true">DARK &middot; LIGHT</span>
+      </fieldset>
+
+      <div class="counter" role="img" aria-label="Film counter: shots remaining"></div>
+      <span class="ctag" aria-hidden="true">SHOTS LEFT</span>
+
+      <span class="logo" aria-hidden="true">dawdle</span>
+      <span class="focus">FOCUS 0.6 <small>m</small> &ndash; &infin;</span>
+      <div class="slot" aria-hidden="true"></div>
+      <i class="arrow a1" aria-hidden="true"></i>
+      <span class="whirr" aria-hidden="true">whirrr&hellip;</span>
+    </div>
+  </div>
+
+  <!-- the eight prints -->
+  <div class="print p1 n1"><label class="card">
+    <input class="z" type="checkbox" form="pack" aria-label="Pick up photograph 1: a striped parasol by the sea">
+    <span class="photo"><span class="pic sea"><i class="sun"></i><i class="water"></i><i class="boat"></i><i class="sand"></i><i class="shade"></i><i class="pole"></i><i class="brolly"></i><i class="ball"></i></span><span class="milk"></span></span>
+    <span class="capt">Aug. &mdash; the last good day</span></label></div>
+
+  <div class="print p2 n2"><label class="card">
+    <input class="z" type="checkbox" form="pack" aria-label="Pick up photograph 2: a cat on a windowsill">
+    <span class="photo"><span class="pic cat"><i class="win"></i><i class="hill"></i><i class="cloud"></i><i class="win" style="background:none"></i><i class="ray"></i><i class="curtain"></i><i class="leaf a"></i><i class="leaf b"></i><i class="leaf c"></i><i class="pot"></i><i class="tail"></i><i class="sill"></i><i class="body"></i><i class="head"></i><i class="ear l"></i><i class="ear r"></i></span><span class="milk"></span></span>
+    <span class="capt">she ignored us for an hour</span></label></div>
+
+  <div class="print p3 n3"><label class="card">
+    <input class="z" type="checkbox" form="pack" aria-label="Pick up photograph 3: a boiled egg and a cup of coffee">
+    <span class="photo"><span class="pic egg"><i class="table"></i><i class="sh a"></i><i class="sh b"></i><i class="ov"></i><i class="bowl"></i><i class="stem"></i><i class="base"></i><i class="saucer"></i><i class="handle"></i><i class="cup"></i><i class="coffee"></i><i class="spoon"></i><i class="st a"></i><i class="st b"></i><i class="st c"></i></span><span class="milk"></span></span>
+    <span class="capt">7:40, nobody else up</span></label></div>
+
+  <div class="print p4 n4"><label class="card">
+    <input class="z" type="checkbox" form="pack" aria-label="Pick up photograph 4: a caravan under pine trees">
+    <span class="photo"><span class="pic van"><i class="sun"></i><i class="pine c"></i><i class="pine d"></i><i class="grass"></i><i class="path"></i><i class="pine a"></i><i class="pine b"></i><i class="sh"></i><i class="hitch"></i><i class="shell2"></i><i class="w1"></i><i class="door"></i><i class="wheel"></i><i class="flag"></i></span><span class="milk"></span></span>
+    <span class="capt">plot 14, under the pines</span></label></div>
+
+  <div class="print p5 n5"><label class="card">
+    <input class="z" type="checkbox" form="pack" aria-label="Pick up photograph 5: a bicycle leaning on a wall">
+    <span class="photo"><span class="pic bike"><i class="shut"></i><i class="ledge"></i><i class="wsh"></i><i class="gsh"></i><i class="wh r"></i><i class="wh f"></i>
+      <i class="tb" style="--x:25;--y:67;--l:17;--a:0deg"></i><i class="tb" style="--x:25;--y:67;--l:24.5;--a:-59deg"></i><i class="tb" style="--x:42;--y:67;--l:25;--a:-101.8deg"></i><i class="tb" style="--x:37.6;--y:46;--l:23.6;--a:-2.4deg"></i><i class="tb" style="--x:42;--y:67;--l:27.4;--a:-44.3deg"></i><i class="tb k" style="--x:60.6;--y:38;--l:30.4;--a:73.6deg"></i>
+      <i class="crank"></i><i class="saddle"></i><i class="bar"></i><i class="bloom2"></i><i class="basket"></i></span><span class="milk"></span></span>
+    <span class="capt">borrowed. returned, mostly.</span></label></div>
+
+  <div class="print p6 n6"><label class="card">
+    <input class="z" type="checkbox" form="pack" aria-label="Pick up photograph 6: a striped lighthouse at dusk">
+    <span class="photo"><span class="pic light"><i class="sun"></i><i class="water"></i><i class="glint"></i><i class="beam"></i><i class="gull a"></i><i class="gull b"></i><i class="gull c"></i><i class="rock"></i><i class="cot"></i><i class="tower"></i><i class="tdoor"></i><i class="twin"></i><i class="gal"></i><i class="lamp"></i><i class="roof"></i></span><span class="milk"></span></span>
+    <span class="capt">we never did go up it</span></label></div>
+
+  <div class="print p7 n7"><label class="card">
+    <input class="z" type="checkbox" form="pack" aria-label="Pick up photograph 7: a birthday cake with three candles">
+    <span class="photo"><span class="pic cake"><i class="bunt"></i><i class="table"></i><i class="sh"></i><i class="plate"></i><i class="cd a"></i><i class="cd b"></i><i class="cd c"></i><i class="tier"></i><i class="ice"></i><i class="drip"></i><i class="berry a"></i><i class="berry b"></i><i class="fl a"></i><i class="fl b"></i><i class="fl c"></i></span><span class="milk"></span></span>
+    <span class="capt">three! already</span></label></div>
+
+  <div class="print p8 n8"><label class="card">
+    <input class="z" type="checkbox" form="pack" aria-label="Pick up photograph 8: two feet at the end of a towel, facing the sea">
+    <span class="photo"><span class="pic feet"><i class="water"></i><i class="boat"></i><i class="sand"></i><i class="dune"></i><i class="fringe"></i><i class="towel"></i><i class="book"></i><i class="leg l"></i><i class="leg r"></i><i class="foot l"><i class="toes"></i></i><i class="foot r"><i class="toes"></i></i></span><span class="milk"></span></span>
+    <span class="capt">do not disturb</span></label></div>
+
+  <!-- film box & note -->
+  <div class="filmbox">
+    <span class="top" aria-hidden="true"></span><span class="side" aria-hidden="true"></span>
+    <span class="face" aria-hidden="true"></span>
+    <span class="name" aria-hidden="true">dawdle</span>
+    <span class="kind" aria-hidden="true">instant film<br>colour &middot; square</span>
+    <span class="eight" aria-hidden="true">8</span>
+    <input class="reload" type="reset" form="pack" value="load new film">
+  </div>
+
+  <div class="note">
+    <h2>Dawdle instant film &middot; eight exposures</h2>
+    <p>Press the red button and let the motor do its bit. Then leave the print alone in the light: shadows turn up first, the warm colours last, the caption whenever somebody finds a pen.</p>
+    <p><i>Pick a print up to look closer. Nudge the dial if the day runs too hot or too cold.</i></p>
+  </div>
+
+</div>
+</main>
+</body>
+</html>

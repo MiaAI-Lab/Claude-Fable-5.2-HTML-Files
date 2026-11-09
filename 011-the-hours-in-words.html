@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1D3557">
+<title>The Hours in Words</title>
+<style>
+:root{
+  --bg:#1D3557;
+  --ink:#F1E3C6;
+  --ct:1s;
+  --ce:linear;
+  --side:clamp(14px,2.3vw,44px);
+  --top:62px;
+  --bot:66px;
+  --spring:cubic-bezier(.2,.9,.2,1.1);
+  --serif:Didot,"Bodoni MT","Bodoni 72","Playfair Display","Libre Bodoni",Georgia,"C059","Century Schoolbook","Times New Roman",serif;
+  --mono:Menlo,Consolas,"SF Mono","DejaVu Sans Mono","Liberation Mono","Courier New",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  background-color:var(--bg);
+  color:var(--ink);
+  transition:background-color var(--ct) var(--ce),color var(--ct) var(--ce);
+  font-family:var(--mono);
+  cursor:ew-resize;
+  -webkit-user-select:none;user-select:none;
+  touch-action:none;
+  overscroll-behavior:none;
+  -webkit-tap-highlight-color:transparent;
+  -webkit-font-smoothing:antialiased;
+}
+body.scrub{cursor:grabbing}
+
+/* paper grain: a speckle tile laid over the flat field */
+#grain{position:fixed;inset:0;z-index:4;pointer-events:none;background-repeat:repeat}
+
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+/* ---------- the broadside ---------- */
+#stage{position:fixed;left:var(--side);right:var(--side);top:var(--top);bottom:var(--bot)}
+#block{position:absolute;inset:0;font-family:var(--serif);font-weight:700;line-height:1;--it:0em}
+.ln{position:absolute;left:0;top:0;width:0;height:0;transform-origin:0 0;white-space:nowrap}
+.s{position:absolute;top:0;height:1em;display:block;transform-origin:50% 62%;transition:transform .55s var(--spring)}
+.g{position:absolute;left:0;top:0;display:block;line-height:1;white-space:pre}
+.g.i{font-style:italic;top:var(--it)}
+
+/* ---------- corner details ---------- */
+.mono{font-family:var(--mono);font-size:10.5px;line-height:1.6;letter-spacing:.2em;text-transform:uppercase;font-weight:400}
+.bar{position:fixed;left:var(--side);right:var(--side);z-index:3;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;column-gap:18px}
+.bar.top{top:0;height:var(--top);padding-top:env(safe-area-inset-top)}
+.bar.bot{bottom:0;height:var(--bot);padding-bottom:calc(4px + env(safe-area-inset-bottom))}
+.bar>*{animation:rise 1s var(--spring) both}
+.bar.top>:nth-child(1){animation-delay:.9s}
+.bar.top>:nth-child(3){animation-delay:1.02s}
+.bar.bot>:nth-child(1){animation-delay:1.14s}
+.bar.bot>:nth-child(2){animation-delay:1.26s}
+.bar.bot>:nth-child(3){animation-delay:1.38s}
+@keyframes rise{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.two span{display:block}
+.two span+span{opacity:.62}
+.r{text-align:right;justify-self:end}
+
+#note{font-family:var(--serif);font-style:italic;font-weight:400;font-size:16px;letter-spacing:.01em;text-align:center;white-space:nowrap;animation:none;opacity:0;transform:translateY(8px);transition:opacity .9s ease,transform 1.1s var(--spring)}
+#note.on{opacity:1;transform:none}
+
+/* now marker */
+.mid{display:flex;align-items:center;justify-content:center;gap:16px;min-width:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;-webkit-appearance:none;appearance:none;border-radius:2px}
+button:focus-visible{outline:1.5px solid currentColor;outline-offset:3px}
+#now{display:flex;align-items:center;gap:12px;min-height:40px;padding:0 6px;text-align:left}
+.trk{position:relative;flex:none;width:46px;height:14px}
+.trk::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;margin-top:-.5px;background:currentColor;opacity:.42}
+.trk .tick{position:absolute;left:50%;top:1px;bottom:1px;width:1px;margin-left:-.5px;background:currentColor;opacity:.7}
+.trk .dia{position:absolute;left:50%;top:50%;width:8px;height:8px;margin:-4px 0 0 -4px;background:currentColor;border:1.5px solid currentColor;transform:translateX(var(--dx,0px)) rotate(45deg);transition:transform .7s var(--spring),background-color .3s}
+.trk .dia::after{content:"";position:absolute;inset:-5px;border:1px solid currentColor;opacity:0;animation:pulse 2.6s cubic-bezier(.2,.7,.2,1) infinite}
+@keyframes pulse{0%{opacity:.7;transform:scale(.5)}70%,100%{opacity:0;transform:scale(1.5)}}
+.away .trk .dia{background-color:transparent}
+.away .trk .dia::after{animation:none}
+#now .ret{display:none;white-space:nowrap;margin-left:.9em;padding-bottom:1px;border-bottom:1px solid currentColor}
+.away #now .ret{display:inline}
+#now:hover .ret{border-bottom-width:2px}
+#hint{opacity:.62;white-space:nowrap;transition:opacity .8s ease}
+#hint::before{content:"";display:inline-block;width:18px;height:1px;background:currentColor;vertical-align:middle;margin-right:14px;opacity:.7}
+.away #hint,.seen #hint{opacity:0}
+.away #hint{display:none}
+
+/* controls */
+.ctl{display:flex;align-items:center;justify-content:flex-end;gap:10px;justify-self:end}
+#mode{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 6px}
+#mode span{opacity:.5;transition:opacity .35s ease}
+#mode[aria-checked="false"] .a,#mode[aria-checked="true"] .b{opacity:1}
+.sw{position:relative;flex:none;width:24px;height:11px;border:1px solid currentColor;border-radius:6px}
+.sw i{position:absolute;left:2px;top:2px;width:5px;height:5px;border-radius:50%;background:currentColor;transition:transform .5s var(--spring)}
+#mode[aria-checked="true"] .sw i{transform:translateX(13px)}
+#fs{display:grid;place-items:center;width:40px;height:40px}
+#fs svg{width:17px;height:17px;overflow:visible;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:square}
+#fs path{transition:transform .45s var(--spring)}
+#fs:hover .c1{transform:translate(-1.6px,-1.6px)}
+#fs:hover .c2{transform:translate(1.6px,-1.6px)}
+#fs:hover .c3{transform:translate(1.6px,1.6px)}
+#fs:hover .c4{transform:translate(-1.6px,1.6px)}
+.full #fs .c1{transform:translate(3px,3px) rotate(180deg)}
+.full #fs .c2{transform:translate(-3px,3px) rotate(180deg)}
+.full #fs .c3{transform:translate(-3px,-3px) rotate(180deg)}
+.full #fs .c4{transform:translate(3px,-3px) rotate(180deg)}
+#fs path{transform-box:fill-box;transform-origin:center}
+
+/* seconds hairline */
+#hair{position:fixed;left:0;right:0;bottom:0;height:2px;z-index:3;pointer-events:none}
+#hair::before{content:"";position:absolute;inset:1px 0 0 0;background:currentColor;opacity:.2}
+#hair i{position:absolute;inset:0;background:currentColor;transform-origin:0 50%;transform:scaleX(0)}
+
+/* translation chip */
+#tip{position:fixed;left:0;top:0;z-index:6;pointer-events:none;opacity:0;transition:opacity .2s ease}
+#tip b{position:relative;display:block;background-color:var(--bg);border:1px solid currentColor;padding:7px 11px 6px;border-radius:2px;transition:background-color var(--ct) var(--ce),transform .4s var(--spring);font-weight:400;transform:translateY(7px) scale(.94)}
+#tip b::after{content:"";position:absolute;left:50%;bottom:-4.5px;width:7px;height:7px;margin-left:-4px;background-color:var(--bg);border:solid currentColor;border-width:0 1px 1px 0;transform:rotate(45deg);transition:background-color var(--ct) var(--ce)}
+#tip.below b::after{bottom:auto;top:-4.5px;border-width:1px 0 0 1px}
+#tip span{position:relative;z-index:1;font-family:var(--mono);font-size:11px;letter-spacing:.09em;white-space:nowrap}
+#tip.on{opacity:1}
+#tip.on b{transform:none}
+
+.ns{position:fixed;inset:0;display:grid;place-content:center;font-family:var(--serif);font-weight:700;font-size:16vw;line-height:.9;text-align:center}
+.ns em{font-size:1.5em}
+
+@media (max-width:1080px){
+  :root{--bot:96px}
+  .bar.bot{grid-template-columns:1fr auto;grid-template-rows:auto auto;align-content:center;row-gap:0}
+  .mid{grid-column:1/3;grid-row:1;gap:10px}
+  #now{min-height:34px;max-width:100%}
+}
+@media (max-width:700px){
+  :root{--top:78px}
+  #zone span+span{display:none}
+  .mono{font-size:9px;letter-spacing:.16em}
+  .bar.top{grid-template-columns:1fr 1fr;grid-template-rows:auto 20px;align-content:center;row-gap:3px}
+  #note{grid-column:1/3;grid-row:2;font-size:12.5px}
+  #zone{grid-column:2;grid-row:1}
+  #hint .wide{display:none}
+  .away #now .ret{display:none}
+  .away #nowt{border-bottom:1px solid currentColor;padding-bottom:1px}
+  #mode span{display:none}
+  #mode[aria-checked="false"] .a,#mode[aria-checked="true"] .b{display:inline}
+  .ctl{gap:2px}
+}
+@media (max-height:480px){
+  :root{--top:40px;--bot:46px}
+  .two span+span,#day,#hint{display:none}
+  .bar.top{grid-template-rows:auto;row-gap:0}
+  #note{grid-column:auto;grid-row:auto}
+  .bar.bot{grid-template-columns:1fr auto;grid-template-rows:auto}
+  .mid{grid-column:1;grid-row:1;justify-content:flex-start}
+  #now{padding-left:0}
+  #nowt{white-space:nowrap}
+}
+@media (prefers-reduced-motion:reduce){
+  .bar>*{animation-duration:.01s;animation-delay:0s!important}
+  .trk .dia::after{animation:none}
+  .s,.trk .dia,.sw i,#fs path,#tip b{transition-duration:.01s}
+}
+</style>
+</head>
+<body>
+<div id="grain" aria-hidden="true"></div>
+
+<header class="bar top">
+  <p id="date" class="mono two"><span>&nbsp;</span><span>&nbsp;</span></p>
+  <p id="note" role="status"></p>
+  <p id="zone" class="mono two r"><span>&nbsp;</span><span>&nbsp;</span></p>
+</header>
+
+<main id="stage">
+  <h1 id="say" class="sr" aria-live="polite">The hours in words</h1>
+  <div id="block" aria-hidden="true"></div>
+</main>
+
+<footer class="bar bot" id="foot">
+  <p id="day" class="mono two"><span>&nbsp;</span><span>&nbsp;</span></p>
+  <div class="mid">
+    <button id="now" type="button" class="mono" aria-label="Return to the present moment">
+      <span class="trk" aria-hidden="true"><i class="tick"></i><i class="dia"></i></span>
+      <span><span id="nowt">now</span><span class="ret">back to now</span></span>
+    </button>
+    <span id="hint" class="mono" aria-hidden="true">drag to travel<span class="wide"> &middot; arrow keys to step</span></span>
+  </div>
+  <div class="ctl">
+    <button id="mode" type="button" class="mono" role="switch" aria-checked="true" aria-label="Elaborate phrasing">
+      <span class="a">plain</span><i class="sw" aria-hidden="true"><i></i></i><span class="b">elaborate</span>
+    </button>
+    <button id="fs" type="button" aria-label="Toggle full screen">
+      <svg viewBox="0 0 17 17" aria-hidden="true">
+        <path class="c1" d="M1 6V1h5"/><path class="c2" d="M11 1h5v5"/><path class="c3" d="M16 11v5h-5"/><path class="c4" d="M6 16H1v-5"/>
+      </svg>
+    </button>
+  </div>
+</footer>
+
+<div id="hair" aria-hidden="true"><i id="sec"></i></div>
+<div id="tip" aria-hidden="true"><b><span id="tipt"></span></b></div>
+
+<noscript><p class="ns">it is<br><em>later</em><br>than you think.</p></noscript>
+
+<script>
+(function () {
+'use strict';
+
+var doc = document, root = doc.documentElement, body = doc.body;
+function $(id) { return doc.getElementById(id); }
+var stage = $('stage'), block = $('block'), say = $('say'), noteEl = $('note'),
+    dateEl = $('date'), zoneEl = $('zone'), dayEl = $('day'), foot = $('foot'),
+    nowBtn = $('now'), nowT = $('nowt'), modeBtn = $('mode'), fsBtn = $('fs'),
+    secEl = $('sec'), tip = $('tip'), tipT = $('tipt'),
+    themeMeta = doc.querySelector('meta[name="theme-color"]');
+
+var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+var reduce = mq.matches;
+if (mq.addEventListener) mq.addEventListener('change', function (e) { reduce = e.matches; });
+
+/* ------------------------------------------------------------------ */
+/* numbers as words                                                    */
+/* ------------------------------------------------------------------ */
+var ONES = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
+  'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+var TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+var ORD = { one: 'first', two: 'second', three: 'third', five: 'fifth', eight: 'eighth', nine: 'ninth', twelve: 'twelfth' };
+var DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+function card(n) {
+  if (n < 20) return ONES[n];
+  if (n < 100) { var o = n % 10; return TENS[n / 10 | 0] + (o ? '-' + ONES[o] : ''); }
+  var r = n % 100;
+  return ONES[n / 100 | 0] + ' hundred' + (r ? ' and ' + card(r) : '');
+}
+function ord(n) {
+  var m = card(n).match(/^(.*?)([a-z]+)$/), last = m[2];
+  if (ORD[last]) last = ORD[last];
+  else if (/y$/.test(last)) last = last.slice(0, -1) + 'ieth';
+  else last += 'th';
+  return m[1] + last;
+}
+function pad(n) { return (n < 10 ? '0' : '') + n; }
+function yearWords(y) {
+  var a = y / 100 | 0, b = y % 100;
+  return card(a) + ' ' + (b === 0 ? 'hundred' : b < 10 ? 'oh ' + card(b) : card(b));
+}
+
+/* ------------------------------------------------------------------ */
+/* the phrase generator: every minute of the day                       */
+/* ------------------------------------------------------------------ */
+function hourName(h) { return h === 0 ? 'midnight' : h === 12 ? 'noon' : ONES[h % 12]; }
+function partOf(h) {
+  return h < 5 ? ['in the small hours', '00:00–04:59']
+    : h < 12 ? ['in the morning', '05:00–11:59']
+    : h < 17 ? ['in the afternoon', '12:00–16:59']
+    : h < 21 ? ['in the evening', '17:00–20:59']
+    : ['at night', '21:00–23:59'];
+}
+function phrase(h, m, elaborate) {
+  var T = [], G = [];
+  function grp(s) { G.push(s); return G.length - 1; }
+  function add(str, it, g) {
+    if (!str) return;
+    str.split(' ').forEach(function (w) {
+      var ps = w.split('-');
+      ps.forEach(function (p, i) {
+        var last = i === ps.length - 1;
+        T.push({ t: last ? p : p + '-', it: !!it, g: g, glue: !last });
+      });
+    });
+  }
+  add('it is', false, grp('it is = ' + pad(h) + ':' + pad(m)));
+
+  if (!elaborate) {
+    var hw = ONES[h % 12 || 12];
+    if (m === 0) {
+      var g0 = grp(hw + ' o’clock = ' + pad(h) + ':00');
+      add(hw, true, g0); add('o’clock', false, g0);
+    } else {
+      add(hw, false, grp(hw + ' = ' + pad(h) + 'h'));
+      var mw = (m < 10 ? 'oh ' : '') + card(m);
+      add(mw, true, grp(mw + ' = :' + pad(m)));
+    }
+  } else {
+    var to = m > 31, tg = (h + (to ? 1 : 0)) % 24, hn = hourName(tg),
+        special = tg === 0 || tg === 12, n = to ? 60 - m : m,
+        lead = '', key = '', link = '', hourIsKey = false, g;
+    if (m === 0) {
+      if (special) { g = grp('exactly ' + hn + ' = ' + pad(tg) + ':00'); add('exactly', false, g); add(hn, true, g); }
+      else { g = grp(hn + ' o’clock = ' + pad(h) + ':00'); add(hn, true, g); add('o’clock', false, g); }
+    } else {
+      if (special && m === 1) { lead = 'just gone'; hourIsKey = true; }
+      else if (special && m === 59) { lead = 'nearly'; hourIsKey = true; }
+      else if (m === 29) { lead = 'nearly'; key = 'half'; link = 'past'; }
+      else if (m === 31) { lead = 'just gone'; key = 'half'; link = 'past'; }
+      else if (m === 30) { key = 'half'; link = 'past'; }
+      else if (n === 15) { key = 'a quarter'; link = to ? 'to' : 'past'; }
+      else { key = card(n); link = (n % 5 ? (n === 1 ? 'minute ' : 'minutes ') : '') + (to ? 'to' : 'past'); }
+      g = grp([lead, key, link].filter(Boolean).join(' ') + ' = :' + pad(m));
+      add(lead, false, g); add(key, true, g); add(link, false, g);
+      add(hn, hourIsKey, grp(hn + ' = ' + pad(tg) + 'h'));
+    }
+    if (!special) { var p = partOf(h); add(p[0], false, grp(p[0] + ' = ' + p[1])); }
+  }
+  T[T.length - 1].t += '.';
+  var text = '';
+  T.forEach(function (tk, i) { text += tk.t + (tk.glue || i === T.length - 1 ? '' : ' '); });
+  return { T: T, G: G, text: text.charAt(0).toUpperCase() + text.slice(1) };
+}
+
+/* ------------------------------------------------------------------ */
+/* colour: 24 hand-picked fields, blended through the hour             */
+/* ------------------------------------------------------------------ */
+var PAL = [
+  ['#101626', '#D8D2C0'], ['#14132A', '#BFC3E6'], ['#1A1220', '#C9B8E8'], ['#211A2E', '#E2B7C4'],
+  ['#3A2B4A', '#F3C9B5'], ['#F6C6A8', '#3B1F2B'], ['#F4D9C0', '#7A2E3A'], ['#CFE3E6', '#17324D'],
+  ['#CFE8C9', '#1F3D2B'], ['#F2C14E', '#1A1A1A'], ['#F6EBD0', '#1E3A8A'], ['#EDEDE8', '#111111'],
+  ['#FFE14A', '#111111'], ['#FDF8EC', '#E4391B'], ['#A9D6E5', '#0B2545'], ['#E9D8A6', '#9B2226'],
+  ['#E9A23B', '#2B1608'], ['#D9663A', '#FFF3DC'], ['#B23A48', '#FFE5C4'], ['#6D2E63', '#FFD3B6'],
+  ['#3C2F6B', '#F4D6A0'], ['#1D3557', '#F1E3C6'], ['#10263A', '#A8D5E2'], ['#0E1B2B', '#E6D9F2']
+];
+function hexLin(hex) {
+  var n = parseInt(hex.slice(1), 16);
+  return [n >> 16, n >> 8 & 255, n & 255].map(function (c) {
+    c /= 255; return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  });
+}
+function linOk(c) {
+  var l = Math.cbrt(0.4122214708 * c[0] + 0.5363325363 * c[1] + 0.0514459929 * c[2]),
+      m = Math.cbrt(0.2119034982 * c[0] + 0.6806995451 * c[1] + 0.1073969566 * c[2]),
+      s = Math.cbrt(0.0883024619 * c[0] + 0.2817188376 * c[1] + 0.6299787005 * c[2]);
+  return [0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s,
+          1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s,
+          0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s];
+}
+function okLin(o) {
+  var l = o[0] + 0.3963377774 * o[1] + 0.2158037573 * o[2],
+      m = o[0] - 0.1055613458 * o[1] - 0.0638541728 * o[2],
+      s = o[0] - 0.0894841775 * o[1] - 1.2914855480 * o[2];
+  l = l * l * l; m = m * m * m; s = s * s * s;
+  return [4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+          -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+          -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s].map(function (v) { return Math.min(1, Math.max(0, v)); });
+}
+var PALOK = PAL.map(function (p) { return [linOk(hexLin(p[0])), linOk(hexLin(p[1]))]; });
+var PALC = PAL.map(function (p) { return contrast(hexLin(p[0]), hexLin(p[1])); });
+function mix3(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]; }
+function lum(c) { return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; }
+function contrast(a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+function css(c) {
+  return 'rgb(' + c.map(function (v) {
+    v = v <= 0.0031308 ? v * 12.92 : 1.055 * Math.pow(v, 1 / 2.4) - 0.055;
+    return Math.round(Math.min(1, Math.max(0, v)) * 255);
+  }).join(',') + ')';
+}
+function fieldAt(h, frac) {
+  var a = PALOK[h], b = PALOK[(h + 1) % 24];
+  var bg = okLin(mix3(a[0], b[0], frac)), ink = okLin(mix3(a[1], b[1], frac));
+  var need = Math.min(4.5, PALC[h] + (PALC[(h + 1) % 24] - PALC[h]) * frac);
+  if (contrast(ink, bg) < need) {
+    var W = [1, 1, 1], K = [0, 0, 0], dir = lum(ink) > lum(bg) ? W : K, c = ink;
+    if (contrast(dir, bg) < need + 0.1) dir = contrast(W, bg) > contrast(K, bg) ? W : K;
+    for (var k = 1; k <= 24; k++) {
+      c = mix3(ink, dir, k / 24);
+      if (contrast(c, bg) >= need) break;
+    }
+    ink = c;
+  }
+  return [css(bg), css(ink)];
+}
+var colNow = ['', ''], colSet = '', flashing = false, ctLock = false;
+function paint() {
+  var bg = colNow[flashing ? 1 : 0], ink = colNow[flashing ? 0 : 1], k = bg + ink;
+  if (k === colSet) return;
+  colSet = k;
+  root.style.setProperty('--bg', bg);
+  root.style.setProperty('--ink', ink);
+  if (themeMeta) themeMeta.setAttribute('content', bg);
+}
+function setCT(v, e) { root.style.setProperty('--ct', v); root.style.setProperty('--ce', e || 'linear'); }
+
+/* ------------------------------------------------------------------ */
+/* measuring type                                                      */
+/* ------------------------------------------------------------------ */
+var STACK = 'Didot,"Bodoni MT","Bodoni 72","Playfair Display","Libre Bodoni",Georgia,"C059","Century Schoolbook","Times New Roman",serif';
+var MS = 200, SPACE = 0.78;
+var ctx = doc.createElement('canvas').getContext('2d'), mc = {}, fontIt = null;
+function useFont(it) {
+  if (fontIt === it) return;
+  fontIt = it; ctx.font = (it ? 'italic ' : '') + '700 ' + MS + 'px ' + STACK;
+}
+function met(c, it) {
+  var k = (it ? 'i' : 'r') + c, m = mc[k];
+  if (!m) {
+    useFont(it);
+    var x = ctx.measureText(c);
+    m = mc[k] = { w: x.width / MS, l: x.actualBoundingBoxLeft / MS, r: x.actualBoundingBoxRight / MS,
+                  a: x.actualBoundingBoxAscent / MS, d: x.actualBoundingBoxDescent / MS };
+  }
+  return m;
+}
+function kern(a, b, it) {
+  var k = (it ? 'I' : 'R') + a + b, v = mc[k];
+  if (v === undefined) { useFont(it); v = mc[k] = ctx.measureText(a + b).width / MS - met(a, it).w - met(b, it).w; }
+  return v;
+}
+function baseline(it) {
+  var d = doc.createElement('div');
+  d.style.cssText = 'position:absolute;left:0;top:0;visibility:hidden;white-space:nowrap;font:' + (it ? 'italic ' : '') + '700 ' + MS + 'px/1 ' + STACK;
+  d.innerHTML = 'x<span style="display:inline-block;width:0;height:0;vertical-align:baseline"></span>';
+  body.appendChild(d);
+  var b = (d.lastChild.getBoundingClientRect().top - d.getBoundingClientRect().top) / MS;
+  body.removeChild(d);
+  return b;
+}
+var BR = baseline(false), BI = baseline(true);
+block.style.setProperty('--it', (BR - BI).toFixed(4) + 'em');
+
+/* one candidate line: tokens i..j set solid, measured to its ink */
+function buildLine(T, i, j) {
+  var ch = [], k, n, key = '', hasIt = false, hasRo = false;
+  for (k = i; k <= j; k++) {
+    var tk = T[k];
+    if (k > i && !T[k - 1].glue) ch.push({ c: ' ', it: T[k - 1].it && tk.it, ti: -1, g: -1 });
+    for (n = 0; n < tk.t.length; n++) ch.push({ c: tk.t.charAt(n), it: tk.it, ti: k, g: tk.g });
+    if (tk.it) hasIt = true; else hasRo = true;
+  }
+  var sum = 0, asc = 0, desc = 0;
+  for (n = 0; n < ch.length; n++) {
+    var a = ch[n], b = ch[n + 1], m = met(a.c, a.it), w = a.c === ' ' ? m.w * SPACE : m.w;
+    if (b && a.c !== ' ' && b.c !== ' ' && a.it === b.it) w += kern(a.c, b.c, a.it);
+    if (b && a.it && !b.it && b.c !== ' ') w += 0.04;
+    a.w = w; sum += w;
+    if (a.c !== ' ') { if (m.a > asc) asc = m.a; if (m.d > desc) desc = m.d; }
+    key += (a.it ? '/' : '') + a.c;
+  }
+  var f = met(ch[0].c, ch[0].it), l = ch[ch.length - 1], lm = met(l.c, l.it);
+  var inkLeft = -f.l, inkRight = sum - l.w + lm.r;
+  return { ch: ch, key: key, inkLeft: inkLeft, inkW: inkRight - inkLeft, adj: inkRight - inkLeft - sum,
+           asc: asc, desc: desc, hasIt: hasIt, mixed: hasIt && hasRo, hyph: T[j].glue,
+           lone: i === j && /^(it|is|in|the|to|at|a|oh)$/.test(T[i].t) };
+}
+
+var SW = 0, SH = 0, SL = 0, ST = 0, GAP = 8, SYMIN = 0.8, SYMAX = 1.42;
+function measureStage() {
+  var r = stage.getBoundingClientRect();
+  SW = Math.max(120, r.width); SH = Math.max(60, r.height); SL = r.left; ST = r.top;
+  GAP = Math.max(6, Math.min(SW, SH) * 0.022);
+}
+
+/* choose the line breaks whose fitted lines best fill the stage */
+function layout(T) {
+  var prev = {};
+  lines.forEach(function (ln) { if (!ln.out) prev[ln.key] = 1; });
+  var n = T.length, memo = {}, best = null, bestScore = -1e9, mask, k;
+  function rng(i, j) { var id = i * 40 + j; return memo[id] || (memo[id] = buildLine(T, i, j)); }
+  for (mask = 0; mask < (1 << (n - 1)); mask++) {
+    var ls = [], i = 0, sumH = 0, fsMax = 0, fsKey = 0, fsMin = 1e9, pen = 0, stab = 0, hs = [];
+    for (k = 0; k < n; k++) if (k === n - 1 || (mask >> k) & 1) { ls.push(rng(i, k)); i = k + 1; }
+    for (k = 0; k < ls.length; k++) {
+      var l = ls[k], fs = SW / l.inkW, h = (l.asc + l.desc) * fs;
+      sumH += h; hs.push(h);
+      if (fs > fsMax) fsMax = fs;
+      if (fs < fsMin) fsMin = fs;
+      if (l.hasIt && fs > fsKey) fsKey = fs;
+      if (l.mixed) pen += 0.02;
+      if (l.hyph) pen += 0.015;
+      if (l.lone) pen += 0.09;
+      if (prev[l.key]) stab += 0.045;
+    }
+    for (k = 0; k < ls.length; k++) if (!ls[k].hasIt && hs[k] / sumH > 0.34 && ls.length > 1) pen += 0.35 * (hs[k] / sumH - 0.34);
+    if (fsMin / fsMax < 0.16) pen += 0.05;
+    var gaps = (ls.length - 1) * GAP, room = Math.max(10, SH - gaps);
+    var sy = Math.min(SYMAX, Math.max(SYMIN, room / sumH)), s = 1, cov;
+    if (sy * sumH > room) { s = room / (sy * sumH); cov = s; } else cov = (sy * sumH + gaps) / SH;
+    var score = cov - 0.2 * Math.abs(Math.log(sy)) + 0.14 * Math.min(1, fsKey / fsMax)
+      + 0.05 * Math.min(1, Math.log(fsMax / fsMin) / 1.1) + Math.min(0.14, stab) - pen;
+    if (score > bestScore) { bestScore = score; best = { lines: ls, s: s, sy: sy }; }
+  }
+  return best;
+}
+
+/* ------------------------------------------------------------------ */
+/* the setting machine: slots, rolls and liquid re-justification       */
+/* ------------------------------------------------------------------ */
+function bezier(x1, y1, x2, y2) {
+  var ax = 1 - 3 * x2 + 3 * x1, bx = 3 * x2 - 6 * x1, cx = 3 * x1,
+      ay = 1 - 3 * y2 + 3 * y1, by = 3 * y2 - 6 * y1, cy = 3 * y1;
+  return function (x) {
+    if (x <= 0) return 0;
+    if (x >= 1) return 1;
+    var t = x, i, e, d;
+    for (i = 0; i < 8; i++) {
+      e = ((ax * t + bx) * t + cx) * t - x;
+      d = (3 * ax * t + 2 * bx) * t + cx;
+      if (Math.abs(e) < 1e-5 || !d) break;
+      t -= e / d;
+    }
+    return ((ay * t + by) * t + cy) * t;
+  };
+}
+var springEase = bezier(0.2, 0.9, 0.2, 1.1), SPRING = 'cubic-bezier(.2,.9,.2,1.1)';
+function calmEase(x) { return x <= 0 ? 0 : x >= 1 ? 1 : 1 - Math.pow(1 - x, 3); }
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+var lines = [], anim = null, anims = [], glob = { s: 1, sy: 1, s0: 1, s1: 1, sy0: 1, sy1: 1 };
+var SPEED = { slow: { dur: 760, stg: 30 }, mid: { dur: 520, stg: 16 }, fast: { dur: 240, stg: 6 } };
+
+function mkLine() {
+  var el = doc.createElement('div');
+  el.className = 'ln';
+  block.appendChild(el);
+  return { el: el, slots: [], trash: [], hf: 1, hf0: 1, hf1: 1, out: false, d: 0, key: '' };
+}
+function mkSlot(ln) {
+  var el = doc.createElement('span');
+  el.className = 's';
+  ln.el.appendChild(el);
+  return { el: el, g: null, c: '', it: false, ti: -1, grp: -1, w: 0, w0: 0, w1: 0, d: 0, x: 0, dead: false };
+}
+function putGlyph(sl, c, it) {
+  var g = doc.createElement('span');
+  g.className = it ? 'g i' : 'g';
+  g.textContent = c;
+  sl.el.appendChild(g);
+  sl.g = g;
+  return g;
+}
+function rollIn(g, d, R, dur) {
+  if (!g.animate) return;
+  anims.push(reduce
+    ? g.animate([{ opacity: 0 }, { opacity: 1 }], { duration: dur, delay: d, easing: 'ease', fill: 'backwards' })
+    : g.animate([{ transform: 'translateY(' + R.toFixed(3) + 'em)' }, { transform: 'translateY(0)' }],
+        { duration: dur, delay: d, easing: SPRING, fill: 'backwards' }));
+}
+function rollOut(ln, g, d, R, dur) {
+  ln.trash.push(g);
+  if (!g.animate) { g.style.visibility = 'hidden'; return; }
+  anims.push(reduce
+    ? g.animate([{ opacity: 1 }, { opacity: 0 }], { duration: dur, delay: d, easing: 'ease', fill: 'forwards' })
+    : g.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(' + (-R).toFixed(3) + 'em)' }],
+        { duration: dur, delay: d, easing: SPRING, fill: 'forwards' }));
+}
+function same(sl, c) { return !sl.dead && sl.c === c.c && sl.it === c.it; }
+function keep(sl, c, d) { sl.w0 = sl.w; sl.w1 = c.w; sl.ti = c.ti; sl.grp = c.g; sl.d = d; return sl; }
+function aim(ln, n) {
+  ln.adj0 = ln.adj; ln.adj1 = n.adj; ln.il0 = ln.inkLeft; ln.il1 = n.inkLeft;
+  ln.asc0 = ln.asc; ln.asc1 = n.asc; ln.desc0 = ln.desc; ln.desc1 = n.desc;
+  ln.hf0 = ln.hf; ln.hf1 = 1; ln.key = n.key;
+}
+
+/* keep identical lines still; pair the rest in reading order */
+function align(O, N) {
+  var a = O.length, b = N.length, dp = [], i, j, plan = [], ro = [], rn = [];
+  for (i = 0; i <= a; i++) { dp[i] = []; for (j = 0; j <= b; j++) dp[i][j] = 0; }
+  for (i = a - 1; i >= 0; i--) for (j = b - 1; j >= 0; j--)
+    dp[i][j] = O[i].key === N[j].key ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  function flush() {
+    var k = Math.max(ro.length, rn.length), q;
+    for (q = 0; q < k; q++) plan.push({ o: ro[q] || null, n: rn[q] || null });
+    ro = []; rn = [];
+  }
+  i = j = 0;
+  while (i < a && j < b) {
+    if (O[i].key === N[j].key) { flush(); plan.push({ o: O[i++], n: N[j++] }); }
+    else if (dp[i + 1][j] >= dp[i][j + 1]) ro.push(O[i++]);
+    else rn.push(N[j++]);
+  }
+  while (i < a) ro.push(O[i++]);
+  while (j < b) rn.push(N[j++]);
+  flush();
+  return plan;
+}
+
+function finish() {
+  anims.forEach(function (a) { try { a.cancel(); } catch (e) {} });
+  anims = [];
+  lines = lines.filter(function (ln) {
+    ln.trash.forEach(function (g) { if (g.parentNode) g.parentNode.removeChild(g); });
+    ln.trash = [];
+    if (ln.out) { block.removeChild(ln.el); return false; }
+    ln.slots = ln.slots.filter(function (sl) {
+      if (sl.dead) { ln.el.removeChild(sl.el); return false; }
+      return true;
+    });
+    ln.el.style.clipPath = 'none';
+    return true;
+  });
+  anim = null;
+}
+
+function retarget(L, sp) {
+  if (anim) finish();
+  clearHover();
+  var dur = reduce ? 420 : sp.dur, stg = reduce ? 0 : sp.stg, idx = 0, first = !lines.length, snap = sp === SPEED.fast,
+      next = [], plan = align(lines, L.lines);
+  plan.forEach(function (p) {
+    var ln = p.o, n = p.n, R, i, sl, d;
+    if (ln && n) {
+      R = Math.max(ln.asc + ln.desc, n.asc + n.desc) + 0.18;
+      var O = ln.slots, N = n.ch, a = 0, b = 0, mx = Math.min(O.length, N.length), S = [];
+      while (a < mx && same(O[a], N[a])) a++;
+      while (b < mx - a && same(O[O.length - 1 - b], N[N.length - 1 - b])) b++;
+      ln.d = idx * stg;
+      for (i = 0; i < a; i++) S.push(keep(O[i], N[i], ln.d));
+      var mo = O.length - a - b, mn = N.length - a - b, k = Math.max(mo, mn);
+      for (i = 0; i < k; i++) {
+        var os = i < mo ? O[a + i] : null, nc = i < mn ? N[a + i] : null, vis = false;
+        sl = os || mkSlot(ln); d = idx * stg;
+        if (os && nc && same(os, nc)) { S.push(keep(sl, nc, d)); continue; }
+        if (sl.g) { rollOut(ln, sl.g, d, R, dur); sl.g = null; vis = true; }
+        sl.w0 = sl.w; sl.d = d;
+        if (nc) {
+          sl.w1 = nc.w; sl.c = nc.c; sl.it = nc.it; sl.ti = nc.ti; sl.grp = nc.g; sl.dead = false;
+          if (nc.c !== ' ') { rollIn(putGlyph(sl, nc.c, nc.it), d, R, dur); vis = true; }
+        } else { sl.w1 = 0; sl.c = ''; sl.ti = -1; sl.grp = -1; sl.dead = true; }
+        if (vis) idx++;
+        S.push(sl);
+      }
+      d = idx * stg;
+      for (i = 0; i < b; i++) S.push(keep(O[O.length - b + i], N[N.length - b + i], d));
+      ln.slots = S;
+      aim(ln, n);
+    } else if (n) {
+      ln = mkLine(); R = n.asc + n.desc + 0.18; ln.d = idx * stg;
+      n.ch.forEach(function (c) {
+        sl = mkSlot(ln);
+        sl.w = sl.w0 = sl.w1 = c.w; sl.c = c.c; sl.it = c.it; sl.ti = c.ti; sl.grp = c.g; sl.d = idx * stg;
+        if (c.c !== ' ') { rollIn(putGlyph(sl, c.c, c.it), sl.d, R, dur); idx++; }
+        ln.slots.push(sl);
+      });
+      ln.adj = n.adj; ln.inkLeft = n.inkLeft; ln.asc = n.asc; ln.desc = n.desc;
+      ln.hf = first || snap ? 1 : 0;
+      aim(ln, n);
+    } else if (snap) {
+      block.removeChild(ln.el); return;
+    } else {
+      R = ln.asc + ln.desc + 0.18; ln.d = idx * stg; ln.out = true;
+      ln.slots.forEach(function (s2) {
+        s2.w0 = s2.w1 = s2.w; s2.d = idx * stg;
+        if (s2.g) { rollOut(ln, s2.g, s2.d, R, dur); s2.g = null; idx++; }
+      });
+      ln.adj0 = ln.adj1 = ln.adj; ln.il0 = ln.il1 = ln.inkLeft;
+      ln.asc0 = ln.asc1 = ln.asc; ln.desc0 = ln.desc1 = ln.desc;
+      ln.hf0 = ln.hf; ln.hf1 = 0; ln.key = '\u0000';
+    }
+    next.push(ln);
+  });
+  lines = next;
+  glob.s0 = first ? L.s : glob.s; glob.s1 = L.s;
+  glob.sy0 = first ? L.sy : glob.sy; glob.sy1 = L.sy;
+  var tail = idx * stg;
+  anim = { t0: performance.now(), dur: dur, end: tail + dur + 30, gd: dur + tail * 0.5 };
+  frame(anim.t0);
+}
+
+function frame(now) {
+  if (!anim) return;
+  var ez = reduce ? calmEase : springEase;
+  var t = now - anim.t0, P = ez(t / anim.gd), i, j, ln, sl, x, lp, inkW, tot = 0;
+  var s = glob.s = lerp(glob.s0, glob.s1, P), sy = glob.sy = lerp(glob.sy0, glob.sy1, P), Wb = SW * s;
+  for (i = 0; i < lines.length; i++) {
+    ln = lines[i]; x = 0;
+    for (j = 0; j < ln.slots.length; j++) {
+      sl = ln.slots[j];
+      sl.w = lerp(sl.w0, sl.w1, ez((t - sl.d) / anim.dur));
+      sl.x = x; x += sl.w;
+    }
+    lp = ez((t - ln.d) / anim.dur);
+    ln.adj = lerp(ln.adj0, ln.adj1, lp);
+    ln.inkLeft = lerp(ln.il0, ln.il1, lp);
+    ln.asc = lerp(ln.asc0, ln.asc1, lp);
+    ln.desc = lerp(ln.desc0, ln.desc1, lp);
+    ln.hf = Math.max(0, lerp(ln.hf0, ln.hf1, lp));
+    inkW = Math.max(0.05, x + ln.adj);
+    ln.fs = Wb / inkW;
+    ln.h = (ln.asc + ln.desc) * ln.fs * sy * ln.hf;
+    tot += ln.h + GAP * ln.hf;
+  }
+  tot -= GAP;
+  if (tot > SH) {                       /* never let a half-set block spill past the stage */
+    var gs = 0, kk;
+    for (i = 0; i < lines.length; i++) gs += GAP * lines[i].hf;
+    gs -= GAP; kk = Math.max(0.2, (SH - gs) / (tot - gs));
+    for (i = 0; i < lines.length; i++) { lines[i].fs *= kk; lines[i].h *= kk; }
+    Wb *= kk; tot = SH;
+  }
+  var y = (SH - tot) / 2, x0 = (SW - Wb) / 2;
+  for (i = 0; i < lines.length; i++) {
+    ln = lines[i];
+    ln.top = y; ln.gx = x0 - ln.inkLeft * ln.fs;
+    var st = ln.el.style;
+    st.fontSize = ln.fs.toFixed(2) + 'px';
+    st.transform = 'translate(' + ln.gx.toFixed(2) + 'px,' + (y - (BR - ln.asc) * ln.fs * sy).toFixed(2) + 'px) scale(1,' + sy.toFixed(4) + ')';
+    if (!reduce) st.clipPath = 'inset(' + (BR - ln.asc - 0.13).toFixed(3) + 'em -99em ' +
+      (-(BR - ln.asc + (ln.asc + ln.desc) * ln.hf + 0.035)).toFixed(3) + 'em -99em)';
+    for (j = 0; j < ln.slots.length; j++) {
+      sl = ln.slots[j];
+      sl.el.style.left = sl.x.toFixed(4) + 'em';
+      sl.el.style.width = Math.max(0, sl.w).toFixed(4) + 'em';
+    }
+    y += ln.h + GAP * ln.hf;
+  }
+  if (t >= anim.end) finish();
+}
+
+/* ------------------------------------------------------------------ */
+/* hover: tilt a word, show its numeric translation                    */
+/* ------------------------------------------------------------------ */
+var hover = -1, hoverSlots = [], tipTimer = 0, cur = null;
+function clearHover() {
+  hoverSlots.forEach(function (sl) { sl.el.style.transform = ''; });
+  hoverSlots = []; hover = -1;
+  tip.classList.remove('on');
+}
+function hit(cx, cy) {
+  var px = cx - SL, py = cy - ST, i, j, ln, ex;
+  for (i = 0; i < lines.length; i++) {
+    ln = lines[i];
+    if (py < ln.top - GAP / 2 || py > ln.top + ln.h + GAP / 2) continue;
+    ex = (px - ln.gx) / ln.fs;
+    for (j = 0; j < ln.slots.length; j++) {
+      var sl = ln.slots[j];
+      if (ex >= sl.x && ex < sl.x + sl.w) return sl.ti >= 0 ? { ln: ln, ti: sl.ti } : null;
+    }
+  }
+  return null;
+}
+function setHover(h) {
+  if (anim || !h || !cur) { if (hover !== -1) clearHover(); return; }
+  if (h.ti === hover) return;
+  clearHover();
+  hover = h.ti;
+  var ln = h.ln, ss = ln.slots.filter(function (sl) { return sl.ti === h.ti; });
+  if (!ss.length) return;
+  var x0 = ss[0].x, x1 = ss[ss.length - 1].x + ss[ss.length - 1].w, cx = (x0 + x1) / 2;
+  var ang = reduce ? 0 : (h.ti % 2 ? 2.3 : -2.3), sn = Math.sin(ang * Math.PI / 180);
+  ss.forEach(function (sl) {
+    var dx = sl.x + sl.w / 2 - cx;
+    sl.el.style.transform = 'translate(0,' + (dx * sn - 0.014).toFixed(4) + 'em) rotate(' + ang + 'deg)';
+  });
+  hoverSlots = ss;
+  tipT.textContent = cur.G[ss[0].grp] || '';
+  var tw = tip.offsetWidth, th = tip.offsetHeight;
+  var tx = SL + ln.gx + cx * ln.fs - tw / 2, ty = ST + ln.top - th - 12, below = false;
+  if (ty < ST - 6) { ty = ST + ln.top + ln.h + 12; below = true; }
+  tx = Math.max(8, Math.min(window.innerWidth - tw - 8, tx));
+  tip.classList.toggle('below', below);
+  tip.style.transform = 'translate(' + Math.round(tx) + 'px,' + Math.round(ty) + 'px)';
+  tip.classList.add('on');
+}
+
+/* ------------------------------------------------------------------ */
+/* the clock                                                           */
+/* ------------------------------------------------------------------ */
+var offset = 0, shift = 0, elaborate = true, shown = null, lastRe = -1e9, fastUntil = 0,
+    stepped = false, quiet = false, lastCol = -1e9, lastDate = '', lastRo = null,
+    drag = null, vel = 0, tween = null, lastTs = 0, raf = 0, PPM = 6, noteTimer = 0, flashTimer = 0,
+    snapTimer = 0;
+var LIMIT = 3 * 1440;
+
+(function () {            /* an address like #16:20 opens the page on that moment */
+  var m = /^#(\d{1,2})[:.h]?(\d{2})$/.exec(location.hash || '');
+  if (!m || +m[1] > 23 || +m[2] > 59) return;
+  var n = new Date(), t = new Date(n.getFullYear(), n.getMonth(), n.getDate(), +m[1], +m[2], n.getSeconds());
+  offset = Math.round((t - n) / 60000);
+})();
+
+function clampOff(v) { return Math.max(-LIMIT, Math.min(LIMIT, v)); }
+function spanWords(mins) {
+  var a = Math.abs(mins), d = a / 1440 | 0, h = (a % 1440) / 60 | 0, m = a % 60, p = [];
+  if (d) p.push(card(d) + (d > 1 ? ' days' : ' day'));
+  if (h) p.push(card(h) + (h > 1 ? ' hours' : ' hour'));
+  if (m) p.push(card(m) + (m > 1 ? ' minutes' : ' minute'));
+  return p.join(' ') + (mins > 0 ? ' ahead' : ' behind');
+}
+function greenwich(off) {
+  if (!off) return 'on Greenwich time';
+  var a = Math.abs(off), h = a / 60 | 0, m = a % 60, s;
+  var fr = m === 30 ? ' and a half' : m === 15 ? ' and a quarter' : m === 45 ? ' and three quarters' : m ? ' and a bit' : '';
+  if (!h) s = m === 30 ? 'half an hour' : card(m) + ' minutes';
+  else s = card(h) + fr + (h === 1 && !fr ? ' hour' : ' hours');
+  return s + (off > 0 ? ' ahead of Greenwich' : ' behind Greenwich');
+}
+function setTwo(el, a, b) { el.firstChild.textContent = a; el.lastChild.textContent = b; }
+function corners(v) {
+  var y = v.getFullYear(), leap = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0, total = leap ? 366 : 365;
+  var n = Math.round((Date.UTC(y, v.getMonth(), v.getDate()) - Date.UTC(y, 0, 0)) / 864e5), left = total - n;
+  setTwo(dateEl, DAYS[v.getDay()] + ' the ' + ord(v.getDate()) + ' of ' + MONTHS[v.getMonth()], yearWords(y));
+  setTwo(dayEl, 'Day ' + card(n) + ' of the year', left === 0 ? 'none remain' : card(left) + (left === 1 ? ' remains' : ' remain'));
+  var tz = '';
+  try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+  tz = tz ? tz.replace(/_/g, ' ').split('/').join(' / ') : 'Local time';
+  setTwo(zoneEl, tz, greenwich(-v.getTimezoneOffset()));
+}
+function hourMark(h) {
+  var name = h === 0 ? 'midnight' : h === 12 ? 'noon' : ONES[h % 12] + ' ' + partOf(h)[0];
+  noteEl.textContent = 'That was ' + name + '. It will not happen again today.';
+  noteEl.classList.add('on');
+  clearTimeout(noteTimer);
+  noteTimer = setTimeout(function () { noteEl.classList.remove('on'); }, 9000);
+  if (reduce) return;
+  clearTimeout(flashTimer);
+  ctLock = true; flashing = true;
+  setCT('1.5s', 'cubic-bezier(.6,0,.2,1)'); paint();
+  flashTimer = setTimeout(function () {
+    flashing = false; setCT('2.1s', 'cubic-bezier(.5,0,.15,1)'); paint();
+    flashTimer = setTimeout(function () { ctLock = false; setCT('1s'); }, 2200);
+  }, 1800);
+}
+function nowMarker(ro) {
+  var away = ro !== 0;
+  foot.classList.toggle('away', away);
+  nowT.textContent = away ? spanWords(ro) : 'now';
+  var dx = away ? (ro > 0 ? 1 : -1) * Math.min(1, Math.log(1 + Math.abs(ro)) / Math.log(1 + 720)) * 18 : 0;
+  nowBtn.style.setProperty('--dx', dx.toFixed(1) + 'px');
+  nowBtn.setAttribute('aria-label', away ? 'Showing ' + spanWords(ro) + '. Return to the present moment' : 'Showing the present moment');
+}
+
+function tick(ts) {
+  raf = requestAnimationFrame(tick);
+  var dt = Math.min(60, ts - lastTs); lastTs = ts;
+  if (!drag && vel) {
+    offset = clampOff(offset + vel * dt / PPM);
+    vel *= Math.exp(-dt / 320);
+    fastUntil = ts + 200;
+    if (Math.abs(vel) < 0.04) { vel = 0; offset = Math.round(offset); }
+  }
+  if (tween) {
+    var p = Math.min(1, (ts - tween.t0) / tween.dur);
+    offset = tween.from * (1 - calmEase(p));
+    fastUntil = ts + 160;
+    if (p >= 1) { tween = null; offset = 0; }
+  }
+  var now = Date.now(), v = new Date(now + offset * 60000), h = v.getHours(), m = v.getMinutes();
+  var key = (elaborate ? 'e' : 'p') + h + ':' + m, fast = ts < fastUntil;
+  if (key !== shown && !(fast && ts - lastRe < 110)) {
+    var first = shown === null;
+    shown = key; lastRe = ts;
+    cur = phrase(h, m, elaborate);
+    retarget(layout(cur.T), SPEED[first ? 'slow' : fast ? 'fast' : stepped ? 'mid' : 'slow']);
+    say.textContent = cur.text; doc.title = cur.text;
+    if (!first && !fast && !quiet && m === 0) hourMark(h);
+    stepped = false; quiet = false;
+  }
+  var dk = v.toDateString();
+  if (dk !== lastDate) { lastDate = dk; corners(v); }
+  if (fast || ts - lastCol > 400) {
+    lastCol = ts;
+    colNow = fieldAt(h, (m * 60 + v.getSeconds()) / 3600);
+    if (!ctLock) root.style.setProperty('--ct', fast ? '.3s' : '1s');
+    paint();
+  }
+  var ro = Math.round(offset);
+  if (ro !== lastRo) { lastRo = ro; nowMarker(ro); }
+  secEl.style.transform = 'scaleX(' + ((now % 60000) / 60000).toFixed(5) + ')';
+  if (anim) frame(ts);
+}
+
+/* ------------------------------------------------------------------ */
+/* input                                                               */
+/* ------------------------------------------------------------------ */
+function seen() { foot.classList.add('seen'); }
+function travel(d, ts) {
+  offset = clampOff(offset + d); tween = null;
+  fastUntil = (ts || performance.now()) + 220; seen();
+}
+function goNow() {
+  vel = 0; clearTimeout(snapTimer);
+  if (Math.round(offset) === 0) { offset = 0; return; }
+  if (reduce) { offset = 0; quiet = true; return; }
+  tween = { from: offset, t0: performance.now(), dur: 750 };
+}
+function relayout() {
+  measureStage();
+  PPM = Math.max(2.4, Math.min(8, window.innerWidth / 240));
+  if (cur) retarget(layout(cur.T), SPEED.fast);
+}
+
+window.addEventListener('pointerdown', function (e) {
+  if (e.button || (e.target.closest && e.target.closest('button'))) return;
+  drag = { id: e.pointerId, x0: e.clientX, x: e.clientX, t: e.timeStamp, moved: false, type: e.pointerType };
+  vel = 0; tween = null;
+});
+window.addEventListener('pointermove', function (e) {
+  if (drag && e.pointerId === drag.id) {
+    var dx = e.clientX - drag.x, dt = Math.max(1, e.timeStamp - drag.t);
+    if (!drag.moved && Math.abs(e.clientX - drag.x0) > 5) {
+      drag.moved = true; body.classList.add('scrub'); clearHover(); clearTimeout(snapTimer);
+      dx = 0;
+    }
+    if (drag.moved) {
+      travel(dx / PPM);
+      vel = vel * 0.7 + (dx / dt) * 0.3;
+      drag.x = e.clientX; drag.t = e.timeStamp;
+    }
+    return;
+  }
+  if (e.pointerType === 'mouse' && !drag) {
+    if (e.target.closest && e.target.closest('button')) clearHover();
+    else setHover(hit(e.clientX, e.clientY));
+  }
+});
+function release(e) {
+  if (!drag || e.pointerId !== drag.id) return;
+  var d = drag; drag = null;
+  body.classList.remove('scrub');
+  if (d.moved) {
+    if (e.timeStamp - d.t > 90 || Math.abs(vel) < 0.25 || reduce) { vel = 0; offset = Math.round(offset); }
+  } else if (d.type !== 'mouse') {
+    clearHover();
+    setHover(hit(e.clientX, e.clientY));
+    clearTimeout(tipTimer);
+    tipTimer = setTimeout(clearHover, 2400);
+  }
+}
+window.addEventListener('pointerup', release);
+window.addEventListener('pointercancel', release);
+doc.addEventListener('mouseleave', clearHover);
+window.addEventListener('wheel', function (e) {
+  var d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+  if (e.deltaMode === 1) d *= 30;
+  vel = 0; travel(d / (PPM * 5));
+  clearTimeout(snapTimer);
+  snapTimer = setTimeout(function () { offset = Math.round(offset); }, 180);
+}, { passive: true });
+
+window.addEventListener('keydown', function (e) {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  var k = e.key, step = 0;
+  if (k === 'ArrowRight') step = e.shiftKey ? 10 : 1;
+  else if (k === 'ArrowLeft') step = e.shiftKey ? -10 : -1;
+  else if (k === 'ArrowUp') step = 60;
+  else if (k === 'ArrowDown') step = -60;
+  if (step) {
+    e.preventDefault();
+    vel = 0; tween = null;
+    offset = clampOff(Math.round(offset) + step); seen();
+    if (e.repeat) fastUntil = performance.now() + 220; else stepped = true;
+    return;
+  }
+  if (k === 'f' || k === 'F') { e.preventDefault(); fullscreen(); }
+  else if (k === 'Escape' || k === 'Home' || k === 'n' || k === 'N') goNow();
+  else if (k === 'e' || k === 'E' || k === 'p' || k === 'P') toggleMode();
+});
+
+nowBtn.addEventListener('click', goNow);
+function toggleMode() {
+  elaborate = !elaborate; quiet = true;
+  modeBtn.setAttribute('aria-checked', elaborate ? 'true' : 'false');
+}
+modeBtn.addEventListener('click', toggleMode);
+
+var fsOK = !!(root.requestFullscreen || root.webkitRequestFullscreen) && (doc.fullscreenEnabled !== false);
+if (!fsOK) fsBtn.style.display = 'none';
+function fullscreen() {
+  if (!fsOK) return;
+  var el = doc.fullscreenElement || doc.webkitFullscreenElement, p;
+  try {
+    if (el) p = (doc.exitFullscreen || doc.webkitExitFullscreen).call(doc);
+    else p = (root.requestFullscreen || root.webkitRequestFullscreen).call(root);
+    if (p && p.catch) p.catch(function () {});
+  } catch (err) {}
+}
+fsBtn.addEventListener('click', fullscreen);
+function fsChange() { body.classList.toggle('full', !!(doc.fullscreenElement || doc.webkitFullscreenElement)); relayout(); }
+doc.addEventListener('fullscreenchange', fsChange);
+doc.addEventListener('webkitfullscreenchange', fsChange);
+
+var rz = 0;
+window.addEventListener('resize', function () { cancelAnimationFrame(rz); rz = requestAnimationFrame(relayout); });
+doc.addEventListener('visibilitychange', function () {
+  cancelAnimationFrame(raf);
+  if (!doc.hidden) { lastTs = performance.now(); raf = requestAnimationFrame(tick); }
+});
+
+/* ------------------------------------------------------------------ */
+/* paper grain                                                         */
+/* ------------------------------------------------------------------ */
+(function () {
+  var dpr = Math.min(2, window.devicePixelRatio || 1), n = 192 * dpr, c = doc.createElement('canvas');
+  c.width = c.height = n;
+  var g = c.getContext('2d'), im = g.createImageData(n, n), d = im.data, i, seed = 20261109;
+  function rnd() { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; }
+  for (i = 0; i < d.length; i += 4) {
+    var v = rnd() < 0.5 ? 0 : 255;
+    d[i] = d[i + 1] = d[i + 2] = v;
+    d[i + 3] = rnd() * rnd() * 26;
+  }
+  g.putImageData(im, 0, 0);
+  var gr = $('grain');
+  gr.style.backgroundImage = 'url(' + c.toDataURL('image/png') + ')';
+  gr.style.backgroundSize = (n / dpr) + 'px ' + (n / dpr) + 'px';
+})();
+
+/* ------------------------------------------------------------------ */
+/* begin                                                               */
+/* ------------------------------------------------------------------ */
+measureStage();
+PPM = Math.max(2.4, Math.min(8, window.innerWidth / 240));
+(function () {
+  var v = new Date(Date.now() + offset * 60000);
+  setCT('0s');
+  colNow = fieldAt(v.getHours(), (v.getMinutes() * 60 + v.getSeconds()) / 3600);
+  paint();
+  requestAnimationFrame(function () { requestAnimationFrame(function () { setCT('1s'); }); });
+})();
+lastTs = performance.now();
+raf = requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

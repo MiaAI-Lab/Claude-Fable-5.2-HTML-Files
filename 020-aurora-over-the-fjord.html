@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#01040A">
+<title>Aurora over Skjervøy Sound</title>
+<style>
+  :root{
+    --sky:#030B14; --deep:#01040A; --teal:#0B3B3C; --green:#39E6A0; --pale:#A6F0C6;
+    --violet:#C04BD9; --snow:#2B3B4A; --warm:#F2B56B; --ink:#DDF8E9;
+    --slow:cubic-bezier(.22,.7,.18,1); --drift:cubic-bezier(.45,.05,.35,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:var(--deep);overflow:hidden;color:var(--ink)}
+  body{font-family:Georgia,"Palatino Linotype",Palatino,"Times New Roman",serif;-webkit-font-smoothing:antialiased;
+    -webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+
+  .stage{position:fixed;inset:0;overflow:hidden;background:linear-gradient(#01040A,#030B14 66%,#01040A);
+    cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Ccircle cx='14' cy='14' r='8.5' fill='none' stroke='%23A6F0C6' stroke-opacity='.55'/%3E%3Ccircle cx='14' cy='14' r='1.1' fill='%23A6F0C6'/%3E%3C/svg%3E") 14 14,crosshair}
+  #sky{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none}
+
+  /* ---------- text plate ---------- */
+  .plate{position:absolute;left:max(30px,env(safe-area-inset-left));bottom:max(30px,env(safe-area-inset-bottom));
+    max-width:min(31rem,calc(100vw - 60px));pointer-events:none;
+    transition:opacity 1.4s var(--slow),transform 1.4s var(--slow)}
+  .place{font:500 11px/1 "Gill Sans","Gill Sans MT","Trebuchet MS",Futura,"Century Gothic",system-ui,sans-serif;
+    letter-spacing:.42em;text-transform:uppercase;color:var(--ink);opacity:0;white-space:nowrap;
+    text-shadow:0 0 14px rgba(1,4,10,.9);animation:rise 2.8s var(--slow) 3.4s forwards}
+  .place i{font-style:normal;color:var(--green);margin:0 .5em 0 .1em}
+  .rule{display:block;width:44px;height:1px;margin:14px 0 13px;background:linear-gradient(90deg,var(--pale),rgba(166,240,198,0));
+    opacity:0;transform-origin:0 50%;animation:draw 2.4s var(--slow) 4s forwards}
+  .note{font-style:italic;font-size:15.5px;line-height:1.45;letter-spacing:.01em;color:var(--ink);min-height:1.45em;
+    text-shadow:0 0 16px rgba(1,4,10,.95),0 0 3px rgba(1,4,10,.8)}
+  .note span{display:inline-block;opacity:0;transform:translateY(5px);filter:blur(3px);
+    transition:opacity 1.9s var(--slow),transform 1.9s var(--slow),filter 1.9s var(--slow)}
+  .note span.on{opacity:.7;transform:none;filter:none}
+  .note b{font-style:normal;font-weight:400;font-family:"Gill Sans","Gill Sans MT","Trebuchet MS",system-ui,sans-serif;
+    font-size:11px;letter-spacing:.2em;margin-right:.55em;color:var(--pale)}
+  .hint{margin-top:15px;font:500 9.5px/1.5 "Gill Sans","Gill Sans MT","Trebuchet MS",Futura,system-ui,sans-serif;
+    letter-spacing:.34em;text-transform:uppercase;color:var(--pale);opacity:0;transition:opacity 2.2s var(--slow)}
+  .hint.on{opacity:.42}
+  .hint em{font-style:normal;color:var(--ink);opacity:.9}
+  @keyframes rise{from{opacity:0;transform:translateY(8px);letter-spacing:.6em}to{opacity:.7;transform:none;letter-spacing:.42em}}
+  @keyframes draw{from{opacity:0;transform:scaleX(0)}to{opacity:.55;transform:scaleX(1)}}
+
+  /* ---------- controls ---------- */
+  .ctl{position:absolute;right:max(26px,env(safe-area-inset-right));bottom:max(24px,env(safe-area-inset-bottom));
+    display:flex;gap:6px;align-items:center;opacity:0;animation:fadein 2.6s var(--slow) 5s forwards}
+  @keyframes fadein{to{opacity:1}}
+  .ctl button{appearance:none;-webkit-appearance:none;background:none;border:0;color:var(--ink);cursor:pointer;
+    display:flex;align-items:center;gap:10px;padding:10px 10px;border-radius:2px;
+    font:500 9.5px/1 "Gill Sans","Gill Sans MT","Trebuchet MS",Futura,system-ui,sans-serif;letter-spacing:.34em;text-transform:uppercase;
+    opacity:.5;transition:opacity .6s var(--slow)}
+  .ctl button:hover,.ctl button[aria-pressed="true"]{opacity:.95}
+  .ctl button:focus-visible{outline:1px solid var(--pale);outline-offset:2px;opacity:1}
+  .ctl .lbl{text-shadow:0 0 12px rgba(1,4,10,.9)}
+  .rays{display:flex;align-items:flex-end;gap:3px;height:16px}
+  .rays u{display:block;width:1px;background:linear-gradient(to top,var(--pale),rgba(57,230,160,.15));height:100%;
+    transform-origin:50% 100%;transform:scaleY(.22);transition:transform 1s var(--slow)}
+  #snd[aria-pressed="true"] .rays u{animation:ray 2.6s var(--drift) infinite alternate}
+  .rays u:nth-child(1){animation-delay:-.3s!important}.rays u:nth-child(2){animation-delay:-1.7s!important}
+  .rays u:nth-child(3){animation-delay:-.9s!important}.rays u:nth-child(4){animation-delay:-2.2s!important}
+  .rays u:nth-child(5){animation-delay:-1.2s!important}.rays u:nth-child(6){animation-delay:-.1s!important}
+  @keyframes ray{0%{transform:scaleY(.2)}45%{transform:scaleY(1)}100%{transform:scaleY(.42)}}
+  .key{display:inline-grid;place-items:center;width:17px;height:17px;border:1px solid rgba(166,240,198,.6);border-radius:3px;
+    letter-spacing:0;font-size:9px;text-indent:.5px;transition:border-color .6s,background .6s}
+  .sep{width:1px;height:14px;background:rgba(166,240,198,.22)}
+  .state{display:inline-block;min-width:2.6em;color:var(--pale)}
+
+  .quiet .plate{opacity:0;transform:translateY(6px)}
+  .quiet #snd,.quiet .sep,.quiet #hide .lbl{opacity:0;pointer-events:none;visibility:hidden}
+  .quiet #hide{opacity:.22}
+  .quiet #hide:hover,.quiet #hide:focus-visible{opacity:.8}
+
+  /* ---------- fallback scene (no WebGL) ---------- */
+  .fb{position:absolute;inset:0;display:none;overflow:hidden;background:linear-gradient(#01040A 0%,#030B14 58%,#062428 66%,#020A12 66.1%,#01040A 100%)}
+  .no-gl .fb{display:block}.no-gl #sky{display:none}
+  .fb .stars{position:absolute;inset:0 0 34% 0}
+  .fb .stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#DDF8E9;animation:tw 4s ease-in-out infinite alternate}
+  @keyframes tw{from{opacity:.15}to{opacity:.9}}
+  .fb .veil{position:absolute;left:-10%;right:-10%;top:0;height:66%;overflow:hidden}
+  .fb .refl{position:absolute;left:-10%;right:-10%;top:66%;height:66%;overflow:hidden;opacity:.5}
+  .fb .refl .tilt{transform:scaleY(-1);filter:blur(6px)}
+  .fb .tilt{position:absolute;inset:0;transform:translateX(calc(var(--wx,0)*2.5%)) skewX(calc(var(--wx,0)*-5deg));transform-origin:50% 100%;
+    transition:transform 3.2s var(--slow),filter 4.5s var(--slow)}
+  .fb .refl .tilt{transform:translateX(calc(var(--wx,0)*2.5%)) scaleY(-1);transform-origin:50% 50%}
+  .fb.surge .tilt{filter:brightness(1.75) saturate(1.25);transition:transform 3.2s var(--slow),filter 1.1s var(--slow)}
+  .fb.surge .refl .tilt{filter:blur(6px) brightness(1.9)}
+  .fb .water{position:absolute;left:0;right:0;top:66%;bottom:0;background:linear-gradient(rgba(11,59,60,.5),rgba(3,11,20,.2) 30%,rgba(1,4,10,.75));
+    -webkit-mask-image:repeating-linear-gradient(#000 0,#000 3px,rgba(0,0,0,.55) 4px,#000 7px);mask-image:repeating-linear-gradient(#000 0,#000 3px,rgba(0,0,0,.55) 4px,#000 7px)}
+  .cur{position:absolute;bottom:9%;height:84%;transform-origin:50% 100%;filter:blur(5px);opacity:0;mix-blend-mode:screen;
+    background:linear-gradient(to top,rgba(166,240,198,0) 0,rgba(166,240,198,.95) 2.5%,rgba(57,230,160,.8) 9%,rgba(57,230,160,.34) 38%,rgba(192,75,217,.2) 72%,rgba(192,75,217,0) 100%);
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent),repeating-linear-gradient(90deg,#000 0,rgba(0,0,0,.25) 7px,#000 11px,rgba(0,0,0,.5) 19px,#000 31px);
+    mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent),repeating-linear-gradient(90deg,#000 0,rgba(0,0,0,.25) 7px,#000 11px,rgba(0,0,0,.5) 19px,#000 31px);
+    -webkit-mask-composite:source-in;mask-composite:intersect;
+    animation:unfurl 3.2s var(--slow) forwards,sway 19s var(--drift) infinite alternate}
+  .cur.c1{left:2%;width:40%;height:70%;bottom:30%;--sk:-7deg;--sk2:-2deg;animation-delay:.4s,0s}
+  .cur.c2{left:34%;width:34%;height:58%;bottom:19%;--sk:3deg;--sk2:8deg;animation-delay:2.2s,-6s;animation-duration:3.2s,25s}
+  .cur.c3{left:56%;width:42%;height:80%;bottom:38%;--sk:-2deg;--sk2:-8deg;animation-delay:3.4s,-11s;animation-duration:3.2s,31s}
+  .cur.c4{left:14%;width:70%;height:34%;bottom:8%;--sk:5deg;--sk2:1deg;animation-delay:4.4s,-3s;animation-duration:3.2s,23s;filter:blur(7px)}
+  @keyframes unfurl{from{opacity:0;clip-path:inset(0 100% 0 0)}to{opacity:.85;clip-path:inset(0 -20% 0 -20%)}}
+  @keyframes sway{0%{transform:skewX(var(--sk)) scaleY(.9) translateX(-3%)}50%{transform:skewX(calc((var(--sk) + var(--sk2))/2)) scaleY(1.06) translateX(2%)}100%{transform:skewX(var(--sk2)) scaleY(.94) translateX(5%)}}
+  .fb svg{position:absolute;left:0;top:0;width:100%;height:100%}
+  .fb svg.r{left:auto;right:0}
+  @media (max-aspect-ratio:4/5){.fb svg{width:230%}}
+  .fb .win{animation:lamp 5s ease-in-out infinite alternate}
+  @keyframes lamp{from{opacity:.82}to{opacity:1}}
+
+  @media (max-width:640px){
+    .plate{left:20px;bottom:76px;max-width:calc(100vw - 40px)}
+    .place{font-size:10px;letter-spacing:.34em}
+    @keyframes rise{from{opacity:0;transform:translateY(8px);letter-spacing:.5em}to{opacity:.7;transform:none;letter-spacing:.34em}}
+    .note{font-size:14.5px}
+    .hint{font-size:8.5px;letter-spacing:.26em}
+    .ctl{right:auto;left:10px;bottom:20px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .cur{animation-duration:6s,95s!important}
+    .fb .stars i,.fb .win{animation:none;opacity:.7}
+    #snd[aria-pressed="true"] .rays u{animation:none;transform:scaleY(.8)}
+    .place,.rule,.ctl{animation-duration:.01s}
+    .note span,.hint,.plate{transition-duration:.01s}
+  }
+</style>
+</head>
+<body>
+<main class="stage" id="stage">
+  <canvas id="sky" tabindex="-1" role="img" aria-label="Aurora borealis hanging in folded green curtains over a dark fjord, with snow-capped mountains, a small cabin with one lit window, and a boat at a jetty."></canvas>
+
+  <div class="fb" id="fb" aria-hidden="true">
+    <div class="stars" id="fbStars"></div>
+    <div class="veil"><div class="tilt" id="fbVeil"><div class="cur c1"></div><div class="cur c2"></div><div class="cur c3"></div><div class="cur c4"></div></div></div>
+    <div class="refl"><div class="tilt" id="fbRefl"></div></div>
+    <div class="water"></div>
+    <svg viewBox="0 0 1600 900" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="fsn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2B3B4A"/><stop offset=".55" stop-color="#16303a"/><stop offset="1" stop-color="#04121a"/></linearGradient>
+        <linearGradient id="ffar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d3037"/><stop offset="1" stop-color="#06202a"/></linearGradient>
+        <radialGradient id="fglow"><stop offset="0" stop-color="#F2B56B" stop-opacity=".55"/><stop offset="1" stop-color="#F2B56B" stop-opacity="0"/></radialGradient>
+        <linearGradient id="fwr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2B56B" stop-opacity=".7"/><stop offset="1" stop-color="#F2B56B" stop-opacity="0"/></linearGradient>
+      </defs>
+      <path fill="url(#ffar)" d="M0 594 L120 560 190 572 300 548 380 566 470 552 560 574 640 566 730 580 820 570 900 578 1010 560 1090 572 1180 556 1290 570 1400 552 1500 566 1600 556 1600 594Z"/>
+      <path fill="url(#fsn)" d="M0 594 L0 330 60 372 104 318 170 402 214 380 268 452 330 430 392 498 450 486 520 540 610 566 700 594Z"/>
+      <path fill="#030d14" d="M0 594 L0 420 46 452 92 428 150 500 204 492 262 546 330 560 420 594Z"/>
+    </svg>
+    <svg class="r" viewBox="0 0 1600 900" preserveAspectRatio="none">
+      <path fill="url(#fsn)" d="M1600 594 L1600 372 1548 410 1500 366 1440 432 1392 420 1330 486 1270 474 1200 532 1120 550 1040 576 960 594Z"/>
+      <path fill="#030d14" d="M1600 594 L1600 470 1540 500 1480 482 1420 536 1350 544 1280 594Z"/>
+      <!-- near shore, cabin, jetty, boat -->
+      <path fill="#0d1a22" d="M1010 640 L1090 632 1180 626 1290 612 1400 600 1500 588 1600 574 1600 640Z"/>
+      <path fill="#030a0f" d="M1380 603 l6 -22 6 20 5 -30 7 28 6 -22 6 20 80 -12 5 -26 6 24 6 -32 7 30 6 -22 6 20 22 -6 0 22 -181 20Z"/>
+      <circle cx="1278" cy="602" r="60" fill="url(#fglow)"/>
+      <path fill="#07090b" d="M1262 616 v-22 l22 -15 22 15 v22Z"/>
+      <path fill="#2B3B4A" d="M1257 596 l27 -19 27 19 -3 3 -24 -17 -24 17Z"/>
+      <rect x="1294" y="576" width="5" height="10" fill="#07090b"/>
+      <rect class="win" x="1270" y="600" width="9" height="9" fill="#F2B56B"/>
+      <rect x="1270" y="640" width="9" height="70" fill="url(#fwr)" opacity=".7"/>
+      <path stroke="#070d12" stroke-width="3" fill="none" d="M930 634 H1030 M940 634 v8 M965 634 v8 M990 634 v8 M1015 634 v8"/>
+      <path fill="#05090d" d="M880 634 h44 l-6 9 h-32Z M898 634 v-10 h14 v10Z M892 634 v-22 h1.6 v22Z"/>
+    </svg>
+  </div>
+
+  <div class="plate" id="plate">
+    <p class="place">Skjervøy Sound <i>·</i>69°N</p>
+    <span class="rule"></span>
+    <p class="note" aria-live="polite"><span id="note"></span></p>
+    <p class="hint" id="hint"></p>
+  </div>
+
+  <div class="ctl">
+    <button id="snd" type="button" aria-pressed="false" aria-label="Sound: wind and aurora crackle">
+      <span class="rays" aria-hidden="true"><u></u><u></u><u></u><u></u><u></u><u></u></span>
+      <span class="lbl">Sound <span class="state" id="sndState">off</span></span>
+    </button>
+    <span class="sep" aria-hidden="true"></span>
+    <button id="hide" type="button" aria-pressed="false" aria-label="Hide text (H)">
+      <span class="key" aria-hidden="true">H</span><span class="lbl">Hide text</span>
+    </button>
+  </div>
+</main>
+
+<script id="vs" type="x-shader/x-vertex">
+attribute vec2 a;
+void main(){ gl_Position = vec4(a, 0.0, 1.0); }
+</script>
+
+<script id="fs" type="x-shader/x-fragment">
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+uniform vec2  uRes;
+uniform float uZoom;
+uniform float uTime;    // slow scene clock: water, smoke, twinkle
+uniform float uPhase;   // aurora clock, runs faster during a substorm
+uniform float uAct;     // global activity 0..1
+uniform float uSteps;
+uniform vec2  uPtr;     // solar wind: x in scene units, amount
+uniform vec3  uSurge;   // origin x, front radius, strength
+uniform vec3  uRev;     // entrance of the three curtains
+uniform vec4  uMet;     // meteor: start xy, progress, angle
+uniform float uCss;     // scene units per CSS pixel
+
+const float FOC = 0.85;
+const float H0  = 1.0;   // altitude of the lower border
+const float HH  = 1.55;  // height of the rays
+const vec3 SKY0 = vec3(0.012, 0.043, 0.078);
+const vec3 SKY1 = vec3(0.004, 0.016, 0.039);
+const vec3 TEAL = vec3(0.043, 0.231, 0.235);
+const vec3 GRN  = vec3(0.224, 0.902, 0.627);
+const vec3 PALE = vec3(0.651, 0.941, 0.776);
+const vec3 VIO  = vec3(0.753, 0.294, 0.851);
+const vec3 SNOW = vec3(0.169, 0.231, 0.290);
+const vec3 WARM = vec3(0.949, 0.710, 0.420);
+
+float HY, HW, PX;
+
+float h11(float p){ p = fract(p * 0.1031); p *= p + 33.33; p *= p + p; return fract(p); }
+float h21(vec2 p){ vec3 q = fract(vec3(p.xyx) * 0.1031); q += dot(q, q.yzx + 33.33); return fract((q.x + q.y) * q.z); }
+float n1(float x){ float i = floor(x), f = fract(x); f = f * f * (3.0 - 2.0 * f); return mix(h11(i), h11(i + 1.0), f); }
+float n2(vec2 x){
+  vec2 i = floor(x), f = fract(x); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(h21(i), h21(i + vec2(1.0, 0.0)), f.x), mix(h21(i + vec2(0.0, 1.0)), h21(i + vec2(1.0, 1.0)), f.x), f.y);
+}
+float fbm2(vec2 p){
+  float s = 0.0, a = 0.5;
+  for (int i = 0; i < 4; i++){ s += a * n2(p); p = p * 2.03 + vec2(17.3, 9.1); a *= 0.5; }
+  return s;
+}
+float ridge(float x, float seed){
+  float s = 0.0, a = 0.52, f = 1.0;
+  for (int i = 0; i < 6; i++){
+    float n = 1.0 - abs(2.0 * n1(x * f + seed) - 1.0);
+    s += a * n * n; f *= 2.07; a *= 0.47; seed += 7.31;
+  }
+  return s;
+}
+
+float surgeAt(float x){
+  float d = abs(x - uSurge.x);
+  float behind = 1.0 - smoothstep(uSurge.y - 0.34, uSurge.y + 0.04, d);
+  float crest = exp(-pow((d - uSurge.y) / 0.15, 2.0));
+  return uSurge.z * (0.72 * behind + 0.85 * crest);
+}
+float windAt(float x){ float d = (x - uPtr.x) / 0.3; return uPtr.y * exp(-d * d); }
+float glowAt(float x){
+  return (0.22 + uAct * 0.85 + surgeAt(x) * 1.5 + windAt(x) * 0.45) * (0.15 + 0.85 * uRev.x);
+}
+
+/* light of one curtain at a point on its sheet: ss = position along the ribbon, hn = height 0..1 */
+vec3 shade(float ss, float hn, float ts, float k, float ph, float act){
+  if (hn < -0.09 || hn > 1.0) return vec3(0.0);
+  float ac = min(act, 1.0);
+  float tall = n1(ss * 0.9 - ph * 0.5 + k * 3.3);
+  float fine = 1.0 / (1.0 + ts * 0.12);
+  float ry = n1(ss * 7.0 + ph * 1.3 + k * 31.0) * 0.5 + n1(ss * 19.0 - ph * 2.1 + k * 13.0) * 0.32 + mix(0.5, n1(ss * 47.0 + ph * 3.0), fine) * 0.18;
+  ry = mix(0.55, ry * ry * 3.6, 0.62 + 0.3 * ac);
+  float patch = smoothstep(0.16, 0.6, n1(ss * 0.42 + ph * 0.33 + k * 41.0) + act * 0.4);
+  float len = mix(8.5, 2.4, tall * (0.5 + 0.5 * ac));
+  float prof = hn > 0.0 ? smoothstep(0.0, 0.012, hn) * (exp(-hn * len) + 1.1 * exp(-hn * 30.0)) + 0.5 * exp(-hn * 90.0)
+                        : 0.5 * exp(hn * 55.0);
+  float vio = smoothstep(0.12, 0.6, hn) * (0.15 + 0.85 * n1(ss * 0.6 + ph * 0.4 + k * 77.0)) * (0.38 + 0.55 * act);
+  vio = clamp(vio, 0.0, 1.0);
+  vec3 c = mix(GRN, VIO, vio) * (1.0 + vio * 2.3);
+  return c * (prof * ry * patch * exp(-ts * 0.09) * (1.0 - smoothstep(0.8, 1.0, hn)));
+}
+
+/* one curtain: a thin luminous sheet standing on a folded line in the ground plane.
+   The view ray is walked along the ground; every crossing of the sheet is found exactly,
+   so the lower border stays sharp and the folds overlap as they do in the sky.
+   Grazing passes (a fold seen edge-on) are caught as near misses. */
+vec3 curtain(vec2 p, float y, float N, float k, float ang, float Z, float A, float F, float sp, float wdt, float act){
+  float ca = cos(ang), sa = sin(ang);
+  float R = -sa * p.x + ca * FOC;
+  if (R < 0.06) return vec3(0.0);
+  float L = length(vec2(p.x, FOC));
+  float ta = (Z - A * 0.9 - 0.05) / R;
+  float tb = (Z + A * 0.9 + 0.6) / R;
+  if ((H0 + HH) / y < ta || (H0 - 0.08 * HH) / y > tb) return vec3(0.0);
+  float dt = (tb - ta) / N;
+  float ph = uPhase * sp;
+  float edge = wdt / 0.17;
+  vec3 acc = vec3(0.0);
+  float gp = 0.0, gpp = 0.0, sprev = 0.0;
+  for (int i = 0; i <= 26; i++){
+    if (float(i) > N) break;
+    float t = ta + dt * float(i);
+    vec2 q = vec2(p.x, FOC) * t;
+    float dx = q.x - uPtr.x * t;
+    float w = uPtr.y * exp(-dx * dx / (0.11 * q.y * q.y + 0.04));
+    q.x -= dx * 0.42 * w;
+    q.y -= 0.5 * w;
+    float s = ca * q.x + sa * q.y;
+    float fold = (n1(s * F + ph + k * 17.3) - 0.5) * A
+               + (n1(s * F * 2.7 - ph * 1.6 + k * 5.1) - 0.5) * A * 0.42
+               + (n1(s * F * 6.3 + ph * 2.3 + k * 9.7) - 0.5) * A * 0.11 * (1.0 + act);
+    float G = -sa * q.x + ca * q.y - Z - fold;
+    if (i > 0 && G * gp < 0.0){
+      float f = gp / (gp - G);
+      float ts = t - dt * (1.0 - f);
+      float slope = abs(G - gp) / (dt * L);
+      acc += shade(mix(sprev, s, f), (y * ts - H0) / HH, ts, k, ph, act) * min(wdt / max(slope, 0.001), edge);
+    } else if (i > 1 && gp * gpp > 0.0 && (gp - gpp) * (G - gp) < 0.0){
+      float cv = G - 2.0 * gp + gpp;
+      float gm = gp - (G - gpp) * (G - gpp) / (8.0 * cv);
+      float ts = t - dt;
+      float amt = 2.0 * edge * exp(-gm * gm / (wdt * wdt * 1.4));
+      if (gm * gp <= 0.0) amt = 2.0 * min(wdt * dt * L / max(sqrt(2.0 * abs(gm * cv)), 0.0001), edge);
+      acc += shade(sprev, (y * ts - H0) / HH, ts, k, ph, act) * amt;
+    }
+    gpp = gp; gp = G; sprev = s;
+  }
+  return acc;
+}
+
+vec3 aurora(vec2 p, float N, out float lum){
+  float y = max(p.y - HY, 0.0) + 0.004;
+  float sg = surgeAt(p.x), wd = windAt(p.x);
+  float act = clamp(uAct + sg * 0.7, 0.0, 1.7);
+  float m0 = smoothstep(0.0, 1.0, (uRev.x * (2.0 * HW + 0.8) - (p.x + HW)) / 0.8);
+  float m1 = smoothstep(0.0, 1.0, (uRev.y * (2.0 * HW + 0.8) - (HW - p.x)) / 0.8);
+  float m2 = uRev.z;
+  vec3 acc = vec3(0.0);
+  if (m0 > 0.001) acc += m0 * curtain(p, y, N, 0.0,  0.62, 3.0, 1.25, 0.34, 0.50, 0.085, act);
+  if (m1 > 0.001) acc += m1 * curtain(p, y, N, 1.0, -0.30, 2.0, 1.05, 0.29, 0.36, 0.085, act) * 0.8;
+  if (m2 > 0.001) acc += m2 * curtain(p, y, N, 2.0,  0.10, 6.0, 1.70, 0.21, 0.27, 0.110, act) * 1.1;
+  acc *= 7.5 * (0.42 + 1.05 * uAct) * (1.0 + 1.0 * wd + 0.95 * sg);
+  lum = dot(acc, vec3(0.3, 0.6, 0.1));
+  acc = mix(acc, PALE * lum * 1.1, smoothstep(0.6, 2.2, lum) * 0.8);
+  return 1.0 - exp(-acc * 1.3);
+}
+
+float starLayer(vec2 p, float sc, float thr, float rad){
+  sc /= uCss * 900.0;
+  vec2 g = p * sc, id = floor(g), f = fract(g) - 0.5;
+  float h = h21(id);
+  if (h < thr) return 0.0;
+  vec2 o = vec2(h21(id + 3.17), h21(id + 7.71)) - 0.5;
+  float d = length(f - o * 0.7) / (sc * max(PX, uCss * 0.7) * rad);
+  float b = (h - thr) / (1.0 - thr);
+  float tw = 0.72 + 0.28 * sin(uTime * (0.8 + h * 5.0) + h * 91.0);
+  return exp(-d * d) * (0.12 + b * b * 0.95) * tw * min(1.0, uCss * 0.9 / PX);
+}
+
+/* four mountain layers, back to front; rgb premixed, a = coverage */
+vec4 mountains(vec2 p, float gl){
+  float y = p.y - HY;
+  float xn = p.x / HW;
+  vec4 o = vec4(0.0);
+  float e = PX * 1.2;
+  // far range across the mouth of the sound
+  float hF = (0.02 + 0.075 * ridge(p.x * 2.6 + 3.0, 1.0)) * mix(0.5, 1.0, smoothstep(0.0, 0.55, abs(xn + 0.08)));
+  // right flank, left flank, the near massif on the far left
+  float hR = smoothstep(0.1, 1.05, xn) * (0.05 + 0.4 * ridge(p.x * 2.1 + 40.0, 4.0));
+  float hL = (1.0 - smoothstep(-0.98, -0.02, xn)) * (0.06 + 0.42 * ridge(p.x * 1.7 + 11.0, 2.0));
+  float hN = (1.0 - smoothstep(-1.2, -0.42, xn)) * (0.12 + 0.62 * ridge(p.x * 1.25 + 71.0, 9.0));
+  if (y > max(max(hF, hR), max(hL, hN)) + e) return o;
+  float st1 = n2(vec2((p.x + y * 0.9) * 26.0, y * 9.0));
+  float st2 = n2(vec2((p.x - y * 0.55 * sign(p.x)) * 95.0, y * 15.0));
+  float st3 = n2(vec2(p.x * 190.0, y * 60.0));
+  vec3 hazeC = vec3(0.016, 0.062, 0.072) * (0.7 + gl * 0.7);
+  // far
+  {
+    float a = 1.0 - smoothstep(hF - e, hF + e, y);
+    float sn = smoothstep(0.0, 0.03, y - 0.022 + (st1 - 0.5) * 0.03);
+    vec3 c = mix(vec3(0.008, 0.022, 0.03), SNOW * (0.5 + 0.3 * st1) + GRN * gl * 0.08, sn);
+    c = mix(c, hazeC, 0.5);
+    o = vec4(c, a);
+  }
+  // right
+  {
+    float a = 1.0 - smoothstep(hR - e, hR + e, y);
+    float sn = smoothstep(0.0, 0.05, y - 0.035 + (st1 - 0.5) * 0.07 + (st2 - 0.5) * 0.035) * smoothstep(0.22, 0.42, st2 + st3 * 0.25);
+    vec3 c = mix(vec3(0.006, 0.017, 0.024), SNOW * (0.4 + 0.75 * st1) + GRN * gl * (0.06 + 0.16 * st1), sn);
+    c += GRN * gl * 0.1 * (1.0 - smoothstep(0.0, 0.012, hR - y));
+    c = mix(c, hazeC, 0.2);
+    o.rgb = mix(o.rgb, c, a); o.a = o.a + a * (1.0 - o.a);
+  }
+  // left
+  {
+    float a = 1.0 - smoothstep(hL - e, hL + e, y);
+    float sn = smoothstep(0.0, 0.05, y - 0.035 + (st1 - 0.5) * 0.07 + (st2 - 0.5) * 0.035) * smoothstep(0.22, 0.42, st2 + st3 * 0.25);
+    vec3 c = mix(vec3(0.006, 0.017, 0.024), SNOW * (0.4 + 0.75 * (1.0 - st1)) + GRN * gl * (0.06 + 0.16 * (1.0 - st1)), sn);
+    c += GRN * gl * 0.1 * (1.0 - smoothstep(0.0, 0.012, hL - y));
+    c = mix(c, hazeC, 0.2);
+    o.rgb = mix(o.rgb, c, a); o.a = o.a + a * (1.0 - o.a);
+  }
+  // near massif
+  {
+    float a = 1.0 - smoothstep(hN - e, hN + e, y);
+    float sn = smoothstep(0.0, 0.07, y - 0.06 + (st1 - 0.5) * 0.1 + (st2 - 0.5) * 0.05) * smoothstep(0.3, 0.5, st2 + st3 * 0.3);
+    vec3 c = mix(vec3(0.004, 0.011, 0.016), SNOW * (0.3 + 0.7 * (1.0 - st1)) + GRN * gl * (0.05 + 0.15 * (1.0 - st1)), sn);
+    c += GRN * gl * 0.12 * (1.0 - smoothstep(0.0, 0.009, hN - y));
+    o.rgb = mix(o.rgb, c, a); o.a = o.a + a * (1.0 - o.a);
+  }
+  return o;
+}
+
+/* everything above the horizon: sky, stars, aurora, mountains */
+vec3 above(vec2 p, float N, float full){
+  float y = max(p.y - HY, 0.0);
+  float gl = glowAt(p.x);
+  vec4 mt = mountains(p, gl);
+  if (mt.a > 0.997) return mt.rgb;
+  vec3 col = mix(SKY0, SKY1, smoothstep(0.0, 0.72, y));
+  float lum;
+  vec3 au = aurora(p, N, lum);
+  // spruce-teal glow haze pooling at the horizon
+  col += TEAL * exp(-y * 6.5) * (0.22 + 0.5 * gl);
+  col += TEAL * 0.1 * gl * exp(-y * 1.6);
+  // Milky Way
+  float mw = dot(p - vec2(-0.22, HY + 0.42), vec2(0.82, -0.57));
+  float band = exp(-mw * mw / 0.014);
+  float dust = fbm2(p * 5.0 + 3.0);
+  if (full > 0.5){
+    col += vec3(0.5, 0.62, 0.8) * band * (0.012 + 0.05 * dust * dust) * smoothstep(0.0, 0.2, y);
+    float dim = (1.0 - clamp(lum * 1.6, 0.0, 0.92)) * smoothstep(0.0, 0.1, y);
+    float st = starLayer(p, 44.0, 0.8 - band * 0.2, 1.15) * 1.2
+             + starLayer(p + 7.3, 96.0, 0.74 - band * 0.4, 0.85) * 0.55
+             + starLayer(p - 3.1, 15.0, 0.88, 1.55) * 1.7;
+    col += vec3(0.82, 0.92, 1.0) * st * dim;
+    // thin high haze
+    float hz = fbm2(vec2(p.x * 1.3 + uTime * 0.006, y * 8.0 - uTime * 0.002));
+    col += (TEAL * 0.5 + GRN * 0.05 * gl) * smoothstep(0.45, 0.85, hz) * 0.22 * exp(-y * 2.6);
+    // meteor
+    if (uMet.z > 0.0 && uMet.z < 1.0){
+      vec2 dir = vec2(cos(uMet.w), sin(uMet.w));
+      vec2 head = uMet.xy + dir * 0.42 * uMet.z;
+      vec2 rel = p - head;
+      float al = -dot(rel, dir);
+      float pr = dot(rel, vec2(-dir.y, dir.x));
+      float tail = 0.03 + 0.13 * sin(3.1416 * uMet.z);
+      float body = exp(-pr * pr / (PX * PX * 1.6)) * smoothstep(tail, 0.0, al) * step(0.0, al);
+      float hd = exp(-dot(rel, rel) / (PX * PX * 5.0));
+      col += vec3(0.86, 1.0, 0.92) * (body * 0.9 + hd) * sin(3.1416 * uMet.z);
+    }
+  }
+  col += au;
+  return mix(col, mt.rgb, mt.a);
+}
+
+/* near shore on the right: returns top of snow ground and top including spruces */
+float landTop(float x, float x0, float yb, float cx, out float ground){
+  float hx = x - x0;
+  ground = yb - 0.01;
+  if (hx < 0.0) return ground;
+  ground = yb + smoothstep(0.0, 0.05, hx) * 0.007 + hx * 0.12 * (0.7 + 0.6 * n1(x * 9.0 + 2.0));
+  float tx = x * 150.0, id = floor(tx), f = fract(tx);
+  float th = h11(id + 5.0) * 0.7 + 0.3 * h11(id * 1.7 + 2.0);
+  float tree = (1.0 - abs(2.0 * f - 1.0)) * (0.008 + 0.026 * th) * step(0.2, h11(id + 9.0)) * smoothstep(0.25, 0.55, n1(x * 17.0 + 4.0) + 0.25 * h11(id + 2.0));
+  float clear = smoothstep(0.035, 0.075, abs(x - cx - 0.006)) * smoothstep(0.03, 0.11, hx);
+  return ground + tree * clear;
+}
+
+void main(){
+  vec2 fc = gl_FragCoord.xy;
+  float asp = uRes.x / uRes.y;
+  vec2 p = (fc / uRes - 0.5) * vec2(asp, 1.0) * uZoom;
+  HW = 0.5 * asp * uZoom; HY = -0.17 * uZoom; PX = uZoom / uRes.y;
+
+  float x0 = 0.24 * HW, yb = HY - 0.046, cx = x0 + (HW - x0) * 0.5;
+  float ground, gdummy;
+  float top = landTop(p.x, x0, yb, cx, ground);
+  float gl = glowAt(p.x);
+  vec3 col;
+
+  if (p.y > yb && p.y < top && p.x > x0){
+    // the near shore
+    if (p.y < ground){
+      float sh = n2(vec2(p.x * 46.0, p.y * 210.0));
+      col = SNOW * (0.3 + 0.2 * sh) * (0.75 + 0.5 * smoothstep(yb, ground, p.y)) + GRN * gl * (0.035 + 0.05 * sh);
+    } else {
+      col = vec3(0.004, 0.012, 0.014) + GRN * gl * 0.012;
+    }
+  } else if (p.y >= HY){
+    col = above(p, uSteps, 1.0);
+  } else {
+    // the sound: a mirrored, rippled, vertically smeared sample of everything above
+    float d = HY - p.y;
+    float zz = 1.0 / (d + 0.014);
+    float fx = 1.0 / (0.004 + 0.075 * d);
+    vec2 w = vec2(p.x * fx, 111.1 * log(0.0028 + 0.009 * d));
+    float r2 = n2(w * vec2(0.21, 0.13) - vec2(uTime * 0.1, uTime * 0.26));
+    float r3 = n2(vec2(p.x * 7.0 + uTime * 0.08, zz * 0.45 - uTime * 0.13));
+    float calm = 0.45 + 1.0 * r3;
+    float rip = 0.0;
+    col = vec3(0.0);
+    for (int k = 0; k < 3; k++){
+      float fk = float(k);
+      float r1 = n2(w * (1.0 + fk * 0.37) + vec2(uTime * 0.3 + fk * 13.7, uTime * (0.9 + fk * 0.35) + fk * 5.3));
+      float rk = (r1 + 0.4 * r2) / 1.4 - 0.5;
+      vec2 rp = vec2(p.x + rk * 0.006 * calm, HY + max(d * 0.62 + rk * (d * 0.62 + 0.003) * calm, 0.0006));
+      col += above(rp, floor(uSteps * 0.55), 0.0);
+      rip += rk;
+    }
+    col /= 3.0; rip /= 3.0;
+    col *= mix(0.92, 0.4, smoothstep(0.0, 0.42, d));
+    col *= 1.0 + 0.45 * smoothstep(0.04, 0.2, rip);
+    col += vec3(0.002, 0.007, 0.012);
+    col *= 1.0 - 0.5 * exp(-d * 260.0);
+    if (p.y < yb){
+      float m = yb - p.y;
+      float g2;
+      float xr = p.x + rip * 0.006;
+      float tr = landTop(xr, x0, yb, cx, g2);
+      float my = yb + m * 0.9 + rip * (m * 0.5 + 0.002);
+      if (xr > x0 && my < tr){
+        vec3 lc = my < g2 ? SNOW * 0.2 + GRN * gl * 0.03 : vec3(0.004, 0.011, 0.013);
+        col = mix(col, lc, 0.86 * exp(-m * 5.0));
+      }
+      // the window, again, in the water
+      float wx = cx - 0.0075;
+      float dxw = p.x - wx + rip * 0.01;
+      float sp = 0.004 + m * 0.035;
+      float glit = 0.3 + 0.7 * n2(vec2(p.x * 260.0, zz * 9.0 - uTime * 1.6));
+      col += WARM * exp(-dxw * dxw / (sp * sp)) * exp(-m * 11.0) * smoothstep(0.0, 0.006, m) * glit * 0.62;
+    }
+  }
+
+  // ---- cabin ----
+  float sc = 0.021;
+  float gC; landTop(cx, x0, yb, cx, gC);
+  vec2 c = (p - vec2(cx, gC - 0.002)) / sc;
+  if (abs(c.x) < 1.6 && c.y > -0.2 && c.y < 2.2){
+    float roofY = 0.8 + (1.22 - abs(c.x)) * 0.6;
+    bool wall = abs(c.x) < 1.0 && c.y > 0.0 && c.y <= 0.82;
+    bool roof = c.y > 0.78 && c.y < roofY && abs(c.x) < 1.22;
+    bool chim = c.x > 0.42 && c.x < 0.66 && c.y > 0.8 && c.y < 1.62;
+    vec2 wq = c - vec2(-0.36, 0.42);
+    if (chim) col = vec3(0.014, 0.014, 0.016) + (c.y > 1.54 ? SNOW * 0.5 : vec3(0.0));
+    if (wall){
+      col = vec3(0.03, 0.019, 0.015) * (0.8 + 0.4 * step(0.5, fract(c.y * 5.5)));
+      if (c.x > 0.3 && c.x < 0.64 && c.y < 0.6) col = vec3(0.016, 0.011, 0.01);
+      col += WARM * 0.05 * exp(-length(wq) * 1.6);
+    }
+    if (roof){
+      float snowR = smoothstep(0.26, 0.16, roofY - c.y);
+      col = mix(vec3(0.012, 0.012, 0.014), SNOW * 0.8 + GRN * gl * 0.12, snowR);
+    }
+    if (wall && abs(wq.x) < 0.23 && abs(wq.y) < 0.21){
+      float flick = 0.9 + 0.1 * n1(uTime * 1.7);
+      col = WARM * flick * (0.86 + 0.2 * (1.0 - length(wq) * 2.0));
+      if (abs(wq.x) < 0.028 || abs(wq.y) < 0.028) col *= 0.22;
+    }
+  }
+  {
+    // lamplight on the air and on the snow
+    vec2 wp = (p - vec2(cx - 0.0075, gC + 0.0068)) / sc;
+    col += WARM * 0.16 * exp(-length(wp) * 2.6);
+    if (p.y < ground && p.y > yb && p.x > x0) col += WARM * 0.2 * exp(-length((wp + vec2(0.0, 0.6)) * vec2(0.8, 2.6)) * 1.5);
+    // chimney smoke, a single thread
+    float sy = c.y - 1.62;
+    if (sy > 0.0 && sy < 16.0){
+      float cxs = 0.54 + sy * 0.05 + (n1(sy * 0.55 - uTime * 0.22) - 0.5) * min(sy, 6.0) * 0.36;
+      float wd = 0.07 + sy * 0.035;
+      float a = exp(-pow((c.x - cxs) / wd, 2.0)) * exp(-sy * 0.2) * smoothstep(0.0, 0.5, sy) * (0.55 + 0.45 * n1(sy * 1.4 - uTime * 0.5));
+      col = mix(col, vec3(0.26, 0.33, 0.37) + GRN * gl * 0.14, a * 0.55);
+    }
+  }
+
+  // ---- jetty and boat ----
+  {
+    float j0 = x0 - 0.082, j1 = x0 + 0.03;
+    float dk = yb + 0.0052;
+    if (p.x > j0 && p.x < j1){
+      if (p.y > dk - 0.0017 && p.y < dk + 0.0009) col = p.y > dk ? SNOW * 0.55 + GRN * gl * 0.06 : vec3(0.008, 0.012, 0.014);
+      float px2 = mod(p.x - j0 - 0.004, 0.0185);
+      if (px2 < 0.0016 && p.y <= dk - 0.0017 && p.y > yb - 0.0035) col = vec3(0.008, 0.012, 0.014);
+      if (p.y < yb - 0.0035 && p.y > yb - 0.03) col *= 1.0 - 0.45 * exp(-(yb - 0.0035 - p.y) * 110.0);
+    }
+    float bob = sin(uTime * 0.9) * 0.0007;
+    vec2 b = (p - vec2(j0 - 0.027, yb - 0.0022 + bob)) / 0.021;
+    b.y -= b.x * 0.03 * sin(uTime * 0.7);
+    if (abs(b.x) < 1.3 && b.y > -1.4 && b.y < 2.0){
+      float sheer = 0.36 + 0.1 * b.x * b.x - 0.05 * b.x;
+      bool hull = b.y > 0.0 && b.y < sheer && b.x > -1.0 + (sheer - b.y) * 0.5 && b.x < 1.12 - (sheer - b.y) * 1.1;
+      bool house = b.x > -0.62 && b.x < -0.12 && b.y >= 0.3 && b.y < 0.8;
+      bool mast = abs(b.x - 0.12) < 0.03 && b.y >= 0.3 && b.y < 1.5;
+      if (hull) col = b.y > sheer - 0.1 ? SNOW * 0.75 + GRN * gl * 0.07 : vec3(0.007, 0.011, 0.013);
+      if (house) col = b.y > 0.72 ? SNOW * 0.6 : vec3(0.012, 0.016, 0.018);
+      if (mast) col = vec3(0.012, 0.016, 0.018);
+      if (b.y < 0.0 && abs(b.x) < 1.05) col *= 1.0 - 0.6 * exp(b.y * 3.2) * (1.0 - smoothstep(0.7, 1.05, abs(b.x)));
+    }
+  }
+
+  // lens falloff and a breath of grain to keep the dark gradients whole
+  vec2 v = fc / uRes - 0.5;
+  col *= 1.0 - 0.55 * dot(v, v);
+  col += (h21(fc + fract(uTime * 7.13) * 91.0) - 0.5) * 0.012;
+  gl_FragColor = vec4(max(col, 0.0), 1.0);
+}
+</script>
+
+<script>
+(function(){
+  'use strict';
+  var root = document.documentElement;
+  var stage = document.getElementById('stage');
+  var cv = document.getElementById('sky');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var calm = reduce.matches;
+  var onReduce = function(e){ calm = e.matches; };
+  if (reduce.addEventListener) reduce.addEventListener('change', onReduce); else if (reduce.addListener) reduce.addListener(onReduce);
+
+  /* ---------------- observer's notebook ---------------- */
+  var NOTES = [
+    'the dog has stopped barking',
+    'frost on the tripod legs. Left it out anyway',
+    'a faint arc low in the north, pale as breath',
+    'the water is so still the stars are in it',
+    'rays now, tall ones, standing over Blåtind',
+    'coffee gone cold. Did not notice when',
+    'Ingrid’s lamp is the only light on the whole shore',
+    'the curtain folded over itself like cloth',
+    'a seal came up by the jetty, looked, went under',
+    'violet along the top edge, only for a minute',
+    'minus fourteen. The snow squeaks',
+    'heard it, I think. A hiss, like silk drawn over wood',
+    'the mooring ropes creak when the tide turns',
+    'it has gone quiet again. Waiting',
+    'smoke going straight up. No wind at all down here',
+    'grandmother said you must never whistle at it',
+    'it moves the way a thought does',
+    'wrote nothing for ten minutes. Just looked',
+    'the far range is showing its snow, faintly green',
+    'fingers too stiff for the pencil. Carrying on'
+  ];
+  var SURGE_NOTES = [
+    'the whole sound went green. I could read my watch by it',
+    'it broke open overhead — everything at once',
+    'the snow on Blåtind lit up like a lampshade',
+    'I said something out loud. Nobody here to hear it',
+    'the water caught fire, cold fire, shore to shore',
+    'the dog is barking again'
+  ];
+  var noteEl = document.getElementById('note');
+  var hintEl = document.getElementById('hint');
+  var clock = 23 * 60 + 41, noteIdx = 0, surgeIdx = 0, noteTimer = 0, pendingSurgeNote = false;
+  function stamp(){ var h = Math.floor(clock / 60) % 24, m = clock % 60; return (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m; }
+  function showNote(text){
+    noteEl.classList.remove('on');
+    setTimeout(function(){
+      noteEl.textContent = '';
+      var b = document.createElement('b'); b.textContent = stamp();
+      noteEl.appendChild(b);
+      noteEl.appendChild(document.createTextNode('— ' + text));
+      noteEl.classList.add('on');
+    }, calm ? 30 : 2000);
+  }
+  function nextNote(){
+    clearTimeout(noteTimer);
+    var text;
+    if (pendingSurgeNote){ text = SURGE_NOTES[surgeIdx++ % SURGE_NOTES.length]; pendingSurgeNote = false; }
+    else { text = NOTES[noteIdx++ % NOTES.length]; }
+    showNote(text);
+    clock += 2 + Math.floor(Math.random() * 6);
+    noteTimer = setTimeout(nextNote, 15000 + Math.random() * 5000);
+  }
+  noteTimer = setTimeout(nextNote, 2600);
+
+  var coarse = window.matchMedia('(pointer: coarse)').matches;
+  hintEl.innerHTML = (coarse ? '<em>Drag</em> to stir the solar wind' : '<em>Move</em> to stir the solar wind') +
+    (calm ? '' : ' &nbsp;·&nbsp; <em>' + (coarse ? 'tap' : 'click') + '</em> for a substorm');
+  var hintGone = false;
+  setTimeout(function(){ if (!hintGone) hintEl.classList.add('on'); }, 7500);
+  function dropHint(){ if (hintGone) return; hintGone = true; setTimeout(function(){ hintEl.classList.remove('on'); }, 2500); }
+
+  /* ---------------- text toggle ---------------- */
+  var hideBtn = document.getElementById('hide');
+  function toggleText(){
+    var q = root.classList.toggle('quiet');
+    hideBtn.setAttribute('aria-pressed', q ? 'true' : 'false');
+    hideBtn.setAttribute('aria-label', q ? 'Show text (H)' : 'Hide text (H)');
+  }
+  hideBtn.addEventListener('click', function(e){ e.stopPropagation(); toggleText(); });
+
+  /* ---------------- scene state ---------------- */
+  var S = { ptrX: 0, ptrTarget: 0, ptrAmt: 0, lastMove: -1e9, surge: null, surgeEnv: 0, phase: 40, time: 0,
+            nextNatural: 26 + Math.random() * 10, met: null, nextMet: 16 + Math.random() * 12 };
+  var W = 1, H = 1, zoom = 1, asp = 1;
+  function measure(){
+    W = Math.max(1, window.innerWidth); H = Math.max(1, window.innerHeight);
+    asp = W / H; zoom = Math.min(1.5, Math.max(1, 1.05 / asp));
+  }
+  measure();
+  function sceneX(clientX){ return (clientX / W - 0.5) * asp * zoom; }
+  function startSurge(x, strength){
+    if (calm) return;
+    if (fbSurge) fbSurge();
+    S.surge = { x: x, t: 0, k: strength };
+    pendingSurgeNote = true;
+    clearTimeout(noteTimer); noteTimer = setTimeout(nextNote, 4200);
+    if (audio) audio.surge(strength);
+  }
+  stage.addEventListener('pointermove', function(e){
+    S.ptrTarget = sceneX(e.clientX); S.lastMove = performance.now();
+  }, { passive: true });
+  stage.addEventListener('pointerdown', function(e){
+    S.ptrTarget = sceneX(e.clientX); S.lastMove = performance.now();
+  }, { passive: true });
+  stage.addEventListener('click', function(e){
+    if (e.target.closest && e.target.closest('button')) return;
+    startSurge(sceneX(e.clientX), 1); dropHint();
+  });
+  window.addEventListener('keydown', function(e){
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    var k = e.key.toLowerCase();
+    if (k === 'h'){ toggleText(); }
+    else if ((k === ' ' || k === 'enter') && !(document.activeElement && document.activeElement.tagName === 'BUTTON')){
+      e.preventDefault(); startSurge(S.ptrX, 1); dropHint();
+    } else if (k === 'arrowleft' || k === 'arrowright'){
+      S.ptrTarget = Math.max(-asp * zoom / 2, Math.min(asp * zoom / 2, S.ptrTarget + (k === 'arrowleft' ? -0.16 : 0.16)));
+      S.lastMove = performance.now();
+    }
+  });
+
+  function ease(x){ x = Math.max(0, Math.min(1, x)); return x * x * x * (x * (6 * x - 15) + 10); }
+  function step(dt, now){
+    var ts = calm ? 0.2 : 1;
+    S.time += dt * ts;
+    // solar wind: slow, heavy easing
+    var active = (now - S.lastMove) < 3800;
+    S.ptrX += (S.ptrTarget - S.ptrX) * (1 - Math.exp(-dt * 1.15));
+    S.ptrAmt += ((active ? 1 : 0) - S.ptrAmt) * (1 - Math.exp(-dt * (active ? 0.8 : 0.3)));
+    if (active && S.ptrAmt > 0.5) dropHint();
+    // substorm
+    var env = 0;
+    if (S.surge){
+      var s = S.surge; s.t += dt;
+      env = s.k * ease(s.t / 0.7) * (s.t < 4.2 ? 1 : Math.exp(-(s.t - 4.2) / 3.4));
+      if (s.t > 24) S.surge = null;
+    }
+    S.surgeEnv = env;
+    if (!calm){
+      S.nextNatural -= dt;
+      if (S.nextNatural < 0 && !S.surge){
+        S.nextNatural = 48 + Math.random() * 40;
+        S.surge = { x: (Math.random() - 0.5) * asp * zoom * 0.9, t: 0, k: 0.7 };
+        if (audio) audio.surge(0.7);
+      }
+      S.nextMet -= dt;
+      if (S.nextMet < 0 && !S.met){
+        S.nextMet = 45 + Math.random() * 85;
+        var left = Math.random() < 0.5;
+        S.met = { x: (Math.random() - 0.5) * asp * zoom * 0.7, y: -0.17 * zoom + (0.4 + Math.random() * 0.22) * zoom,
+                  a: left ? Math.PI + 0.35 + Math.random() * 0.3 : -0.35 - Math.random() * 0.3, t: 0 };
+      }
+      if (S.met){ S.met.t += dt / 0.75; if (S.met.t >= 1) S.met = null; }
+    } else { S.met = null; }
+    S.phase += dt * ts * (0.2 + 1.05 * env + 0.22 * S.ptrAmt);
+  }
+
+  /* ---------------- sound: low wind, faint high crackle ---------------- */
+  var audio = null;
+  var sndBtn = document.getElementById('snd'), sndState = document.getElementById('sndState');
+  function makeAudio(){
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    var ac = new AC();
+    var len = ac.sampleRate * 3, buf = ac.createBuffer(1, len, ac.sampleRate), d = buf.getChannelData(0), last = 0;
+    for (var i = 0; i < len; i++){ var w = Math.random() * 2 - 1; last = (last + 0.02 * w) / 1.02; d[i] = last * 3.2 + w * 0.12; }
+    var master = ac.createGain(); master.gain.value = 0; master.connect(ac.destination);
+    function noise(){ var s = ac.createBufferSource(); s.buffer = buf; s.loop = true; s.start(); return s; }
+    // wind: two slow band-passed voices
+    var windGain = ac.createGain(); windGain.gain.value = 0.5; windGain.connect(master);
+    [[190, 0.07, 0.6], [420, 0.043, 0.3]].forEach(function(v){
+      var f = ac.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = v[0]; f.Q.value = 0.9;
+      var g = ac.createGain(); g.gain.value = v[2];
+      var lfo = ac.createOscillator(); lfo.frequency.value = v[1];
+      var lg = ac.createGain(); lg.gain.value = v[0] * 0.45; lfo.connect(lg); lg.connect(f.frequency); lfo.start();
+      var lfo2 = ac.createOscillator(); lfo2.frequency.value = v[1] * 1.7;
+      var lg2 = ac.createGain(); lg2.gain.value = v[2] * 0.5; lfo2.connect(lg2); lg2.connect(g.gain); lfo2.start();
+      noise().connect(f); f.connect(g); g.connect(windGain);
+    });
+    // crackle: very short bursts of high noise
+    var hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 5200;
+    var bp = ac.createBiquadFilter(); bp.type = 'peaking'; bp.frequency.value = 8200; bp.gain.value = 8;
+    var cg = ac.createGain(); cg.gain.value = 0;
+    noise().connect(hp); hp.connect(bp); bp.connect(cg); cg.connect(master);
+    var timer = 0, on = false;
+    function tick(){
+      if (!on) return;
+      var act = 0.12 + S.surgeEnv * 0.9 + S.ptrAmt * 0.12;
+      var t = ac.currentTime;
+      var n = Math.random() < act ? 1 + Math.floor(Math.random() * 3 * (0.4 + act)) : 0;
+      for (var i = 0; i < n; i++){
+        var at = t + Math.random() * 0.12, peak = (0.05 + Math.random() * 0.2) * (0.5 + act);
+        cg.gain.setValueAtTime(0, at); cg.gain.linearRampToValueAtTime(peak, at + 0.0015);
+        cg.gain.exponentialRampToValueAtTime(0.0001, at + 0.006 + Math.random() * 0.02);
+      }
+      timer = setTimeout(tick, 130);
+    }
+    return {
+      set: function(v){
+        on = v; clearTimeout(timer);
+        if (v){ ac.resume(); tick(); }
+        master.gain.cancelScheduledValues(ac.currentTime);
+        master.gain.setTargetAtTime(v ? 0.55 : 0, ac.currentTime, v ? 1.2 : 0.35);
+        if (!v) setTimeout(function(){ if (!on) ac.suspend(); }, 2200);
+      },
+      surge: function(k){
+        if (!on) return;
+        var t = ac.currentTime;
+        windGain.gain.cancelScheduledValues(t);
+        windGain.gain.setTargetAtTime(0.5 + 0.5 * k, t, 1.2);
+        windGain.gain.setTargetAtTime(0.5, t + 5, 3);
+      }
+    };
+  }
+  sndBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    var on = sndBtn.getAttribute('aria-pressed') !== 'true';
+    if (on && !audio) audio = makeAudio();
+    if (!audio) return;
+    audio.set(on);
+    sndBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    sndState.textContent = on ? 'on' : 'off';
+  });
+
+  /* ---------------- fallback scene ---------------- */
+  function fallback(){
+    if (root.classList.contains('no-gl')) return;
+    root.classList.add('no-gl');
+    var st = document.getElementById('fbStars'), seed = 7;
+    function rnd(){ seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+    for (var i = 0; i < 150; i++){
+      var el = document.createElement('i'), sz = rnd() < 0.12 ? 2 : 1;
+      el.style.cssText = 'left:' + (rnd() * 100).toFixed(2) + '%;top:' + (Math.pow(rnd(), 1.3) * 100).toFixed(2) + '%;width:' + sz + 'px;height:' + sz +
+        'px;animation-duration:' + (2.5 + rnd() * 5).toFixed(1) + 's;animation-delay:-' + (rnd() * 6).toFixed(1) + 's';
+      st.appendChild(el);
+    }
+    document.getElementById('fbRefl').innerHTML = document.getElementById('fbVeil').innerHTML;
+    var fb = document.getElementById('fb'), surgeT = 0;
+    stage.addEventListener('pointermove', function(e){ fb.style.setProperty('--wx', ((e.clientX / W - 0.5) * 2).toFixed(3)); }, { passive: true });
+    fbSurge = function(){ fb.classList.add('surge'); clearTimeout(surgeT); surgeT = setTimeout(function(){ fb.classList.remove('surge'); }, 4200); };
+  }
+  var fbSurge = null;
+
+  /* ---------------- WebGL ---------------- */
+  var gl = null, prog = null, U = {}, quality = 1, steps = 20, raf = 0, running = false;
+  try {
+    var opts = { antialias: false, alpha: false, depth: false, stencil: false, powerPreference: 'high-performance' };
+    gl = cv.getContext('webgl', opts) || cv.getContext('experimental-webgl', opts);
+  } catch (err) { gl = null; }
+
+  function compile(type, src){
+    var sh = gl.createShader(type); gl.shaderSource(sh, src); gl.compileShader(sh);
+    if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) return null;
+    return sh;
+  }
+  function initGL(){
+    var vs = compile(gl.VERTEX_SHADER, document.getElementById('vs').textContent);
+    var fs = compile(gl.FRAGMENT_SHADER, document.getElementById('fs').textContent);
+    if (!vs || !fs) return false;
+    prog = gl.createProgram(); gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return false;
+    gl.useProgram(prog);
+    var b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    var loc = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    ['uRes', 'uZoom', 'uTime', 'uPhase', 'uAct', 'uSteps', 'uPtr', 'uSurge', 'uRev', 'uMet', 'uCss'].forEach(function(n){ U[n] = gl.getUniformLocation(prog, n); });
+    return true;
+  }
+  function resize(){
+    measure();
+    if (!gl) return;
+    var s = Math.min(window.devicePixelRatio || 1, 1.5) * quality;
+    var w = Math.max(2, Math.round(W * s)), h = Math.max(2, Math.round(H * s));
+    if (cv.width !== w || cv.height !== h){ cv.width = w; cv.height = h; gl.viewport(0, 0, w, h); }
+  }
+
+  var t0 = 0, warm = 0, last = 0, emaMs = 16, slowFrames = 0, frames = 0;
+  function frame(now){
+    raf = requestAnimationFrame(frame);
+    if (!last) last = now;
+    if (!t0 && warm++ > 1) t0 = now;
+    var raw = now - last; last = now;
+    var dt = Math.min(raw, 100) / 1000;
+    step(dt, now);
+
+    // adaptive internal resolution
+    if (raw < 1000 && frames++ > 20){
+      emaMs += (raw - emaMs) * 0.08;
+      if (emaMs > 22) slowFrames++; else slowFrames = Math.max(0, slowFrames - 2);
+      if (slowFrames > 36){
+        slowFrames = 0; emaMs = 16; frames = 0;
+        if (quality > 0.72){ quality = Math.max(0.7, quality * 0.84); resize(); }
+        else if (steps > 14){ steps -= 2; }
+        else if (quality > 0.5){ quality = Math.max(0.5, quality * 0.84); resize(); }
+        else if (steps > 10){ steps -= 2; }
+      }
+    }
+
+    var el = t0 ? (now - t0) / 1000 : 0;
+    var r0, r1, r2;
+    if (calm){ r0 = r1 = r2 = ease(el / 2.5); }
+    else { r0 = ease((el - 0.45) / 2.7); r1 = ease((el - 2.9) / 4.2); r2 = ease((el - 4.6) / 5.5); }
+    var act = 0.36 + 0.11 * Math.sin(S.time * 0.047) + 0.07 * Math.sin(S.time * 0.131 + 1.3)
+            + 0.22 * Math.exp(-Math.pow((el - 3.4) / 2.2, 2)) + 0.5 * S.surgeEnv;
+    gl.uniform2f(U.uRes, cv.width, cv.height);
+    gl.uniform1f(U.uZoom, zoom);
+    gl.uniform1f(U.uCss, zoom / H);
+    gl.uniform1f(U.uTime, S.time);
+    gl.uniform1f(U.uPhase, S.phase);
+    gl.uniform1f(U.uAct, act);
+    gl.uniform1f(U.uSteps, steps);
+    gl.uniform2f(U.uPtr, S.ptrX, S.ptrAmt);
+    if (S.surge) gl.uniform3f(U.uSurge, S.surge.x, S.surge.t * 0.44, S.surgeEnv);
+    else gl.uniform3f(U.uSurge, 0, 0, 0);
+    gl.uniform3f(U.uRev, r0, r1, r2);
+    if (S.met) gl.uniform4f(U.uMet, S.met.x, S.met.y, S.met.t, S.met.a);
+    else gl.uniform4f(U.uMet, 0, 0, -1, 0);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+  function start(){ if (running || !gl || !prog) return; running = true; last = 0; raf = requestAnimationFrame(frame); }
+  function stop(){ running = false; cancelAnimationFrame(raf); }
+
+  if (gl && initGL()){
+    resize();
+    window.addEventListener('resize', resize);
+    document.addEventListener('visibilitychange', function(){ if (document.hidden) stop(); else start(); });
+    cv.addEventListener('webglcontextlost', function(e){ e.preventDefault(); stop(); prog = null; });
+    cv.addEventListener('webglcontextrestored', function(){ if (initGL()){ cv.width = 0; resize(); start(); } else fallback(); });
+    start();
+  } else {
+    gl = null;
+    fallback();
+    window.addEventListener('resize', measure);
+    // keep the notebook and pointer state alive without a render loop
+  }
+})();
+</script>
+</body>
+</html>

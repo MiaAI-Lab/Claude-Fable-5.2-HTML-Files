@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maison Ombre — No. 7, Bibliothèque Brûlée</title>
+<meta name="description" content="Maison Ombre, parfums d'intérieur. No. 7 — Bibliothèque Brûlée: smoked paper, cold tea, iris, wet stone.">
+<style>
+:root{
+  --ivory:#F5EEE4; --ox:#5B0F1B; --gold:#B8925A; --ink:#1E1A17;
+  --e:cubic-bezier(.16,1,.3,1);
+  --vh:100vh;
+  --bh:min(calc(var(--vh) * .58),560px);
+  --bb:calc(var(--vh) * .08);
+  --tf:min(13vw,calc(var(--vh) * .25));
+  --didone:Didot,"Bodoni MT","Bodoni 72","Didot LT STD",Georgia,"Times New Roman",serif;
+  --serif:Baskerville,"Baskerville Old Face","Hoefler Text",Palatino,"Palatino Linotype",Georgia,serif;
+  --gut:7vw; --tk:.745; --tg:1.02;
+}
+@supports (height:100svh){ :root{ --vh:100svh; } }
+*,*::before,*::after{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
+body{
+  margin:0; color:var(--ink); background-color:var(--ivory);
+  /* laid paper: fine laid lines and sparse chain lines */
+  background-image:
+    repeating-linear-gradient(0deg, rgba(30,26,23,.034) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(30,26,23,.028) 0 1px, transparent 1px 96px);
+  font-family:var(--serif); font-size:17px; line-height:1.62;
+  font-variant-numeric:oldstyle-nums; font-feature-settings:"onum" 1,"liga" 1;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+@supports (overflow:clip){ body{ overflow-x:clip; } }
+html.has-ring, html.has-ring *{ cursor:none !important; }
+::selection{ background:var(--ox); color:var(--ivory); }
+a{ color:inherit; text-decoration:none; }
+:focus{ outline:none; }
+:focus-visible{ outline:1px solid var(--ox); outline-offset:5px; border-radius:1px; }
+
+.caps{
+  font-family:var(--serif); font-size:10.5px; letter-spacing:.3em; text-transform:uppercase;
+  line-height:1.9; font-variant-numeric:lining-nums; font-feature-settings:"lnum" 1;
+}
+.caps i{ font-style:normal; opacity:.58; }
+.num{ font-family:var(--didone); color:var(--gold); font-variant-numeric:oldstyle-nums; font-feature-settings:"onum" 1; }
+.rule{ display:block; height:1px; background:var(--gold); border:0; margin:0; }
+
+/* ---------- window light ---------- */
+.light{
+  position:fixed; z-index:0; left:0; top:-22vh; width:max(34vw,300px); height:150vh;
+  pointer-events:none; will-change:transform; transform:translate3d(30vw,0,0) skewX(-15deg);
+  filter:blur(16px); opacity:.95;
+}
+.panes{ position:absolute; inset:0; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:repeat(3,1fr); gap:26px 20px; }
+.panes i{ background:linear-gradient(180deg, rgba(255,253,247,.92), rgba(255,250,240,.62)); }
+.shade{ position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:radial-gradient(120% 90% at 40% 30%, transparent 55%, rgba(91,15,27,.045) 100%); }
+
+/* ---------- cursor ---------- */
+.ring{
+  position:fixed; left:0; top:0; z-index:60; width:14px; height:14px; margin:-7px 0 0 -7px;
+  border:1px solid var(--gold); border-radius:50%; pointer-events:none; opacity:0;
+  transition:width .7s var(--e), height .7s var(--e), margin .7s var(--e), opacity .5s linear, background-color .7s var(--e);
+}
+.ring::after{ content:""; position:absolute; left:50%; top:50%; width:2px; height:2px; margin:-1px; border-radius:50%; background:var(--ox); transition:opacity .5s linear; }
+.ring.on{ opacity:1; }
+.ring.big{ width:48px; height:48px; margin:-24px 0 0 -24px; background:rgba(184,146,90,.12); }
+.ring.big::after{ opacity:0; }
+
+/* ---------- header and rail ---------- */
+.top{
+  position:absolute; z-index:6; left:0; right:0; top:0; padding:30px var(--gut) 0;
+  display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:16px;
+}
+.top .mo{ width:40px; height:40px; display:block; color:var(--ox); --mo-o:var(--gold); }
+.top .house{ text-align:center; white-space:nowrap; }
+.top .where{ text-align:right; white-space:nowrap; }
+.top a.home{ display:inline-block; }
+.rail{
+  position:fixed; z-index:7; right:22px; top:50%; transform:translateY(-50%);
+  display:none; flex-direction:column; gap:14px; align-items:flex-end;
+}
+.rail a{ display:flex; align-items:center; gap:10px; font-family:var(--didone); font-size:12px; letter-spacing:.12em; color:rgba(30,26,23,.5); padding:3px 0 3px 12px; transition:color .9s var(--e); }
+.rail a::after{ content:""; width:10px; height:1px; background:var(--gold); transition:width .9s var(--e), background-color .9s var(--e); }
+.rail a:hover, .rail a.cur{ color:var(--ox); }
+.rail a:hover::after, .rail a.cur::after{ width:30px; background:var(--ox); }
+@media (min-width:1000px){ .rail{ display:flex; } }
+
+/* ---------- stage: opening + pyramid share one bottle ---------- */
+main{ position:relative; z-index:1; }
+.stage{ position:relative; }
+.pin{
+  position:sticky; top:0; z-index:3; height:var(--vh);
+  pointer-events:none; overflow:hidden;
+}
+@supports (overflow:clip){ .pin{ overflow:clip; } }
+.bpos{
+  position:absolute; left:50%; bottom:var(--bb); height:var(--bh); aspect-ratio:320/520;
+  transform:translate3d(-50%,0,0); transform-origin:50% 100%; will-change:transform;
+  animation:arrive 2200ms var(--e) 150ms both;
+}
+@keyframes arrive{ from{ opacity:0; } to{ opacity:1; } }
+.bpos svg{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; display:block; }
+.bottle{
+  position:absolute; inset:0; transform-origin:50% 96%; will-change:transform;
+  pointer-events:auto; touch-action:pan-y; -webkit-user-select:none; user-select:none; -webkit-tap-highlight-color:transparent;
+}
+.bottle:focus-visible{ outline:1px solid var(--gold); outline-offset:10px; }
+.lens{
+  position:absolute; left:19.375%; top:32.692%; width:61.25%; height:56.923%; overflow:hidden;
+  background:#F4EDE2;
+  -webkit-clip-path:polygon(4.1% 0,95.9% 0,100% 2.7%,100% 97.3%,95.9% 100%,4.1% 100%,0 97.3%,0 2.7%);
+  clip-path:polygon(4.1% 0,95.9% 0,100% 2.7%,100% 97.3%,95.9% 100%,4.1% 100%,0 97.3%,0 2.7%);
+}
+.lens .tl{ position:absolute; left:0; top:0; transform-origin:0 0; will-change:transform; color:#4a0c16; }
+.wisps{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+.wisps path{ fill:none; stroke-linecap:round; stroke-linejoin:round; }
+.hint{
+  position:absolute; left:calc(50% + var(--bh) * .308 + 40px); bottom:calc(var(--bb) + var(--bh) * .27);
+  display:flex; align-items:center; gap:12px; color:rgba(30,26,23,.72);
+  transition:opacity 1200ms var(--e);
+}
+.hint > *{ animation:arrive 1800ms var(--e) 2400ms both; }
+.hint svg{ width:34px; height:20px; flex:none; overflow:visible; }
+.hint.gone{ opacity:0 !important; }
+
+/* opening */
+.opening{ position:relative; z-index:1; height:var(--vh); margin-top:calc(var(--vh) * -1); overflow:hidden; }
+@supports (overflow:clip){ .opening{ overflow:clip; } }
+.tl{
+  font-family:var(--didone); font-style:italic; font-weight:400; color:var(--ox);
+  font-size:var(--tf); line-height:1; white-space:nowrap; letter-spacing:-.012em; margin:0;
+}
+.opening h1{ margin:0; font-size:inherit; font-weight:400; }
+.opening .tl{ position:absolute; display:block; }
+.opening .t2{ left:34.7vw; top:calc(var(--vh) - var(--bb) - var(--bh) * var(--tk)); }
+.opening .t1{ left:var(--gut); top:calc(var(--vh) - var(--bb) - var(--bh) * var(--tk) - var(--tf) * var(--tg)); }
+.js .tl{ animation:track 1900ms var(--e) both; }
+.js .tl.t2{ animation-delay:260ms; }
+.js .tl .ch{ animation:chIn 1300ms var(--e) both; animation-delay:calc(var(--d) * 62ms + var(--b,0ms)); }
+@keyframes track{ from{ letter-spacing:.3em; } to{ letter-spacing:-.012em; } }
+@keyframes chIn{ from{ opacity:0; } to{ opacity:1; } }
+.lede{ position:absolute; left:var(--gut); bottom:calc(var(--vh) * .09); max-width:300px; animation:arrive 1800ms var(--e) 1500ms both; }
+.lede .num{ display:block; font-size:54px; line-height:1; letter-spacing:.01em; }
+.lede .num small{ font-size:.5em; vertical-align:.62em; letter-spacing:.06em; margin-right:.12em; }
+.lede .caps{ display:block; margin:12px 0 18px; }
+.lede .rule{ width:56px; margin-bottom:18px; }
+.lede p{ margin:0; font-style:italic; font-size:20px; line-height:1.42; }
+.lede .caps.fr{ margin:16px 0 0; color:rgba(30,26,23,.72); }
+.aside{ position:absolute; right:var(--gut); bottom:calc(var(--vh) * .09); text-align:right; max-width:250px; animation:arrive 1800ms var(--e) 1800ms both; }
+.aside .scroll{ display:inline-flex; align-items:center; gap:14px; }
+.aside .scroll::after{ content:""; width:1px; height:44px; background:linear-gradient(var(--gold),var(--gold)) no-repeat 0 0/100% 100%; animation:plumb 2800ms var(--e) infinite; }
+@keyframes plumb{ 0%{ background-size:100% 0; background-position:0 0; } 55%{ background-size:100% 100%; background-position:0 0; } 56%{ background-position:0 100%; } 100%{ background-size:100% 0; background-position:0 100%; } }
+
+/* pyramid */
+.track{ position:relative; z-index:1; height:calc(var(--vh) * 2.8); }
+.npin{ position:sticky; top:0; height:var(--vh); min-height:520px; display:grid; grid-template-columns:1fr 1fr; align-items:center; }
+.tript{ grid-column:2; width:100%; max-width:600px; padding-right:calc(var(--gut) + 20px); }
+.thead{ display:flex; align-items:baseline; justify-content:space-between; gap:20px; margin-bottom:calc(var(--vh) * .028); }
+.thead .num{ font-size:30px; font-style:italic; margin-right:16px; }
+.clock{ font-family:var(--didone); font-size:17px; color:var(--ox); white-space:nowrap; letter-spacing:.04em; }
+.clock b{ font-weight:400; font-style:italic; display:inline-block; min-width:3.6em; text-align:right; }
+.grp{ display:grid; grid-template-columns:132px 1fr; gap:0 18px; padding:calc(var(--vh) * .026) 0 calc(var(--vh) * .022); position:relative; }
+.grp::before{ content:""; position:absolute; left:0; right:0; top:0; height:1px; background:var(--gold); transform-origin:0 50%; transform:scaleX(var(--a,1)); }
+.grp .lab{ opacity:var(--a,1); padding-top:.7em; }
+.grp .lab em{ display:block; font-family:var(--serif); font-style:italic; text-transform:none; letter-spacing:.01em; font-size:13.5px; line-height:1.4; opacity:.74; margin-top:6px; max-width:120px; }
+.grp ul{ list-style:none; margin:0; padding:0; }
+.note{
+  display:inline-block; border:0; background:none; padding:0 .1em 0 0; margin:0; text-align:left;
+  font-family:var(--didone); font-style:italic; font-size:clamp(21px,calc(var(--vh) * .039),34px); line-height:1.3;
+  color:var(--ox); opacity:var(--o,1); will-change:transform,opacity;
+  transition:opacity 900ms var(--e), color 900ms var(--e);
+  -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+}
+.note::after{ content:""; display:block; height:1px; margin-top:-3px; background:var(--gold); transform:scaleX(0); transform-origin:0 50%; transition:transform 1100ms var(--e); }
+.note:hover, .note:focus-visible, .note.on{ opacity:1; }
+.note:hover::after, .note:focus-visible::after, .note.on::after{ transform:scaleX(1); }
+.note:focus-visible{ outline:none; }
+.sense{ border-top:1px solid var(--gold); padding-top:16px; min-height:5.2em; font-style:italic; font-size:16px; line-height:1.5; position:relative; }
+.sense span{ display:block; transition:opacity 900ms var(--e), transform 900ms var(--e); }
+.sense .idle{ font-style:normal; color:rgba(30,26,23,.72); }
+.sense .said{ position:absolute; left:0; right:0; top:16px; opacity:0; transform:translate3d(0,6px,0); }
+.sense .said b{ font-weight:400; color:var(--ox); }
+.sense.has .idle{ opacity:0; }
+.sense.has .said{ opacity:1; transform:none; }
+
+/* ---------- lower movements ---------- */
+.mv{ position:relative; z-index:1; padding:calc(var(--vh) * .24) var(--gut) calc(var(--vh) * .14); }
+.mvh{ display:flex; align-items:baseline; gap:18px; margin:0 0 calc(var(--vh) * .09); }
+.mvh .num{ font-size:30px; font-style:italic; }
+.mvh .rule{ flex:1; transform-origin:0 50%; }
+.js .rv{ opacity:0; transition:opacity 1400ms var(--e) var(--dl,0ms); }
+.js .rv.in{ opacity:1; }
+.js .rule.rv{ opacity:1; transform:scaleX(0); transition:transform 1400ms var(--e) var(--dl,0ms); }
+.js .rule.rv.in{ transform:scaleX(1); }
+.js .big.rv{ opacity:0; letter-spacing:.14em; transition:opacity 1400ms var(--e) var(--dl,0ms), letter-spacing 1400ms var(--e) var(--dl,0ms); }
+.js .big.rv.in{ opacity:1; letter-spacing:-.01em; }
+.big{ font-family:var(--didone); font-style:italic; font-weight:400; color:var(--ox); font-size:clamp(40px,6.4vw,104px); line-height:1.02; letter-spacing:-.01em; margin:0; }
+.txt{ max-width:34em; }
+.txt p{ margin:0 0 1.15em; }
+
+.nose{ display:grid; grid-template-columns:minmax(0,5fr) minmax(0,6fr); gap:0 8vw; align-items:start; }
+.folio{ margin:0; max-width:360px; justify-self:center; width:100%; }
+.folio svg{ display:block; width:100%; height:auto; overflow:visible; filter:drop-shadow(0 18px 22px rgba(30,26,23,.13)); }
+.folio figcaption{ margin-top:22px; color:rgba(30,26,23,.78); }
+.nose .big{ margin-bottom:.5em; }
+.nose .role{ display:block; margin-bottom:34px; }
+.quote{ margin:44px 0 0; padding:0 0 0 22px; border-left:1px solid var(--gold); max-width:25em; }
+.quote p{ margin:0; font-family:var(--didone); font-style:italic; font-size:clamp(21px,2vw,27px); line-height:1.34; color:var(--ox); }
+.quote footer{ margin-top:12px; font-style:italic; font-size:15px; color:rgba(30,26,23,.8); }
+
+.objet{ display:grid; grid-template-columns:minmax(0,4fr) minmax(0,7fr); gap:0 8vw; align-items:start; }
+.plan{ margin:0; max-width:300px; width:100%; justify-self:center; }
+.plan svg{ display:block; width:100%; height:auto; overflow:visible; }
+.plan figcaption{ margin-top:18px; color:rgba(30,26,23,.78); text-align:center; }
+.plan .ln{ fill:none; stroke:var(--ink); stroke-width:.9; }
+.plan .dim{ fill:none; stroke:var(--gold); stroke-width:.8; }
+.plan text{ font-family:var(--didone); font-style:italic; font-size:12px; fill:var(--ox); }
+.js .plan .ln, .js .plan .dim{ stroke-dasharray:1; stroke-dashoffset:1; transition:stroke-dashoffset 2400ms var(--e) var(--dl,0ms); }
+.js .plan.in .ln, .js .plan.in .dim{ stroke-dashoffset:0; }
+.js .plan text{ opacity:0; transition:opacity 1400ms var(--e) 1400ms; }
+.js .plan.in text{ opacity:1; }
+.plan.rv{ opacity:1 !important; }
+.objet .big{ margin-bottom:.7em; }
+.specs{ margin:0; max-width:36em; }
+.specs div{ display:grid; grid-template-columns:150px 1fr; gap:0 22px; padding:15px 0 14px; border-top:1px solid rgba(184,146,90,.55); }
+.specs dt{ padding-top:.42em; }
+.specs dd{ margin:0; font-size:16px; line-height:1.55; }
+.eds{ width:100%; max-width:36em; border-collapse:collapse; margin-top:calc(var(--vh) * .08); }
+.eds caption{ text-align:left; padding-bottom:12px; caption-side:top; }
+.eds th{ font-weight:400; text-align:left; padding:10px 14px 9px 0; border-top:1px solid var(--gold); border-bottom:1px solid var(--gold); white-space:nowrap; }
+.eds td{ padding:15px 14px 14px 0; border-bottom:1px solid rgba(184,146,90,.5); vertical-align:baseline; font-size:15.5px; line-height:1.4; transition:background-color 900ms var(--e); }
+.eds td:first-child{ font-family:var(--didone); font-style:italic; font-size:19px; color:var(--ox); }
+.eds td:first-child small{ display:block; font-family:var(--serif); font-size:13.5px; color:var(--ink); opacity:.78; margin-top:2px; }
+.eds td.pr{ font-family:var(--didone); font-size:19px; white-space:nowrap; color:var(--ink); }
+.eds td:last-child, .eds th:last-child{ padding-right:0; text-align:right; }
+.eds tbody tr:hover td{ background-color:rgba(184,146,90,.09); }
+
+.carte{ text-align:center; padding-bottom:calc(var(--vh) * .2); }
+.carte .mvh{ text-align:left; }
+.carte .big{ margin:0 auto .45em; }
+.carte .txt{ margin:0 auto calc(var(--vh) * .07); max-width:27em; }
+.ask{ position:relative; max-width:600px; margin:0 auto; min-height:300px; }
+.ask form{ transition:opacity 900ms var(--e), transform 900ms var(--e); }
+.ask label{ display:block; margin-bottom:8px; }
+.line{ display:flex; align-items:flex-end; gap:18px; position:relative; padding-bottom:10px; }
+.line::before, .line::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:1px; background:var(--gold); }
+.line::after{ background:var(--ox); transform:scaleX(0); transform-origin:0 50%; transition:transform 1200ms var(--e); }
+.line:focus-within::after{ transform:scaleX(1); }
+.line input{
+  flex:1; min-width:0; border:0; background:transparent; padding:10px 0 4px; margin:0; border-radius:0;
+  font-family:var(--didone); font-style:italic; font-size:clamp(20px,2.4vw,30px); color:var(--ox); caret-color:var(--gold);
+  -webkit-appearance:none; appearance:none;
+}
+.line input::placeholder{ color:rgba(30,26,23,.56); opacity:1; }
+.line input:focus-visible{ outline:none; }
+.line input:-webkit-autofill{ -webkit-text-fill-color:var(--ox); box-shadow:0 0 0 60px var(--ivory) inset; }
+.send{
+  flex:none; border:0; background:none; padding:10px 0 8px 6px; margin:0; color:var(--ink);
+  display:inline-flex; align-items:center; gap:12px; transition:color 900ms var(--e);
+}
+.send svg{ width:34px; height:10px; overflow:visible; transition:transform 900ms var(--e); }
+.send:hover, .send:focus-visible{ color:var(--ox); }
+.send:hover svg, .send:focus-visible svg{ transform:translate3d(8px,0,0); }
+.msg{ min-height:1.8em; margin:14px 0 0; text-align:left; font-style:italic; font-size:15px; color:var(--ox); opacity:0; transition:opacity 900ms var(--e); }
+.msg.show{ opacity:1; }
+.ask.err .line{ animation:demur 900ms var(--e); }
+.ask.err .line::after{ transform:scaleX(1); }
+@keyframes demur{ 0%{ transform:translate3d(0,0,0); } 22%{ transform:translate3d(-7px,0,0); } 48%{ transform:translate3d(5px,0,0); } 74%{ transform:translate3d(-2px,0,0); } 100%{ transform:none; } }
+.sealed{ position:absolute; left:0; right:0; top:-26px; visibility:hidden; opacity:0; transition:opacity 900ms var(--e), visibility 0s linear 900ms; }
+.ask.done form{ opacity:0; transform:translate3d(0,-10px,0); pointer-events:none; }
+.ask.done .sealed{ visibility:visible; opacity:1; transition:opacity 900ms var(--e) 300ms, visibility 0s; }
+.env{ display:block; width:min(320px,82%); height:auto; margin:0 auto; overflow:visible; }
+.env .ed{ fill:none; stroke:var(--gold); stroke-width:1; stroke-dasharray:1; stroke-dashoffset:1; }
+.env .paper{ fill:#FAF5EC; opacity:0; }
+.env .addr{ font-family:var(--didone); font-style:italic; font-size:11px; fill:var(--ink); opacity:0; }
+.env .wax{ transform-box:fill-box; transform-origin:50% 50%; transform:scale(0); }
+.env .die{ transform-box:fill-box; transform-origin:50% 50%; transform:scale(1.5); opacity:0; }
+.env .shade2{ opacity:0; }
+.ask.done .env .paper{ opacity:1; transition:opacity 1200ms var(--e) 300ms; }
+.ask.done .env .ed{ stroke-dashoffset:0; transition:stroke-dashoffset 1400ms var(--e) 300ms; }
+.ask.done .env .shade2{ opacity:1; transition:opacity 900ms var(--e) 1300ms; }
+.ask.done .env .wax{ animation:waxdrop 1100ms cubic-bezier(.3,1.5,.5,1) 1200ms both; }
+.ask.done .env .die{ animation:press 1000ms var(--e) 2000ms both; }
+.ask.done .env .addr{ opacity:.8; transition:opacity 1200ms var(--e) 900ms; }
+@keyframes waxdrop{ 0%{ transform:scale(0); } 55%{ transform:scale(1.07,1.02); } 100%{ transform:scale(1); } }
+@keyframes press{ 0%{ transform:scale(1.5); opacity:0; } 45%{ transform:scale(.94); opacity:1; } 100%{ transform:scale(1); opacity:1; } }
+.sealed p{ margin:26px auto 0; max-width:25em; font-style:italic; opacity:0; }
+.sealed .again{ opacity:0; margin-top:16px; }
+.ask.done .sealed p{ opacity:1; transition:opacity 1400ms var(--e) 2700ms; }
+.ask.done .sealed .again{ opacity:1; transition:opacity 1400ms var(--e) 3300ms, color 900ms var(--e); }
+.again{ border:0; background:none; padding:6px 0; color:rgba(30,26,23,.78); border-bottom:1px solid var(--gold); }
+.again:hover, .again:focus-visible{ color:var(--ox); }
+
+.foot{ position:relative; z-index:1; padding:0 var(--gut) 44px; }
+.foot .rule{ margin-bottom:34px; }
+.foot .cols{ display:grid; grid-template-columns:auto 1fr auto; gap:30px 40px; align-items:start; }
+.foot .mo{ width:54px; height:54px; color:var(--ox); --mo-o:var(--gold); display:block; }
+.foot p{ margin:0; font-size:15px; line-height:1.6; max-width:30em; }
+.foot p + p{ margin-top:8px; font-style:italic; color:rgba(30,26,23,.82); }
+.foot nav{ display:grid; gap:2px; text-align:right; }
+.foot nav a{ color:rgba(30,26,23,.8); transition:color 900ms var(--e); }
+.foot nav a:hover, .foot nav a:focus-visible{ color:var(--ox); }
+
+/* ---------- narrower screens ---------- */
+@media (max-width:999px){
+  .tript{ padding-right:var(--gut); }
+  .grp{ grid-template-columns:104px 1fr; }
+  .nose, .objet{ gap:0 6vw; }
+}
+@media (max-width:699px){
+  :root{ --bh:calc(var(--vh) * .5); --bb:calc(var(--vh) * .135); --tf:15.4vw; --gut:20px; --tk:.7; --tg:1.3; }
+  body{ font-size:16px; }
+  .top{ padding-top:20px; grid-template-columns:auto 1fr; }
+  .top .mo{ width:34px; height:34px; }
+  .top .house{ text-align:right; }
+  .top .house i{ display:none; }
+  .top .where{ display:none; }
+  .opening .t2{ left:27vw; }
+  .lede{ position:static; max-width:none; }
+  .lede .num{ position:absolute; left:20px; top:84px; font-size:34px; }
+  .lede .caps{ position:absolute; left:20px; top:124px; margin:0; }
+  .lede .caps:not(.fr) i{ display:none; }
+  .lede .rule{ display:none; }
+  .lede p{ position:absolute; left:20px; right:20px; bottom:calc(var(--vh) * .05); text-align:center; font-size:16px; line-height:1.35; }
+  .lede .caps.fr{ position:absolute; left:10px; right:10px; bottom:calc(var(--vh) * .016); top:auto; margin:0; text-align:center; font-size:8.5px; letter-spacing:.24em; }
+  .aside{ display:none; }
+  .hint{ left:auto; right:20px; bottom:auto; top:92px; flex-direction:column; align-items:flex-end; text-align:right; gap:6px; max-width:150px; }
+  .hint .caps i{ display:block; }
+  .hint .caps{ font-size:8.5px; letter-spacing:.24em; line-height:1.7; }
+  .track{ height:calc(var(--vh) * 2.7); }
+  .npin{ display:block; }
+  .tript{ max-width:none; padding:calc(var(--vh) * .335) 20px 0; }
+  .thead{ position:absolute; left:20px; right:20px; top:22px; margin:0; align-items:flex-start; }
+  .thead > .caps{ max-width:112px; line-height:1.7; }
+  .thead > .caps i{ display:none; }
+  .thead .num{ display:block; font-size:24px; margin:0 0 2px; }
+  .clock{ font-size:15px; padding-top:6px; }
+  .grp{ grid-template-columns:1fr; padding:calc(var(--vh) * .016) 0 calc(var(--vh) * .012); }
+  .grp .lab{ padding-top:0; }
+  .grp .lab em{ float:right; margin:0; max-width:none; font-size:12.5px; line-height:1.6; }
+  .note{ font-size:clamp(18px,calc(var(--vh) * .03),23px); line-height:1.28; }
+  .sense{ font-size:14.5px; padding-top:10px; min-height:4.6em; line-height:1.42; }
+  .sense .said{ top:10px; }
+  .mv{ padding:calc(var(--vh) * .16) 20px calc(var(--vh) * .1); }
+  .nose, .objet{ grid-template-columns:1fr; gap:54px 0; }
+  .folio{ max-width:250px; }
+  .plan{ max-width:210px; }
+  .specs div{ grid-template-columns:1fr; padding:13px 0 12px; }
+  .specs dt{ padding:0 0 2px; }
+  .eds th{ font-size:8.5px; letter-spacing:.2em; padding-right:8px; }
+  .eds td{ font-size:14px; padding:12px 8px 11px 0; }
+  .eds td:first-child{ font-size:17px; }
+  .eds td:first-child small{ font-size:12.5px; }
+  .eds td.pr{ font-size:16px; }
+  .line{ gap:10px; }
+  .ask{ min-height:400px; }
+  .again i{ display:none; }
+  .send .w{ display:none; }
+  .foot .cols{ grid-template-columns:1fr; }
+  .foot nav{ text-align:left; }
+}
+@media (max-height:560px) and (min-width:700px){
+  .lede .num{ font-size:36px; } .lede p{ font-size:16px; }
+  .grp{ padding:8px 0 6px; } .sense{ min-height:3.4em; padding-top:8px; }
+}
+
+@media (prefers-reduced-motion:reduce){
+  html{ scroll-behavior:auto; }
+  *,*::before,*::after{ animation:none !important; transition-duration:1ms !important; transition-delay:0ms !important; }
+  .js .rv, .js .big.rv{ opacity:1; letter-spacing:-.01em; }
+  .js .rule.rv{ transform:none; }
+  .js .plan .ln, .js .plan .dim{ stroke-dashoffset:0; }
+  .js .plan text{ opacity:1; }
+  .env .wax, .env .die{ transform:none; }
+  .ask.done .env .die{ opacity:1; }
+  .aside .scroll::after{ background-size:100% 100%; }
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="mo" viewBox="0 0 48 48">
+      <path style="fill:var(--mo-o,currentColor)" fill-rule="evenodd" d="M24 5.5c8.2 0 13.4 8.2 13.4 18.5S32.2 42.5 24 42.5 10.6 34.3 10.6 24 15.800 5.5 24 5.500zm0 1.300c-3.900 0-6.100 7.700-6.100 17.200s2.200 17.200 6.100 17.200 6.100-7.700 6.100-17.200S27.900 6.800 24 6.800z"/>
+      <g fill="currentColor" stroke="currentColor" stroke-width=".9" stroke-linecap="butt">
+        <path stroke="none" d="M7.600 14h4.600l12.500 16.300-.7 3.500z"/>
+        <path stroke="none" d="M35.500 14h3.800v20h-3.800z"/>
+        <path fill="none" d="M9.400 14v20M24 33.600 37.600 14M5.600 14h6.800M5.800 34h7.400M32.200 34h10.400M33.800 14h8.600"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="light" id="light" aria-hidden="true"><div class="panes"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+<div class="shade" aria-hidden="true"></div>
+<div class="ring" id="ring" aria-hidden="true"></div>
+
+<header class="top">
+  <a class="home" href="#ouverture" aria-label="Maison Ombre — top of page"><svg class="mo" aria-hidden="true"><use href="#mo"/></svg></a>
+  <span class="caps house">Maison Ombre <i>— parfums d’intérieur</i></span>
+  <span class="caps where">Paris <i>· VI<sup>e</sup> ·</i> sur rendez-vous</span>
+</header>
+
+<nav class="rail" aria-label="Movements">
+  <a href="#ouverture" data-s="ouverture" aria-label="I. Opening">I</a>
+  <a href="#pyramide" data-s="pyramide" aria-label="II. The pyramid">II</a>
+  <a href="#nez" data-s="nez" aria-label="III. The nose">III</a>
+  <a href="#objet" data-s="objet" aria-label="IV. The object">IV</a>
+  <a href="#carte" data-s="carte" aria-label="V. The card">V</a>
+</nav>
+
+<main>
+<div class="stage" id="stage">
+
+  <div class="pin" id="pin">
+    <div class="bpos" id="bpos">
+      <!-- cast light and caustics on the page -->
+      <svg viewBox="0 0 320 520" aria-hidden="true" focusable="false">
+        <defs>
+          <filter id="fSoft" x="-60%" y="-150%" width="220%" height="400%"><feGaussianBlur stdDeviation="9"/></filter>
+          <filter id="fFine" x="-40%" y="-150%" width="180%" height="400%"><feGaussianBlur stdDeviation="2.2"/></filter>
+          <filter id="fTouch" x="-20%" y="-300%" width="140%" height="700%"><feGaussianBlur stdDeviation="3.4"/></filter>
+          <linearGradient id="gCast" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#5B0F1B" stop-opacity=".62"/>
+            <stop offset=".45" stop-color="#A2401F" stop-opacity=".4"/>
+            <stop offset="1" stop-color="#C98A45" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <g id="castG">
+          <path id="castP" fill="url(#gCast)" filter="url(#fSoft)" d="M46 498H274L300 546H72Z"/>
+          <g id="causG" filter="url(#fFine)" fill="none" stroke="#E0A458" stroke-linecap="round">
+            <path stroke-width="3.4" stroke-opacity=".85"/><path stroke-width="2.4" stroke-opacity=".7"/><path stroke-width="1.8" stroke-opacity=".55"/>
+          </g>
+        </g>
+        <ellipse cx="160" cy="501" rx="124" ry="5" fill="#1E1A17" fill-opacity=".34" filter="url(#fTouch)"/>
+      </svg>
+
+      <div class="bottle" id="bottle" tabindex="0" role="img" aria-label="The flask of No. 7. Drag sideways, or use the left and right arrow keys, to tilt it and set the liquid moving.">
+        <!-- back of the glass -->
+        <svg viewBox="0 0 320 520" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="gBack" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#E9E0D2" stop-opacity=".78"/><stop offset=".5" stop-color="#F7F1E8" stop-opacity=".5"/><stop offset="1" stop-color="#DDD2C3" stop-opacity=".8"/>
+            </linearGradient>
+          </defs>
+          <path d="M56 146H264L280 162V484L264 500H56L40 484V162Z" fill="url(#gBack)"/>
+          <rect x="134" y="110" width="52" height="38" fill="url(#gBack)"/>
+        </svg>
+
+        <div class="lens" id="lens" aria-hidden="true"></div>
+
+        <!-- liquid, glass, collar, cap -->
+        <svg viewBox="0 0 320 520" aria-hidden="true" focusable="false">
+          <defs>
+            <clipPath id="cCav"><path d="M70 170H250L258 178V458L250 466H70L62 458V178Z"/></clipPath>
+            <clipPath id="cBody"><path d="M56 146H264L280 162V484L264 500H56L40 484V162Z"/></clipPath>
+            <linearGradient id="gLiq" gradientUnits="userSpaceOnUse" x1="0" y1="250" x2="0" y2="466">
+              <stop offset="0" stop-color="#B9692B"/><stop offset=".3" stop-color="#93351F"/><stop offset=".72" stop-color="#6A1519"/><stop offset="1" stop-color="#4C0C16"/>
+            </linearGradient>
+            <linearGradient id="gSurf" gradientUnits="userSpaceOnUse" x1="62" y1="0" x2="258" y2="0">
+              <stop offset="0" stop-color="#9C4521"/><stop offset=".4" stop-color="#DDA057"/><stop offset=".7" stop-color="#C47B38"/><stop offset="1" stop-color="#8A3A1E"/>
+            </linearGradient>
+            <linearGradient id="gSide" gradientUnits="userSpaceOnUse" x1="62" y1="0" x2="258" y2="0">
+              <stop offset="0" stop-color="#2E060C" stop-opacity=".62"/><stop offset=".16" stop-color="#2E060C" stop-opacity="0"/>
+              <stop offset=".8" stop-color="#2E060C" stop-opacity="0"/><stop offset="1" stop-color="#2E060C" stop-opacity=".58"/>
+            </linearGradient>
+            <linearGradient id="gGlow" gradientUnits="userSpaceOnUse" x1="0" y1="330" x2="0" y2="466">
+              <stop offset="0" stop-color="#F0A552" stop-opacity="0"/><stop offset="1" stop-color="#F0A552" stop-opacity=".34"/>
+            </linearGradient>
+            <linearGradient id="gStreak" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".12" stop-color="#fff" stop-opacity=".85"/><stop offset=".7" stop-color="#fff" stop-opacity=".4"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="gFL" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity=".18"/></linearGradient>
+            <linearGradient id="gFR" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1E1A17" stop-opacity=".05"/><stop offset="1" stop-color="#1E1A17" stop-opacity=".24"/></linearGradient>
+            <linearGradient id="gFT" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".75"/><stop offset="1" stop-color="#fff" stop-opacity=".1"/></linearGradient>
+            <linearGradient id="gFB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7A1D1C" stop-opacity=".5"/><stop offset=".55" stop-color="#C4793A" stop-opacity=".34"/><stop offset="1" stop-color="#1E1A17" stop-opacity=".3"/></linearGradient>
+            <linearGradient id="gNeck" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#1E1A17" stop-opacity=".2"/><stop offset=".14" stop-color="#fff" stop-opacity=".85"/><stop offset=".3" stop-color="#fff" stop-opacity=".12"/>
+              <stop offset=".76" stop-color="#1E1A17" stop-opacity=".05"/><stop offset=".9" stop-color="#fff" stop-opacity=".5"/><stop offset="1" stop-color="#1E1A17" stop-opacity=".24"/>
+            </linearGradient>
+            <linearGradient id="gGold" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#6F5229"/><stop offset=".1" stop-color="#B8925A"/><stop offset=".24" stop-color="#F0DDB0"/><stop offset=".36" stop-color="#C9A56A"/>
+              <stop offset=".62" stop-color="#9A763F"/><stop offset=".84" stop-color="#D8BA80"/><stop offset=".93" stop-color="#B8925A"/><stop offset="1" stop-color="#65491F"/>
+            </linearGradient>
+            <linearGradient id="gOak" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#070605"/><stop offset=".2" stop-color="#3B2E26"/><stop offset=".34" stop-color="#2A211C"/><stop offset=".66" stop-color="#1A1513"/><stop offset=".9" stop-color="#2B221D"/><stop offset="1" stop-color="#050404"/>
+            </linearGradient>
+            <linearGradient id="gOakV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset=".12" stop-color="#fff" stop-opacity="0"/><stop offset=".85" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></linearGradient>
+          </defs>
+
+          <!-- the liquid -->
+          <g clip-path="url(#cCav)">
+            <path id="liqSurf" fill="url(#gSurf)" d="M62 254H258V262H62Z"/>
+            <path id="liqBody" fill="url(#gLiq)" d="M62 262H258V470H62Z"/>
+            <path id="liqGlow" fill="url(#gGlow)" d="M62 262H258V470H62Z"/>
+            <path id="liqSide" fill="url(#gSide)" d="M62 262H258V470H62Z"/>
+            <rect id="liqStreak" x="74" y="268" width="7" height="186" fill="url(#gStreak)" opacity=".2"/>
+            <g id="bubs" fill="#FFE2B8" fill-opacity=".2" stroke="#FFE9CC" stroke-opacity=".7" stroke-width=".7"></g>
+            <path id="liqLine" fill="none" stroke="#FFD9AE" stroke-opacity=".8" stroke-width="1.2" d="M62 262H258"/>
+          </g>
+
+          <!-- label -->
+          <g>
+            <rect x="113" y="321" width="94" height="104" fill="#1E1A17" fill-opacity=".2"/>
+            <rect x="112" y="319" width="96" height="104" fill="#F5EEE4"/>
+            <rect x="116" y="323" width="88" height="96" fill="none" stroke="#B8925A" stroke-width=".7"/>
+            <text x="160" y="339" text-anchor="middle" font-family="Baskerville,Palatino,Georgia,serif" font-size="5.4" letter-spacing="1.9" fill="#1E1A17">MAISON OMBRE</text>
+            <path d="M142 345H178" stroke="#B8925A" stroke-width=".6"/>
+            <text x="161" y="386" text-anchor="middle" font-family="Didot,'Bodoni MT',Georgia,serif" font-size="46" fill="#5B0F1B" style="font-variant-numeric:oldstyle-nums">7</text>
+            <text x="139" y="366" text-anchor="middle" font-family="Didot,'Bodoni MT',Georgia,serif" font-style="italic" font-size="10" fill="#B8925A">N°</text>
+            <text x="160" y="402" text-anchor="middle" font-family="Didot,'Bodoni MT',Georgia,serif" font-style="italic" font-size="8.2" fill="#5B0F1B">Bibliothèque Brûlée</text>
+            <text x="160" y="413" text-anchor="middle" font-family="Baskerville,Palatino,Georgia,serif" font-size="4.6" letter-spacing="1.5" fill="#1E1A17">EXTRAIT · 50 ML</text>
+          </g>
+
+          <!-- thick glass: eight bevel facets around the cavity -->
+          <g>
+            <path d="M40 162L62 178V458L40 484Z" fill="url(#gFL)"/>
+            <path d="M280 162V484L258 458V178Z" fill="url(#gFR)"/>
+            <path d="M56 146H264L250 170H70Z" fill="url(#gFT)"/>
+            <path d="M264 500H56L70 466H250Z" fill="url(#gFB)"/>
+            <path d="M56 146L70 170L62 178L40 162Z" fill="#fff" fill-opacity=".9"/>
+            <path d="M264 146L280 162L258 178L250 170Z" fill="#fff" fill-opacity=".34"/>
+            <path d="M280 484L264 500L250 466L258 458Z" fill="#1E1A17" fill-opacity=".26"/>
+            <path d="M40 484L62 458L70 466L56 500Z" fill="#fff" fill-opacity=".4"/>
+            <path d="M56 146L70 170M264 146L250 170M280 162L258 178M280 484L258 458M264 500L250 466M56 500L70 466M40 484L62 458M40 162L62 178" stroke="#1E1A17" stroke-opacity=".2" stroke-width=".6" fill="none"/>
+            <path d="M70 170H250L258 178V458L250 466H70L62 458V178Z" fill="none" stroke="#1E1A17" stroke-opacity=".3" stroke-width=".8"/>
+            <path d="M71.500 172H248.500L256 179.500" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width=".8"/>
+            <path d="M63.500 180V456" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width=".8"/>
+            <path d="M56 146H264L280 162V484L264 500H56L40 484V162Z" fill="none" stroke="#1E1A17" stroke-opacity=".5" stroke-width="1"/>
+          </g>
+          <!-- reflections that drift with the window light -->
+          <g clip-path="url(#cBody)">
+            <g id="refl">
+              <path d="M92 146H130L74 500H40V430Z" fill="#fff" fill-opacity=".1"/>
+              <path d="M146 146H156L98 500H88Z" fill="#fff" fill-opacity=".09"/>
+              <rect x="45" y="176" width="4.500" height="296" fill="url(#gStreak)" opacity=".95"/>
+              <rect x="270" y="190" width="2.500" height="250" fill="url(#gStreak)" opacity=".5"/>
+              <path d="M236 182h12v38" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.6"/>
+            </g>
+          </g>
+
+          <!-- neck, collar, cap -->
+          <rect x="134" y="110" width="52" height="38" fill="url(#gNeck)"/>
+          <path d="M134 110V147M186 110V147" stroke="#1E1A17" stroke-opacity=".45" stroke-width=".9" fill="none"/>
+          <path d="M147 112V168M173 112V168" stroke="#1E1A17" stroke-opacity=".16" stroke-width=".7" fill="none"/>
+          <ellipse cx="160" cy="93" rx="41" ry="4.200" fill="#8A6A3B"/>
+          <ellipse cx="160" cy="92.600" rx="17" ry="2.400" fill="#1E1A17"/>
+          <rect x="118" y="93" width="84" height="19" rx="1.500" fill="url(#gGold)"/>
+          <path d="M118 97H202M118 108H202" stroke="#5E451F" stroke-opacity=".5" stroke-width=".6"/>
+          <path d="M118 94H202" stroke="#fff" stroke-opacity=".5" stroke-width=".7"/>
+          <path d="M118 112H202" stroke="#3D2C12" stroke-opacity=".6" stroke-width=".8"/>
+          <g id="cap">
+            <path d="M124 23Q124 14 133 14H187Q196 14 196 23V93H124Z" fill="url(#gOak)"/>
+            <path d="M124 23Q124 14 133 14H187Q196 14 196 23V93H124Z" fill="url(#gOakV)"/>
+            <g fill="none" stroke="#6B584A" stroke-opacity=".3" stroke-width=".6">
+              <path d="M133 17C131 40 135 62 132 92M141 15C143 36 139 60 142 92M150 14C148 44 152 66 150 92M163 14C165 40 161 70 164 92M172 14C170 36 174 58 171 92M181 15C183 44 179 66 182 92M189 18C187 44 190 70 188 92"/>
+            </g>
+            <g fill="none" stroke="#000" stroke-opacity=".6" stroke-width=".9" stroke-linecap="round">
+              <path d="M137 30l2 9-1.500 7M156 52l-2 8 2.500 9M176 26l1.500 10M168 70l2 8M145 74l-1 9"/>
+            </g>
+            <path d="M124 84H196" stroke="#B8925A" stroke-width="1.100"/>
+            <path d="M131 15.500H189" stroke="#fff" stroke-opacity=".22" stroke-width=".8"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <div class="hint" id="hint" aria-hidden="true">
+      <svg viewBox="0 0 34 20"><path d="M3 16C9 4 25 4 31 16" fill="none" stroke="#B8925A" stroke-width="1"/><path d="M3 16l.6-5M3 16l4.600-2M31 16l-.6-5M31 16l-4.600-2" fill="none" stroke="#B8925A" stroke-width="1" stroke-linecap="round"/></svg>
+      <span class="caps">Inclinez le flacon <i>· tilt the flask</i></span>
+    </div>
+
+    <svg class="wisps" id="wisps" aria-hidden="true" focusable="false"></svg>
+  </div>
+
+  <!-- I. Opening -->
+  <section class="opening" id="ouverture" aria-labelledby="h1">
+    <h1 id="h1" aria-label="Bibliothèque Brûlée">
+      <span class="tl t1" aria-hidden="true">Bibliothèque</span>
+      <span class="tl t2" id="t2" aria-hidden="true">Brûlée</span>
+    </h1>
+    <div class="lede">
+      <span class="num"><small>N°</small>7</span>
+      <span class="caps">Extrait <i>· parfum d’intérieur</i></span>
+      <span class="rule"></span>
+      <p>A fragrance for rooms that have read too much.</p>
+      <span class="caps fr" lang="fr">Un parfum pour les pièces qui ont trop lu.</span>
+    </div>
+    <div class="aside">
+      <span class="caps scroll">Défiler <i>· scroll</i></span>
+    </div>
+  </section>
+
+  <!-- II. The pyramid -->
+  <section class="track" id="pyramide" aria-labelledby="h2">
+    <div class="npin">
+      <div class="tript" id="tript">
+        <div class="thead">
+          <h2 class="caps" id="h2" style="margin:0;font-weight:400"><span class="num">II</span>La pyramide <i>· the pyramid</i></h2>
+          <span class="clock" aria-hidden="true"><span class="caps" id="phase">sur la peau du mur</span> <b id="clock">+ 0 h 00</b></span>
+        </div>
+
+        <div class="grp" data-g="0">
+          <div class="caps lab">Tête <i>· top</i><em>the first quarter of an hour</em></div>
+          <ul>
+            <li><button type="button" class="note" data-k="bergamot peel" data-d="bright, bitter, and gone before you have finished noticing it.">bergamot peel</button></li>
+            <li><button type="button" class="note" data-k="cold Lapsang" data-d="a cup of smoked tea, left on a windowsill since Tuesday.">cold Lapsang</button></li>
+            <li><button type="button" class="note" data-k="struck match" data-d="sulphur and a small decision, for about two seconds.">struck match</button></li>
+          </ul>
+        </div>
+        <div class="grp" data-g="1">
+          <div class="caps lab">Cœur <i>· heart</i><em>until the third hour</em></div>
+          <ul>
+            <li><button type="button" class="note" data-k="iris root" data-d="cold, powdery, like the inside of a cello.">iris root</button></li>
+            <li><button type="button" class="note" data-k="vellum" data-d="skin scraped thin enough to keep a promise on.">vellum</button></li>
+            <li><button type="button" class="note" data-k="ink" data-d="iron and oak gall; someone else’s handwriting, still slightly damp.">ink</button></li>
+          </ul>
+        </div>
+        <div class="grp" data-g="2">
+          <div class="caps lab">Fond <i>· base</i><em>until the next morning</em></div>
+          <ul>
+            <li><button type="button" class="note" data-k="smoked cedar" data-d="the shelf itself, after it has had something to think about.">smoked cedar</button></li>
+            <li><button type="button" class="note" data-k="wet limestone" data-d="a stairwell in March; a church that has been rained into.">wet limestone</button></li>
+            <li><button type="button" class="note" data-k="a trace of beeswax" data-d="polish, applied afterwards by way of apology.">a trace of beeswax</button></li>
+          </ul>
+        </div>
+
+        <div class="sense" id="sense" aria-live="polite">
+          <span class="caps idle">Effleurez une note <i>· touch a note to breathe it back</i></span>
+          <span class="said" id="said"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- III. The nose -->
+<section class="mv" id="nez" aria-labelledby="h3">
+  <div class="mvh"><span class="num rv">III</span><h2 class="caps rv" id="h3" style="margin:0;font-weight:400">Le nez <i>· the nose</i></h2><span class="rule rv"></span></div>
+  <div class="nose">
+    <figure class="folio rv">
+      <svg viewBox="0 0 320 400" role="img" aria-label="A scorched leaf of a book with a tea ring in its upper margin.">
+        <defs>
+          <filter id="fRough" x="-8%" y="-8%" width="116%" height="116%">
+            <feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="4" seed="11" result="n"/>
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="15" xChannelSelector="R" yChannelSelector="G"/>
+          </filter>
+          <filter id="fCockle" x="-8%" y="-8%" width="116%" height="116%">
+            <feTurbulence type="fractalNoise" baseFrequency=".012" numOctaves="2" seed="5" result="n"/>
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"/>
+          </filter>
+          <radialGradient id="gScorch" gradientUnits="userSpaceOnUse" cx="262" cy="352" r="200">
+            <stop offset="0" stop-color="#120E0C"/><stop offset=".3" stop-color="#1E1A17" stop-opacity=".97"/>
+            <stop offset=".43" stop-color="#5B0F1B" stop-opacity=".78"/><stop offset=".58" stop-color="#8E5A2C" stop-opacity=".4"/>
+            <stop offset=".8" stop-color="#B8925A" stop-opacity=".12"/><stop offset="1" stop-color="#B8925A" stop-opacity="0"/>
+          </radialGradient>
+          <linearGradient id="gLeaf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FDF9F1"/><stop offset="1" stop-color="#EFE5D4"/></linearGradient>
+          <clipPath id="cLeaf"><path d="M40 22H278V236C258 250 272 282 240 296C212 308 226 344 188 354C170 359 170 378 148 380H40Z"/></clipPath>
+        </defs>
+        <g transform="rotate(-3.500 160 200)" filter="url(#fRough)">
+          <path d="M40 22H278V236C258 250 272 282 240 296C212 308 226 344 188 354C170 359 170 378 148 380H40Z" fill="url(#gLeaf)" stroke="#1E1A17" stroke-opacity=".3" stroke-width=".8"/>
+          <g clip-path="url(#cLeaf)"><rect x="0" y="0" width="320" height="400" fill="url(#gScorch)"/></g>
+        </g>
+        <g transform="rotate(-3.500 160 200)" filter="url(#fCockle)">
+          <g clip-path="url(#cLeaf)">
+            <text x="159" y="56" text-anchor="middle" font-family="Baskerville,Palatino,Georgia,serif" font-size="8.500" letter-spacing="3" fill="#1E1A17" fill-opacity=".8">DE L’HUMIDITÉ</text>
+            <text x="262" y="42" text-anchor="end" font-family="Didot,'Bodoni MT',Georgia,serif" font-style="italic" font-size="11" fill="#B8925A">112</text>
+            <g stroke="#1E1A17" stroke-opacity=".42" stroke-width="1.100">
+              <path d="M78 78H258M62 91H258M62 104H258M62 117H250M62 130H258M62 143H258M62 156H212"/>
+              <path d="M78 178H258M62 191H258M62 204H258M62 217H258M62 230H240M62 243H258M62 256H258M62 269H190"/>
+              <path d="M78 291H240M62 304H230M62 317H220M62 330H200M62 343H190M62 356H150"/>
+            </g>
+            <text x="62" y="170" font-family="Didot,'Bodoni MT',Georgia,serif" font-size="30" fill="#5B0F1B" fill-opacity=".85">L</text>
+            <circle cx="104" cy="118" r="35" fill="#8E5A2C" fill-opacity=".07" stroke="#8E5A2C" stroke-opacity=".42" stroke-width="2.600" stroke-dasharray="150 9 40 4 60"/>
+            <circle cx="104" cy="118" r="31.500" fill="none" stroke="#8E5A2C" stroke-opacity=".16" stroke-width="1"/>
+            <rect x="0" y="0" width="320" height="400" fill="url(#gScorch)" opacity=".9"/>
+          </g>
+        </g>
+      </svg>
+      <figcaption class="caps">Fig. 1 <i>— folio 112, recto. Scorch, lower margin; tea, upper.</i></figcaption>
+    </figure>
+    <div>
+      <h3 class="big rv">Séverine Aubrac</h3>
+      <span class="caps role rv" style="--dl:150ms">Parfumeuse <i>· formerly of the paper trade</i></span>
+      <div class="txt rv" style="--dl:300ms">
+        <p>Séverine Aubrac worked for eleven years as a paper conservator, which is to say she was paid to stop old things from smelling of anything at all.</p>
+        <p>One winter a small fire in a private reading room was put out with what was to hand, which was a pot of tea. She was called the next morning to assess the damage and stayed, by her own account, forty minutes longer than the work required.</p>
+        <p>No. 7 is those forty minutes. It took four years and 212 trials; she maintains that trial nine was already correct, and that the remainder were manners.</p>
+      </div>
+      <blockquote class="quote rv" style="--dl:450ms">
+        <p lang="fr">«&nbsp;Le papier se souvient de tout, surtout de ce qu’on lui a fait.&nbsp;»</p>
+        <footer>Paper remembers everything, especially what was done to it.</footer>
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- IV. The object -->
+<section class="mv" id="objet" aria-labelledby="h4">
+  <div class="mvh"><span class="num rv">IV</span><h2 class="caps rv" id="h4" style="margin:0;font-weight:400">L’objet <i>· the object</i></h2><span class="rule rv"></span></div>
+  <div class="objet">
+    <figure class="plan rv">
+      <svg viewBox="0 0 260 372" role="img" aria-label="Elevation of the flask: 58 millimetres wide, 112 millimetres tall, walls of 6 millimetres.">
+        <g transform="translate(22 10)">
+          <path class="ln" pathLength="1" d="M34 90H166L178 102V318L166 330H34L22 318V102Z"/>
+          <path class="ln" pathLength="1" style="--dl:200ms" d="M46 108H154L160 114V298L154 304H46L40 298V114Z"/>
+          <path class="ln" pathLength="1" style="--dl:350ms" d="M82 90V66H118V90M72 66H128V52H72ZM76 52V10Q76 4 82 4H118Q124 4 124 10V52"/>
+          <path class="ln" pathLength="1" style="--dl:600ms;stroke-opacity:.4;stroke-dasharray:.012 .012" d="M40 168C70 162 130 174 160 168"/>
+          <path class="dim" pathLength="1" style="--dl:700ms" d="M22 350H178M22 344V356M178 344V356"/>
+          <path class="dim" pathLength="1" style="--dl:850ms" d="M202 4V330M196 4H208M196 330H208"/>
+          <path class="dim" pathLength="1" style="--dl:1000ms" d="M-10 200H22M40 200H58M22 194V206M40 194V206"/>
+          <text x="100" y="368" text-anchor="middle">58 mm</text>
+          <text x="214" y="171" transform="rotate(90 214 171)" text-anchor="middle">112 mm</text>
+          <text x="66" y="191" text-anchor="start">6 mm</text>
+        </g>
+      </svg>
+      <figcaption class="caps">Fig. 2 <i>— élévation, sans le parfum</i></figcaption>
+    </figure>
+    <div>
+      <h3 class="big rv">Cinquante millilitres, <br>un feu, un chêne.</h3>
+      <dl class="specs rv" style="--dl:200ms">
+        <div><dt class="caps">Verre <i>· glass</i></dt><dd>Hand-blown at the Verrerie de Val-d’Orne, a village of 311 people and one furnace. Walls six millimetres thick; no two flasks quite agree.</dd></div>
+        <div><dt class="caps">Contenance <i>· volume</i></dt><dd>50 ml. Sufficient for one room and a year of evenings.</dd></div>
+        <div><dt class="caps">Bouchon <i>· cap</i></dt><dd>Oak, turned, then blackened in an open fire and rubbed with beeswax. It will mark white gloves. This is intended.</dd></div>
+        <div><dt class="caps">Col <i>· collar</i></dt><dd>Brass, gilded, engraved with the batch.</dd></div>
+        <div><dt class="caps">Concentration</dt><dd>Extrait, 28 %. Two sprays towards the curtains; the room does the rest.</dd></div>
+      </dl>
+      <table class="eds rv" style="--dl:350ms">
+        <caption class="caps">Éditions <i>· editions and prices</i></caption>
+        <thead><tr><th class="caps" scope="col">Édition</th><th class="caps" scope="col">Vol.</th><th class="caps" scope="col">Prix</th><th class="caps" scope="col">Tirage</th></tr></thead>
+        <tbody>
+          <tr><td>Extrait<small>the flask as drawn</small></td><td>50 ml</td><td class="pr">€240</td><td>edition of 900</td></tr>
+          <tr><td>Flacon d’archive<small>numbered; label singed by hand</small></td><td>50 ml</td><td class="pr">€410</td><td>edition of 70</td></tr>
+          <tr><td>Recharge<small>refill, in plain apothecary glass</small></td><td>50 ml</td><td class="pr">€165</td><td>to owners of a flask</td></tr>
+          <tr><td>Carte parfumée<small>sample card, scented by hand</small></td><td>—</td><td class="pr">gratis</td><td>by post</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- V. The card -->
+<section class="mv carte" id="carte" aria-labelledby="h5">
+  <div class="mvh"><span class="num rv">V</span><h2 class="caps rv" id="h5" style="margin:0;font-weight:400">La carte <i>· the card</i></h2><span class="rule rv"></span></div>
+  <h3 class="big rv">Avant le flacon, la carte.</h3>
+  <p class="txt rv" style="--dl:200ms">We would rather you did not buy it unsmelled. Leave an address; a card, scented by hand, will be posted to it.</p>
+  <div class="ask rv" id="ask" style="--dl:350ms">
+    <form id="req" novalidate>
+      <label class="caps" for="mail" style="text-align:left">Request a sample card <i>· demander une carte</i></label>
+      <div class="line">
+        <input id="mail" name="mail" type="email" inputmode="email" autocomplete="email" spellcheck="false" placeholder="votre adresse — your address" aria-describedby="msg">
+        <button class="send caps" type="submit" aria-label="Send — envoyer"><span class="w">Envoyer</span>
+          <svg viewBox="0 0 34 10" aria-hidden="true"><path d="M0 5H33M28 1l5 4-5 4" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+        </button>
+      </div>
+      <p class="msg" id="msg" role="status"></p>
+    </form>
+    <div class="sealed" id="sealed" aria-live="polite">
+      <svg class="env" viewBox="0 0 320 200" aria-hidden="true" focusable="false">
+        <defs>
+          <filter id="fWax" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence type="fractalNoise" baseFrequency=".045" numOctaves="2" seed="4" result="n"/>
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G"/>
+          </filter>
+          <filter id="fWaxS" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="3"/></filter>
+          <radialGradient id="gWax" cx=".36" cy=".3" r=".8"><stop offset="0" stop-color="#8E2231"/><stop offset=".45" stop-color="#5B0F1B"/><stop offset="1" stop-color="#34070E"/></radialGradient>
+          <radialGradient id="gDie" cx=".6" cy=".66" r=".7"><stop offset="0" stop-color="#6E1522"/><stop offset="1" stop-color="#4A0B15"/></radialGradient>
+        </defs>
+        <rect class="paper" x="20" y="24" width="280" height="160"/>
+        <path class="ed" pathLength="1" d="M20 24H300V184H20Z"/>
+        <path class="ed" pathLength="1" d="M20 24L160 118L300 24"/>
+        <path class="ed" pathLength="1" style="stroke-opacity:.5" d="M20 184L122 94M300 184L198 94"/>
+        <text class="addr" id="addr" x="160" y="170" text-anchor="middle"></text>
+        <ellipse class="shade2" cx="163" cy="124" rx="34" ry="32" fill="#1E1A17" fill-opacity=".3" filter="url(#fWaxS)"/>
+        <g class="wax"><circle cx="160" cy="118" r="34" fill="url(#gWax)" filter="url(#fWax)"/></g>
+        <g class="die">
+          <circle cx="160" cy="118" r="23.500" fill="url(#gDie)"/>
+          <circle cx="160" cy="118" r="23.500" fill="none" stroke="#2A050B" stroke-opacity=".8" stroke-width="1.400"/>
+          <path d="M139.500 129.500A23.500 23.500 0 0 0 183 124" fill="none" stroke="#C8616F" stroke-opacity=".7" stroke-width="1"/>
+          <circle cx="160" cy="118" r="19.500" fill="none" stroke="#2A050B" stroke-opacity=".45" stroke-width=".6"/>
+          <use href="#mo" x="143.200" y="101.200" width="34" height="34" style="color:#2A050B;opacity:.85"/>
+          <use href="#mo" x="142.600" y="100.600" width="34" height="34" style="color:#B5505E;opacity:.75"/>
+        </g>
+      </svg>
+      <p id="sealedTxt"></p>
+      <button class="again caps" type="button" id="again">Une autre adresse <i>· another address</i></button>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <span class="rule"></span>
+  <div class="cols">
+    <svg class="mo" aria-hidden="true"><use href="#mo"/></svg>
+    <div>
+      <p>Maison Ombre, parfums d’intérieur. 7, passage de l’Encre, Paris VI<sup>e</sup>.</p>
+      <p>Ouvert sur rendez-vous, et les jours de pluie. Open by appointment, and when it rains.</p>
+    </div>
+    <nav class="caps" aria-label="Footer">
+      <a href="#ouverture">I <i>· Ouverture</i></a>
+      <a href="#pyramide">II <i>· La pyramide</i></a>
+      <a href="#nez">III <i>· Le nez</i></a>
+      <a href="#objet">IV <i>· L’objet</i></a>
+      <a href="#carte">V <i>· La carte</i></a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+(function(){
+'use strict';
+var RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var doc = document.documentElement;
+doc.classList.add('js');
+function $(s){ return document.querySelector(s); }
+function $$(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); }
+function clamp(v,a,b){ a = a===undefined?0:a; b = b===undefined?1:b; return v<a?a:(v>b?b:v); }
+function smooth(t){ return t*t*(3-2*t); }
+var NS = 'http://www.w3.org/2000/svg';
+
+var stage=$('#stage'), pin=$('#pin'), bpos=$('#bpos'), bottle=$('#bottle'), lens=$('#lens'),
+    t2=$('#t2'), light=$('#light'), ring=$('#ring'), hint=$('#hint'), capEl=$('#cap'), refl=$('#refl');
+
+/* ---------- title: letters and the refracted copy inside the flask ---------- */
+$$('.opening .tl').forEach(function(line, li){
+  var txt = line.textContent, n = txt.length; line.textContent = '';
+  for (var i=0;i<n;i++){
+    var s = document.createElement('span'); s.className = 'ch'; s.textContent = txt.charAt(i);
+    s.style.setProperty('--d', i); s.style.setProperty('--b', (li*260+120)+'ms');
+    line.appendChild(s);
+  }
+});
+var clone = t2.cloneNode(true); clone.removeAttribute('id'); lens.appendChild(clone);
+
+/* ---------- metrics ---------- */
+var W=0, vh=0, H=0, Wb=0, bTop=0, stageH=0, t2Left=0, t2Top=0, lightW=0;
+function measure(){
+  W = doc.clientWidth; vh = pin.offsetHeight; H = bpos.offsetHeight; Wb = bpos.offsetWidth;
+  bTop = bpos.offsetTop; stageH = stage.offsetHeight; lightW = light.offsetWidth;
+  t2Left = t2.offsetLeft; t2Top = t2.offsetTop;
+}
+
+/* ---------- liquid ---------- */
+var N=30, X0=62, X1=258, CX=160, LEVEL=262, BOT=472, DX=(X1-X0)/(N-1);
+var h=new Float32Array(N), hv=new Float32Array(N);
+var slope=RM?0:.2, slopeV=0, tilt=0, tiltV=0, tiltT=0, drag=null, gamma=0, amb=1.2;
+var liqBody=$('#liqBody'), liqSurf=$('#liqSurf'), liqLine=$('#liqLine'), liqGlow=$('#liqGlow'), liqSide=$('#liqSide'), liqStreak=$('#liqStreak');
+var bubG=$('#bubs'), bubs=[];
+for (var b=0;b<14;b++){ var c=document.createElementNS(NS,'circle'); c.setAttribute('r','0'); bubG.appendChild(c); bubs.push({el:c,on:false,x:0,y:0,r:1,vy:0,ph:0}); }
+var castP=$('#castP'), castG=$('#castG'), causP=$$('#causG path');
+var ys=new Float32Array(N);
+
+function surfY(x){ var i=clamp(Math.round((x-X0)/DX),0,N-1); return ys[i]; }
+
+function physics(dt){
+  // the flask itself
+  var k = drag ? 240 : 70, d = drag ? 26 : 7.5;
+  tiltV += ((tiltT - tilt)*k - tiltV*d)*dt; tilt += tiltV*dt;
+  // the surface seeks the world's horizontal, late and with an overshoot
+  var target = -Math.tan(tilt + gamma);
+  var acc = (target - slope)*40 - slopeV*2.3;
+  slopeV += acc*dt; slope += slopeV*dt;
+  if (slope>.46){ slope=.46; slopeV*=-.3; } else if (slope<-.46){ slope=-.46; slopeV*=-.3; }
+  // travelling waves along the surface (reflecting at the walls)
+  var sub=2, ds=dt/sub;
+  hv[0] += slopeV*52*dt; hv[N-1] -= slopeV*52*dt;
+  amb -= dt; if (amb<0){ amb = 1.6+Math.random()*2.2; hv[(Math.random()*N)|0] += (Math.random()-.5)*14; }
+  for (var s=0;s<sub;s++){
+    for (var i=0;i<N;i++){
+      var l=h[i?i-1:0], r=h[i<N-1?i+1:N-1];
+      hv[i] += (760*(l+r-2*h[i]) - 9*h[i])*ds;
+    }
+    var m=0, f=Math.exp(-1.5*ds);
+    for (i=0;i<N;i++){ hv[i]*=f; h[i]+=hv[i]*ds; if(h[i]>13)h[i]=13; else if(h[i]<-13)h[i]=-13; m+=h[i]; }
+    m/=N; for (i=0;i<N;i++) h[i]-=m;
+  }
+  // bubbles after a slosh
+  var en=Math.abs(slopeV);
+  if (en>.45 && Math.random() < dt*en*9){
+    for (var j=0;j<bubs.length;j++){ var bb=bubs[j]; if(!bb.on){ bb.on=true; bb.x=80+Math.random()*160; bb.y=440+Math.random()*24; bb.r=.9+Math.random()*2.3; bb.vy=26+Math.random()*34; bb.ph=Math.random()*6.3; break; } }
+  }
+  for (j=0;j<bubs.length;j++){ bb=bubs[j]; if(!bb.on) continue;
+    bb.y -= bb.vy*dt; bb.vy += 14*dt; bb.ph += dt*5; bb.x += Math.sin(bb.ph)*9*dt;
+    if (bb.y < surfY(bb.x)+bb.r+1){ bb.on=false; bb.el.setAttribute('r','0'); var ii=clamp(Math.round((bb.x-X0)/DX),0,N-1); hv[ii]-=bb.r*5; }
+  }
+}
+
+function drawLiquid(T){
+  var i, x, d='', back='';
+  for (i=0;i<N;i++){ x=X0+i*DX; ys[i]=LEVEL+slope*(x-CX)+h[i]; }
+  d = 'M'+X0+' '+ys[0].toFixed(2);
+  for (i=1;i<N-1;i++){ x=X0+i*DX; d += 'Q'+x.toFixed(1)+' '+ys[i].toFixed(2)+' '+(x+DX/2).toFixed(1)+' '+((ys[i]+ys[i+1])/2).toFixed(2); }
+  d += 'L'+X1+' '+ys[N-1].toFixed(2);
+  for (i=N-1;i>=0;i-=1){ x=X0+i*DX; back += 'L'+x.toFixed(1)+' '+(LEVEL-9+slope*(x-CX)*.84+h[i>2?i-3:0]*.45).toFixed(2); }
+  var body = d+'L'+X1+' '+BOT+'L'+X0+' '+BOT+'Z';
+  liqLine.setAttribute('d', d); liqBody.setAttribute('d', body); liqGlow.setAttribute('d', body); liqSide.setAttribute('d', body);
+  liqSurf.setAttribute('d', d+back+'Z');
+  liqStreak.setAttribute('y', (ys[2]+7).toFixed(1)); liqStreak.setAttribute('height', Math.max(0,452-ys[2]).toFixed(1));
+  for (i=0;i<bubs.length;i++){ var bb=bubs[i]; if(bb.on){ bb.el.setAttribute('cx',bb.x.toFixed(1)); bb.el.setAttribute('cy',bb.y.toFixed(1)); bb.el.setAttribute('r',bb.r.toFixed(1)); } }
+}
+
+/* light through the liquid, lying on the page */
+function drawCast(T, rel, strength){
+  var sx = rel*86 + tilt*120, sy = 50;
+  castP.setAttribute('d','M46 497H274L'+(274+sx).toFixed(1)+' '+(497+sy)+'L'+(46+sx).toFixed(1)+' '+(497+sy)+'Z');
+  castG.setAttribute('opacity', strength.toFixed(3));
+  for (var k=0;k<3;k++){
+    var yy=507+k*12, t=(yy-497)/sy, d='';
+    for (var j=0;j<=8;j++){
+      var x = 70+k*9 + j*((180-k*18)/8) + sx*t;
+      var y = yy + Math.sin(j*1.25 + T*(.9+k*.23) + k*2.1)*2.4 + h[clamp(j*3+k,0,N-1)]*.55 - slope*(j-4)*2.2;
+      d += (j?'L':'M')+x.toFixed(1)+' '+y.toFixed(1);
+    }
+    causP[k].setAttribute('d', d);
+  }
+}
+
+/* ---------- wisps ---------- */
+var wispSvg=$('#wisps'), wisps=[], COL=['#B8925A','#5B0F1B','#1E1A17'];
+for (var w=0;w<16;w++){
+  var g=document.createElementNS(NS,'g'), p1=document.createElementNS(NS,'path'), p2=document.createElementNS(NS,'path');
+  p1.setAttribute('stroke-width','5'); p2.setAttribute('stroke-width','1.25');
+  g.appendChild(p1); g.appendChild(p2); g.setAttribute('opacity','0'); wispSvg.appendChild(g);
+  wisps.push({g:g,a:p1,b:p2,on:false,pts:[],age:0,life:0,emit:0,acc:0,ph:0,src:null,wind:0,rise:0,sway:1});
+}
+function spawnWisp(src, col, o){
+  if (RM) return;
+  for (var i=0;i<wisps.length;i++){ var s=wisps[i]; if(s.on) continue;
+    s.on=true; s.pts.length=0; s.age=0; s.acc=1; s.src=src; s.ph=Math.random()*6.3;
+    s.life=o.life||5.4; s.emit=o.emit||1.7; s.wind=o.wind||0; s.rise=o.rise||40; s.sway=o.sway||1; s.peak=o.peak||.62;
+    s.a.setAttribute('stroke',col); s.b.setAttribute('stroke',col);
+    return;
+  }
+}
+function stepWisps(dt, T){
+  for (var i=0;i<wisps.length;i++){ var s=wisps[i]; if(!s.on) continue;
+    s.age+=dt;
+    if (s.age<s.emit){ s.acc+=dt*20; while(s.acc>=1 && s.pts.length<44){ s.acc-=1; var o=s.src(); s.pts.push({x:o[0],y:o[1],vy:-s.rise,a:0}); } }
+    var d='', n=s.pts.length;
+    for (var j=0;j<n;j++){ var p=s.pts[j]; p.a+=dt;
+      var gr=Math.min(1,p.a*.7);
+      var fx=(Math.sin(p.y*.011+T*.6+s.ph)*20 + Math.cos(p.y*.027-T*.4+s.ph*2)*9)*s.sway + s.wind*gr;
+      p.x+=fx*gr*dt; p.y+=p.vy*dt; p.vy*=(1-.12*dt);
+    }
+    if (n>2){
+      d='M'+s.pts[0].x.toFixed(1)+' '+s.pts[0].y.toFixed(1);
+      for (j=1;j<n-1;j++){ d+='Q'+s.pts[j].x.toFixed(1)+' '+s.pts[j].y.toFixed(1)+' '+((s.pts[j].x+s.pts[j+1].x)/2).toFixed(1)+' '+((s.pts[j].y+s.pts[j+1].y)/2).toFixed(1); }
+      s.a.setAttribute('d',d); s.b.setAttribute('d',d);
+    }
+    var u=s.age/s.life, op = u<.14 ? u/.14 : (u>.5 ? 1-(u-.5)/.5 : 1);
+    s.a.setAttribute('stroke-opacity',(.085*s.peak/.62).toFixed(3));
+    s.g.setAttribute('opacity',(clamp(op)*s.peak).toFixed(3));
+    if (u>=1){ s.on=false; s.g.setAttribute('opacity','0'); s.a.setAttribute('d',''); s.b.setAttribute('d',''); }
+  }
+}
+
+/* ---------- notes ---------- */
+var groups=$$('.grp').map(function(g){ return {el:g, notes:Array.prototype.slice.call(g.querySelectorAll('.note')), a:-1}; });
+var A=[.03,.2,.37], F=[.5,.7,9], FA=[.7,.46,0];
+var clockEl=$('#clock'), phaseEl=$('#phase'), lastClock='', lastPhase='';
+var PH=['tête · top','cœur · heart','fond · base'];
+function drawNotes(q){
+  for (var gi=0;gi<3;gi++){ var g=groups[gi];
+    var a=smooth(clamp((q-A[gi])/.14));
+    if (Math.abs(a-g.a)>.002){ g.a=a; g.el.style.setProperty('--a',a.toFixed(3)); }
+    for (var i=0;i<g.notes.length;i++){ var n=g.notes[i];
+      var ai=smooth(clamp((q-A[gi]-i*.034)/.13)), f=smooth(clamp((q-F[gi]-i*.032)/.2));
+      var o=ai*(1-f*FA[gi]), y=(1-ai)*24-f*6, ls=(1-ai)*.2+f*.045;
+      var key=o.toFixed(3)+'|'+y.toFixed(1)+'|'+ls.toFixed(3);
+      if (n._k!==key){ n._k=key; n.style.setProperty('--o',o.toFixed(3)); n.style.transform='translate3d(0,'+y.toFixed(1)+'px,0)'; n.style.letterSpacing=ls.toFixed(3)+'em'; }
+    }
+  }
+  var min = q<.3 ? q/.3*15 : (q<.62 ? 15+(q-.3)/.32*165 : 180+(q-.62)/.38*480);
+  min=Math.round(min); var hh=Math.floor(min/60), mm=min%60;
+  var c='+ '+hh+' h '+(mm<10?'0':'')+mm;
+  if (c!==lastClock){ lastClock=c; clockEl.textContent=c; }
+  var ph = q<.02 ? 'à l’ouverture' : (q<.3?PH[0]:(q<.62?PH[1]:PH[2]));
+  if (ph!==lastPhase){ lastPhase=ph; phaseEl.textContent=ph; }
+}
+var sense=$('#sense'), said=$('#said'), saidT=0;
+function neckSrc(){ return [neckX+Math.sin(T*1.7)*5*sc, neckY]; }
+function speak(n){
+  window.clearTimeout(saidT);
+  said.innerHTML=''; var bEl=document.createElement('b'); bEl.textContent=n.getAttribute('data-k')+': ';
+  said.appendChild(bEl); said.appendChild(document.createTextNode(n.getAttribute('data-d')));
+  sense.classList.add('has');
+  var r=n.getBoundingClientRect(), pr=pin.getBoundingClientRect(), gi=+n.closest('.grp').getAttribute('data-g');
+  var x0=r.left-pr.left, yy=r.top-pr.top+r.height*.28, ww=Math.min(r.width,170);
+  [.22,.7].forEach(function(f,k){ var xx=x0+ww*f;
+    spawnWisp(function(){ return [xx, yy]; }, COL[gi], {life:3.4+k*.8, emit:.8+k*.3, rise:34-k*6, sway:.6, peak:.7});
+  });
+}
+function hush(){ saidT=window.setTimeout(function(){ sense.classList.remove('has'); }, 500); }
+groups.forEach(function(g){ g.notes.forEach(function(n){
+  n.addEventListener('pointerenter', function(e){ if(e.pointerType==='mouse') speak(n); });
+  n.addEventListener('pointerleave', function(e){ if(e.pointerType==='mouse' && !n.classList.contains('on')) hush(); });
+  n.addEventListener('focus', function(){ if(n.matches(':focus-visible')) speak(n); });
+  n.addEventListener('blur', function(){ n.classList.remove('on'); hush(); });
+  n.addEventListener('click', function(){
+    var was=n.classList.contains('on');
+    $$('.note.on').forEach(function(o){ o.classList.remove('on'); });
+    if (!was){ n.classList.add('on'); speak(n); } else { hush(); }
+  });
+}); });
+
+/* ---------- scroll, layout, light ---------- */
+var syT=window.pageYOffset||0, sy=syT, neckX=0, neckY=0, sc=1, bcx=0, prevCx=null, q=0, emitT=0, prevSy=sy;
+window.addEventListener('scroll', function(){ syT=window.pageYOffset||0; if(RM) render(0,0); }, {passive:true});
+window.addEventListener('resize', function(){ measure(); if(RM) render(0,0); });
+
+function layout(){
+  var p=smooth(clamp(sy/vh)), s, dx, dy;
+  if (W<700){ s=.46; dx=0; dy=(vh*.085 + s*H) - (bTop+H); }
+  else if (W<1000){ s=.72; dx=-W*.25; dy=-vh*.03; }
+  else { s=.9; dx=-Math.min(W*.215, 420); dy=-vh*.015; }
+  sc=1+(s-1)*p; bcx=W/2+dx*p;
+  var by=bTop+H+dy*p;
+  bpos.style.transform='translate3d(calc(-50% + '+(dx*p).toFixed(2)+'px),'+(dy*p).toFixed(2)+'px,0) scale('+sc.toFixed(4)+')';
+  bottle.style.transform='rotate('+(tilt*57.2958).toFixed(3)+'deg)';
+  neckX=bcx+Math.sin(tilt)*sc*H*.78; neckY=by-sc*H*(1-93/520);
+  // the cap lifts away as the pyramid arrives
+  var c=smooth(clamp((sy/vh-.5)/.45));
+  capEl.setAttribute('transform','translate('+(c*16).toFixed(2)+' '+(-c*64).toFixed(2)+') rotate('+(c*9).toFixed(2)+' 160 60)');
+  capEl.setAttribute('opacity',(1-smooth(clamp((c-.35)/.65))).toFixed(3));
+  hint.style.opacity=clamp(1-sy/vh*4).toFixed(3);
+  // refracted title inside the cavity
+  if (sy<vh*1.05){
+    var left=bcx-sc*Wb/2, top=by-sc*H, lw=.6125*sc*Wb, lh=.56923*sc*H, lx=left+.19375*sc*Wb, ly=top+.32692*sc*H;
+    var cx=lx+lw/2, cy=ly+lh/2, m=1.075, tx=t2Left, ty=t2Top-sy;
+    var px=cx+(tx-cx)*m+5, py=cy+(ty-cy)*m;
+    clone.style.transform='translate3d('+((px-lx)/sc).toFixed(2)+'px,'+((py-ly)/sc).toFixed(2)+'px,0) scale('+(m/sc).toFixed(4)+')';
+  }
+  return p;
+}
+
+var L=-.25, lightX=0;
+function drawLight(T){
+  L=Math.sin(T*6.2832/230 - .6);
+  lightX = W*(.4 + .27*L);
+  light.style.transform='translate3d('+(lightX-lightW/2).toFixed(1)+'px,'+(-sy*.035).toFixed(1)+'px,0) skewX(-15deg)';
+  refl.setAttribute('transform','translate('+(L*14).toFixed(2)+' 0)');
+}
+
+function render(dt, T){
+  var p=layout();
+  drawLight(T);
+  var inStage = sy < stageH - vh*.2;
+  if (!inStage) return;
+  var rel=clamp((bcx-lightX)/(W*.3),-1,1);
+  if (!RM){ physics(dt); }
+  drawLiquid(T); drawCast(T, rel, .55+.45*(1-Math.abs(rel)));
+  q = RM ? .45 : clamp((sy-vh*.78)/(vh*1.84));
+  drawNotes(q);
+  if (!RM){
+    // top, heart, base leave the neck in that order
+    var vel=Math.abs(sy-prevSy)/Math.max(dt,.001);
+    emitT-=dt*(vel>30?2.4:1);
+    if (p>.86 && sy<stageH-vh*1.05 && emitT<=0){
+      var gi = q<A[1]+.02 ? 0 : (q<A[2]+.04 ? 1 : 2);
+      var rare = q>.72;
+      emitT = rare ? 1.9 : .62;
+      var wind = W<700 ? (Math.random()-.5)*12 : 8+Math.random()*20;
+      spawnWisp(neckSrc, COL[gi], {life:rare?7:5.6, emit:rare?2.2:1.7, wind:wind, rise:W<700?30:(40+Math.random()*14), peak:gi===0?.95:.72});
+    }
+    stepWisps(dt, T);
+  }
+}
+
+/* ---------- pointer: slosh, tilt, cursor ---------- */
+var mx=-100, my=-100, rx=-100, ry=-100, lastPX=null;
+var FINE = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+window.addEventListener('pointermove', function(e){
+  if (e.pointerType==='mouse' && FINE && (e.clientX>0 || e.clientY>0)){
+    mx=e.clientX; my=e.clientY;
+    if (!doc.classList.contains('has-ring')){ doc.classList.add('has-ring'); ring.classList.add('on'); rx=mx; ry=my; }
+    if (RM) ring.style.transform='translate3d('+mx+'px,'+my+'px,0)';
+  }
+  if (drag && e.pointerId===drag.id){
+    tiltT=clamp((e.clientX-drag.x)*.0042,-.3,.3);
+  } else if (e.pointerType==='mouse' && !RM && lastPX!==null && sy<stageH){
+    var dx=clamp(e.clientX-lastPX,-45,45), dist=Math.abs(e.clientX-bcx)/(Wb*sc+1);
+    var prox=.22+.78/(1+dist*dist*.6);
+    slopeV+=dx*.0021*prox;
+    hv[dx>0?N-2:1]+=Math.abs(dx)*.5*prox;
+  }
+  lastPX=e.clientX;
+}, {passive:true});
+document.addEventListener('pointerover', function(e){
+  var t=e.target.closest ? e.target.closest('a,button,input,.bottle') : null;
+  ring.classList.toggle('big', !!t);
+});
+doc.addEventListener('pointerleave', function(){ ring.classList.remove('on'); });
+doc.addEventListener('pointerenter', function(e){ if(e.pointerType==='mouse' && doc.classList.contains('has-ring')) ring.classList.add('on'); });
+
+bottle.addEventListener('pointerdown', function(e){
+  if (RM || (e.pointerType==='mouse' && e.button!==0)) return;
+  drag={id:e.pointerId, x:e.clientX-tilt/.0042};
+  try{ bottle.setPointerCapture(e.pointerId); }catch(err){}
+  hint.classList.add('gone');
+});
+function release(e){ if(drag && e.pointerId===drag.id){ drag=null; tiltT=0; } }
+bottle.addEventListener('pointerup', release);
+bottle.addEventListener('pointercancel', release);
+bottle.addEventListener('lostpointercapture', release);
+var keyT=0;
+bottle.addEventListener('keydown', function(e){
+  if (RM) return;
+  if (e.key==='ArrowLeft' || e.key==='ArrowRight'){
+    e.preventDefault(); tiltT = e.key==='ArrowLeft' ? -.22 : .22; hint.classList.add('gone');
+    window.clearTimeout(keyT); keyT=window.setTimeout(function(){ tiltT=0; }, 620);
+  }
+});
+if ('DeviceOrientationEvent' in window && typeof window.DeviceOrientationEvent.requestPermission !== 'function'){
+  window.addEventListener('deviceorientation', function(e){ if(typeof e.gamma==='number' && !RM){ gamma=clamp(e.gamma/90,-.35,.35)*.9; } }, {passive:true});
+}
+
+/* ---------- loop ---------- */
+var last=0, T=0, raf=0;
+function frame(now){
+  var dt=Math.min(.034,(now-last)/1000); last=now; T+=dt;
+  prevSy=sy; sy += (syT-sy)*(1-Math.exp(-dt*8.5)); if (Math.abs(syT-sy)<.05) sy=syT;
+  // the flask moving across the page also moves what is in it
+  render(dt, T);
+  if (prevCx!==null){ var dcx=bcx-prevCx; if (dcx){ slopeV -= clamp(dcx,-30,30)*.0034; } hv[N>>1] += clamp(sy-prevSy,-40,40)*.05; }
+  prevCx=bcx;
+  rx += (mx-rx)*(1-Math.exp(-dt*20)); ry += (my-ry)*(1-Math.exp(-dt*20));
+  ring.style.transform='translate3d('+rx.toFixed(1)+'px,'+ry.toFixed(1)+'px,0)';
+  raf=window.requestAnimationFrame(frame);
+}
+function start(){ if(raf||RM) return; last=performance.now(); raf=window.requestAnimationFrame(frame); }
+function stop(){ if(raf){ window.cancelAnimationFrame(raf); raf=0; } }
+document.addEventListener('visibilitychange', function(){ if(document.hidden) stop(); else start(); });
+
+measure();
+if (RM){ sy=syT; render(0,0); window.addEventListener('load', function(){ measure(); render(0,0); }); }
+else { render(0,0); start(); window.addEventListener('load', measure); }
+
+/* ---------- reveals and rail ---------- */
+var rvs=$$('.rv');
+if ('IntersectionObserver' in window && !RM){
+  var io=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } }); }, {rootMargin:'0px 0px -12% 0px', threshold:.05});
+  rvs.forEach(function(el){ io.observe(el); });
+} else { rvs.forEach(function(el){ el.classList.add('in'); }); }
+
+var railA=$$('.rail a'), secs=railA.map(function(a){ return document.getElementById(a.getAttribute('data-s')); });
+function markRail(){
+  var y=(window.pageYOffset||0)+window.innerHeight*.5, cur=0;
+  for (var i=0;i<secs.length;i++){ if (secs[i].getBoundingClientRect().top+(window.pageYOffset||0) <= y) cur=i; }
+  railA.forEach(function(a,i){ a.classList.toggle('cur', i===cur); if(i===cur) a.setAttribute('aria-current','true'); else a.removeAttribute('aria-current'); });
+}
+window.addEventListener('scroll', markRail, {passive:true}); markRail();
+
+/* ---------- the card ---------- */
+var ask=$('#ask'), form=$('#req'), mail=$('#mail'), msg=$('#msg'), addr=$('#addr'), sealedTxt=$('#sealedTxt'), again=$('#again');
+again.tabIndex=-1;
+form.addEventListener('submit', function(e){
+  e.preventDefault();
+  var v=mail.value.trim();
+  ask.classList.remove('err');
+  if (!v){ complain('Il manque une adresse. An address, if you would.'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)){ complain('Cette adresse nous échappe. That address does not quite hold together.'); return; }
+  msg.classList.remove('show');
+  addr.textContent = v.length>38 ? v.slice(0,36)+'…' : v;
+  sealedTxt.textContent='Scellé. Your card leaves on Thursday, as cards here do. We do not keep addresses once they have been written on an envelope.';
+  ask.classList.add('done'); again.tabIndex=0; mail.blur();
+  mail.disabled=true; form.querySelector('.send').disabled=true;
+});
+function complain(t){
+  msg.textContent=t; msg.classList.add('show');
+  void ask.offsetWidth; ask.classList.add('err'); mail.focus();
+}
+mail.addEventListener('input', function(){ msg.classList.remove('show'); ask.classList.remove('err'); });
+again.addEventListener('click', function(){
+  ask.classList.remove('done'); again.tabIndex=-1; mail.disabled=false; form.querySelector('.send').disabled=false; mail.value=''; mail.focus();
+});
+})();
+</script>
+</body>
+</html>

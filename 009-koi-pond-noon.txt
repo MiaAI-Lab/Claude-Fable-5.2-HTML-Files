@@ -1,0 +1,39 @@
+TITLE
+Koi Pond, Noon
+
+PROMPT
+An ambient, full-bleed top-down view of a garden koi pond at midday, on Canvas 2D. Nothing to achieve; a place to rest your eyes. Concept: procedural animals that feel alive: each koi is a chain of spine segments driven by a travelling sine wave, with body width profile, pectoral fins that paddle, a fanning tail, and a unique painted pattern.
+
+Mood: calm, bright, tender. Palette: pond teal #2C7A7B shading to deep #14323A in the centre, pale shallow jade #BFE3D0 at the stone edge, koi orange #F26B21, white #FFFFFF, plus sparing koi black #1B1B1B and yolk yellow #F2B33D; lily pads in two greens (#3E8E5A, #6DB37C) with one or two pink-white lotus flowers (#F7C6D0). Light page (bright water, not a dark pond).
+
+Scene: 9–13 koi (fewer on small screens) of varying sizes and named varieties (kohaku: white with orange patches; showa: black, red, white; ogon: solid gold-yellow; tancho: white with a single red crown spot), patterns generated per fish by seeded noise blobs clipped to the body shape. Fish wander using steering behaviours (wander, mild separation, avoid edges and lily pads), accelerate with a tail burst and glide. Each casts a soft offset shadow on the pond floor, which sells the depth; the floor shows faint pebbles and animated caustic light (a cheap layered-sine or Voronoi-like caustic pattern drawn at low resolution and scaled up). Surface: lily pads drift on slow tethers and bob when ripples pass; occasional water striders skate in short darts leaving tiny dimples; a few fallen maple leaves rotate slowly. Stone edging frames the pond irregularly at the corners with moss.
+
+Interaction: click or tap the water to make concentric ripples (expanding rings with refraction-like highlight/shadow pairs that distort nothing but look right) which startle nearby fish (they dart away, then return); press-and-hold or double-tap scatters a pinch of food pellets: the signature moment, where all the koi turn and converge in a swirling, jostling knot, mouths opening at the surface with little "bloop" rings, then disperse lazily once it is eaten. Moving the pointer slowly makes the nearest curious fish follow it for a while. A dragonfly occasionally crosses and its shadow passes over the pond. The mouse cursor is replaced by a small drawn ring that fills as an arc while holding. Keyboard: with the pond focused, Enter makes a ripple and Space scatters food.
+
+Typography: almost no text. A tiny vertical caption in the lower corner in refined small type (Georgia italic, 11–12px, colour #14323A at 70%): "Koi pond, noon." and a discreet designed hint with two tiny drawn glyphs, "tap the water · hold to feed", each half of which fades once that gesture has been used. A small unobtrusive readout names the fish nearest the cursor ("Kohaku, about eleven years old") in the same quiet style. Optional sound toggle (off by default): soft water trickle and plips synthesised with filtered noise.
+
+Entrance: the water surface fades up from white glare like eyes adjusting to sunlight, and fish swim in from the edges. Performance: cap fish at 14, caustics at low-res offscreen canvas, DPR capped at 2. Reduced motion: fish glide at a third of the speed, no caustic animation, ripples still appear gently.
+
+DESCRIPTION
+A bright, full-bleed garden pond seen from directly above at midday. The water runs from pale jade shallows at the mossy corner stones through teal to a deep centre, with pebbles on the floor and a slow net of caustic light sliding over everything, fish included. Nine to thirteen koi, each a flexing spine with its own painted pattern (kohaku, showa, ogon, tancho), cruise in bursts and glides, paddle their pectoral fins and drag soft shadows across the floor that lengthen over deeper water. Lily pads drift on tethers, two lotus flowers breathe, maple leaves turn, water striders dart, and now and then a dragonfly and its shadow cross the frame. The page opens in white glare that settles like eyes adjusting to the sun while the fish swim in from the edges. There is nothing to achieve: tap for ripples, hold to feed, and watch the whole pond turn towards one spot.
+
+VISUAL TECHNIQUES
+- Canvas 2D scene with devicePixelRatio capped at 2, paused when the tab is hidden
+- Koi built from a 14-node towed spine chain with a travelling sine wave whose amplitude follows tail thrust
+- Body outline from a width profile sampled along the spine, smoothed with midpoint quadratic curves
+- Per-fish seeded blob patterns defined in spine coordinates, so the markings bend with the body, clipped to the body shape
+- Paddling pectoral and pelvic fins that fold during a burst, a two-lobed fanning tail with fin rays, edge shading and a wet dorsal sheen
+- Steering behaviours: wander, separation, edge, stone and lily-pad avoidance, flee, return, pointer following and food seeking with a tangential swirl
+- Burst-and-glide speed model driving tail-beat frequency
+- Soft shadows drawn to a quarter-resolution layer and scaled up, offset further in deeper water
+- Pond floor painted once from a depth field (superellipse falloff plus stone proximity) mapped through the jade, teal and deep ramp, with procedural pebbles
+- Animated caustics from an iterated-sine turbulence function computed at low resolution, depth-masked and added with lighter compositing
+- Ripples as concentric highlight and shadow ring pairs with a brighter sunward arc
+- Procedural stones with speckle, veins, rim light and stippled moss, pre-rendered to an offscreen canvas
+- Lily pads with notches, veins, water beads and spring-driven bobbing; layered-petal lotus flowers
+- Maple leaves, water striders with dimple shadows on the floor, and a dragonfly with flickering wings and a displaced shadow
+- White glare entrance fade; quiet Georgia italic captions with a vertical signature
+- Optional synthesised sound: filtered noise trickle with randomised sine plips
+
+INTERACTION MODEL
+Tap or click the water to send out concentric ripples; fish within reach dart away, then drift back to investigate, and lily pads and leaves bob and slide as the rings pass. Press and hold (an arc fills around the pointer) or double-tap to scatter a pinch of food pellets: every koi notices in turn, converges and circles in a jostling knot, mouths opening with small bloop rings as each pellet is taken, then the group disperses. Moving the pointer slowly draws the nearest fish to follow it for a while; a fast movement loses it. A quiet readout in the lower corner names the variety and approximate age of the fish nearest the pointer. The round droplet button in the top corner turns the water sound on and off; it is off by default. With the pond focused, Enter makes a ripple and Space scatters food. With reduced motion enabled the fish move at a third of the speed, the caustics hold still and ripples spread slowly and gently.

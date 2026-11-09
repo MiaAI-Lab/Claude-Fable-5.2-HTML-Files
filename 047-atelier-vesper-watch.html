@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atelier Vesper — Heure Bleue 38 · Calibre V.03</title>
+<meta name="description" content="Atelier Vesper, Les Brenassons. The Heure Bleue 38 and its hand-wound Calibre V.03, running live.">
+<style>
+:root{
+  --ink:#0C0D0F; --gold:#C7A66B; --ivory:#E9E4DA; --ruby:#7B1E1E; --steel:#2A3138; --blue:#3F5F8A;
+  --gold-hi:#E2C993; --gold-lo:#8C7243; --gold-deep:#5A4827;
+  --ease:cubic-bezier(.2,.7,.1,1);
+  --display:Didot,"Bodoni MT","Bodoni 72",Baskerville,"Libre Baskerville",Georgia,"Times New Roman",serif;
+  --text:Baskerville,"Baskerville Old Face","Hoefler Text",Georgia,"Times New Roman",serif;
+  --engrave:Copperplate,"Copperplate Gothic Light","Gill Sans","Gill Sans MT","Arial Narrow","Helvetica Neue",Arial,sans-serif;
+  --d:min(72vh,50vw,800px);
+}
+*{box-sizing:border-box}
+html{background:var(--ink);scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--ink);color:var(--ivory);font-family:var(--text);font-size:17px;line-height:1.62;
+  font-variant-numeric:lining-nums tabular-nums;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.07;mix-blend-mode:screen;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .91 0 0 0 0 .89 0 0 0 0 .85 0 0 0 .9 0'/></filter><rect width='220' height='220' filter='url(%23n)'/></svg>")}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+:focus{outline:none}
+:focus-visible{outline:1px solid var(--gold);outline-offset:5px}
+.cap{font-family:var(--display);font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+.defs{position:absolute;width:0;height:0;overflow:hidden}
+
+/* ───────── header ───────── */
+.top{position:absolute;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;justify-content:space-between;
+  padding:26px clamp(20px,4.2vw,64px)}
+.mark{display:flex;align-items:center;gap:14px}
+.mark svg{width:26px;height:26px}
+.mark b{font-family:var(--display);font-weight:400;font-size:13px;letter-spacing:.42em;text-transform:uppercase}
+.top nav{display:flex;gap:clamp(18px,2.6vw,40px)}
+.top nav a{position:relative;padding:6px 0;color:rgba(233,228,218,.72);transition:color 800ms var(--ease)}
+.top nav a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--gold);transform:scaleX(0);
+  transform-origin:left;transition:transform 900ms var(--ease)}
+.top nav a:hover,.top nav a:focus-visible{color:var(--ivory)}
+.top nav a:hover::after,.top nav a:focus-visible::after{transform:scaleX(1)}
+
+/* ───────── hero ───────── */
+.hero{position:relative;min-height:max(100vh,700px);overflow:hidden;display:grid;
+  grid-template-columns:minmax(330px,36fr) 64fr;grid-template-areas:"copy stage";align-items:center;
+  padding:84px clamp(20px,4.2vw,64px) 40px;gap:clamp(12px,2vw,40px)}
+.hero::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(60% 55% at 68% 50%,rgba(42,49,56,.55),rgba(12,13,15,0) 70%)}
+.copy{grid-area:copy;position:relative;z-index:3;max-width:470px}
+.stage{grid-area:stage;position:relative;display:flex;align-items:center;justify-content:center;align-self:stretch}
+.eyebrow{display:flex;align-items:center;gap:14px;margin:0 0 20px}
+.eyebrow i{display:block;width:44px;height:1px;background:var(--gold)}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(54px,6.9vw,106px);line-height:.9;letter-spacing:-.012em;margin:0 0 22px}
+h1 .ln{display:block;overflow:hidden;padding-bottom:.08em}
+h1 .ln>span{display:inline-block}
+h1 em{font-style:italic;color:var(--gold);padding-right:.06em}
+h1 sup{font-size:.2em;letter-spacing:.2em;vertical-align:top;position:relative;top:.9em;margin-left:.5em;color:var(--ivory);
+  border:1px solid rgba(199,166,107,.6);border-radius:50%;display:inline-flex;width:2.7em;height:2.7em;align-items:center;justify-content:center;
+  padding-left:.2em;font-style:normal}
+.lead{margin:0 0 26px;color:rgba(233,228,218,.78);max-width:35ch;font-size:18px}
+.lead em{color:var(--ivory)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 26px;margin:0 0 24px}
+.ctl{display:flex;align-items:center;gap:12px;text-align:left}
+.ctl .ic{width:44px;height:44px;border:1px solid rgba(199,166,107,.55);border-radius:50%;display:grid;place-items:center;flex:none;
+  transition:background 900ms var(--ease),border-color 900ms var(--ease),transform 900ms var(--ease)}
+.ctl .ic svg{width:24px;height:24px;stroke:var(--gold);fill:none;stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round;
+  transition:stroke 900ms var(--ease),transform 1100ms var(--ease)}
+.ctl .tx{display:flex;flex-direction:column;line-height:1.25}
+.ctl .tx b{font-family:var(--display);font-weight:400;font-size:10.5px;letter-spacing:.3em;text-transform:uppercase}
+.ctl .tx i{font-size:13.5px;color:rgba(233,228,218,.6)}
+.ctl:hover .ic{border-color:var(--gold)}
+.ctl:hover .ic svg{transform:rotate(-14deg)}
+.ctl[aria-pressed="true"] .ic{background:var(--gold);border-color:var(--gold)}
+.ctl[aria-pressed="true"] .ic svg{stroke:var(--ink)}
+#flipBtn[aria-pressed="true"] .ic svg{transform:rotateY(180deg)}
+
+.anno{position:relative;border-top:1px solid rgba(199,166,107,.5);padding-top:14px}
+.anno::before{content:"";position:absolute;top:-1px;left:0;height:1px;width:100%;background:var(--gold);transform-origin:left;
+  transform:scaleX(.12);transition:transform 1100ms var(--ease)}
+.anno.live::before{transform:scaleX(1)}
+.anno-k{display:flex;justify-content:space-between;gap:12px}
+.anno-fr{font-family:var(--display);font-size:clamp(26px,2.5vw,34px);line-height:1.1;margin:10px 0 2px;font-style:italic}
+.anno-en{font-size:15px;color:rgba(233,228,218,.62);margin-bottom:12px}
+.anno dl{margin:0;display:grid;grid-template-columns:auto 1fr;font-size:15px}
+.anno dt,.anno dd{margin:0;padding:6px 0;border-top:1px solid rgba(233,228,218,.13)}
+.anno dt{font-family:var(--display);font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);padding-right:22px;padding-top:9px}
+.anno dd{color:rgba(233,228,218,.9)}
+.anno-body{transition:opacity 500ms var(--ease),transform 800ms var(--ease)}
+.anno-body.swap{opacity:0;transform:translateY(6px);transition:none}
+.index{display:flex;flex-wrap:wrap;gap:4px 2px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(233,228,218,.13)}
+.index button{width:32px;height:30px;font-size:12px;letter-spacing:.06em;color:rgba(233,228,218,.5);position:relative;
+  transition:color 600ms var(--ease)}
+.index button::after{content:"";position:absolute;left:8px;right:8px;bottom:3px;height:1px;background:var(--gold);transform:scaleX(0);
+  transition:transform 800ms var(--ease)}
+.index button:hover,.index button.on,.index button:focus-visible{color:var(--gold-hi)}
+.index button.on::after,.index button:hover::after{transform:scaleX(1)}
+.index .sep{width:1px;height:14px;background:rgba(199,166,107,.4);align-self:center;margin:0 8px}
+
+/* ───────── the watch ───────── */
+.watch{position:relative;width:var(--d);height:var(--d);perspective:2200px;flex:none;touch-action:pan-y;
+  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+.tilt{position:absolute;inset:0;transform-style:preserve-3d;transition:transform 1200ms var(--ease)}
+.flip{position:absolute;inset:0;transform-style:preserve-3d;transition:transform 1150ms var(--ease)}
+.strap{position:absolute;left:27%;width:46%;height:32%;
+  background:
+    repeating-linear-gradient(90deg,rgba(233,228,218,.035) 0 1px,transparent 1px 3px),
+    linear-gradient(90deg,#08090a,#1b1e22 14%,#15181b 50%,#1b1e22 86%,#08090a)}
+.strap::after{content:"";position:absolute;inset:0 5%;border-left:1px dashed rgba(199,166,107,.32);border-right:1px dashed rgba(199,166,107,.32)}
+.strap.t{bottom:86%;-webkit-mask-image:linear-gradient(0deg,#000 40%,transparent);mask-image:linear-gradient(0deg,#000 40%,transparent)}
+.strap.b{top:86%;-webkit-mask-image:linear-gradient(180deg,#000 40%,transparent);mask-image:linear-gradient(180deg,#000 40%,transparent)}
+.lugs{position:absolute;left:21.5%;width:57%;top:-6.5%;height:113%;border-radius:7% / 4%;clip-path:polygon(5% 0,95% 0,100% 9%,100% 91%,95% 100%,5% 100%,0 91%,0 9%);
+  background:linear-gradient(90deg,#5A4827,#C7A66B 9%,#8C7243 14%,#3d3220 20%,#3d3220 80%,#8C7243 86%,#E2C993 91%,#6f5a34);
+  box-shadow:0 30px 60px rgba(0,0,0,.6)}
+.crown{position:absolute;left:-5.6%;top:43.4%;width:7.2%;height:13.2%;z-index:0;cursor:ns-resize;touch-action:none;
+  transition:transform 900ms var(--ease);transform:translateX(0)}
+.crown::before{content:"";position:absolute;left:62%;right:-30%;top:30%;bottom:30%;
+  background:linear-gradient(180deg,#5A4827,#E2C993 35%,#8C7243 70%,#3d3220)}
+.crown span{position:absolute;inset:0 26% 0 0;border-radius:18% / 9%;
+  background:
+    linear-gradient(180deg,rgba(12,13,15,.75),rgba(12,13,15,0) 22%,rgba(255,244,214,.28) 44%,rgba(12,13,15,0) 62%,rgba(12,13,15,.8)),
+    repeating-linear-gradient(180deg,#E2C993 0 2px,#8C7243 2px 4px,#4a3b20 4px 6px);
+  background-position:0 0,0 var(--kn,0px);box-shadow:inset -3px 0 5px rgba(0,0,0,.45),0 8px 18px rgba(0,0,0,.5);
+  transition:background-position 320ms var(--ease)}
+.crown.out{transform:translateX(-24%)}
+.crown:focus-visible{outline-offset:8px}
+.crown:hover span{filter:brightness(1.12)}
+.face{position:absolute;inset:0;border-radius:50%;overflow:hidden;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.face svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.face.back{background:conic-gradient(from 20deg,#8C7243,#E2C993 8%,#C7A66B 16%,#6f5a34 27%,#C7A66B 38%,#E2C993 50%,#a88a52 58%,#5A4827 70%,#C7A66B 82%,#E2C993 92%,#8C7243);
+  box-shadow:0 0 0 1px rgba(0,0,0,.6)}
+.face.front{transform:rotateY(180deg);
+  background:conic-gradient(from -40deg,#E2C993,#8C7243 10%,#5A4827 22%,#C7A66B 34%,#f0dcae 46%,#C7A66B 55%,#6f5a34 68%,#C7A66B 80%,#8C7243 90%,#E2C993)}
+.wheels,.bridges,.hands{pointer-events:none}
+.wheels [data-k],.bridges [data-k],.hands [data-k],.dial [data-k]{pointer-events:auto;cursor:pointer}
+[data-k]{transition:opacity 700ms var(--ease),filter 700ms var(--ease)}
+.watch.hl [data-k]{opacity:.27}
+.watch.hl [data-k].on{opacity:1;filter:brightness(1.32) saturate(1.08)}
+.ring{fill:none;stroke:#E2C993;stroke-width:1.3;stroke-dasharray:2 7;opacity:0;transition:opacity 700ms var(--ease);pointer-events:none}
+.ring.on{opacity:.95}
+.glare{position:absolute;inset:0;border-radius:50%;pointer-events:none;overflow:hidden}
+.glare::before{content:"";position:absolute;inset:-40%;
+  background:linear-gradient(112deg,rgba(233,228,218,0) 36%,rgba(233,228,218,.13) 44%,rgba(233,228,218,.03) 50%,rgba(233,228,218,.09) 53%,rgba(233,228,218,0) 62%);
+  transform:translate(calc(var(--gx,0)*14%),calc(var(--gy,0)*8%));transition:transform 1200ms var(--ease);animation:drift 13s ease-in-out infinite alternate}
+.glare::after{content:"";position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(120% 120% at 30% 18%,rgba(233,228,218,.07),rgba(233,228,218,0) 42%);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.35)}
+@keyframes drift{from{margin-left:-16%}to{margin-left:18%}}
+.eng{font-family:var(--engrave);text-transform:uppercase}
+#stem{transition:transform 900ms var(--ease)}
+#stem.out{transform:translateX(-12px)}
+.status{position:absolute;left:0;right:0;bottom:-6px;display:flex;justify-content:center;gap:clamp(14px,2vw,30px);z-index:4;pointer-events:none;
+  font-family:var(--display);font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:rgba(233,228,218,.62);white-space:nowrap}
+.status b{font-weight:400;color:var(--gold);letter-spacing:.16em;font-size:12px;margin-left:.6em}
+.modehint{position:absolute;top:8px;left:0;right:0;text-align:center;z-index:4;pointer-events:none;opacity:0;transform:translateY(-6px);
+  transition:opacity 800ms var(--ease),transform 800ms var(--ease)}
+.modehint.on{opacity:1;transform:none}
+
+/* entrance */
+.js .eyebrow,.js .lead,.js .controls,.js .anno,.js .status,.js .top{opacity:0;animation:rise 1200ms var(--ease) forwards}
+.js .top{animation-delay:80ms}.js .eyebrow{animation-delay:160ms}.js .lead{animation-delay:620ms}
+.js .controls{animation-delay:800ms}.js .anno{animation-delay:980ms}.js .status{animation-delay:1500ms}
+.js h1 .ln>span{transform:translateY(108%);animation:lift 1200ms var(--ease) forwards}
+.js h1 .ln:nth-child(1)>span{animation-delay:240ms}.js h1 .ln:nth-child(2)>span{animation-delay:400ms}
+.js .watch{opacity:0;animation:arrive 1500ms var(--ease) 120ms forwards}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes lift{to{transform:none}}
+@keyframes arrive{from{opacity:0;transform:scale(.955)}to{opacity:1;transform:none}}
+
+/* ───────── sections ───────── */
+section.sec{position:relative;max-width:1180px;margin:0 auto;padding:clamp(90px,15vh,170px) clamp(20px,4.2vw,64px) 0}
+.sec-h{display:grid;grid-template-columns:120px 1fr;align-items:baseline;border-top:1px solid rgba(199,166,107,.45);padding-top:22px;margin-bottom:clamp(40px,7vh,84px)}
+.sec-h h2{font-family:var(--display);font-weight:400;font-size:clamp(40px,5.6vw,84px);line-height:1;margin:0;letter-spacing:-.01em}
+.sec-h h2 em{color:var(--gold)}
+.rv{opacity:0;transform:translateY(14px);transition:opacity 1200ms var(--ease),transform 1200ms var(--ease)}
+.rv.in{opacity:1;transform:none}
+.sec-h.rv{transform:none;opacity:1;border-top-color:transparent;position:relative}
+.sec-h.rv::before{content:"";position:absolute;left:0;right:0;top:-1px;height:1px;background:rgba(199,166,107,.6);transform:scaleX(0);transform-origin:left;transition:transform 1500ms var(--ease)}
+.sec-h.rv>*{opacity:0;transform:translateY(16px);transition:opacity 1200ms var(--ease) 200ms,transform 1200ms var(--ease) 200ms}
+.sec-h.rv.in::before{transform:scaleX(1)}
+.sec-h.rv.in>*{opacity:1;transform:none}
+
+.montre{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,6vw,96px);align-items:start}
+.spec{width:100%;border-collapse:collapse}
+.spec th,.spec td{text-align:left;font-weight:400;padding:15px 0;border-bottom:1px solid rgba(233,228,218,.14);vertical-align:baseline}
+.spec th{width:44%;font-family:var(--display);font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+.spec td{font-size:18px}
+.spec td small{display:block;font-size:14px;color:rgba(233,228,218,.55)}
+.spec tr{transition:background 800ms var(--ease)}
+.spec tr:hover{background:linear-gradient(90deg,rgba(199,166,107,.07),rgba(199,166,107,0))}
+.profile{position:sticky;top:60px}
+.profile svg{width:100%;height:auto;display:block;overflow:visible}
+.profile p{margin:22px 0 0;color:rgba(233,228,218,.6);font-size:15px;max-width:40ch}
+.pl{fill:none;stroke:var(--gold);stroke-width:1;vector-effect:non-scaling-stroke}
+.pd{fill:none;stroke:rgba(233,228,218,.5);stroke-width:.6;vector-effect:non-scaling-stroke}
+.pt{font-family:var(--display);font-size:13px;fill:var(--ivory);letter-spacing:.12em}
+
+.atelier{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(30px,6vw,96px)}
+.atelier blockquote{margin:0;font-family:var(--display);font-size:clamp(28px,3.5vw,50px);line-height:1.14;font-style:italic}
+.atelier blockquote::before{content:"";display:block;width:44px;height:1px;background:var(--gold);margin-bottom:28px}
+.atelier blockquote footer{font-style:normal;margin-top:26px}
+.bench{margin:clamp(40px,7vh,72px) 0 0;display:grid;grid-template-columns:54px 1fr;max-width:480px;font-size:15px;color:rgba(233,228,218,.62)}
+.bench dt,.bench dd{margin:0;padding:9px 0;border-top:1px solid rgba(233,228,218,.13)}
+.bench dt{font-family:var(--display);font-size:19px;color:var(--gold);line-height:1.3}
+.bench dd span{font-style:italic;color:var(--ivory)}
+.atelier p{margin:0 0 1.2em;color:rgba(233,228,218,.8)}
+.atelier p:first-of-type::first-letter{font-family:var(--display);font-size:3.3em;float:left;line-height:.82;padding:.06em .12em 0 0;color:var(--gold)}
+.sign{display:flex;gap:28px;margin-top:30px;padding-top:18px;border-top:1px solid rgba(233,228,218,.14);font-size:14px;color:rgba(233,228,218,.6)}
+.sign b{display:block;font-weight:400;font-family:var(--display);font-style:italic;font-size:19px;color:var(--ivory)}
+
+.fin{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(18px,3.4vw,56px)}
+.fin figure{margin:0;touch-action:pan-y}
+.loupe{position:relative;border-radius:50%;aspect-ratio:1;overflow:hidden;border:1px solid rgba(199,166,107,.6);
+  box-shadow:0 0 0 7px var(--ink),0 0 0 8px rgba(199,166,107,.25),0 30px 60px rgba(0,0,0,.5);cursor:crosshair}
+.loupe svg{width:100%;height:100%;display:block}
+.loupe::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 50px rgba(0,0,0,.75);pointer-events:none}
+.fin figcaption{margin-top:28px}
+.fin figcaption b{display:block;font-family:var(--display);font-weight:400;font-style:italic;font-size:26px;margin:6px 0 6px}
+.fin figcaption p{margin:0;font-size:15.5px;color:rgba(233,228,218,.68)}
+
+.liste{display:grid;grid-template-columns:1fr minmax(260px,400px);gap:clamp(30px,6vw,96px);align-items:center}
+.liste p{color:rgba(233,228,218,.8);max-width:46ch;margin:0 0 34px}
+.field{position:relative;display:flex;align-items:flex-end;gap:18px;max-width:520px;border-bottom:1px solid rgba(199,166,107,.6);
+  transition:border-color 800ms var(--ease)}
+.field::after{content:"";position:absolute;left:0;bottom:-1px;height:1px;width:100%;background:var(--gold-hi);transform:scaleX(0);transform-origin:left;
+  transition:transform 1100ms var(--ease)}
+.field:focus-within::after{transform:scaleX(1)}
+.field.bad{border-color:var(--ruby)}
+.field.bad::after{background:#b23a3a;transform:scaleX(1)}
+.field label{position:absolute;left:0;top:-4px;transition:transform 800ms var(--ease),opacity 800ms var(--ease)}
+.field input{flex:1;min-width:0;background:none;border:0;color:var(--ivory);font:inherit;font-family:var(--display);font-size:clamp(20px,2.3vw,28px);
+  padding:26px 0 12px;caret-color:var(--gold);border-radius:0}
+.field input::placeholder{color:rgba(233,228,218,.3);font-style:italic}
+.field input:focus{outline:none}
+.send{display:flex;align-items:center;gap:12px;padding:0 0 14px;white-space:nowrap}
+.send svg{width:34px;height:12px;stroke:var(--gold);fill:none;stroke-width:1;transition:transform 900ms var(--ease)}
+.send:hover svg,.send:focus-visible svg{transform:translateX(7px)}
+.msg{min-height:1.7em;margin-top:14px;font-style:italic;font-size:15px;color:rgba(233,228,218,.7)}
+.ringwrap{position:relative;aspect-ratio:1;border-radius:50%;
+  background:conic-gradient(from 60deg,#8C7243,#E2C993 9%,#C7A66B 18%,#6f5a34 30%,#C7A66B 42%,#E2C993 52%,#a88a52 60%,#5A4827 72%,#C7A66B 84%,#E2C993 93%,#8C7243);
+  box-shadow:0 40px 80px rgba(0,0,0,.6)}
+.ringwrap svg{position:absolute;inset:0;width:100%;height:100%}
+.ringwrap tspan{opacity:0;transition:opacity 420ms var(--ease)}
+.ringwrap tspan.cut{opacity:1}
+.ringwrap .mid{transition:opacity 1100ms var(--ease)}
+.spark{opacity:0}
+footer.end{max-width:1180px;margin:clamp(100px,16vh,180px) auto 0;padding:26px clamp(20px,4.2vw,64px) 46px;border-top:1px solid rgba(199,166,107,.45);
+  display:flex;flex-wrap:wrap;justify-content:space-between;gap:14px 40px;font-size:14px;color:rgba(233,228,218,.55)}
+footer.end a{border-bottom:1px solid rgba(199,166,107,.5);transition:color 800ms var(--ease)}
+footer.end a:hover{color:var(--gold-hi)}
+
+/* ───────── responsive ───────── */
+@media (max-width:980px){
+  :root{--d:min(86vw,62vh,560px)}
+  .hero{grid-template-columns:1fr;grid-template-areas:"copy" "stage" "tools";padding-top:84px;align-items:start;gap:0}
+  .copy{display:contents}
+  .eyebrow{grid-area:copy;margin:0 0 14px;align-self:start}
+  h1{grid-area:copy;margin:34px 0 0;font-size:clamp(46px,14vw,92px)}
+  .stage{margin-top:0;padding:calc(var(--d)*.1) 0 calc(var(--d)*.17)}
+  .status{bottom:0}
+  .hero{overflow:visible;min-height:0}
+  .tools{grid-area:tools;margin-top:44px}
+  .lead{max-width:44ch}
+  .top nav a:not(.keep){display:none}
+  .montre,.atelier,.liste{grid-template-columns:1fr}
+  .profile{position:static;order:-1}
+  .fin{grid-template-columns:1fr;max-width:400px;margin:0 auto}
+  .sec-h{grid-template-columns:1fr;gap:10px}
+  .liste .ringwrap{max-width:340px;width:100%;margin:0 auto}
+}
+@media (max-width:980px) and (min-width:620px){
+  .fin{grid-template-columns:repeat(3,1fr);max-width:none}
+}
+@media (max-width:420px){
+  .status{gap:12px;font-size:9px;letter-spacing:.22em}
+  .status b{font-size:10.5px}
+  .mark b{font-size:10.5px;letter-spacing:.3em}
+  .mark{gap:10px}
+  .top nav a{font-size:9px;letter-spacing:.22em}
+  .field{flex-wrap:wrap}
+  .send{padding-top:6px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition-duration:1ms!important}
+  .js .eyebrow,.js .lead,.js .controls,.js .anno,.js .status,.js .top,.js .watch{opacity:1}
+  .js h1 .ln>span{transform:none}
+  .rv,.sec-h.rv>*{opacity:1;transform:none}.sec-h.rv::before{transform:none}
+  #slowBtn{display:none}
+}
+</style>
+</head>
+<body>
+<script>document.documentElement.classList.add('js')</script>
+
+<svg class="defs" aria-hidden="true" focusable="false">
+  <defs>
+    <pattern id="perl" width="34" height="34" patternUnits="userSpaceOnUse">
+      <rect width="34" height="34" fill="#20262c"/>
+      <g fill="url(#perlG)" stroke="#E9E4DA" stroke-opacity=".09" stroke-width=".7">
+        <circle cx="0" cy="0" r="15"/><circle cx="34" cy="0" r="15"/><circle cx="17" cy="17" r="15"/><circle cx="0" cy="34" r="15"/><circle cx="34" cy="34" r="15"/>
+      </g>
+    </pattern>
+    <radialGradient id="perlG" cx=".38" cy=".34" r=".75"><stop offset="0" stop-color="#3a444e"/><stop offset=".55" stop-color="#2A3138"/><stop offset="1" stop-color="#171b20"/></radialGradient>
+    <pattern id="perlBig" width="92" height="92" patternUnits="userSpaceOnUse">
+      <rect width="92" height="92" fill="#20262c"/>
+      <g fill="url(#perlG)" stroke="#E9E4DA" stroke-opacity=".12" stroke-width="1">
+        <circle cx="0" cy="0" r="42"/><circle cx="92" cy="0" r="42"/><circle cx="46" cy="46" r="42"/><circle cx="0" cy="92" r="42"/><circle cx="92" cy="92" r="42"/>
+      </g>
+      <g fill="none" stroke="#E9E4DA" stroke-opacity=".05" stroke-width="1">
+        <circle cx="46" cy="46" r="32"/><circle cx="46" cy="46" r="22"/><circle cx="46" cy="46" r="12"/>
+      </g>
+    </pattern>
+    <linearGradient id="cotesG" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#1b2025"/><stop offset=".42" stop-color="#3b4650"/><stop offset=".5" stop-color="#46525d"/><stop offset=".58" stop-color="#2f3840"/><stop offset="1" stop-color="#1b2025"/>
+    </linearGradient>
+    <pattern id="cotes" width="30" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(-33)">
+      <rect width="30" height="8" fill="url(#cotesG)"/>
+      <rect width="30" height=".6" y="3" fill="#E9E4DA" opacity=".035"/>
+    </pattern>
+    <linearGradient id="bevel" gradientUnits="userSpaceOnUse" x1="150" y1="100" x2="850" y2="900">
+      <stop offset="0" stop-color="#E9E4DA"/><stop offset=".3" stop-color="#8d949a"/><stop offset=".55" stop-color="#E9E4DA"/><stop offset=".8" stop-color="#4b545c"/><stop offset="1" stop-color="#c9c6be"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff6dc" stop-opacity="0"/><stop offset=".26" stop-color="#fff6dc" stop-opacity=".5"/><stop offset=".45" stop-color="#fff6dc" stop-opacity="0"/>
+      <stop offset=".72" stop-color="#000" stop-opacity=".42"/><stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="ruby" cx=".36" cy=".32" r=".8"><stop offset="0" stop-color="#d7565a"/><stop offset=".28" stop-color="#9c2a2a"/><stop offset=".7" stop-color="#7B1E1E"/><stop offset="1" stop-color="#3c0d0d"/></radialGradient>
+    <linearGradient id="chaton" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0dcae"/><stop offset=".5" stop-color="#C7A66B"/><stop offset="1" stop-color="#6f5a34"/></linearGradient>
+    <linearGradient id="screw" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6f93c2"/><stop offset=".4" stop-color="#3F5F8A"/><stop offset="1" stop-color="#1c2a40"/></linearGradient>
+    <linearGradient id="steelL" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E9E4DA"/><stop offset=".5" stop-color="#8f979d"/><stop offset="1" stop-color="#3b444c"/></linearGradient>
+    <linearGradient id="goldL" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E2C993"/><stop offset=".5" stop-color="#C7A66B"/><stop offset="1" stop-color="#8C7243"/></linearGradient>
+    <radialGradient id="plateShade" cx=".5" cy=".5" r=".5"><stop offset=".72" stop-color="#000" stop-opacity="0"/><stop offset=".94" stop-color="#000" stop-opacity=".35"/><stop offset="1" stop-color="#000" stop-opacity=".85"/></radialGradient>
+    <radialGradient id="dialG" cx=".42" cy=".36" r=".72"><stop offset="0" stop-color="#f1ede4"/><stop offset=".6" stop-color="#E9E4DA"/><stop offset="1" stop-color="#cfc8b9"/></radialGradient>
+    <linearGradient id="handG" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#5279ad"/><stop offset=".5" stop-color="#3F5F8A"/><stop offset=".5" stop-color="#2A3138"/><stop offset="1" stop-color="#222a33"/></linearGradient>
+    <linearGradient id="idxG" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#ecd6a4"/><stop offset=".5" stop-color="#C7A66B"/><stop offset=".5" stop-color="#9b7f49"/><stop offset="1" stop-color="#7c6438"/></linearGradient>
+    <filter id="grain" x="0" y="0" width="1" height="1"><feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="7"/><feColorMatrix values="0 0 0 0 .16 0 0 0 0 .15 0 0 0 0 .13 0 0 0 .55 0"/><feComposite in2="SourceGraphic" operator="in"/></filter>
+    <linearGradient id="angl" gradientUnits="userSpaceOnUse" x1="-160" y1="0" x2="160" y2="120">
+      <stop offset="0" stop-color="#1b2025"/><stop offset=".38" stop-color="#3b444c"/><stop offset=".5" stop-color="#f6f2e8"/><stop offset=".62" stop-color="#59636c"/><stop offset="1" stop-color="#1b2025"/>
+    </linearGradient>
+    <radialGradient id="spot" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff6dc" stop-opacity=".5"/><stop offset=".45" stop-color="#E9E4DA" stop-opacity=".14"/><stop offset="1" stop-color="#E9E4DA" stop-opacity="0"/></radialGradient>
+    <radialGradient id="polish" cx=".5" cy=".5" r=".6" fx=".35" fy=".3"><stop id="pol0" offset="0" stop-color="#15181c"/><stop id="pol1" offset="1" stop-color="#0C0D0F"/></radialGradient>
+  </defs>
+</svg>
+
+<header class="top">
+  <a class="mark" href="#top" aria-label="Atelier Vesper">
+    <svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="12" fill="none" stroke="#C7A66B" stroke-width=".8"/><path d="M7.5 8.5 13 19l5.5-10.5" fill="none" stroke="#C7A66B" stroke-width=".9"/><circle cx="13" cy="6.2" r="1" fill="#7B1E1E"/></svg>
+    <b>Atelier Vesper</b>
+  </a>
+  <nav aria-label="Sections">
+    <a class="cap" href="#montre">La Montre</a>
+    <a class="cap" href="#atelier">L’Atelier</a>
+    <a class="cap" href="#finissage">Finissage</a>
+    <a class="cap keep" href="#liste">Liste d’attente</a>
+  </nav>
+</header>
+
+<main id="top">
+<section class="hero" aria-label="Heure Bleue 38">
+  <div class="copy">
+    <p class="eyebrow cap"><i></i><span lang="fr">Les Brenassons · Jura</span></p>
+    <h1 lang="fr"><span class="ln"><span>Heure</span></span><span class="ln"><span><em>Bleue</em><sup>38</sup></span></span></h1>
+    <div class="tools">
+      <p class="lead">One watch, wound by hand, with nothing to hide. The calibre beside these words is running — it is keeping <em>your</em> time, six beats to the second.</p>
+      <div class="controls">
+        <button class="ctl" id="flipBtn" type="button" aria-pressed="false">
+          <span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 8.500h10l1.2 2.200v6.300a1.5 1.5 0 0 1-1.5 1.500H7.300a1.5 1.5 0 0 1-1.5-1.500v-6.300z"/><path d="M8.5 11v7.500M12 11v7.500M15.5 11v7.500M9.5 8.500V6h5v2.5"/></svg></span>
+          <span class="tx"><b lang="fr">Retourner la montre</b><i id="flipTx">turn the watch over — to the dial</i></span>
+        </button>
+        <button class="ctl" id="slowBtn" type="button" aria-pressed="false">
+          <span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 6.500V12l-3.6 2.4"/><path d="M12 3.500v1.200M20.5 12h-1.200M12 20.500v-1.200M3.5 12h1.2"/></svg></span>
+          <span class="tx"><b lang="fr">Ralenti</b><i id="slowTx">slow the escapement 20×</i></span>
+        </button>
+        <button class="ctl" id="soundBtn" type="button" aria-pressed="false">
+          <span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 3.500v8a3.5 3.5 0 0 0 7 0v-8"/><path d="M12 15v5.5"/><circle cx="12" cy="20.7" r=".5"/><path class="wv" d="M5.5 5.500c-.9 1.6-.9 3.4 0 5M18.5 5.500c.9 1.6.9 3.4 0 5" opacity=".001"/></svg></span>
+          <span class="tx"><b lang="fr">Son</b><i id="soundTx">the tick is off</i></span>
+        </button>
+      </div>
+      <div class="anno" id="anno" aria-live="polite">
+        <div class="anno-body" id="annoBody"></div>
+        <div class="index" id="index" role="group" aria-label="Components"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage" id="stage">
+    <p class="modehint cap" id="modeHint" lang="fr">Mise à l’heure — glissez la couronne</p>
+    <div class="watch" id="watch">
+      <div class="tilt" id="tilt">
+        <div class="flip" id="flip">
+          <div class="lugs"></div><div class="strap t"></div><div class="strap b"></div>
+          <button class="crown" id="crown" type="button" aria-label="Crown. Drag up or down to wind. Press to pull it out one notch, then drag to set the time."><span></span></button>
+
+          <div class="face back" id="faceBack">
+            <svg class="plate" viewBox="0 0 1000 1000" aria-hidden="true">
+              <defs><path id="cbRing" d="M500 500m-466 0a466 466 0 1 1 932 0a466 466 0 1 1-932 0"/></defs>
+              <circle cx="500" cy="500" r="499" fill="none" stroke="#000" stroke-opacity=".35" stroke-width="2"/>
+              <circle cx="500" cy="500" r="486" fill="none" stroke="#fff6dc" stroke-opacity=".25" stroke-width="1"/>
+              <text class="eng" font-size="15.5" fill="#4a3b20"><textPath href="#cbRing" textLength="2905" lengthAdjust="spacing">Atelier Vesper · Les Brenassons · Heure Bleue 38 · N° 07 / 12 · Verre saphir · 3 atm · Remontage manuel · Fait à la main ·</textPath></text>
+              <circle cx="500" cy="500" r="446" fill="#07080a"/>
+              <circle cx="500" cy="500" r="440" fill="url(#perl)"/>
+              <circle cx="500" cy="500" r="440" fill="url(#plateShade)"/>
+              <circle cx="500" cy="500" r="443" fill="none" stroke="#000" stroke-opacity=".8" stroke-width="5"/>
+            </svg>
+            <svg class="wheels" id="wheels" viewBox="0 0 1000 1000" role="img" aria-label="Calibre V.03, running"></svg>
+            <svg class="bridges" id="bridges" viewBox="0 0 1000 1000" aria-hidden="true"></svg>
+            <div class="glare"></div>
+          </div>
+
+          <div class="face front" id="faceFront">
+            <svg class="dial" id="dial" viewBox="0 0 1000 1000" aria-hidden="true"></svg>
+            <svg class="hands" id="hands" viewBox="0 0 1000 1000" role="img" aria-label="Dial showing your local time"></svg>
+            <div class="glare"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="status" aria-hidden="true">
+      <span lang="fr">Heure<b id="stTime">00:00:00</b></span>
+      <span lang="fr">Réserve<b id="stRes">31 h</b></span>
+      <span lang="fr">Cadence<b id="stRate">21 600 A/h</b></span>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="montre">
+  <header class="sec-h rv"><span class="cap">N° I</span><h2 lang="fr">La <em>Montre</em></h2></header>
+  <div class="montre">
+    <table class="spec rv">
+      <tbody>
+        <tr><th scope="row" lang="fr">Diamètre</th><td>38 mm</td></tr>
+        <tr><th scope="row" lang="fr">Épaisseur</th><td>9.8 mm<small>sapphire to sapphire</small></td></tr>
+        <tr><th scope="row" lang="fr">Mouvement</th><td>Calibre V.03, hand-wound<small>21 jewels, adjusted in 5 positions</small></td></tr>
+        <tr><th scope="row" lang="fr">Fréquence</th><td>21,600 vibrations an hour<small>3 Hz — six beats each second</small></td></tr>
+        <tr><th scope="row" lang="fr">Réserve de marche</th><td>60 hours<small>shown as a waxing moon at nine</small></td></tr>
+        <tr><th scope="row" lang="fr">Boîtier</th><td>Steel or rose gold</td></tr>
+        <tr><th scope="row" lang="fr">Cadran</th><td>Ivory lacquer, applied gold indices<small>leaf hands in flame-blued steel</small></td></tr>
+        <tr><th scope="row" lang="fr">Production</th><td>12 pieces a year</td></tr>
+      </tbody>
+    </table>
+    <div class="profile rv">
+      <svg viewBox="0 0 440 230" role="img" aria-label="Side elevation: 38 millimetres across, 9.8 millimetres thick">
+        <path class="pl" d="M68 96 H372 Q380 96 380 104 V146 Q380 154 372 154 H68 Q60 154 60 146 V104 Q60 96 68 96Z"/>
+        <path class="pl" d="M84 96 Q220 66 356 96"/>
+        <path class="pl" d="M92 154 Q220 172 348 154"/>
+        <path class="pl" d="M60 112 L34 150 Q30 158 38 158 L60 150 M380 112 L406 150 Q410 158 402 158 L380 150"/>
+        <path class="pl" d="M60 125 H380" stroke-dasharray="1 5"/>
+        <circle class="pl" cx="220" cy="125" r="11"/><path class="pl" d="M220 114v22M212 117v16M228 117v16"/>
+        <path class="pd" d="M60 196 H380 M60 190 v12 M380 190 v12"/>
+        <path class="pd" d="M420 81 V163 M414 81 h12 M414 163 h12"/>
+        <text class="pt" x="220" y="218" text-anchor="middle">38,0 mm</text>
+        <text class="pt" x="396" y="52" text-anchor="middle">9,8 mm</text>
+        <path class="pd" d="M396 58 L418 80"/>
+        <text class="pt" x="220" y="40" text-anchor="middle" fill="#C7A66B" style="fill:#C7A66B;font-size:10px;letter-spacing:.3em">VUE DE CHAMP · ÉCH. 3 : 1</text>
+      </svg>
+      <p>Drawn from six o’clock. The crown is the only thing that sticks out, and it is knurled deep enough to wind with a thumb in winter.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="atelier">
+  <header class="sec-h rv"><span class="cap">N° II</span><h2 lang="fr">L’<em>Atelier</em></h2></header>
+  <div class="atelier">
+    <div class="rv">
+      <blockquote>We make one watch at a time because we own one bench.
+        <footer class="cap">Colette Vesper-Aubry</footer>
+      </blockquote>
+      <dl class="bench" aria-label="Inventory of the workshop">
+        <dt>1</dt><dd><span lang="fr">établi en poirier</span> — pearwood bench, two drawers that stick</dd>
+        <dt>2</dt><dd><span lang="fr">tabourets</span> — stools, one higher than the other</dd>
+        <dt>1</dt><dd><span lang="fr">tour d’horloger</span> — watchmaker’s lathe, bought in 1987, older than that</dd>
+        <dt>31</dt><dd><span lang="fr">limes</span> — files, of which Colette uses four</dd>
+        <dt>1</dt><dd><span lang="fr">fenêtre au nord-est</span> — window, the important tool</dd>
+      </dl>
+    </div>
+    <div class="rv">
+      <p>The workshop is the front room of a farmhouse above Les Brenassons, facing north-east so the light stays flat until noon. Colette Vesper-Aubry spent nineteen years finishing other people’s movements in the valley before she drew her own. Her nephew Basile joined in the third winter; he cuts the wheels and pinions, she does everything that gets looked at through a loupe.</p>
+      <p>A Heure Bleue takes about four weeks. Three of them are finishing. When a watch leaves, the bench is cleared, the next plate is clamped down, and that is the whole of our production planning.</p>
+      <p>We do not have a boutique. If you are passing, ring the bell twice — once sounds like the postman, and we let the postman wait.</p>
+      <div class="sign">
+        <span><b>Colette</b>design, finishing, regulation</span>
+        <span><b>Basile</b>wheels, pinions, cases</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="finissage">
+  <header class="sec-h rv"><span class="cap">N° III</span><h2 lang="fr"><em>Finissage</em></h2></header>
+  <div class="fin">
+    <figure class="rv" data-v="0">
+      <div class="loupe"><svg viewBox="0 0 300 300" aria-hidden="true">
+        <rect width="300" height="300" fill="url(#perl)"/>
+        <path d="M222 -10 C 222 92 160 126 120 156 C 80 186 72 232 72 312" fill="none" stroke="#000" stroke-opacity=".6" stroke-width="20"/>
+        <path d="M-10 -10 H210 C 210 90 150 120 110 150 C 70 180 60 230 60 310 H-10Z" fill="url(#cotes)"/>
+        <path id="anglP" d="M210 -10 C 210 90 150 120 110 150 C 70 180 60 230 60 310" fill="none" stroke="url(#angl)" stroke-width="15"/>
+        <path d="M203 -10 C 203 86 146 114 106 144 C 64 175 53 228 53 310" fill="none" stroke="#000" stroke-opacity=".35" stroke-width="1"/>
+        <g transform="translate(98 62)"><circle r="23" fill="#0b0c0e"/><circle r="19" fill="url(#screw)"/><rect x="-19" y="-2.5" width="38" height="5" fill="#0d131d" transform="rotate(-24)"/></g>
+      </svg></div>
+      <figcaption><span class="cap">Fig. 1</span><b lang="fr">Anglage</b><p>Every bridge edge is filed to forty-five degrees and polished with gentian wood. Move across it: the bevel lights all at once, or not at all.</p></figcaption>
+    </figure>
+    <figure class="rv" data-v="1">
+      <div class="loupe"><svg viewBox="0 0 300 300" aria-hidden="true">
+        <rect width="300" height="300" fill="url(#cotes)"/>
+        <circle cx="150" cy="150" r="112" fill="#060708"/>
+        <circle cx="150" cy="150" r="104" fill="none" stroke="url(#bevel)" stroke-width="5" opacity=".8"/>
+        <circle id="polHead" cx="150" cy="150" r="98" fill="url(#polish)"/>
+        <g transform="rotate(27 150 150)"><rect x="46" y="138" width="208" height="24" fill="#050607"/><rect id="polSlot" x="46" y="138" width="208" height="2" fill="#E9E4DA" opacity=".2"/></g>
+      </svg></div>
+      <figcaption><span class="cap">Fig. 2</span><b lang="fr">Poli noir</b><p>A screw head lapped on a tin plate until it is flat to the wavelength. Black from every angle but one; find the one.</p></figcaption>
+    </figure>
+    <figure class="rv" data-v="2">
+      <div class="loupe"><svg viewBox="0 0 300 300" aria-hidden="true">
+        <rect width="300" height="300" fill="url(#perlBig)"/>
+        <circle id="perlSpot" cx="150" cy="150" r="150" fill="url(#spot)"/>
+      </svg></div>
+      <figcaption><span class="cap">Fig. 3</span><b lang="fr">Perlage</b><p>The mainplate, under the dial where nobody looks: overlapping circles laid down one at a time with a rubber peg and a steady wrist.</p></figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="sec" id="liste">
+  <header class="sec-h rv"><span class="cap">N° IV</span><h2 lang="fr">Liste <em>d’attente</em></h2></header>
+  <div class="liste">
+    <div class="rv">
+      <p>There is no deposit and no configurator. Leave an address; when your turn is two watches away, Colette writes to you herself and asks which metal you would like.</p>
+      <form id="wait" novalidate>
+        <div class="field" id="field">
+          <label class="cap" for="email" lang="fr">Votre adresse</label>
+          <input id="email" name="email" type="email" inputmode="email" autocomplete="email" spellcheck="false" placeholder="vous@exemple.ch" aria-describedby="msg">
+          <button class="send cap" type="submit"><span lang="fr">Inscrire</span><svg viewBox="0 0 34 12" aria-hidden="true"><path d="M0 6h32M27 1l5 5-5 5"/></svg></button>
+        </div>
+        <p class="msg" id="msg" role="status">Nothing is sent anywhere. The ring simply remembers you while this page is open.</p>
+      </form>
+    </div>
+    <div class="ringwrap rv">
+      <svg viewBox="0 0 320 320" role="img" aria-label="Caseback ring" id="ringSvg">
+        <defs><path id="wRing" d="M160 160m-131 0a131 131 0 1 1 262 0a131 131 0 1 1-262 0"/></defs>
+        <circle cx="160" cy="160" r="159" fill="none" stroke="#000" stroke-opacity=".4" stroke-width="1.5"/>
+        <circle cx="160" cy="160" r="114" fill="#07080a"/>
+        <circle cx="160" cy="160" r="111" fill="url(#perl)"/>
+        <circle cx="160" cy="160" r="111" fill="url(#plateShade)"/>
+        <text class="eng" id="ringGhost" font-size="12" fill="#3d3220" opacity=".4" letter-spacing="1"><textPath href="#wRing" textLength="806" lengthAdjust="spacing">· · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · ·</textPath></text>
+        <text class="eng" font-size="12.5" fill="#2b2315"><textPath id="ringText" href="#wRing" textLength="806" lengthAdjust="spacing"></textPath></text>
+        <circle class="spark" id="spark" r="3" fill="#fff6dc"/>
+        <g class="mid" id="ringMid" text-anchor="middle">
+          <text class="cap" x="160" y="140" fill="#C7A66B" style="font-size:8px;letter-spacing:.3em;fill:#C7A66B" id="ringK">VOTRE NOM ICI</text>
+          <text x="160" y="178" fill="#E9E4DA" font-size="34" font-style="italic" style="font-family:var(--display)" id="ringN">N° —</text>
+          <text class="cap" x="160" y="204" fill="#E9E4DA" opacity=".6" style="font-size:7.5px;letter-spacing:.3em;fill:#E9E4DA" id="ringY">GRAVÉ À LA MAIN</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="end">
+  <span>Atelier Vesper · Chemin des Sagnes 4 · Les Brenassons, Jura</span>
+  <span>The atelier, the village and the watch are inventions. The time is real.</span>
+  <a href="#top">Back to the movement</a>
+</footer>
+
+<script>
+(function(){
+'use strict';
+var NS='http://www.w3.org/2000/svg';
+var RM=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var $=function(id){return document.getElementById(id)};
+function S(p,tag,a,txt){var e=document.createElementNS(NS,tag);if(a)for(var k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;if(p)p.appendChild(e);return e}
+var rad=Math.PI/180;
+function f2(n){return (Math.round(n*100)/100)}
+function pol(r,deg,cx,cy){return [ (cx==null?500:cx)+r*Math.cos(deg*rad), (cy==null?500:cy)+r*Math.sin(deg*rad) ]}
+function clamp(v,a,b){return v<a?a:v>b?b:v}
+function smooth(t){return t*t*(3-2*t)}
+function m360(a){a%=360;return a<0?a+360:a}
+
+/* ───────── geometry of the calibre (back view) ───────── */
+var C={x:500,y:500}, F={x:500,y:700};
+var dCT=146.25, dTF=119;                       // centre distances from tooth counts
+(function(){var d=200,a=(dCT*dCT-dTF*dTF+d*d)/(2*d),h=Math.sqrt(dCT*dCT-a*a);C.T={x:500+h,y:500+a}})();
+var T=C.T;
+var Bx=pol(175,230), BAR={x:Bx[0],y:Bx[1]};
+var ALPHA=200, EPS=4.3, FORK=7;
+var Ex=pol(93.6,190,F.x,F.y), E={x:Ex[0],y:Ex[1]};
+var Px=pol(60,ALPHA,E.x,E.y), P={x:Px[0],y:Px[1]};
+var Lx=pol(58,ALPHA,P.x,P.y), BAL={x:Lx[0],y:Lx[1]};
+var Wx=pol(122,143,BAR.x,BAR.y), CW={x:Wx[0],y:Wx[1]};
+function dir(a,b){return Math.atan2(b.y-a.y,b.x-a.x)/rad}
+var phiCB=dir(C,BAR), phiCT=dir(C,T), phiTF=dir(T,F), phiFE=dir(F,E), phiBW=dir(BAR,CW);
+function mesh(thA,zA,zB,phi){return -(zA/zB)*(thA-phi)+phi+180+180/zB}
+
+/* gear outline with ogival, involute-like flanks; tooth 0 centred on angle 0 */
+function gearPath(z,R,o){
+  o=o||{};var m=2*R/z, ra=R+m*(o.add||1.05), rr=R-m*(o.ded||1.25), p=2*Math.PI/z, w=o.w||.25, d='';
+  function pt(r,t,a){return f2(r*Math.cos(a+t*p))+' '+f2(r*Math.sin(a+t*p))}
+  for(var i=0;i<z;i++){var a=i*p, rm=R+(ra-R)*.72;
+    d+=(i?'L':'M')+pt(rr,-w-.035,a)+'L'+pt(R,-w,a)+'Q'+pt(rm,-w*.9,a)+' '+pt(ra,-.045,a)+'L'+pt(ra,.045,a)+
+       'Q'+pt(rm,w*.9,a)+' '+pt(R,w,a)+'L'+pt(rr,w+.035,a)+'A'+f2(rr)+' '+f2(rr)+' 0 0 1 '+pt(rr,1-w-.035,a);
+  }
+  return {d:d+'Z',ra:ra,rr:rr,m:m};
+}
+function windows(rIn,rOut,n,sw,rot){
+  var d='',step=360/n;rot=rot||0;
+  for(var k=0;k<n;k++){
+    var a0=k*step+rot, a1=a0+step, do_=Math.asin(sw/2/rOut)/rad, di=Math.asin(sw/2/rIn)/rad;
+    var A=pol(rOut,a0+do_,0,0),B=pol(rOut,a1-do_,0,0),Cc=pol(rIn,a1-di,0,0),D=pol(rIn,a0+di,0,0);
+    d+='M'+f2(A[0])+' '+f2(A[1])+'A'+rOut+' '+rOut+' 0 0 1 '+f2(B[0])+' '+f2(B[1])+'L'+f2(Cc[0])+' '+f2(Cc[1])+
+       'A'+rIn+' '+rIn+' 0 0 0 '+f2(D[0])+' '+f2(D[1])+'Z';
+  }
+  return d;
+}
+function sawPath(z,R,h){var d='',p=360/z;for(var i=0;i<z;i++){var a=pol(R+h,i*p,0,0),b=pol(R-h*.2,i*p+p*.86,0,0),c=pol(R-h*.2,i*p+p,0,0);
+  d+=(i?'L':'M')+f2(a[0])+' '+f2(a[1])+'L'+f2(b[0])+' '+f2(b[1])+'L'+f2(c[0])+' '+f2(c[1])}return d+'Z'}
+function clubPath(){
+  var d='';for(var k=0;k<15;k++){var a=k*24;
+    var q=[[30,a-14],[45,a-10.5],[50.6,a-9.2],[52,a],[46,a-2.2],[30,a-6]].map(function(v){return pol(v[0],v[1],0,0)});
+    d+=(k?'L':'M')+f2(q[0][0])+' '+f2(q[0][1]);
+    for(var i=1;i<6;i++)d+='L'+f2(q[i][0])+' '+f2(q[i][1]);
+    var n=pol(30,a+10,0,0);d+='A30 30 0 0 1 '+f2(n[0])+' '+f2(n[1]);
+  }
+  return d+'Z'+windows(11,23.5,4,5.5,12);
+}
+var gid=0;
+function goldGrad(defs,r,dark){var id='gg'+(gid++);var g=S(defs,'radialGradient',{id:id,gradientUnits:'userSpaceOnUse',cx:0,cy:0,r:r});
+  var st=dark?[[0,'#7a6238'],[.5,'#a88a52'],[.86,'#C7A66B'],[.93,'#a88a52'],[1,'#6f5a34']]:[[0,'#9c7f4a'],[.3,'#C7A66B'],[.78,'#b8975c'],[.86,'#E2C993'],[.93,'#C7A66B'],[1,'#8C7243']];
+  st.forEach(function(s){S(g,'stop',{offset:s[0],'stop-color':s[1]})});return 'url(#'+id+')'}
+function screw(p,x,y,r,ang){var g=S(p,'g',{transform:'translate('+f2(x)+' '+f2(y)+')'});
+  S(g,'circle',{r:r+2.2,fill:'#090a0c'});S(g,'circle',{r:r,fill:'url(#screw)'});
+  S(g,'circle',{r:r-.8,fill:'none',stroke:'#9db9dc','stroke-opacity':.35,'stroke-width':.8});
+  S(g,'rect',{x:-r,y:-r*.16,width:2*r,height:r*.32,fill:'#0b111b',transform:'rotate('+ang+')'});return g}
+function jewel(p,x,y,rc,rj){var g=S(p,'g',{transform:'translate('+f2(x)+' '+f2(y)+')'});
+  S(g,'circle',{r:rc+1.5,fill:'#0a0b0d'});S(g,'circle',{r:rc,fill:'url(#chaton)'});
+  S(g,'circle',{r:rc-2.2,fill:'none',stroke:'#5A4827','stroke-width':.7});
+  S(g,'circle',{r:rj,fill:'url(#ruby)'});S(g,'circle',{r:rj*.26,fill:'#2a0808'});
+  S(g,'ellipse',{cx:-rj*.3,cy:-rj*.36,rx:rj*.32,ry:rj*.18,fill:'#ffd9d0',opacity:.55,transform:'rotate(-30)'});return g}
+
+/* ───────── build: wheels layer ───────── */
+var W=$('wheels'), BR=$('bridges'), wdefs=S(W,'defs');
+var R={}; // rotating elements
+function tr(el,a){el.setAttribute('transform','rotate('+a.toFixed(3)+')')}
+function group(key,c){return S(W,'g',{'data-k':key,transform:'translate('+f2(c.x)+' '+f2(c.y)+')'})}
+function rimShadow(g,r,w){S(g,'circle',{r:r,fill:'none',stroke:'#000','stroke-opacity':.42,'stroke-width':w,transform:'translate(4 7)'})}
+function wheel(key,c,z,Rp,pz,pR,spokes,sw,hub){
+  var g=group(key,c), gp=gearPath(z,Rp), rimIn=gp.rr-Math.max(6,gp.m*2.6);
+  rimShadow(g,(gp.ra+rimIn)/2,gp.ra-rimIn);
+  var rot=S(g,'g');
+  S(rot,'path',{d:gp.d+windows(hub,rimIn,spokes,sw,17),'fill-rule':'evenodd',fill:goldGrad(wdefs,gp.ra),stroke:'#4a3b20','stroke-width':.7});
+  S(rot,'circle',{r:rimIn+1.6,fill:'none',stroke:'#5A4827','stroke-opacity':.7,'stroke-width':.6});
+  S(rot,'circle',{r:gp.rr-1.2,fill:'none',stroke:'#fff6dc','stroke-opacity':.3,'stroke-width':.6});
+  S(g,'circle',{r:(gp.rr+rimIn)/2,fill:'none',stroke:'url(#sheen)','stroke-width':gp.rr-rimIn,opacity:.75});
+  var pin=S(g,'g');
+  if(pz){var pp=gearPath(pz,pR,{add:.95,ded:1.150,w:.23});
+    S(pin,'circle',{r:pp.ra+2.5,fill:'#000',opacity:.3,transform:'translate(1.5 2.5)'});
+    S(pin,'path',{d:pp.d,fill:'url(#steelL)',stroke:'#1a1f24','stroke-width':.6});
+    S(pin,'circle',{r:Math.max(2.2,pp.rr*.42),fill:'#14181c'});}
+  S(g,'circle',{r:gp.ra+3,fill:'transparent'});
+  R[key]=[rot,pin];return {g:g,ra:gp.ra};
+}
+
+/* keyless works: stem, winding pinion */
+(function(){
+  var g=S(W,'g',{id:'stem'});
+  S(g,'rect',{x:64,y:494,width:214,height:12,fill:'url(#steelL)',opacity:.85});
+  S(g,'rect',{x:64,y:494,width:214,height:3,fill:'#fff',opacity:.18});
+  var wp=S(g,'g',{transform:'translate(262 484)'});
+  S(wp,'rect',{width:40,height:32,rx:3,fill:'#11151a'});
+  for(var i=0;i<8;i++)S(wp,'rect',{x:2+i*4.6,y:1,width:2.6,height:30,fill:i%2?'#8f979d':'#c9c6be',opacity:.9});
+  var sp=S(g,'g',{transform:'translate(206 486)'});
+  S(sp,'rect',{width:34,height:28,rx:3,fill:'#11151a'});
+  for(i=0;i<5;i++)S(sp,'rect',{x:3+i*6,y:1,width:3.2,height:26,fill:'#8f979d',opacity:.8});
+})();
+
+/* barrel with visible mainspring */
+var springEl;
+(function(){
+  var g=group('barillet',BAR), gp=gearPath(72,150);
+  rimShadow(g,146,22);
+  var rot=S(g,'g');
+  S(rot,'path',{d:gp.d,fill:goldGrad(wdefs,gp.ra,true),stroke:'#4a3b20','stroke-width':.7});
+  S(rot,'circle',{r:136,fill:'#08090b'});
+  springEl=S(rot,'path',{fill:'none',stroke:'#4d73a6','stroke-width':2.3,'stroke-linecap':'round'});
+  S(rot,'path',{d:'M140 0A140 140 0 1 0 -140 0A140 140 0 1 0 140 0Z'+windows(92,128,3,54,30),'fill-rule':'evenodd',fill:goldGrad(wdefs,140,true),stroke:'#4a3b20','stroke-width':.7});
+  for(var r=20;r<140;r+=6)S(rot,'circle',{r:r,fill:'none',stroke:r%12?'#fff6dc':'#000','stroke-opacity':.07,'stroke-width':1});
+  S(rot,'text',{class:'eng','font-size':9,fill:'#3d3220','letter-spacing':3,'text-anchor':'middle',transform:'rotate(92) translate(0 -131)'},'');
+  S(g,'circle',{r:139,fill:'none',stroke:'url(#sheen)','stroke-width':10,opacity:.6});
+  S(g,'circle',{r:156,fill:'transparent'});
+  R.barillet=[rot];
+})();
+function drawSpring(f){
+  var k=.42+2.050*f, N=10, n=N*26, d='';
+  for(var i=0;i<=n;i++){var u=i/n, r=26+108*Math.pow(u,k), a=u*N*2*Math.PI;
+    d+=(i?'L':'M')+f2(r*Math.cos(a))+' '+f2(r*Math.sin(a));}
+  springEl.setAttribute('d',d);
+}
+
+/* ratchet, crown wheel, click */
+(function(){
+  var g=S(W,'g',{'data-k':'rochet'});
+  var a=S(g,'g',{transform:'translate('+f2(BAR.x)+' '+f2(BAR.y)+')'});
+  S(a,'circle',{r:84,fill:'#000',opacity:.45,transform:'translate(4 7)'});
+  var ra=S(a,'g');
+  S(ra,'path',{d:sawPath(40,80,5),fill:goldGrad(wdefs,86),stroke:'#4a3b20','stroke-width':.7});
+  for(var i=0;i<24;i++)S(ra,'path',{d:'M12 0Q40 '+(18)+' 74 8',fill:'none',stroke:i%2?'#fff6dc':'#3d3220','stroke-opacity':.16,'stroke-width':1.2,transform:'rotate('+(i*15)+')'});
+  S(ra,'circle',{r:22,fill:'#0a0b0d'});S(ra,'circle',{r:19,fill:'url(#screw)'});
+  S(ra,'rect',{x:-19,y:-2.6,width:38,height:5.2,fill:'#0b111b',transform:'rotate(38)'});
+  S(a,'circle',{r:50,fill:'none',stroke:'url(#sheen)','stroke-width':52,opacity:.55});
+  var b=S(g,'g',{transform:'translate('+f2(CW.x)+' '+f2(CW.y)+')'});
+  S(b,'circle',{r:44,fill:'#000',opacity:.45,transform:'translate(4 7)'});
+  var rb=S(b,'g');var gp=gearPath(21,42,{add:.8,ded:1,w:.26});
+  S(rb,'path',{d:gp.d,fill:goldGrad(wdefs,gp.ra),stroke:'#4a3b20','stroke-width':.7});
+  for(i=0;i<12;i++)S(rb,'path',{d:'M9 0Q22 9 36 3',fill:'none',stroke:i%2?'#fff6dc':'#3d3220','stroke-opacity':.18,'stroke-width':1,transform:'rotate('+(i*30)+')'});
+  S(rb,'circle',{r:13,fill:'#0a0b0d'});S(rb,'circle',{r:11,fill:'url(#screw)'});
+  S(rb,'rect',{x:-11,y:-1.7,width:22,height:3.4,fill:'#0b111b',transform:'rotate(-52)'});
+  S(b,'circle',{r:26,fill:'none',stroke:'url(#sheen)','stroke-width':24,opacity:.5});
+  // click (pawl) and its spring
+  var cp=pol(88,-62,BAR.x,BAR.y);
+  var ck=S(g,'g',{transform:'translate('+f2(cp[0])+' '+f2(cp[1])+') rotate(28)'});
+  S(ck,'path',{d:'M-4 4 L2 -16 L12 -18 L16 -6 L34 2 Q60 14 70 40',fill:'none',stroke:'#11151a','stroke-width':9,'stroke-linecap':'round','stroke-linejoin':'round'});
+  S(ck,'path',{d:'M-4 4 L2 -16 L12 -18 L16 -6 L34 2 Q60 14 70 40',fill:'none',stroke:'url(#steelL)','stroke-width':5.5,'stroke-linecap':'round','stroke-linejoin':'round'});
+  screw(ck,12,-8,5.5,70);
+  S(g,'circle',{cx:f2(BAR.x),cy:f2(BAR.y),r:86,fill:'transparent'});
+  S(g,'circle',{cx:f2(CW.x),cy:f2(CW.y),r:47,fill:'transparent'});
+  R.rochet=[ra];R.couronne=[rb];
+})();
+
+var wc=wheel('centre',C,80,130,12,25,5,11,34);
+var wt=wheel('moyenne',T,75,105,10,16.250,5,9,24);
+var wf=wheel('seconde',F,72,86.4,10,14,5,8,21);
+
+/* escape wheel + its pinion (same arbor, separate phase) */
+(function(){
+  var g=group('echappement',E);
+  S(g,'circle',{r:41,fill:'none',stroke:'#000','stroke-opacity':.4,'stroke-width':22,transform:'translate(3 5)'});
+  var rot=S(g,'g');
+  S(rot,'path',{d:clubPath(),'fill-rule':'evenodd',fill:goldGrad(wdefs,52),stroke:'#4a3b20','stroke-width':.6});
+  S(g,'circle',{r:27,fill:'none',stroke:'url(#sheen)','stroke-width':6,opacity:.7});
+  var pin=S(g,'g');var pp=gearPath(6,7.2,{add:.9,ded:1.050,w:.24});
+  S(pin,'path',{d:pp.d,fill:'url(#steelL)',stroke:'#1a1f24','stroke-width':.5});
+  S(pin,'circle',{r:2.2,fill:'#14181c'});
+  S(g,'circle',{r:55,fill:'transparent'});
+  R.echappement=[rot];R.echPin=[pin];
+})();
+
+/* pallet fork between banking pins */
+(function(){
+  var g=S(W,'g',{'data-k':'ancre'});
+  var st=S(g,'g',{transform:'translate('+f2(P.x)+' '+f2(P.y)+') rotate('+ALPHA+')'});
+  S(st,'circle',{cx:30,cy:-9.3,r:2.6,fill:'url(#chaton)',stroke:'#0a0b0d','stroke-width':.8});
+  S(st,'circle',{cx:30,cy:9.3,r:2.6,fill:'url(#chaton)',stroke:'#0a0b0d','stroke-width':.8});
+  var outer=S(g,'g',{transform:'translate('+f2(P.x)+' '+f2(P.y)+')'});
+  var rot=S(outer,'g');
+  var body='M-24 -37 L-9 -33 L3 -7 L33 -3.2 L42 -7.5 L46 -6.5 L43 -1.8 L43 1.8 L46 6.5 L42 7.5 L33 3.2 L3 7 L-9 33 L-24 37 L-27 30 L-14 24 L-7 0 L-14 -24 L-27 -30Z';
+  S(rot,'path',{d:body,fill:'#000',opacity:.4,transform:'translate(2 4)'});
+  S(rot,'path',{d:body,fill:'url(#steelL)',stroke:'#14181c','stroke-width':.7,'stroke-linejoin':'round'});
+  // ruby pallets, radial to the escape wheel
+  [[-30,1],[30,-1]].forEach(function(v){
+    var ex=-60+57.4*Math.cos(v[0]*rad), ey=57.4*Math.sin(v[0]*rad);
+    S(rot,'rect',{x:-7.1,y:-3.5,width:14.2,height:7,rx:.6,fill:'url(#ruby)',stroke:'#3c0d0d','stroke-width':.5,
+      transform:'translate('+f2(ex)+' '+f2(ey)+') rotate('+v[0]+')'});
+  });
+  S(rot,'circle',{r:5.5,fill:'url(#chaton)'});S(rot,'circle',{r:3.2,fill:'url(#ruby)'});
+  S(g,'circle',{cx:f2(P.x),cy:f2(P.y),r:40,fill:'transparent'});
+  R.ancre=[rot];
+})();
+
+/* balance wheel and hairspring */
+var hairEl, STUD=158;
+(function(){
+  var g=group('balancier',BAL);
+  S(g,'circle',{r:96,fill:'none',stroke:'#000','stroke-opacity':.42,'stroke-width':10,transform:'translate(4 8)'});
+  var rot=S(g,'g');
+  for(var i=0;i<3;i++)S(rot,'path',{d:'M0 0L92 0',stroke:'#b8975c','stroke-width':8.5,transform:'rotate('+(i*120+20)+')'});
+  for(i=0;i<3;i++)S(rot,'path',{d:'M14 0L90 0',stroke:'#fff6dc','stroke-opacity':.45,'stroke-width':1.2,transform:'rotate('+(i*120+20)+') translate(0 -2.5)'});
+  S(rot,'circle',{r:96,fill:'none',stroke:goldGrad(wdefs,101),'stroke-width':9});
+  S(rot,'circle',{r:99.8,fill:'none',stroke:'#fff6dc','stroke-opacity':.4,'stroke-width':.7});
+  S(rot,'circle',{r:91.8,fill:'none',stroke:'#4a3b20','stroke-opacity':.8,'stroke-width':.7});
+  for(i=0;i<12;i++){var p=pol(102.5,i*30+5,0,0);S(rot,'circle',{cx:f2(p[0]),cy:f2(p[1]),r:3.8,fill:i%3?'#a88a52':'#E2C993',stroke:'#3d3220','stroke-width':.6})}
+  S(rot,'circle',{r:15,fill:'url(#steelL)',stroke:'#14181c','stroke-width':.7});
+  var ip=pol(12,ALPHA+180,0,0);
+  S(rot,'circle',{cx:f2(ip[0]),cy:f2(ip[1]),r:2.7,fill:'url(#ruby)',stroke:'#3c0d0d','stroke-width':.4});
+  hairEl=S(g,'path',{fill:'none',stroke:'#7aa0d4','stroke-width':1.25,'stroke-linecap':'round'});
+  var col=S(g,'g');S(col,'circle',{r:8,fill:'url(#goldL)',stroke:'#3d3220','stroke-width':.6});S(col,'circle',{r:3,fill:'#14181c'});
+  S(g,'circle',{r:108,fill:'transparent'});
+  R.balancier=[rot,col];
+})();
+function drawHair(beta){
+  var N=6.5, n=300, tot=N*360+beta, d='';
+  for(var i=0;i<=n;i++){var u=i/n, r=64+(9-64)*u, a=(STUD+u*tot)*rad;
+    d+=(i?'L':'M')+f2(r*Math.cos(a))+' '+f2(r*Math.sin(a));}
+  hairEl.setAttribute('d',d);
+}
+
+/* ───────── build: bridges layer ───────── */
+(function(){
+  var g=S(BR,'g',{'data-k':'ponts'});
+  function arc(r,a0,a1,rev){var A=pol(r,a0),B=pol(r,a1);return rev?'M'+f2(B[0])+' '+f2(B[1])+'A'+r+' '+r+' 0 0 0 '+f2(A[0])+' '+f2(A[1]):'M'+f2(A[0])+' '+f2(A[1])+'A'+r+' '+r+' 0 0 1 '+f2(B[0])+' '+f2(B[1])}
+  function line(a,b){return 'M'+f2(a[0])+' '+f2(a[1])+'L'+f2(b[0])+' '+f2(b[1])}
+  var parts=[
+    [arc(380,-86,34),84],[line(pol(372,-22),[C.x,C.y]),40],[line(pol(372,24),[T.x,T.y]),36],
+    [arc(396,66,118),56],[line(pol(392,84),[F.x,F.y]),28],[line(pol(392,106),[E.x,E.y]),19],
+    [arc(400,140,160),56],[line(pol(398,150),[BAL.x,BAL.y]),32]
+  ];
+  parts.forEach(function(p){S(g,'path',{d:p[0],fill:'none',stroke:'#000','stroke-opacity':.5,'stroke-width':p[1]+7,'stroke-linecap':'round',transform:'translate(5 9)'})});
+  parts.forEach(function(p){S(g,'path',{d:p[0],fill:'none',stroke:'url(#bevel)','stroke-width':p[1]+6,'stroke-linecap':'round'})});
+  parts.forEach(function(p){S(g,'path',{d:p[0],fill:'none',stroke:'#14181c','stroke-width':p[1]+1.2,'stroke-linecap':'round'})});
+  parts.forEach(function(p){S(g,'path',{d:p[0],fill:'none',stroke:'url(#cotes)','stroke-width':p[1],'stroke-linecap':'round'})});
+  var d=S(BR,'defs');
+  S(d,'path',{id:'engA',d:arc(389,-83,31)});S(d,'path',{id:'engB',d:arc(408,77,107,true)});
+  var t=S(g,'text',{class:'eng','font-size':15.5,fill:'#C7A66B'});
+  S(t,'textPath',{href:'#engA',textLength:760,lengthAdjust:'spacing'},'ATELIER VESPER · V.03 · 21 RUBIS · AJUSTÉ 5 POSITIONS');
+  t=S(g,'text',{class:'eng','font-size':11,fill:'#C7A66B',opacity:.85});
+  S(t,'textPath',{href:'#engB',textLength:200,lengthAdjust:'spacing'},'LES BRENASSONS · N° 07');
+  [[358,-74,31],[354,-41,118],[356,2,74],[358,31,12]].forEach(function(s){var p=pol(s[0],s[1]);screw(g,p[0],p[1],10.5,s[2])});
+  [[396,67.5,95],[396,116.5,33],[400,142,147],[400,158,61]].forEach(function(s){var p=pol(s[0],s[1]);screw(g,p[0],p[1],10.5,s[2])});
+  jewel(g,C.x,C.y,15,9);jewel(g,T.x,T.y,13,7.5);jewel(g,F.x,F.y,13,7.5);jewel(g,E.x,E.y,9,5);
+  // balance cock: shock setting with lyre spring, stud, regulator marks
+  jewel(g,BAL.x,BAL.y,15,8);
+  var lg=S(g,'g',{transform:'translate('+f2(BAL.x)+' '+f2(BAL.y)+') rotate('+(STUD-90)+')'});
+  S(lg,'path',{d:'M-9 -4 Q-12 -12 0 -12.5 Q12 -12 9 -4 M-9 -4 L-9 6 M9 -4 L9 6',fill:'none',stroke:'#f0dcae','stroke-width':1.3,'stroke-linecap':'round'});
+  var sp=pol(64,STUD,BAL.x,BAL.y);
+  S(g,'rect',{x:-6,y:-4.5,width:12,height:9,rx:1.5,fill:'url(#chaton)',stroke:'#0a0b0d','stroke-width':.8,transform:'translate('+f2(sp[0])+' '+f2(sp[1])+') rotate('+STUD+')'});
+  var rg=S(g,'g',{transform:'translate('+f2(BAL.x)+' '+f2(BAL.y)+')'});
+  for(var i=-3;i<=3;i++){var a=STUD+180+i*7,p0=pol(24,a,0,0),p1=pol(i?28:31,a,0,0);S(rg,'path',{d:line(p0,p1),stroke:'#C7A66B','stroke-width':.9})}
+  var pm=pol(36,STUD+180-27,0,0),pp=pol(36,STUD+180+27,0,0);
+  S(rg,'text',{class:'eng',x:f2(pp[0]),y:f2(pp[1]+3),'font-size':8,fill:'#C7A66B','text-anchor':'middle'},'+');
+  S(rg,'text',{class:'eng',x:f2(pm[0]),y:f2(pm[1]+3),'font-size':8,fill:'#C7A66B','text-anchor':'middle'},'–');
+  S(BR,'circle',{id:'ringB',class:'ring',r:10});
+})();
+
+/* ───────── build: dial ───────── */
+var DL=$('dial'), HD=$('hands'), resArc, RESLEN=103.3;
+(function(){
+  S(DL,'circle',{cx:500,cy:500,r:499,fill:'none',stroke:'#000','stroke-opacity':.4,'stroke-width':2});
+  S(DL,'circle',{cx:500,cy:500,r:466,fill:'#0a0b0d'});
+  S(DL,'circle',{cx:500,cy:500,r:460,fill:'url(#dialG)'});
+  S(DL,'circle',{cx:500,cy:500,r:460,fill:'#fff',filter:'url(#grain)',opacity:.16});
+  S(DL,'circle',{cx:500,cy:500,r:458,fill:'none',stroke:'#000','stroke-opacity':.3,'stroke-width':5});
+  S(DL,'circle',{cx:500,cy:500,r:438,fill:'none',stroke:'#2A3138','stroke-opacity':.55,'stroke-width':.8});
+  S(DL,'circle',{cx:500,cy:500,r:424,fill:'none',stroke:'#2A3138','stroke-opacity':.55,'stroke-width':.8});
+  var tk='';for(var i=0;i<60;i++){var a=pol(424,i*6),b=pol(438,i*6);tk+='M'+f2(a[0])+' '+f2(a[1])+'L'+f2(b[0])+' '+f2(b[1])}
+  S(DL,'path',{d:tk,stroke:'#2A3138','stroke-opacity':.75,'stroke-width':1});
+  var gi=S(DL,'g',{'data-k':'index'});
+  for(i=0;i<12;i++){
+    var g=S(gi,'g',{transform:'rotate('+(i*30)+' 500 500)'});
+    var xs=i===0?[-10.5,2.5]:[-4];
+    xs.forEach(function(x){
+      S(g,'rect',{x:500+x+2.5,y:92+4,width:8,height:i%3===0?62:50,fill:'#000',opacity:.22});
+      S(g,'rect',{x:500+x,y:92,width:8,height:i%3===0?62:50,fill:'url(#idxG)',stroke:'#6f5a34','stroke-width':.5});
+    });
+  }
+  S(gi,'circle',{cx:500,cy:500,r:420,fill:'none',stroke:'transparent','stroke-width':70});
+  S(DL,'text',{x:500,y:318,'text-anchor':'middle','font-size':54,fill:'#20262c',style:'font-family:var(--display);letter-spacing:.02em'},'Vesper');
+  S(DL,'text',{x:500,y:346,'text-anchor':'middle','font-size':10.5,fill:'#2A3138',style:'font-family:var(--display);letter-spacing:.42em'},'ATELIER · LES BRENASSONS');
+  S(DL,'text',{x:693,y:497,'text-anchor':'middle','font-size':10.5,fill:'#2A3138',style:'font-family:var(--display);letter-spacing:.34em'},'CALIBRE V.03');
+  S(DL,'text',{x:693,y:516,'text-anchor':'middle','font-size':13,'font-style':'italic',fill:'#7B1E1E',style:'font-family:var(--display);letter-spacing:.04em'},'remontage manuel');
+  // power reserve: a moon that waxes as you wind
+  var gr=S(DL,'g',{'data-k':'reserve'});
+  var dd=S(DL,'defs');var cp=S(dd,'clipPath',{id:'moon'});
+  var moon='M328.8 456.030A50 50 0 1 0 328.8 543.970A44 44 0 1 1 328.8 456.030Z';
+  S(cp,'path',{d:moon});
+  S(gr,'path',{d:moon,fill:'#d3ccbd',stroke:'#8C7243','stroke-width':1});
+  var cg=S(gr,'g',{'clip-path':'url(#moon)'});
+  resArc=S(cg,'circle',{cx:305,cy:500,r:25,fill:'none',stroke:'#3F5F8A','stroke-width':50,'stroke-dasharray':'0 400',transform:'rotate(61.6 305 500)'});
+  S(cg,'path',{d:moon,fill:'none',stroke:'#000','stroke-opacity':.25,'stroke-width':4});
+  S(gr,'text',{x:340,y:560,'font-size':10,fill:'#2A3138','text-anchor':'middle',style:'font-family:var(--display)'},'0');
+  S(gr,'text',{x:341,y:447,'font-size':10,fill:'#2A3138','text-anchor':'middle',style:'font-family:var(--display)'},'60');
+  S(gr,'text',{x:302,y:586,'font-size':8.5,fill:'#2A3138','text-anchor':'middle',style:'font-family:var(--display);letter-spacing:.34em'},'RÉSERVE');
+  S(gr,'circle',{cx:305,cy:505,r:66,fill:'transparent'});
+  // small seconds
+  var gs=S(DL,'g',{'data-k':'petite'});
+  S(gs,'circle',{cx:500,cy:700,r:97,fill:'#bdb6a6'});
+  S(gs,'circle',{cx:500,cy:701.5,r:95,fill:'#e3ddd1'});
+  for(i=1;i<16;i++)S(gs,'circle',{cx:500,cy:701.5,r:i*5.8,fill:'none',stroke:'#2A3138','stroke-opacity':.1,'stroke-width':.8});
+  tk='';for(i=0;i<60;i++){a=pol(i%5?84:78,i*6,500,701.5);b=pol(91,i*6,500,701.5);tk+='M'+f2(a[0])+' '+f2(a[1])+'L'+f2(b[0])+' '+f2(b[1])}
+  S(gs,'path',{d:tk,stroke:'#2A3138','stroke-opacity':.8,'stroke-width':.9});
+  [['60',-90],['15',0],['30',90],['45',180]].forEach(function(v){var p=pol(64,v[1],500,701.5);
+    S(gs,'text',{x:f2(p[0]),y:f2(p[1]+4.5),'text-anchor':'middle','font-size':13,fill:'#20262c',style:'font-family:var(--display)'},v[0])});
+  // hands
+  var gh=S(HD,'g',{'data-k':'aiguilles'});
+  function hand(d,sh){var g=S(gh,'g',{transform:'translate(500 500)'});var s=S(g,'g',{transform:'translate('+sh+' '+(sh*1.7)+')'});
+    var sr=S(s,'path',{d:d,fill:'#000',opacity:.2});var r=S(g,'path',{d:d,fill:'url(#handG)',stroke:'#16202e','stroke-width':.6});return [r,sr]}
+  R.hH=hand('M0 34C17 4 25 -92 0 -226C-25 -92 -17 4 0 34Z',5);
+  R.hM=hand('M0 38C13 4 20 -150 0 -352C-20 -150 -13 4 0 38Z',7);
+  S(gh,'circle',{cx:500,cy:500,r:13,fill:'url(#chaton)',stroke:'#5A4827','stroke-width':.7});
+  S(gh,'circle',{cx:500,cy:500,r:4.5,fill:'#2A3138'});
+  var g2=S(HD,'g',{'data-k':'petite',transform:'translate(500 701.5)'});
+  var ss=S(S(g2,'g',{transform:'translate(2 3.5)'}),'path',{d:'M0 22L0 -80',stroke:'#000','stroke-opacity':.22,'stroke-width':2.4});
+  var sg=S(g2,'g');
+  S(sg,'path',{d:'M-1.2 24L-.5 -82L.5 -82L1.2 24Z',fill:'#3F5F8A'});S(sg,'circle',{cy:17,r:5,fill:'#3F5F8A'});S(sg,'circle',{r:4.2,fill:'#2A3138'});S(sg,'circle',{r:1.5,fill:'#C7A66B'});
+  R.hS=[sg,ss];
+  S(HD,'circle',{id:'ringD',class:'ring',r:10});
+})();
+
+/* ───────── parts & annotation ───────── */
+var PARTS={
+  barillet:{n:'01',fam:'Organe moteur',fr:'Barillet',en:'mainspring barrel',rows:[['Dents','72 teeth'],['Cadence','one turn every six hours'],['Ressort','ten turns of blued spring, 60 hours']],face:0,c:BAR,r:160},
+  rochet:{n:'02',fam:'Remontoir',fr:'Rochet & roue de couronne',en:'ratchet and crown wheel',rows:[['Dents','40 wolf teeth · 21 teeth'],['Cadence','turn only when you wind'],['Cliquet','one click, sprung in steel']],face:0,c:BAR,r:92},
+  centre:{n:'03',fam:'Rouage',fr:'Roue de centre',en:'centre wheel',rows:[['Dents','80 teeth · pinion of 12'],['Cadence','one turn each hour'],['Porte','the minute hand']],face:0,c:C,r:139},
+  moyenne:{n:'04',fam:'Rouage',fr:'Roue moyenne',en:'third wheel',rows:[['Dents','75 teeth · pinion of 10'],['Cadence','one turn every 7 min 30 s'],['Rapport','8 : 1 from the centre wheel']],face:0,c:T,r:113},
+  seconde:{n:'05',fam:'Rouage',fr:'Roue de seconde',en:'fourth wheel',rows:[['Dents','72 teeth · pinion of 10'],['Cadence','one turn each minute'],['Porte','the small seconds hand']],face:0,c:F,r:94},
+  echappement:{n:'06',fam:'Échappement',fr:'Roue d’échappement',en:'escape wheel',rows:[['Dents','15 club teeth · pinion of 6'],['Cadence','one turn in five seconds'],['Pas','thirty steps of 12° per turn']],face:0,c:E,r:60},
+  ancre:{n:'07',fam:'Échappement',fr:'Ancre',en:'pallet fork',rows:[['Levées','two ruby pallets, entry and exit'],['Cadence','six beats each second'],['Course','7° either side, between banking pins']],face:0,c:P,r:46},
+  balancier:{n:'08',fam:'Organe réglant',fr:'Balancier-spiral',en:'balance and hairspring',rows:[['Fréquence','3 Hz'],['Cadence','21,600 vibrations an hour'],['Spiral','six and a half turns, breathing']],face:0,c:BAL,r:114},
+  ponts:{n:'09',fam:'Ébauche',fr:'Ponts',en:'bridges',rows:[['Décor','Côtes de Genève, bevels by hand'],['Rubis','21, in gold chatons'],['Vis','flame-blued, slots left as they fall']],face:0},
+  aiguilles:{n:'10',fam:'Cadran',fr:'Aiguilles feuille',en:'leaf hands',rows:[['Acier','blued over a spirit lamp'],['Cadence','your local time, exactly'],['Chaussée','on the centre wheel arbor']],face:1,c:{x:500,y:500},r:60},
+  petite:{n:'11',fam:'Cadran',fr:'Petite seconde',en:'small seconds',rows:[['Position','at six, on the fourth wheel'],['Cadence','six tiny steps each second'],['Tour','one each minute']],face:1,c:{x:500,y:701.5},r:104},
+  reserve:{n:'12',fam:'Cadran',fr:'Réserve de marche',en:'power reserve',rows:[['Lecture','a moon that waxes as you wind'],['Autonomie','60 hours, fully wound'],['Remontage','drag the crown']],face:1,c:{x:305,y:500},r:62}
+};
+PARTS.index={n:'·',fam:'Cadran',fr:'Index appliqués',en:'applied indices',rows:[['Métal','rose gold, two facets each'],['Pose','riveted through the dial'],['Nombre','thirteen — twelve o’clock is doubled']],face:1};
+var watch=$('watch'), anno=$('anno'), annoBody=$('annoBody'), indexEl=$('index'), cur=null, pinned=null;
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function annoHTML(k){
+  if(!k)return '<div class="anno-k"><span class="cap" lang="fr">Calibre V.03</span><span class="cap" lang="fr">12 organes</span></div>'+
+    '<div class="anno-fr" lang="fr">Touchez un organe</div><div class="anno-en">hover or tap any part of the watch</div>'+
+    '<dl><dt lang="fr">Couronne</dt><dd>drag it to wind the mainspring</dd><dt lang="fr">Un cran</dt><dd>click it out, then drag to set the hands</dd><dt lang="fr">Ralenti</dt><dd>watch the fork lock and release each tooth</dd></dl>';
+  var p=PARTS[k],h='<div class="anno-k"><span class="cap" lang="fr">N° '+p.n+' — '+esc(p.fam)+'</span><span class="cap" lang="fr">'+(p.face?'Côté cadran':'Côté fond')+'</span></div>'+
+    '<div class="anno-fr" lang="fr">'+esc(p.fr)+'</div><div class="anno-en">'+esc(p.en)+'</div><dl>';
+  p.rows.forEach(function(r){h+='<dt lang="fr">'+esc(r[0])+'</dt><dd>'+esc(r[1])+'</dd>'});
+  return h+'</dl>';
+}
+function show(k){
+  if(k===cur)return;cur=k;
+  var all=document.querySelectorAll('.watch [data-k]');
+  for(var i=0;i<all.length;i++)all[i].classList.toggle('on',all[i].getAttribute('data-k')===k);
+  watch.classList.toggle('hl',!!k);anno.classList.toggle('live',!!k);
+  annoBody.classList.add('swap');annoBody.innerHTML=annoHTML(k);
+  void annoBody.offsetWidth;annoBody.classList.remove('swap');
+  var bs=indexEl.querySelectorAll('button');for(i=0;i<bs.length;i++)bs[i].classList.toggle('on',bs[i].getAttribute('data-p')===k);
+  var rb=$('ringB'),rd=$('ringD');rb.classList.remove('on');rd.classList.remove('on');
+  if(k&&PARTS[k].c){var p=PARTS[k],el=p.face?rd:rb;el.setAttribute('cx',f2(p.c.x));el.setAttribute('cy',f2(p.c.y));el.setAttribute('r',p.r);el.classList.add('on')}
+}
+(function(){
+  var keys=['barillet','rochet','centre','moyenne','seconde','echappement','ancre','balancier','ponts','aiguilles','petite','reserve'];
+  keys.forEach(function(k,i){
+    if(i===9){var s=document.createElement('span');s.className='sep';indexEl.appendChild(s)}
+    var b=document.createElement('button');b.type='button';b.textContent=PARTS[k].n;b.setAttribute('data-p',k);
+    b.setAttribute('aria-label',PARTS[k].fr+' — '+PARTS[k].en);indexEl.appendChild(b);
+    b.addEventListener('click',function(){if(pinned===k){pinned=null;show(null);return}pinned=k;setFace(PARTS[k].face);show(k)});
+    b.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse'&&PARTS[k].face===(dialSide?1:0))show(k)});
+    b.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse')show(pinned)});
+    b.addEventListener('focus',function(){if(PARTS[k].face===(dialSide?1:0))show(k)});
+    b.addEventListener('blur',function(){show(pinned)});
+  });
+  annoBody.innerHTML=annoHTML(null);
+  watch.addEventListener('pointerover',function(e){if(e.pointerType!=='mouse'||crownDrag)return;var t=e.target.closest&&e.target.closest('[data-k]');show(t?t.getAttribute('data-k'):pinned)});
+  watch.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse')show(pinned)});
+  watch.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-k]');
+    if(e.target.closest('.crown'))return;
+    if(t){var k=t.getAttribute('data-k');pinned=(pinned===k)?null:k;show(pinned)}else{pinned=null;show(null)}});
+})();
+
+/* ───────── state & clock ───────── */
+function localSec(){var d=new Date();return (Date.now()-d.getTimezoneOffset()*60000)/1000%43200}
+var AMP=205, A=0, running=false, rate=1, rateGoal=1;
+var B=Math.round(localSec()*3)/3, D=0, Dbase=0, setOff=0, dragging=false;
+var reserve=31, reserveShown=31, wind=0, windShown=0, knurl=0;
+var dialSide=false, flipAngle=0, flipUntil=0, lastBeat=Math.floor(B*6), last=Date.now();
+var onScreen=true, V=B, lastMs=0, lastSecShown=-1;
+function rebase(){var loc=localSec(),df=loc-B;if(df>21600)df-=43200;if(df<-21600)df+=43200;Dbase=Math.round(df*3)/3}
+
+function renderHands(v){
+  var mA=m360(v/10), hA=m360(v/120), sA=m360(v*6);
+  R.hM.forEach(function(e){tr(e,mA)});R.hH.forEach(function(e){tr(e,hA)});R.hS.forEach(function(e){tr(e,sA)});
+}
+function renderTrain(v,beta,gf){
+  var thC=-v/10, thB=mesh(thC,12,72,phiCB), thT=mesh(thC,80,10,phiCT), thF=mesh(thT,75,10,phiTF), thP=mesh(thF,72,6,phiFE);
+  tr(R.centre[0],m360(thC));tr(R.centre[1],m360(thC));
+  tr(R.barillet[0],m360(thB));
+  tr(R.moyenne[0],m360(thT));tr(R.moyenne[1],m360(thT));
+  tr(R.seconde[0],m360(thF));tr(R.seconde[1],m360(thF));
+  tr(R.echPin[0],m360(thP));
+  tr(R.echappement[0],m360(ALPHA-30-EPS+72*v));
+  tr(R.ancre[0],ALPHA-FORK*gf);
+  tr(R.balancier[0],beta);tr(R.balancier[1],beta);
+  drawHair(beta);
+}
+function renderWind(){
+  var a=-windShown;tr(R.rochet[0],m360(a));tr(R.couronne[0],m360(mesh(a,40,21,phiBW)));
+}
+function renderReserve(){
+  drawSpring(reserveShown/60);
+  resArc.setAttribute('stroke-dasharray',f2(RESLEN*reserveShown/60)+' 400');
+  $('stRes').textContent=Math.round(reserveShown)+' h';
+}
+function pad(n){return (n<10?'0':'')+n}
+function renderStatus(v){
+  var sec=Math.floor(v);if(sec===lastSecShown)return;lastSecShown=sec;
+  var df=v-localSec();if(df>21600)df-=43200;if(df<-21600)df+=43200;
+  var t=new Date(Date.now()+df*1000+40);
+  $('stTime').textContent=pad(t.getHours())+':'+pad(t.getMinutes())+':'+pad(t.getSeconds());
+}
+function escapement(){
+  var x=6*B, n=Math.round(x), even=(n%2===0), beta=A*Math.sin(Math.PI*x), gf, s;
+  if(A<2){gf=even?-1:1;s=n-1;beta=0}
+  else{var bl=Math.min(26,A*.6);gf=clamp(beta/bl,-1,1);var p=((even?1:-1)*gf+1)/2;s=n-1+smooth(clamp((p-.55)/.45,0,1))}
+  return {s:s,beta:beta,gf:gf,beat:Math.floor(x)};
+}
+function frame(){
+  raf=requestAnimationFrame(frame);
+  var ms=Date.now(), dt=Math.max(0,(ms-last)/1000);last=ms;var vdt=Math.min(dt,.1);
+  if(running){
+    if(rate!==rateGoal){rate+=(rateGoal-rate)*(1-Math.exp(-vdt*4));if(Math.abs(rate-rateGoal)<.004){rate=rateGoal;if(rate===1)rebase()}}
+    B+=dt*rate;A+=(AMP-A)*(1-Math.exp(-vdt*2.6));
+    reserve=Math.max(0,reserve-dt/3600);
+  }
+  var Dg=Dbase+setOff;D+=(Dg-D)*(1-Math.exp(-vdt*(dragging?26:4.5)));if(Math.abs(Dg-D)<2e-4)D=Dg;
+  var e=escapement();V=e.s/6+D;
+  if(e.beat!==lastBeat){if(running&&A>60&&Math.abs(e.beat-lastBeat)<3)tick(e.beat&1);lastBeat=e.beat}
+  if(Math.abs(reserve-reserveShown)>.004){reserveShown+=(reserve-reserveShown)*(1-Math.exp(-vdt*5));renderReserve()}
+  if(Math.abs(wind-windShown)>.01){windShown+=(wind-windShown)*(1-Math.exp(-vdt*16));renderWind()}
+  if(!onScreen)return;
+  var flipping=ms<flipUntil;
+  if(dialSide||flipping)renderHands(V);
+  if(!dialSide||flipping)renderTrain(V,e.beta,e.gf);
+  renderStatus(V);
+}
+var raf=0;
+function start(){if(!raf&&!RM){last=Date.now();raf=requestAnimationFrame(frame)}}
+function stop(){if(raf){cancelAnimationFrame(raf);raf=0}}
+document.addEventListener('visibilitychange',function(){if(document.hidden)stop();else start()});
+if('IntersectionObserver' in window){new IntersectionObserver(function(en){onScreen=en[0].isIntersecting},{rootMargin:'120px'}).observe(watch)}
+
+/* reduced motion: correct time, hands only, once a second */
+function staticRender(){
+  V=localSec()+setOff;renderHands(Math.floor(V));
+  var t=new Date(Date.now()+setOff*1000);$('stTime').textContent=pad(t.getHours())+':'+pad(t.getMinutes())+':'+pad(t.getSeconds());
+}
+
+/* ───────── winding, crown, setting ───────── */
+var crown=$('crown'), stem=$('stem'), crownOut=false, crownDrag=null, setTimer=0;
+function windBy(h,click){
+  if(reserve>=60){reserve=60;return false}
+  reserve=Math.min(60,reserve+h);wind+=h*9/1.2;knurl+=h*14;crown.style.setProperty('--kn',knurl.toFixed(1)+'px');
+  if(click)ratchetClick();
+  if(RM){reserveShown=reserve;windShown=wind;renderReserve();renderWind()}
+  return true;
+}
+function setPulled(v){crownOut=v;crown.classList.toggle('out',v);stem.classList.toggle('out',v);$('modeHint').classList.toggle('on',v);
+  crown.setAttribute('aria-pressed',v?'true':'false')}
+function endSet(){setOff=0;dragging=false;if(RM)staticRender()}
+crown.addEventListener('pointerdown',function(e){
+  e.preventDefault();crown.setPointerCapture(e.pointerId);
+  crownDrag={y:e.clientY,ly:e.clientY,moved:0,acc:0};dragging=crownOut;
+});
+crown.addEventListener('pointermove',function(e){
+  if(!crownDrag)return;var dy=e.clientY-crownDrag.ly;crownDrag.ly=e.clientY;crownDrag.moved+=Math.abs(dy);
+  if(crownDrag.moved<4)return;
+  if(crownOut){setOff-=dy*24;knurl+=dy;crown.style.setProperty('--kn',knurl.toFixed(1)+'px');if(RM)staticRender()}
+  else{var up=Math.abs(dy);crownDrag.acc+=up;var cl=false;if(crownDrag.acc>14){crownDrag.acc=0;cl=true}windBy(up*.035,cl)}
+});
+function crownUp(e){
+  if(!crownDrag)return;var d=crownDrag;crownDrag=null;
+  if(d.moved<4)setPulled(!crownOut);
+  if(crownOut||dragging)endSet();
+}
+crown.addEventListener('pointerup',crownUp);crown.addEventListener('pointercancel',crownUp);
+crown.addEventListener('click',function(e){e.stopPropagation()});
+crown.addEventListener('keydown',function(e){
+  if(e.key==='Enter'||e.key===' '){e.preventDefault();setPulled(!crownOut);return}
+  if(e.key==='ArrowUp'||e.key==='ArrowDown'){e.preventDefault();var s=e.key==='ArrowUp'?1:-1;
+    if(crownOut){dragging=true;setOff+=s*300;clearTimeout(setTimer);setTimer=setTimeout(endSet,900);if(RM)staticRender()}
+    else windBy(1,true)}
+  if(e.key==='Escape'&&crownOut)setPulled(false);
+});
+
+/* ───────── faces ───────── */
+var flip=$('flip'), flipBtn=$('flipBtn');
+function setFace(dial){
+  dial=!!dial;if(dial===dialSide)return;dialSide=dial;flipAngle+=180;
+  flip.style.transform='rotateY('+flipAngle+'deg)';flipUntil=Date.now()+1300;
+  flipBtn.setAttribute('aria-pressed',dial?'true':'false');
+  $('flipTx').textContent=dial?'turn the watch over — to the calibre':'turn the watch over — to the dial';
+  if(cur&&PARTS[cur].face!==(dial?1:0)){pinned=null;show(null)}
+  if(RM){staticRender()}
+}
+flipBtn.addEventListener('click',function(){setFace(!dialSide)});
+
+var slowBtn=$('slowBtn');
+slowBtn.addEventListener('click',function(){
+  var on=slowBtn.getAttribute('aria-pressed')!=='true';slowBtn.setAttribute('aria-pressed',on?'true':'false');
+  rateGoal=on?.05:1;$('slowTx').textContent=on?'one beat every 3.3 s — release to catch up':'slow the escapement 20×';
+  $('stRate').textContent=on?'÷ 20':'21 600 A/h';
+  if(on){setFace(false);pinned='ancre';show('ancre')}else if(pinned==='ancre'){pinned=null;show(null)}
+});
+
+/* pointer tilt & sapphire reflection */
+(function(){
+  var st=$('stage'), tilt=$('tilt');if(RM)return;
+  st.addEventListener('pointermove',function(e){
+    if(e.pointerType!=='mouse')return;var r=watch.getBoundingClientRect();
+    var x=clamp((e.clientX-r.left)/r.width*2-1,-1.3,1.3), y=clamp((e.clientY-r.top)/r.height*2-1,-1.3,1.3);
+    tilt.style.transform='rotateX('+(-y*3.2).toFixed(2)+'deg) rotateY('+(x*4).toFixed(2)+'deg)';
+    watch.style.setProperty('--gx',x.toFixed(2));watch.style.setProperty('--gy',y.toFixed(2));
+  });
+  st.addEventListener('pointerleave',function(){tilt.style.transform='';watch.style.setProperty('--gx',0);watch.style.setProperty('--gy',0)});
+})();
+
+/* ───────── sound ───────── */
+var ac=null, master=null, noise=null, soundOn=false, soundBtn=$('soundBtn');
+function initAudio(){
+  var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;
+  ac=new AC();master=ac.createGain();master.gain.value=.5;master.connect(ac.destination);
+  noise=ac.createBuffer(1,Math.floor(ac.sampleRate*.06),ac.sampleRate);var d=noise.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=Math.random()*2-1;return true;
+}
+function click(freq,q,dur,vol){
+  if(!soundOn||!ac)return;var t=ac.currentTime,s=ac.createBufferSource(),bp=ac.createBiquadFilter(),g=ac.createGain();
+  s.buffer=noise;bp.type='bandpass';bp.frequency.value=freq;bp.Q.value=q;
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.0012);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  s.connect(bp);bp.connect(g);g.connect(master);s.start(t);s.stop(t+dur+.01);
+}
+function tick(odd){click(odd?5300:3900,odd?9:7,.026,odd?.85:.7);if(rate<.5)click(odd?2400:1900,5,.05,.25)}
+function ratchetClick(){click(1700,4,.04,.6)}
+soundBtn.addEventListener('click',function(){
+  if(!ac&&!initAudio()){$('soundTx').textContent='no audio on this device';return}
+  soundOn=!soundOn;if(soundOn&&ac.state==='suspended')ac.resume();
+  soundBtn.setAttribute('aria-pressed',soundOn?'true':'false');$('soundTx').textContent=soundOn?'tick, tock — six a second':'the tick is off';
+  soundBtn.querySelector('.wv').setAttribute('opacity',soundOn?1:.001);
+});
+
+/* ───────── first three seconds ───────── */
+renderReserve();renderWind();
+(function(){
+  var e=escapement();V=e.s/6;renderTrain(V,0,e.gf);renderHands(V);
+  if(RM){reserve=reserveShown=38;wind=windShown=21;renderReserve();renderWind();
+    renderTrain(localSec(),0,-1);staticRender();setInterval(staticRender,1000);return}
+  start();
+  [700,1080,1460].forEach(function(t){setTimeout(function(){windBy(2.334,true)},t)});
+  setTimeout(function(){running=true;rebase()},1950);
+})();
+
+/* ───────── sections: reveals ───────── */
+(function(){
+  var els=document.querySelectorAll('.rv');
+  if(!('IntersectionObserver' in window)||RM){for(var i=0;i<els.length;i++)els[i].classList.add('in');return}
+  var io=new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target)}})},{threshold:.18});
+  for(i=0;i<els.length;i++)io.observe(els[i]);
+})();
+
+/* ───────── finissage vignettes ───────── */
+(function(){
+  var figs=document.querySelectorAll('.fin figure'), st=[], vis=false, vraf=0, t0=Date.now();
+  var angl=$('angl'), pol0=$('pol0'), pol1=$('pol1'), polG=$('polish'), slot=$('polSlot'), spot=$('perlSpot');
+  function mix(a,b,t){return Math.round(a+(b-a)*t)}
+  function col(i){return 'rgb('+mix(12,246,i)+','+mix(13,242,i)+','+mix(15,232,i)+')'}
+  function apply(k,x,y){
+    if(k===0){angl.setAttribute('gradientTransform','translate('+f2(x*520-110)+' 0)')}
+    else if(k===1){var i=Math.exp(-Math.pow((x-.7)/.085,2))*Math.exp(-Math.pow((y-.4)/.5,2));
+      pol0.setAttribute('stop-color',col(Math.min(1,i*1.150+.03)));pol1.setAttribute('stop-color',col(i*.82));
+      polG.setAttribute('fx',f2(.2+x*.5));polG.setAttribute('fy',f2(.2+y*.4));slot.setAttribute('opacity',f2(.12+i*.7))}
+    else{spot.setAttribute('cx',f2(x*300));spot.setAttribute('cy',f2(y*300))}
+  }
+  for(var i=0;i<figs.length;i++)(function(fig,k){
+    var s={x:.5,y:.5,tx:.5,ty:.5,hover:false};st.push(s);
+    function mv(e){var r=fig.querySelector('.loupe').getBoundingClientRect();s.tx=clamp((e.clientX-r.left)/r.width,0,1);s.ty=clamp((e.clientY-r.top)/r.height,0,1);s.hover=true;if(RM){apply(k,s.tx,s.ty)}}
+    fig.addEventListener('pointermove',mv);fig.addEventListener('pointerdown',mv);
+    fig.addEventListener('pointerleave',function(){s.hover=false});
+  })(figs[i],i);
+  apply(0,.52,.5);apply(1,.62,.4);apply(2,.4,.36);
+  if(RM)return;
+  function loop(){
+    vraf=requestAnimationFrame(loop);var t=(Date.now()-t0)/1000;
+    st.forEach(function(s,k){
+      if(!s.hover){s.tx=.5+.46*Math.sin(t*.42+k*1.9);s.ty=.5+.3*Math.cos(t*.31+k)}
+      s.x+=(s.tx-s.x)*.07;s.y+=(s.ty-s.y)*.07;apply(k,s.x,s.y);
+    });
+  }
+  function upd(){var run=vis&&!document.hidden;if(run&&!vraf)vraf=requestAnimationFrame(loop);if(!run&&vraf){cancelAnimationFrame(vraf);vraf=0}}
+  if('IntersectionObserver' in window)new IntersectionObserver(function(en){vis=en[0].isIntersecting;upd()}).observe($('finissage'));else{vis=true;upd()}
+  document.addEventListener('visibilitychange',upd);
+})();
+
+/* ───────── waiting list: engraved, never sent ───────── */
+(function(){
+  var form=$('wait'), input=$('email'), field=$('field'), msg=$('msg'), tp=$('ringText'), spark=$('spark'), timer=0;
+  input.addEventListener('input',function(){field.classList.remove('bad')});
+  form.addEventListener('submit',function(e){
+    e.preventDefault();var v=input.value.trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)){field.classList.add('bad');msg.textContent='Une adresse, s’il vous plaît — one we can write to.';input.focus();return}
+    field.classList.remove('bad');
+    var name=v.split('@')[0].replace(/[._\-+]+/g,' ').toUpperCase().slice(0,20), h=0;
+    for(var i=0;i<v.length;i++)h=(h*31+v.charCodeAt(i))%9973;
+    var rank=23+h%36, year=new Date().getFullYear()+1+Math.ceil(rank/12);
+    var str='RÉSERVÉ POUR '+name+' · HEURE BLEUE 38 · RANG '+rank+' · LES BRENASSONS · ';
+    clearInterval(timer);while(tp.firstChild)tp.removeChild(tp.firstChild);
+    var spans=[];for(i=0;i<str.length;i++){spans.push(S(tp,'tspan',null,str[i]))}
+    $('ringGhost').setAttribute('opacity',0);
+    $('ringK').textContent='RANG SUR LA LISTE';$('ringN').textContent='N° '+rank;$('ringY').textContent='VERS '+year;
+    msg.textContent='Engraved. You are number '+rank+'; at twelve a year, expect a letter around '+year+'.';
+    if(RM){spans.forEach(function(s){s.classList.add('cut')});return}
+    var k=0;spark.style.opacity=1;
+    timer=setInterval(function(){
+      if(k>=spans.length){clearInterval(timer);spark.style.opacity=0;return}
+      spans[k].classList.add('cut');
+      var a=(180+k/spans.length*360)*rad;spark.setAttribute('cx',f2(160+134*Math.cos(a)));spark.setAttribute('cy',f2(160+134*Math.sin(a)));
+      spark.setAttribute('r',k%2?2.2:3.4);k++;
+    },46);
+  });
+})();
+})();
+</script>
+</body>
+</html>

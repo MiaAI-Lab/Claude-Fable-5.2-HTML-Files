@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lava Lamp, 1971</title>
+<style>
+:root{
+  --wall:#FF5E1F; --liq:#FFB000; --liqA:#FFC62E; --liqB:#F79200; --wax:#D91E63;
+  --shade:#3A0A2A; --cream:#FBE9D0; --glow:#FFD873;
+  --sb:clamp(132px,21vh,200px);
+  --lampH:min(66vh,150vw);
+  --lx:66%;
+  --gi:0;
+  --sans:"Futura","Century Gothic","Avenir Next","Trebuchet MS","Helvetica Neue",Arial,sans-serif;
+  --fat:"Cooper Black","Cooper Std Black","Cooper Std","Bookman Old Style","Rockwell Extra Bold",Georgia,"Times New Roman",serif;
+  --spring:cubic-bezier(.2,1.5,.35,1);
+  --glide:cubic-bezier(.65,0,.2,1);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--wall);color:var(--shade);font-family:var(--sans);overflow:hidden;
+  -webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+.room{position:fixed;inset:0;overflow:hidden;background:var(--wall)}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+/* ---------- wall ---------- */
+.wall2{position:absolute;inset:0;clip-path:circle(0px at 66% 45%);pointer-events:none}
+.wall2.go{transition:clip-path 1.25s var(--glide)}
+.vignette{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 90% at 30% 20%,rgba(251,233,208,.10),transparent 55%),
+             linear-gradient(180deg,transparent 55%,rgba(58,10,42,.16) 100%)}
+.grain{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.2;mix-blend-mode:multiply;z-index:9}
+
+.spot{position:absolute;left:var(--lx);bottom:calc(var(--sb) - 15px);
+  --u:calc(var(--lampH) / 640);
+  width:calc(var(--u) * 200);height:calc(var(--u) * 640);transform:translateX(-50%)}
+.spot.back{pointer-events:none}
+.super{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.super path{fill:none;stroke-dasharray:1.02 1}
+.super .b{animation:draw 1.5s var(--glide) both;animation-delay:calc(var(--i) * 80ms + 80ms)}
+.super .o{stroke-dashoffset:1.02}
+@keyframes draw{from{stroke-dashoffset:1.02}to{stroke-dashoffset:0}}
+
+.glow{position:absolute;left:50%;top:44%;width:calc(var(--u) * 1150);height:calc(var(--u) * 1150);
+  margin:calc(var(--u) * -575) 0 0 calc(var(--u) * -575);border-radius:50%;
+  transform:translateY(22%) scale(.12);opacity:0;color:var(--glow);
+  transition:transform 2s cubic-bezier(.16,.8,.3,1),opacity 2s cubic-bezier(.16,.8,.3,1),color 1.2s linear}
+.glow i{position:absolute;inset:0;border-radius:50%;background:currentColor;opacity:var(--gi);
+  -webkit-mask-image:radial-gradient(closest-side,rgba(0,0,0,.9),rgba(0,0,0,.62) 20%,rgba(0,0,0,.28) 48%,rgba(0,0,0,.07) 78%,transparent);
+          mask-image:radial-gradient(closest-side,rgba(0,0,0,.9),rgba(0,0,0,.62) 20%,rgba(0,0,0,.28) 48%,rgba(0,0,0,.07) 78%,transparent)}
+.lit .glow{transform:none;opacity:1}
+
+/* ---------- title ---------- */
+.title-block{position:absolute;left:5vw;bottom:calc(var(--sb) + 3vh);width:min(35vw,51vh);margin:0;z-index:2}
+h1{margin:0;font-size:0;line-height:0}
+#ttl{display:block;width:100%;height:auto;overflow:visible;font-family:var(--fat);font-weight:900;font-size:200px;letter-spacing:-5px}
+#ttl .ln{transform-box:fill-box;transform-origin:20% 100%;
+  animation:rise 1.1s var(--spring) both;animation-delay:calc(var(--i) * 130ms + 250ms)}
+#ttl .sh{fill:var(--shade);stroke:var(--shade);stroke-width:11;stroke-linejoin:round;transition:fill 1.2s,stroke 1.2s}
+#ttl .fc{fill:var(--cream);stroke:var(--cream);stroke-width:11;stroke-linejoin:round}
+#ttl .ln .wob{transition:transform .9s var(--spring);transform-box:fill-box;transform-origin:50% 100%}
+#ttl .ln:hover .wob{transform:rotate(-2.2deg) translateY(-6px)}
+@keyframes rise{from{opacity:0;transform:translateY(46%) rotate(5deg) scale(.9)}60%{opacity:1}to{opacity:1;transform:none}}
+.cap{margin:1.6vh 0 0 .4em;font-size:clamp(15px,1.55vw,23px);letter-spacing:.02em;color:var(--shade);
+  text-transform:lowercase;font-weight:500;display:flex;align-items:center;gap:.7em;
+  animation:capin 1s .9s both cubic-bezier(.2,.8,.2,1);transition:color 1.2s}
+.cap::before{content:"";width:2.2em;height:2px;background:currentColor;border-radius:2px;opacity:.75;flex:none}
+.cap span{display:inline-block;transition:opacity .45s ease,transform .6s var(--spring)}
+.cap.swap span{opacity:0;transform:translateY(.5em)}
+@keyframes capin{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}
+
+/* ---------- sideboard ---------- */
+.sideboard{position:absolute;left:0;right:0;bottom:0;height:var(--sb);z-index:3;
+  background:linear-gradient(180deg,#7d4320 0,#8a4b24 12%,#7a401e 60%,#5f2f17 100%)}
+.sideboard::before{content:"";position:absolute;left:0;right:0;top:-10px;height:10px;
+  background:linear-gradient(180deg,transparent,rgba(58,10,42,.28))}
+.sb-top{position:absolute;left:0;right:0;top:0;height:28px;
+  background:linear-gradient(180deg,#c98950 0,#b87540 55%,#a56535 100%);
+  box-shadow:0 1px 0 rgba(255,220,170,.35) inset,0 3px 0 #6a3519,0 9px 14px rgba(40,8,24,.38)}
+.wood{position:absolute;inset:0;width:100%;height:100%;opacity:.5;mix-blend-mode:multiply;pointer-events:none}
+.sb-front{position:absolute;left:0;right:0;top:31px;bottom:0;
+  background:repeating-linear-gradient(90deg,transparent 0 31%,rgba(40,8,24,.42) 31% calc(31% + 2px),rgba(255,210,160,.12) calc(31% + 2px) calc(31% + 3px),transparent calc(31% + 3px) 100%)}
+.sb-front::after{content:"";position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(180deg,transparent,rgba(40,8,24,.4))}
+
+.tglow{position:absolute;left:50%;bottom:calc(var(--u) * -6);width:calc(var(--u) * 620);height:calc(var(--u) * 56);
+  transform:translateX(-50%);border-radius:50%;color:var(--glow);opacity:0;transition:opacity 2s,color 1.2s linear;pointer-events:none}
+.tglow i{position:absolute;inset:0;border-radius:50%;background:currentColor;opacity:calc(var(--gi) * .75);
+  -webkit-mask-image:radial-gradient(closest-side,rgba(0,0,0,.8),rgba(0,0,0,.3) 55%,transparent);
+          mask-image:radial-gradient(closest-side,rgba(0,0,0,.8),rgba(0,0,0,.3) 55%,transparent)}
+.lit .tglow{opacity:1}
+.lshadow{position:absolute;left:50%;bottom:calc(var(--u) * -9);width:calc(var(--u) * 250);height:calc(var(--u) * 26);
+  transform:translateX(-50%);border-radius:50%;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(58,10,42,.7),rgba(58,10,42,.3) 60%,transparent)}
+
+/* ---------- lamp ---------- */
+.spot.front{z-index:4;pointer-events:none}
+.lamp{position:absolute;inset:0;transform-origin:50% 99%;transform:rotate(var(--tilt,0deg));
+  cursor:grab;touch-action:none;pointer-events:auto;outline:none;will-change:transform}
+.lamp.held{cursor:grabbing}
+.lamp:focus-visible::after{content:"";position:absolute;inset:calc(var(--u) * -4) calc(var(--u) * -14);border:2px dashed var(--cream);border-radius:calc(var(--u) * 40)}
+.part{position:absolute;left:50%;transform:translateX(-50%)}
+.part::after{content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.10) 0 1px,rgba(58,10,42,.05) 1px 2px,transparent 2px 3px)}
+.cap-m{top:calc(var(--u) * 14);width:calc(var(--u) * 76);height:calc(var(--u) * 73);
+  clip-path:polygon(23.7% 0,76.3% 0,100% 100%,0 100%);
+  background:conic-gradient(from 165.96deg at 50% -111%,#4b2140 0deg,#b9a7b0 3deg,#fdf6ea 6.5deg,#cdbfc4 10deg,#8a6f80 15deg,#6b4a62 19deg,#d9cdd0 23.5deg,#f3e9e0 25deg,#5a2c4c 28.08deg,#5a2c4c 360deg)}
+.cap-tip{top:calc(var(--u) * 8);width:calc(var(--u) * 40);height:calc(var(--u) * 10);border-radius:50% 50% 30% 30%/90% 90% 20% 20%;
+  background:linear-gradient(90deg,#5a2c4c,#efe6df 28%,#b9a7b0 55%,#6b4a62 80%,#e6dad6 94%,#5a2c4c)}
+.cap-tip::after,.ring::after,.foot::after{display:none}
+.glass{top:calc(var(--u) * 86);width:calc(var(--u) * 156);height:calc(var(--u) * 354)}
+.glass::after{display:none}
+.glass canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ring{border-radius:calc(var(--u) * 4);height:calc(var(--u) * 7);
+  background:linear-gradient(90deg,#4b2140,#f6ede4 22%,#b9a7b0 48%,#6b4a62 74%,#efe4dc 92%,#4b2140);
+  box-shadow:0 calc(var(--u) * 2) calc(var(--u) * 3) rgba(58,10,42,.45)}
+.ring.r1{top:calc(var(--u) * 84);width:calc(var(--u) * 80)}
+.ring.r2{top:calc(var(--u) * 437);width:calc(var(--u) * 164)}
+.cup{top:calc(var(--u) * 441);width:calc(var(--u) * 160);height:calc(var(--u) * 69);
+  clip-path:polygon(0 0,100% 0,76.25% 100%,23.75% 100%);
+  background:conic-gradient(from -29.2deg at 50% 210.5%,#4b2140 0deg,#a8929f 5deg,#fdf6ea 12deg,#d2c5c8 19deg,#8a6f80 30deg,#6b4a62 40deg,#cbbcc0 49deg,#f3e9e0 53deg,#5a2c4c 58.4deg,#5a2c4c 360deg)}
+.cone{top:calc(var(--u) * 508);width:calc(var(--u) * 180);height:calc(var(--u) * 121);
+  clip-path:polygon(26.67% 0,73.33% 0,100% 100%,0 100%);
+  background:conic-gradient(from 158.2deg at 50% -87.5%,#4b2140 0deg,#a8929f 4deg,#fdf6ea 9.5deg,#d2c5c8 15deg,#8a6f80 23deg,#6b4a62 30deg,#cbbcc0 37deg,#f3e9e0 40deg,#5a2c4c 43.6deg,#5a2c4c 360deg)}
+.cone::before{content:"";position:absolute;left:0;right:0;top:0;height:16%;background:linear-gradient(180deg,rgba(58,10,42,.55),transparent)}
+.foot{top:calc(var(--u) * 626);width:calc(var(--u) * 186);height:calc(var(--u) * 13);border-radius:calc(var(--u) * 5);
+  background:linear-gradient(180deg,#5b1c45,#3A0A2A 45%,#22051a);box-shadow:0 1px 0 rgba(255,220,220,.25) inset}
+.badge{position:absolute;left:50%;top:calc(var(--u) * 588);transform:translateX(-50%);font-size:calc(var(--u) * 7.5);
+  letter-spacing:.28em;color:rgba(58,10,42,.72);font-weight:700;white-space:nowrap;text-shadow:0 1px 0 rgba(255,255,255,.4)}
+
+/* ---------- fallback (no WebGL): gooey blobs ---------- */
+.goo{display:none;position:absolute;inset:0;overflow:hidden;
+  clip-path:polygon(25.6% 0,74.4% 0,88% 50%,100% 100%,0 100%,12% 50%);
+  background:linear-gradient(0deg,var(--liqA),var(--liqB));transition:background 1s}
+.no-gl .goo{display:block}.no-gl .glass canvas{display:none}
+.goo-in{position:absolute;inset:0;filter:url(#gooey)}
+.goo-in i{position:absolute;border-radius:50%;background:var(--wax);transition:background 1s;
+  animation:bob var(--d) cubic-bezier(.45,.05,.4,.95) var(--dl) infinite alternate both}
+.goo-in .m{left:-12%;right:-12%;bottom:-22%;height:34%;animation:swell 9s ease-in-out infinite alternate}
+@keyframes bob{from{transform:translateY(0) scale(1.05,.9)}35%{transform:translateY(calc(var(--u) * var(--h) * -.4)) scale(.88,1.25)}to{transform:translateY(calc(var(--u) * var(--h) * -1)) scale(1,1)}}
+@keyframes swell{from{transform:scaleY(.9)}to{transform:scaleY(1.2)}}
+.goo-glass{position:absolute;inset:0;
+  background:linear-gradient(90deg,rgba(58,10,42,.5),transparent 18%,transparent 82%,rgba(58,10,42,.5)),
+             linear-gradient(90deg,transparent 22%,rgba(251,233,208,.5) 25%,transparent 29%),
+             radial-gradient(60% 22% at 50% 100%,rgba(251,233,208,.5),transparent)}
+
+/* ---------- control plate ---------- */
+.plate{position:absolute;left:var(--lx);top:calc(50% + 15px);transform:translate(-50%,-50%);z-index:5;
+  display:flex;align-items:stretch;gap:14px;padding:11px 24px 10px;border-radius:12px;
+  background:linear-gradient(180deg,#fff6e6,var(--cream) 30%,#ecd5b6);
+  box-shadow:0 1px 0 #fff inset,0 -2px 0 rgba(58,10,42,.14) inset,0 0 0 1px rgba(58,10,42,.35),0 6px 12px rgba(30,5,20,.5),0 1px 2px rgba(30,5,20,.6);
+  color:#3A0A2A;font-size:8.5px;letter-spacing:.2em;font-weight:700;text-transform:uppercase;white-space:nowrap}
+.screw{position:absolute;width:7px;height:7px;border-radius:50%;top:50%;margin-top:-3.5px;
+  background:radial-gradient(circle at 35% 30%,#fff,#a8929f 55%,#5a2c4c);box-shadow:0 0 0 1px rgba(58,10,42,.3)}
+.screw::after{content:"";position:absolute;left:1px;right:1px;top:3px;height:1px;background:#3A0A2A;transform:rotate(-32deg)}
+.screw.a{left:7px}.screw.b{right:7px}.screw.b::after{transform:rotate(58deg)}
+.dim{display:grid;grid-template-columns:auto auto auto;align-items:end;column-gap:5px}
+.dim .lg{padding-bottom:5px}
+.kwrap{position:relative;width:68px;height:68px}
+.ticks{position:absolute;inset:0;width:100%;height:100%}
+.knob{position:absolute;left:10px;top:10px;width:48px;height:48px;border-radius:50%;cursor:ns-resize;touch-action:none;outline:none;
+  background:repeating-conic-gradient(#3A0A2A 0 5deg,#6a2a54 5deg 10deg);
+  box-shadow:0 5px 7px rgba(30,5,20,.5),0 1px 0 rgba(255,255,255,.3) inset}
+.knob b{position:absolute;inset:6px;border-radius:50%;transform:rotate(var(--a,0deg));
+  background:conic-gradient(#f8efe6,#9d8794 12%,#f3e9e0 25%,#7d6072 38%,#f8efe6 50%,#9d8794 62%,#f3e9e0 75%,#7d6072 88%,#f8efe6);
+  box-shadow:0 0 0 1px rgba(58,10,42,.5),0 1px 2px rgba(255,255,255,.8) inset}
+.knob b::after{content:"";position:absolute;left:50%;top:2px;width:4px;height:13px;margin-left:-2px;border-radius:2px;background:#D91E63;box-shadow:0 0 0 1px rgba(58,10,42,.45)}
+.knob:focus-visible,.chip:focus-visible{box-shadow:0 0 0 2px var(--cream),0 0 0 4.5px #3A0A2A}
+.sep{width:1px;background:linear-gradient(180deg,transparent,rgba(58,10,42,.35) 20%,rgba(58,10,42,.35) 80%,transparent);margin:2px 2px}
+.mid{display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:3px 0 5px}
+.pilot{width:13px;height:13px;border-radius:50%;
+  background:radial-gradient(circle at 38% 32%,#fff 0 8%,#ff8a5c 26%,#D91E63 62%,#7a0f38);
+  box-shadow:0 0 0 2px #cdbfc4,0 0 0 3px rgba(58,10,42,.5),0 0 calc(var(--gi) * 16px) calc(var(--gi) * 3px) rgba(255,94,31,.95);
+  filter:brightness(calc(.55 + var(--gi) * .7))}
+.chips{display:flex;gap:11px;align-items:flex-end}
+.chipc{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:7px;letter-spacing:.16em}
+.chip{appearance:none;-webkit-appearance:none;border:0;padding:0;width:38px;height:38px;border-radius:50%;cursor:pointer;position:relative;outline:none;
+  background:radial-gradient(circle,var(--c1) 0 34%,var(--c2) 36% 61%,var(--c3) 63%);
+  box-shadow:0 0 0 2px #cdbfc4,0 0 0 3px rgba(58,10,42,.55),0 5px 6px rgba(30,5,20,.45);
+  transition:transform .45s var(--spring),box-shadow .3s}
+.chip::after{content:"";position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(60% 42% at 36% 24%,rgba(255,255,255,.75),rgba(255,255,255,0) 70%),radial-gradient(circle,transparent 55%,rgba(58,10,42,.3))}
+.chip:hover{transform:translateY(-2px) scale(1.05)}
+.chip:active{transform:translateY(2px) scale(.95);transition-duration:.08s}
+.chip[aria-pressed="true"]{transform:translateY(2px) scale(.93);box-shadow:0 0 0 2px #3A0A2A,0 0 0 3px rgba(58,10,42,.55),0 1px 2px rgba(30,5,20,.5)}
+.chipc:has([aria-pressed="true"]){color:#D91E63}
+.hint{position:absolute;left:var(--lx);bottom:max(7px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:5;
+  font-size:8.5px;letter-spacing:.24em;font-weight:700;text-transform:uppercase;color:rgba(251,233,208,.82);white-space:nowrap}
+.hint i{display:inline-block;width:4px;height:4px;border-radius:50%;background:#FFB000;margin:0 .8em .15em;vertical-align:middle}
+
+@media (max-width:760px){
+  :root{--lx:71%;--sb:clamp(150px,23vh,190px);--lampH:min(64vh,128vw)}
+  .title-block{left:14px;width:47vw;bottom:calc(var(--sb) + 14px)}
+  .cap{font-size:13px;margin-top:8px}.cap::before{width:1.4em}
+  .plate{left:50%;gap:8px;padding:8px 19px 8px;font-size:7.5px;letter-spacing:.14em}
+  .dim{grid-template-columns:auto auto;column-gap:9px;row-gap:1px}
+  .kwrap{grid-column:1/3;grid-row:1;justify-self:center;width:62px;height:62px}
+  .knob{left:9px;top:9px;width:44px;height:44px}
+  .dim .lg{padding-bottom:0}
+  .chips{gap:8px;align-items:center}.chipc{font-size:6.5px;letter-spacing:.1em}
+  .hint{left:50%}
+  .sb-front{background:none}
+}
+@media (max-width:359px){.plate{transform:translate(-50%,-50%) scale(.88)}}
+@media (max-height:520px){
+  :root{--sb:126px}
+  .title-block{width:min(34vw,60vh)}
+  .hint{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .super .b,#ttl .ln,.cap{animation:none}
+  .glow{transition-duration:.01s}
+  .goo-in i{animation-duration:calc(var(--d) * 4)}
+  .chip,#ttl .ln .wob{transition:none}
+}
+</style>
+</head>
+<body>
+<main class="room" id="room">
+  <div class="wall2" id="wall2"></div>
+  <div class="vignette"></div>
+
+  <div class="spot back">
+    <svg class="super" id="super" viewBox="0 0 200 640" aria-hidden="true">
+      <g style="--i:0"><path class="b" pathLength="1" stroke-width="44.8"/><path class="o" pathLength="1" stroke-width="44.8"/></g>
+      <g style="--i:1"><path class="b" pathLength="1" stroke-width="14.8"/><path class="o" pathLength="1" stroke-width="14.8"/></g>
+      <g style="--i:2"><path class="b" pathLength="1" stroke-width="44.8"/><path class="o" pathLength="1" stroke-width="44.8"/></g>
+      <g style="--i:3"><path class="b" pathLength="1" stroke-width="10.8"/><path class="o" pathLength="1" stroke-width="10.8"/></g>
+      <g style="--i:4"><path class="b" pathLength="1" stroke-width="30.8"/><path class="o" pathLength="1" stroke-width="30.8"/></g>
+      <g style="--i:5"><path class="b" pathLength="1" stroke-width="14.8"/><path class="o" pathLength="1" stroke-width="14.8"/></g>
+      <g style="--i:6"><path class="b" pathLength="1" stroke-width="34.8"/><path class="o" pathLength="1" stroke-width="34.8"/></g>
+    </svg>
+    <div class="glow"><i></i></div>
+  </div>
+
+  <div class="title-block">
+    <h1 aria-label="Lava Lamp, 1971">
+      <svg id="ttl" viewBox="0 0 640 560" aria-hidden="true">
+        <defs>
+          <text id="t1" x="0" y="170">Lava</text>
+          <text id="t2" x="0" y="338">Lamp,</text>
+          <text id="t3" x="0" y="506">1971</text>
+        </defs>
+        <g id="ttl-g">
+          <g class="ln" style="--i:0"><g class="wob"><use href="#t1" class="sh" x="5" y="5"/><use href="#t1" class="sh" x="10" y="10"/><use href="#t1" class="sh" x="15" y="15"/><use href="#t1" class="sh" x="20" y="20"/><use href="#t1" class="fc"/></g></g>
+          <g class="ln" style="--i:1"><g class="wob"><use href="#t2" class="sh" x="5" y="5"/><use href="#t2" class="sh" x="10" y="10"/><use href="#t2" class="sh" x="15" y="15"/><use href="#t2" class="sh" x="20" y="20"/><use href="#t2" class="fc"/></g></g>
+          <g class="ln" style="--i:2"><g class="wob"><use href="#t3" class="sh" x="5" y="5"/><use href="#t3" class="sh" x="10" y="10"/><use href="#t3" class="sh" x="15" y="15"/><use href="#t3" class="sh" x="20" y="20"/><use href="#t3" class="fc"/></g></g>
+        </g>
+      </svg>
+    </h1>
+    <p class="cap" id="cap" aria-live="polite"><span>wait for it.</span></p>
+  </div>
+
+  <div class="sideboard">
+    <div class="sb-front"></div>
+    <svg class="wood" aria-hidden="true" preserveAspectRatio="none">
+      <filter id="teak" x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.0035 0.19" numOctaves="3" seed="7"/>
+        <feColorMatrix values="0 0 0 0 .23  0 0 0 0 .05  0 0 0 0 .1  1.9 0 0 0 -.62"/>
+      </filter>
+      <rect width="100%" height="100%" filter="url(#teak)"/>
+    </svg>
+    <div class="sb-top"></div>
+
+    <section class="plate" aria-label="Lamp controls">
+      <i class="screw a"></i><i class="screw b"></i>
+      <div class="dim">
+        <span class="lg">Mellow</span>
+        <div class="kwrap">
+          <svg class="ticks" viewBox="-34 -34 68 68" aria-hidden="true">
+            <path d="M-21.9 21.9A31 31 0 1 1 21.9 21.9" fill="none" stroke="#3A0A2A" stroke-width="5" pathLength="100" stroke-dasharray="1.1 8.79"/>
+            <path d="M-19.8 19.8A28 28 0 1 1 19.8 19.8" fill="none" stroke="#3A0A2A" stroke-width=".8" opacity=".5"/>
+          </svg>
+          <div class="knob" id="knob" role="slider" tabindex="0" aria-label="Bulb heat" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-valuetext="groovy"><b></b></div>
+        </div>
+        <span class="lg">Far out</span>
+      </div>
+      <div class="mid"><i class="pilot"></i><span>Heat</span></div>
+      <i class="sep"></i>
+      <div class="chips" role="group" aria-label="Wax and liquid colours">
+        <label class="chipc"><button class="chip" type="button" data-s="0" aria-pressed="true" aria-label="Tangerine: magenta wax in amber" style="--c1:#D91E63;--c2:#FFB000;--c3:#FF5E1F"></button>Tang</label>
+        <label class="chipc"><button class="chip" type="button" data-s="1" aria-pressed="false" aria-label="Avocado: teal wax in lime" style="--c1:#0E7F82;--c2:#B9D932;--c3:#D9A31A"></button>Avocado</label>
+        <label class="chipc"><button class="chip" type="button" data-s="2" aria-pressed="false" aria-label="Cherry: cream wax in red" style="--c1:#FBE9D0;--c2:#E8281E;--c3:#D91E63"></button>Cherry</label>
+      </div>
+    </section>
+    <p class="hint">Hold the lamp to heat<i></i>Drag to tilt</p>
+  </div>
+
+  <div class="spot front">
+    <div class="tglow"><i></i></div>
+    <div class="lshadow"></div>
+    <div class="lamp" id="lamp" tabindex="0" role="application" aria-label="Lava lamp. Hold Space to heat it; arrow keys tilt it.">
+      <div class="part cap-tip"></div>
+      <div class="part cap-m"></div>
+      <div class="part glass">
+        <canvas id="gl" aria-hidden="true"></canvas>
+        <div class="goo" aria-hidden="true">
+          <div class="goo-in">
+            <i class="m"></i>
+            <i style="left:22%;bottom:2%;width:46%;aspect-ratio:1;--h:265;--d:17s;--dl:-2s"></i>
+            <i style="left:46%;bottom:0;width:36%;aspect-ratio:1;--h:240;--d:23s;--dl:-9s"></i>
+            <i style="left:30%;bottom:4%;width:28%;aspect-ratio:1;--h:290;--d:13s;--dl:-5s"></i>
+            <i style="left:40%;bottom:-2%;width:40%;aspect-ratio:1;--h:200;--d:29s;--dl:-14s"></i>
+            <i style="left:34%;bottom:6%;width:20%;aspect-ratio:1;--h:300;--d:19s;--dl:-11s"></i>
+            <i style="left:28%;bottom:0;width:32%;aspect-ratio:1;--h:150;--d:11s;--dl:-3s"></i>
+          </div>
+          <div class="goo-glass"></div>
+        </div>
+      </div>
+      <div class="part ring r1"></div>
+      <div class="part cup"></div>
+      <div class="part ring r2"></div>
+      <div class="part cone"></div>
+      <div class="part foot"></div>
+      <span class="badge" aria-hidden="true">LUMINA-FLO · 71</span>
+    </div>
+  </div>
+
+  <svg class="grain" aria-hidden="true">
+    <filter id="grainf" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="3"/>
+      <feColorMatrix values="0 0 0 0 .23  0 0 0 0 .04  0 0 0 0 .16  0 0 0 .9 -.25"/>
+    </filter>
+    <rect width="100%" height="100%" filter="url(#grainf)"/>
+  </svg>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <filter id="gooey"><feGaussianBlur stdDeviation="7"/><feColorMatrix values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9"/></filter>
+  </svg>
+</main>
+
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const root = document.documentElement, room = $('#room'), lamp = $('#lamp'), canvas = $('#gl');
+const RM = matchMedia('(prefers-reduced-motion: reduce)');
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const sm = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255);
+
+/* ------------------------------------------------ schemes */
+const SCHEMES = [
+  { wall: '#FF5E1F', glow: '#FFD873', shade: '#3A0A2A', st: ['#D91E63', '#FBE9D0', '#FFB000', '#3A0A2A'],
+    liqA: '#FFC62E', liqB: '#F79200', wax: '#D91E63', hot: '#FF8A2B' },
+  { wall: '#D9A31A', glow: '#EEF27A', shade: '#17352F', st: ['#0E7F82', '#FBE9D0', '#B9D932', '#17352F'],
+    liqA: '#DDF05A', liqB: '#A6CB1E', wax: '#0E7F82', hot: '#3CCBA4' },
+  { wall: '#D91E63', glow: '#FF7A4E', shade: '#3A0A2A', st: ['#FFB000', '#FBE9D0', '#E8281E', '#3A0A2A'],
+    liqA: '#FF4B2B', liqB: '#CC101E', wax: '#FBE9D0', hot: '#FFE0A0' }
+];
+const STRIPE_KEY = [0, 1, 2, 3, 1, 0, 2];
+const STRIPE_W = [44, 14, 44, 10, 30, 14, 34];
+const stripes = [...document.querySelectorAll('#super g')].map(g => ({ b: g.querySelector('.b'), o: g.querySelector('.o') }));
+const wall2 = $('#wall2');
+let scheme = 0, sweepTimer = 0;
+const colTarget = {}, colNow = {};
+const COLS = ['liqA', 'liqB', 'wax', 'hot', 'shade'];
+COLS.forEach(k => { colTarget[k] = hex(SCHEMES[0][k]); colNow[k] = colTarget[k].slice(); });
+
+function buildStripes() {
+  const r = room.getBoundingClientRect(), sp = $('.spot.back').getBoundingClientRect();
+  const u = sp.height / 640, narrow = r.width <= 760;
+  const k = narrow ? 0.6 : 1, inner = narrow ? 84 : 150;
+  const left = -(sp.left / u) - 30, down = 640 + 60 / u;
+  let rad = inner + STRIPE_W.reduce((a, b) => a + b, 0) * k;
+  stripes.forEach((s, i) => {
+    const w = STRIPE_W[i] * k, rr = rad - w / 2; rad -= w;
+    const d = `M${left.toFixed(1)} ${(250 - rr).toFixed(2)}H100A${rr.toFixed(2)} ${rr.toFixed(2)} 0 0 1 ${(100 + rr).toFixed(2)} 250V${down.toFixed(1)}`;
+    s.b.setAttribute('d', d); s.o.setAttribute('d', d);
+    s.b.setAttribute('stroke-width', w + 0.8); s.o.setAttribute('stroke-width', w + 0.8);
+  });
+}
+function settleSweep() {
+  clearTimeout(sweepTimer);
+  const S = SCHEMES[scheme];
+  stripes.forEach((s, i) => {
+    s.b.style.stroke = S.st[STRIPE_KEY[i]];
+    s.o.style.transition = 'none'; s.o.style.strokeDashoffset = '1.02';
+  });
+  room.style.background = S.wall; document.body.style.background = S.wall;
+  wall2.classList.remove('go'); wall2.style.clipPath = '';
+}
+function setScheme(n, instant) {
+  if (n === scheme && !instant) return;
+  settleSweep();
+  scheme = n;
+  const S = SCHEMES[n], rs = root.style;
+  rs.setProperty('--glow', S.glow); rs.setProperty('--shade', S.shade); rs.setProperty('--wax', S.wax);
+  rs.setProperty('--liqA', S.liqA); rs.setProperty('--liqB', S.liqB);
+  COLS.forEach(k => colTarget[k] = hex(S[k]));
+  document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(+c.dataset.s === n)));
+  if (instant || RM.matches) { settleSweep(); return; }
+  const g = $('.glass').getBoundingClientRect();
+  const at = `${(g.left + g.width / 2).toFixed(0)}px ${(g.top + g.height * 0.6).toFixed(0)}px`;
+  wall2.style.background = S.wall;
+  wall2.style.clipPath = `circle(0px at ${at})`;
+  void wall2.offsetWidth;
+  wall2.classList.add('go');
+  wall2.style.clipPath = `circle(160vmax at ${at})`;
+  stripes.forEach((s, i) => {
+    s.o.style.stroke = S.st[STRIPE_KEY[i]];
+    void s.o.getBoundingClientRect();
+    s.o.style.transition = `stroke-dashoffset 1050ms cubic-bezier(.65,0,.2,1) ${120 + i * 95}ms`;
+    s.o.style.strokeDashoffset = '0';
+  });
+  sweepTimer = setTimeout(settleSweep, 1900);
+}
+document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => setScheme(+c.dataset.s)));
+
+/* ------------------------------------------------ title fit */
+function fitTitle() {
+  const g = $('#ttl-g'), svg = $('#ttl');
+  try {
+    const b = g.getBBox(), ctx = document.createElement('canvas').getContext('2d');
+    ctx.font = `900 200px ${getComputedStyle(svg).fontFamily}`;
+    const m1 = ctx.measureText('Lava'), m3 = ctx.measureText('1971');
+    const top = 170 - (m1.actualBoundingBoxAscent || 150), bot = 506 + (m3.actualBoundingBoxDescent || 4);
+    if (b.width > 10) svg.setAttribute('viewBox', `${(b.x - 9).toFixed(0)} ${(top - 9).toFixed(0)} ${(b.width + 36).toFixed(0)} ${(bot - top + 38).toFixed(0)}`);
+  } catch (e) { /* keep default viewBox */ }
+}
+
+/* ------------------------------------------------ simulation */
+const A = 354 / 156, N = 12, TH = 0.42;
+const RADII = [.150, .118, .132, .104, .120, .096, .100, .090, .082, .074, .066, .058];
+const halfW = y => { const yn = clamp(y / A, 0, 1); return 0.5 + (0.2436 - 0.5) * yn + 0.014 * Math.sin(Math.PI * yn); };
+let seed = 1971;
+const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const blobs = RADII.map((r, i) => ({
+  r, x: ((i * 0.381966) % 1 - 0.5) * 0.66, y: r * 0.45 + rnd() * 0.04, vx: 0, vy: 0,
+  T: Math.max(0.02, 0.46 - i * 0.042), s: 1, ph: rnd() * 6.283, fr: 0.11 + rnd() * 0.21, hk: 0.6 + rnd() * 0.9
+}));
+blobs[0].T = 0.57; blobs[1].T = 0.57; blobs[0].x = -0.03; blobs[1].x = 0.03;
+blobs[2].T = 0.4; blobs[3].T = 0.4; blobs[6].T = 0.5;
+const pairs = [[0, 1], [2, 3], [4, 5]].map(([a, b], i) => ({ a, b, bonded: true, neck: false, by: [0.4, 0.5, 0.46][i] }));
+const bondedWith = new Map(); pairs.forEach(p => { bondedWith.set(p.a * 16 + p.b, p); });
+
+let knob = 0.5, boost = 0, holding = false, keyHeat = false, on = 0, clock = 0, bornAt = 0;
+let tilt = 0, tiltV = 0, tiltTarget = 0, dragging = false, moundX = 0, glowI = 0;
+const MAXT = 0.125;
+
+function step(dt) {
+  clock += dt;
+  const heat = on * (0.45 + 1.25 * knob) * (1 + 1.6 * boost);
+  const upx = -Math.sin(tilt) * 3.4;
+  for (let i = 0; i < N; i++) {
+    const b = blobs[i], yn = b.y / A, mass = 0.55 + Math.pow(b.r / 0.1, 2) * 0.5;
+    const hz = sm(0.62, 0.03, b.y), cz = sm(0.68, 1.0, yn);
+    b.T += (0.105 * b.hk * heat * hz * (1.08 - b.T) - 0.52 * cz * b.T - 0.012 * b.T) / mass * dt;
+    b.T = clamp(b.T, 0, 1.05);
+    let buoy = 1.65 * (b.T - 0.5) * (1 + 0.9 * boost);
+    const floorY = b.r * 0.3;
+    if (b.y <= floorY + 0.006 && b.T < 0.6) buoy = Math.min(buoy, 0);
+    b.vy += buoy * dt;
+    b.vx += (upx * buoy * 1.2 + Math.sin(clock * b.fr + b.ph) * 0.022 - b.x * 0.05) * dt;
+  }
+  for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) {
+    const a = blobs[i], b = blobs[j];
+    let dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 1e-4;
+    const R = a.r + b.r; if (d > R * 1.35) continue;
+    dx /= d; dy /= d;
+    const p = bondedWith.get(i * 16 + j);
+    if (p && p.bonded) {
+      const f = (d - R * 0.5) * 14 * dt;
+      a.vx += dx * f; a.vy += dy * f; b.vx -= dx * f; b.vy -= dy * f;
+      const mx = (a.vx + b.vx) / 2, my = (a.vy + b.vy) / 2, k = Math.min(1, 5 * dt);
+      a.vx += (mx - a.vx) * k; a.vy += (my - a.vy) * k; b.vx += (mx - b.vx) * k; b.vy += (my - b.vy) * k;
+      const mt = (a.T + b.T) / 2; a.T += (mt - a.T) * k; b.T += (mt - b.T) * k;
+    } else {
+      const stuckA = a.y <= a.r * 0.3 + 0.006 && a.T < 0.6, stuckB = b.y <= b.r * 0.3 + 0.006 && b.T < 0.6;
+      if (d < R * 0.78) { const f = (R * 0.78 - d) * 7 * dt; a.vx -= dx * f; a.vy -= dy * f; b.vx += dx * f; b.vy += dy * f; }
+      const k = (stuckA || stuckB) ? 0 : Math.min(1, 0.55 * (1 - d / (R * 1.35)) * dt);
+      const mx = (a.vx + b.vx) / 2, my = (a.vy + b.vy) / 2;
+      a.vx += (mx - a.vx) * k; a.vy += (my - a.vy) * k; b.vx += (mx - b.vx) * k; b.vy += (my - b.vy) * k;
+    }
+  }
+  for (const p of pairs) {
+    const a = blobs[p.a], b = blobs[p.b], R = a.r + b.r, d = Math.hypot(a.x - b.x, a.y - b.y);
+    if (p.bonded) {
+      if (Math.max(a.y, b.y) > p.by * A) {
+        p.bonded = false; p.neck = true;
+        const lo = a.y < b.y ? a : b, hi = lo === a ? b : a;
+        lo.T = Math.min(lo.T, 0.455); hi.T = Math.max(hi.T, 0.66);
+      }
+    } else if (p.neck) {
+      if (d > R * 1.95) { p.neck = false; pinched(); }
+    } else if (a.y < 0.5 && b.y < 0.5 && d < R * 0.85 && a.T < 0.5 && b.T < 0.5) {
+      p.bonded = true; p.by = 0.36 + rnd() * 0.26;
+    }
+  }
+  const drag = Math.exp(-2.25 * dt);
+  for (let i = 0; i < N; i++) {
+    const b = blobs[i];
+    b.vx *= drag; b.vy *= drag;
+    b.x += b.vx * dt; b.y += b.vy * dt;
+    const lim = halfW(b.y) - b.r * 0.82;
+    if (b.x > lim) { b.vx -= (b.x - lim) * 34 * dt; if (b.x > lim + 0.03) b.x = lim + 0.03; }
+    if (b.x < -lim) { b.vx -= (b.x + lim) * 34 * dt; if (b.x < -lim - 0.03) b.x = -lim - 0.03; }
+    const fy = b.r * 0.3, cy = A - b.r * 0.85;
+    if (b.y < fy) { b.y = fy; if (b.vy < 0) b.vy = 0; }
+    if (b.y > cy) { b.y = cy; if (b.vy > 0) b.vy *= 0.5; }
+    const rest = sm(0.12, 0.0, b.y - fy) * sm(0.62, 0.45, b.T);
+    const st = 1 + clamp(Math.abs(b.vy) * 1.9 - 0.06, 0, 0.6) - 0.3 * rest;
+    b.s += (st - b.s) * Math.min(1, 3 * dt);
+  }
+}
+
+/* caption */
+const cap = $('#cap'), capSpan = cap.firstElementChild;
+let capTimer = 0, capBusy = false;
+function setCap(t) {
+  if (capSpan.textContent === t) return;
+  cap.classList.add('swap');
+  setTimeout(() => { capSpan.textContent = t; cap.classList.remove('swap'); }, 460);
+}
+function pinched() {
+  if (capBusy) return;
+  capBusy = true; setCap('there it goes.');
+  clearTimeout(capTimer);
+  capTimer = setTimeout(() => { setCap('wait for it.'); setTimeout(() => capBusy = false, 3000); }, 7500);
+}
+
+/* ------------------------------------------------ WebGL */
+const FRAG = `
+precision highp float;
+uniform vec2 uRes; uniform float uT,uOn,uHeat,uA;
+uniform vec4 uB[16]; uniform float uS[16]; uniform vec4 uM;
+uniform vec3 cLiqA,cLiqB,cWax,cHot,cShade;
+const vec3 cCream=vec3(.984,.914,.816);
+const float TH=${TH.toFixed(2)};
+float hw(float yn){return mix(.5,.2436,yn)+.014*sin(3.14159*yn);}
+float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+void main(){
+  vec2 uv=gl_FragCoord.xy/uRes; float yn=uv.y; float w=hw(yn);
+  float nx=(uv.x-.5)/w; float ax=abs(nx);
+  float pw=2.2/(uRes.x*w);
+  float mask=1.-smoothstep(1.-pw,1.,ax);
+  if(mask<=0.){gl_FragColor=vec4(0.);return;}
+  float lx=nx*(.72+.28*nx*nx);
+  vec2 p=vec2(lx*w,yn*uA);
+  float f=0.,tw=0.; vec2 g=vec2(0.);
+  for(int i=0;i<16;i++){
+    vec4 b=uB[i]; if(b.z<=0.)continue; float s=uS[i];
+    vec2 d=p-b.xy; vec2 e=vec2(d.x*s,d.y/s); float R2=b.z*b.z*4.; float q=dot(e,e)/R2;
+    if(q<1.){float k=1.-q,k2=k*k; f+=k2*k; tw+=k2*k*b.w; vec2 ge=-6.*k2*e/R2; g+=vec2(ge.x*s,ge.y/s);}
+  }
+  { vec2 d=p-uM.xy; float R2=uM.z*uM.z; float q=dot(d,d)/R2;
+    if(q<1.){float k=1.-q,k2=k*k; f+=k2*k; tw+=k2*k*uM.w; g+=-6.*k2*d/R2;} }
+  float tF=tw/max(f,.001);
+  float gl=length(g);
+  float ew=gl*uA/uRes.y*1.3+.0005;
+  float wax=smoothstep(TH-ew,TH+ew,f);
+
+  /* liquid */
+  vec3 liq=mix(cLiqA,cLiqB,smoothstep(0.,.95,yn));
+  liq+=cCream*exp(-yn*5.5)*.30*uOn*(.8+.5*uHeat);
+  liq=mix(liq,cLiqA*1.08,exp(-pow((nx-.1)/.5,2.))*.22*uOn*(1.-yn*.6));
+  vec2 sp=p*27.; sp.y-=uT*.32; sp.x+=sin(uT*.21+p.y*3.1)*.7;
+  vec2 ci=floor(sp),cf=fract(sp); float hh=hash(ci);
+  float spk=step(.885,hh)*smoothstep(.2,.02,length(cf-.25-.5*vec2(hash(ci+7.3),hash(ci+13.1))))*(.45+.55*sin(uT*1.7+hh*50.));
+  liq+=cCream*spk*.34*uOn;
+  liq*=1.-.2*smoothstep(.1,TH,f);
+  liq=mix(mix(liq,cShade,.22)*.66,liq,uOn);
+
+  /* wax */
+  float hgt=clamp((f-TH)/.5,0.,1.);
+  vec3 n=normalize(vec3(-g*.085/(1.+max(f-.9,0.)*2.2),.05+sqrt(hgt)));
+  float hot=clamp(tF*1.15-.34+exp(-yn*4.2)*.5,0.,1.)*uOn;
+  vec3 base=mix(cWax,cHot,hot*.6);
+  base*=mix(1.,.78,smoothstep(.25,1.,yn));
+  vec3 L=normalize(vec3(-.55,.5,.67));
+  float dif=clamp(dot(n,L)*.5+.5,0.,1.);
+  vec3 H=normalize(L+vec3(0.,0.,1.));
+  float nh=max(dot(n,H),0.);
+  float spc=pow(nh,70.)*.8+pow(nh,9.)*.13;
+  float rim=pow(1.-n.z,2.4);
+  float under=max(-n.y,0.)*exp(-yn*2.4)*uOn;
+  vec3 wc=base*(.52+.6*dif)+cHot*under*.5+liq*rim*.42+cCream*spc;
+  wc=mix(wc,cShade,(1.-dif)*.2*(1.-rim));
+  vec3 col=mix(liq,wc,wax);
+
+  /* glass */
+  col=mix(col,cShade,pow(ax,4.5)*.6);
+  col+=cCream*smoothstep(.9,.975,ax)*(1.-smoothstep(.975,1.,ax))*.22;
+  float vf=smoothstep(.03,.2,yn)*smoothstep(.985,.78,yn);
+  float st=exp(-pow((nx+.63)/.05,2.))*.6+exp(-pow((nx+.79)/.018,2.))*.32+exp(-pow((nx-.76)/.07,2.))*.14;
+  col+=cCream*st*vf*(.75+.25*sin(yn*9.+1.));
+  vec2 q2=vec2((nx+.30)/.21,(yn-.725)/.075); q2.x+=q2.y*.14; q2.y+=q2.x*q2.x*.22-q2.x*.1;
+  float win=(1.-smoothstep(.82,1.,abs(q2.x)))*(1.-smoothstep(.84,1.,abs(q2.y)));
+  float mull=smoothstep(.03,.1,abs(q2.x))*smoothstep(.05,.15,abs(q2.y));
+  col+=cCream*win*mull*.2*(.75+.25*q2.y);
+  col=mix(col,cShade,smoothstep(.9,1.,yn)*.5+smoothstep(.05,0.,yn)*.25);
+  gl_FragColor=vec4(col*mask,mask);
+}`;
+const VERT = 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}';
+let gl = null, U = {};
+const uB = new Float32Array(64), uS = new Float32Array(16);
+function noGL() { gl = null; root.classList.add('no-gl'); }
+function initGL() {
+  try { gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false }); } catch (e) { gl = null; }
+  if (!gl) return noGL();
+  const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null; };
+  const vs = sh(gl.VERTEX_SHADER, VERT), fs = sh(gl.FRAGMENT_SHADER, FRAG);
+  if (!vs || !fs) return noGL();
+  const pr = gl.createProgram(); gl.attachShader(pr, vs); gl.attachShader(pr, fs); gl.linkProgram(pr);
+  if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) return noGL();
+  gl.useProgram(pr);
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(pr, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  ['uRes', 'uT', 'uOn', 'uHeat', 'uA', 'uB[0]', 'uS[0]', 'uM', 'cLiqA', 'cLiqB', 'cWax', 'cHot', 'cShade'].forEach(n => U[n] = gl.getUniformLocation(pr, n));
+  gl.uniform1f(U.uA, A);
+  gl.disable(gl.DEPTH_TEST);
+  canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); noGL(); });
+}
+function sizeCanvas() {
+  if (!gl) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = Math.max(2, Math.round(canvas.clientWidth * dpr)), h = Math.max(2, Math.round(canvas.clientHeight * dpr));
+  if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+  gl.viewport(0, 0, w, h); gl.uniform2f(U.uRes, w, h);
+}
+function draw() {
+  if (!gl) return;
+  for (let i = 0; i < N; i++) { const b = blobs[i]; uB[i * 4] = b.x; uB[i * 4 + 1] = b.y; uB[i * 4 + 2] = b.r; uB[i * 4 + 3] = b.T; uS[i] = b.s; }
+  pairs.forEach((p, k) => {
+    const a = blobs[p.a], b = blobs[p.b], R = a.r + b.r, dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy), i = N + k;
+    const live = p.bonded || p.neck;
+    const rn = live ? 0.56 * Math.min(a.r, b.r) * (1 - sm(0.95, 2.0, d / R)) : 0;
+    uB[i * 4] = (a.x + b.x) / 2; uB[i * 4 + 1] = (a.y + b.y) / 2; uB[i * 4 + 2] = rn > 0.02 ? rn : 0; uB[i * 4 + 3] = (a.T + b.T) / 2;
+    uS[i] = Math.abs(dy) > Math.abs(dx) ? clamp(d / (R * 0.7), 1, 2.3) : 1;
+  });
+  gl.uniform4fv(U['uB[0]'], uB); gl.uniform1fv(U['uS[0]'], uS);
+  const mh = 0.2 + 0.035 * Math.min(1.5, knob + boost) * on;
+  gl.uniform4f(U.uM, moundX, -0.5, 2 * (0.5 + mh), 0.36 + 0.3 * on);
+  gl.uniform1f(U.uT, clock); gl.uniform1f(U.uOn, on); gl.uniform1f(U.uHeat, boost + knob * 0.5);
+  gl.uniform3fv(U.cLiqA, colNow.liqA); gl.uniform3fv(U.cLiqB, colNow.liqB); gl.uniform3fv(U.cWax, colNow.wax);
+  gl.uniform3fv(U.cHot, colNow.hot); gl.uniform3fv(U.cShade, colNow.shade);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+}
+
+/* ------------------------------------------------ main loop */
+let last = 0, raf = 0, lastTilt = 9, lastGi = -1;
+function frame(now) {
+  raf = requestAnimationFrame(frame);
+  let dt = Math.min(0.1, (now - last) / 1000 || 0.016); last = now;
+  const life = (now - bornAt) / 1000, calm = RM.matches;
+
+  /* the bulb clicks on */
+  const tb = life - (calm ? 0.1 : 0.75);
+  let onT = tb < 0 ? 0 : tb < 0.07 ? 0.85 : tb < 0.16 ? 0.22 : Math.min(1, 0.55 + (tb - 0.16) * 0.9);
+  if (calm && tb >= 0) onT = 1;
+  on = onT;
+  if (tb >= 0 && !room.classList.contains('lit')) room.classList.add('lit');
+
+  /* press-and-hold heat */
+  const hot = holding || keyHeat;
+  boost += ((hot ? 1 : 0) - boost) * Math.min(1, dt * (hot ? 1.6 : 0.55));
+
+  /* tilt spring */
+  const tsteps = 4, h = dt / tsteps;
+  for (let i = 0; i < tsteps; i++) {
+    const acc = dragging ? (tiltTarget - tilt) * 90 - tiltV * 17 : (tiltTarget - tilt) * 44 - tiltV * (calm ? 13.5 : 2.5);
+    tiltV += acc * h; tilt += tiltV * h;
+  }
+  tilt = clamp(tilt, -0.2, 0.2);
+  moundX += (Math.sin(tilt) * 1.5 - moundX) * Math.min(1, dt * 1.4);
+  if (Math.abs(tilt - lastTilt) > 0.00008) { lamp.style.setProperty('--tilt', (tilt * 57.2958).toFixed(3) + 'deg'); lastTilt = tilt; }
+
+  /* physics */
+  const sdt = dt * (calm ? 0.25 : 1), n = Math.max(1, Math.ceil(sdt / 0.02));
+  for (let i = 0; i < n; i++) step(sdt / n);
+
+  /* glow breathes as wax passes the bulb */
+  let occ = 0;
+  for (let i = 0; i < N; i++) { const b = blobs[i]; occ += b.r * b.r * sm(0.95, 0.3, b.y) * sm(0.02, 0.3, b.y - b.r * 0.45); }
+  const gT = on * clamp((0.7 + 0.2 * knob + 0.22 * boost) * (1 - occ * 5.5), 0.3, 1);
+  glowI += (gT - glowI) * Math.min(1, dt * (on < 1 ? 14 : 2.2));
+  if (Math.abs(glowI - lastGi) > 0.004) { root.style.setProperty('--gi', glowI.toFixed(3)); lastGi = glowI; }
+
+  const kc = Math.min(1, dt * 3.2);
+  for (const k of COLS) for (let i = 0; i < 3; i++) colNow[k][i] += (colTarget[k][i] - colNow[k][i]) * kc;
+  draw();
+}
+function start() { if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); } }
+function stop() { cancelAnimationFrame(raf); raf = 0; }
+document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
+
+/* ------------------------------------------------ lamp: hold to heat, drag to tilt */
+let startX = 0, pid = null;
+lamp.addEventListener('pointerdown', e => {
+  if (e.button > 0) return;
+  pid = e.pointerId; try { lamp.setPointerCapture(pid); } catch (_) {}
+  holding = true; dragging = true; startX = e.clientX - (tilt / MAXT) * 150; lamp.classList.add('held');
+  e.preventDefault();
+});
+lamp.addEventListener('pointermove', e => {
+  if (!dragging || e.pointerId !== pid) return;
+  tiltTarget = clamp((e.clientX - startX) / 150, -1, 1) * MAXT;
+});
+const release = e => {
+  if (e.pointerId !== pid) return;
+  holding = false; dragging = false; tiltTarget = 0; pid = null; lamp.classList.remove('held');
+};
+lamp.addEventListener('pointerup', release);
+lamp.addEventListener('pointercancel', release);
+lamp.addEventListener('lostpointercapture', release);
+lamp.addEventListener('keydown', e => {
+  if (e.key === ' ' || e.key === 'Enter') { keyHeat = true; e.preventDefault(); }
+  else if (e.key === 'ArrowLeft') { tiltV -= RM.matches ? 0.5 : 0.75; e.preventDefault(); }
+  else if (e.key === 'ArrowRight') { tiltV += RM.matches ? 0.5 : 0.75; e.preventDefault(); }
+});
+lamp.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') keyHeat = false; });
+lamp.addEventListener('blur', () => keyHeat = false);
+
+/* ------------------------------------------------ dimmer knob */
+const knobEl = $('#knob');
+const WORDS = ['mellow', 'easy', 'groovy', 'cooking', 'far out'];
+function setKnob(v) {
+  knob = clamp(v, 0, 1);
+  knobEl.style.setProperty('--a', (-135 + 270 * knob).toFixed(1) + 'deg');
+  knobEl.setAttribute('aria-valuenow', Math.round(knob * 100));
+  knobEl.setAttribute('aria-valuetext', WORDS[Math.min(4, Math.floor(knob * 5))]);
+}
+let kp = null, kx = 0, ky = 0, kv = 0;
+knobEl.addEventListener('pointerdown', e => {
+  kp = e.pointerId; try { knobEl.setPointerCapture(kp); } catch (_) {}
+  kx = e.clientX; ky = e.clientY; kv = knob; e.preventDefault(); knobEl.focus({ preventScroll: true });
+});
+knobEl.addEventListener('pointermove', e => { if (e.pointerId === kp) setKnob(kv + ((e.clientX - kx) - (e.clientY - ky)) / 130); });
+const kend = e => { if (e.pointerId === kp) kp = null; };
+knobEl.addEventListener('pointerup', kend); knobEl.addEventListener('pointercancel', kend);
+knobEl.addEventListener('keydown', e => {
+  const m = { ArrowRight: .05, ArrowUp: .05, ArrowLeft: -.05, ArrowDown: -.05, PageUp: .2, PageDown: -.2 }[e.key];
+  if (m) { setKnob(knob + m); e.preventDefault(); }
+  else if (e.key === 'Home') { setKnob(0); e.preventDefault(); }
+  else if (e.key === 'End') { setKnob(1); e.preventDefault(); }
+});
+knobEl.addEventListener('wheel', e => { setKnob(knob - Math.sign(e.deltaY) * 0.05); e.preventDefault(); }, { passive: false });
+
+/* ------------------------------------------------ boot */
+let rz = 0;
+function layout() { buildStripes(); sizeCanvas(); }
+addEventListener('resize', () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(layout); });
+initGL(); fitTitle(); setKnob(0.5); setScheme(0, true); layout();
+bornAt = performance.now();
+if (!document.hidden) start();
+})();
+</script>
+</body>
+</html>

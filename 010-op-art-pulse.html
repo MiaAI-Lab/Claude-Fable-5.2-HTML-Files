@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Six Rooms of Optical Pressure</title>
+<meta name="description" content="A gallery of six kinetic works in strict black and white. The eye does the animating.">
+<style>
+/* ------------------------------------------------------------------
+   SIX ROOMS OF OPTICAL PRESSURE
+   Two values only: #000000 and #FFFFFF.
+   ------------------------------------------------------------------ */
+:root{
+  --s:min(86vw,86vh);
+  --ease:cubic-bezier(.2,.8,.16,1);
+  --inout:cubic-bezier(.62,0,.38,1);
+  --spring:cubic-bezier(.3,1.7,.5,1);
+  --sine:cubic-bezier(.37,0,.63,1);
+  --u:2px;            /* stripe unit, Room III */
+  --p:4px;            /* ring pitch, Room I */
+  --lp:8px;           /* line pitch, Room V */
+  --wallfont:Impact,"HelveticaNeue-CondensedBlack",Haettenschweiler,"Arial Narrow Bold","Arial Narrow","Liberation Sans Narrow","Nimbus Sans Narrow","Roboto Condensed",sans-serif-condensed,sans-serif;
+  --pin:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23fff' stroke-width='3.4'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23000' stroke-width='1.2'/%3E%3Ccircle cx='16' cy='16' r='2.6' fill='%23fff'/%3E%3Ccircle cx='16' cy='16' r='1.4'/%3E%3C/svg%3E") 16 16,crosshair;
+}
+@supports (height:1svh){ :root{--s:min(86vw,86svh)} }
+@media (max-width:700px){ :root{--u:1px;--p:3px;--lp:6px} }
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-snap-type:y mandatory;scroll-behavior:smooth;background:#fff}
+body{
+  margin:0;background:#fff;color:#000;
+  font:11px/1.55 "Helvetica Neue",Helvetica,Arial,"Nimbus Sans","Liberation Sans",sans-serif;
+  letter-spacing:.17em;text-transform:uppercase;
+  -webkit-text-size-adjust:100%;text-size-adjust:100%;
+}
+::selection{background:#000;color:#fff}
+.k ::selection{background:#fff;color:#000}
+a{color:inherit}
+i,b,em{font-style:normal;font-weight:inherit}
+
+/* ============================== TITLE WALL ============================== */
+.wall{
+  position:relative;min-height:100vh;min-height:100svh;
+  scroll-snap-align:start;overflow:hidden;
+  display:flex;flex-direction:column;
+  padding:22px max(4vw,16px) 22px;background:#fff;color:#000;
+  container-type:inline-size;
+}
+.wall .top{
+  display:flex;justify-content:space-between;gap:16px;
+  padding-bottom:10px;margin-bottom:18px;position:relative;white-space:nowrap;
+}
+.wall .top::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:#000;
+  transform-origin:0 50%;animation:rule 1.6s var(--ease) .15s both;
+}
+.wall .top span:nth-child(2){text-align:center}
+.ttl{
+  margin:auto 0;padding:.06em 0 .02em;
+  font-family:var(--wallfont);font-weight:700;font-synthesis:none;
+  letter-spacing:0;line-height:.86;color:#000;
+  display:flex;flex-direction:column;
+}
+.ttl .ln{display:flex;justify-content:space-between;white-space:nowrap}
+.ttl .ln>span{display:block}
+.ttl.wide .l1{font-size:min(16.7cqw,33vh)}
+.ttl.wide .l2{font-size:min(12cqw,23.7vh)}
+.ttl.tall{display:none}
+.ttl.tall .l1{font-size:21.4cqw}
+.ttl.tall .l2{font-size:20.1cqw}
+.ttl.tall .l3{font-size:21.8cqw}
+@media (max-aspect-ratio:1/1){
+  .ttl.wide{display:none}
+  .ttl.tall{display:flex}
+}
+@supports ((-webkit-background-clip:text) or (background-clip:text)){
+  .ttl{
+    background-image:
+      linear-gradient(#000,#000),
+      repeating-linear-gradient(0deg,#fff 0 2px,#000 2px 10px),
+      repeating-linear-gradient(0deg,#fff 0 2px,#000 2px 11px);
+    background-repeat:no-repeat,repeat,repeat;
+    background-size:0% 100%,100% 110px,100% 110px;
+    background-position:100% 0,0 0,0 0;
+    background-blend-mode:normal,difference,normal;
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:cover 2.6s var(--inout) .35s both,drift 48s linear infinite;
+  }
+}
+@keyframes cover{
+  from{background-size:100% 100%,100% 110px,100% 110px}
+  to{background-size:0% 100%,100% 110px,100% 110px}
+}
+@keyframes drift{
+  from{background-position:100% 0,0 0,0 110px}
+  to{background-position:100% 0,0 110px,0 0}
+}
+@keyframes rule{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 -2% 0 0)}}
+
+.wall .low{
+  display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) minmax(0,1fr);
+  gap:clamp(20px,4vw,64px);align-items:end;margin-top:20px;
+}
+.wall .low>*{animation:wipe 1.3s var(--ease) both}
+.wall .low>:nth-child(1){animation-delay:1.5s}
+.wall .low>:nth-child(2){animation-delay:1.68s}
+.wall .low>:nth-child(3){animation-delay:1.86s}
+.intro{
+  margin:0;max-width:46em;
+  font-size:13px;line-height:1.5;letter-spacing:.01em;text-transform:none;
+}
+.intro::first-line{letter-spacing:.17em;text-transform:uppercase;font-size:11px}
+.adv{display:grid;grid-template-columns:44px 1fr;gap:14px;border:1px solid #000;padding:12px 14px 12px 12px;align-items:center}
+.adv .glyph{
+  width:44px;height:44px;display:block;
+  background:repeating-linear-gradient(90deg,#000 0 2px,#fff 2px 4px);
+  animation:flick 1.1s steps(1) infinite;
+}
+@keyframes flick{0%{background-position:0 0}50%{background-position:2px 0}}
+.adv p{margin:0}
+.adv b{display:block;font-weight:700}
+.plan{list-style:none;margin:0;padding:0;border-top:1px solid #000}
+.plan li{border-bottom:1px solid #000}
+.plan a{
+  display:flex;justify-content:space-between;gap:10px;padding:3px 0 2px;text-decoration:none;
+  background:linear-gradient(#000,#000) 0 0/0% 100% no-repeat;
+  transition:background-size .5s var(--ease),color .01s .12s,padding .5s var(--ease);
+}
+.plan a:hover,.plan a:focus-visible{background-size:100% 100%;color:#fff;padding-left:8px;padding-right:8px;outline:0}
+.plan a span:first-child{min-width:2.4em}
+.plan a span:nth-child(2){flex:1}
+.enter{
+  align-self:center;margin-top:18px;padding:6px 10px;text-decoration:none;
+  display:flex;align-items:center;gap:12px;
+  animation:wipe 1.2s var(--ease) 2.2s both;
+}
+.enter i{
+  display:block;width:1px;height:26px;background:#000;position:relative;
+  animation:drop 2.4s var(--inout) 3s infinite;
+}
+.enter i::after{
+  content:"";position:absolute;left:-4px;bottom:0;width:9px;height:9px;
+  border:solid #000;border-width:0 1px 1px 0;transform:rotate(45deg);transform-origin:50% 50%;
+}
+@keyframes drop{0%,100%{transform:translateY(0)}45%{transform:translateY(7px)}}
+.enter:focus-visible,.idx a:focus-visible{outline:1px solid currentColor;outline-offset:2px}
+
+@media (max-width:900px){
+  .wall{padding-top:16px;padding-bottom:14px}
+  .wall .top span:nth-child(2){display:none}
+  .wall .low{grid-template-columns:1fr 1fr;gap:16px 20px}
+  .intro{grid-column:1/-1}
+}
+@media (max-width:560px){
+  .wall{padding-right:34px}
+  .wall .low{grid-template-columns:1fr}
+  .wall .top{font-size:10px;letter-spacing:.12em}
+  .intro{font-size:12.5px}
+  .plan{display:none}
+  .enter{margin-top:12px}
+}
+@media (max-height:620px) and (min-aspect-ratio:1/1){
+  .plan{display:none}
+  .wall .low{grid-template-columns:1.4fr 1fr}
+}
+
+/* ============================== ROOMS ============================== */
+.room{
+  position:relative;height:100vh;height:100svh;
+  display:grid;grid-template-rows:1fr var(--s) 1fr;justify-items:center;
+  scroll-snap-align:start;scroll-snap-stop:always;overflow:hidden;
+  background:var(--bg);color:var(--fg);
+}
+.room.k{--bg:#000;--fg:#fff}
+.room.w{--bg:#fff;--fg:#000}
+.room>input{
+  position:absolute;left:50%;top:50%;width:1px;height:1px;margin:0;
+  opacity:0;pointer-events:none;appearance:none;-webkit-appearance:none;
+}
+.work{
+  grid-row:2;position:relative;display:block;width:var(--s);height:var(--s);
+  overflow:hidden;container-type:size;isolation:isolate;
+  cursor:var(--pin);touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;
+}
+.work *{display:block;position:absolute}
+.tp:focus-visible~.work,.go:focus-visible~.work{outline:1px solid var(--fg);outline-offset:7px}
+
+/* numerals and wall text */
+.num{
+  position:absolute;left:7vw;bottom:calc(50% + var(--s)/2 + 10px);
+  font-family:var(--wallfont);font-weight:700;font-synthesis:none;letter-spacing:.01em;
+  font-size:clamp(26px,calc((100vh - var(--s))/2 - 30px),72px);line-height:.8;
+}
+.note{display:none;margin:0}
+.cap{
+  grid-row:3;width:var(--s);padding-top:13px;
+  display:flex;justify-content:space-between;align-items:flex-start;gap:12px 28px;
+}
+.cap p{margin:0}
+.cap .t b{font-weight:700}
+.cap .hint{display:block}
+.cap .hint .on{display:none}
+.tp:checked~.cap .hint .on{display:inline}
+.tp:checked~.cap .hint .off{display:none}
+
+/* still / moving switch */
+.tog{
+  flex:none;display:flex;align-items:center;gap:9px;cursor:pointer;
+  padding:2px 0;white-space:nowrap;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+}
+.tog .trk{
+  position:relative;width:28px;height:12px;border:1px solid currentColor;display:block;
+}
+.tog .trk::after{
+  content:"";position:absolute;left:2px;top:2px;width:6px;height:6px;background:currentColor;
+  transition:transform .45s var(--spring);
+}
+.tog span{position:relative;padding-bottom:2px}
+.tog span::after{
+  content:"";position:absolute;left:0;right:.17em;bottom:0;height:1px;background:currentColor;
+  transform:scaleX(0);transform-origin:0 50%;transition:transform .45s var(--ease);
+}
+.tog .a::after{transform:scaleX(1)}
+.sw:checked~.cap .tog .trk::after,.go:checked~.cap .tog .trk::after{transform:translateX(16px)}
+.sw:checked~.cap .tog .a::after,.go:checked~.cap .tog .a::after{transform:scaleX(0);transform-origin:100% 50%}
+.sw:checked~.cap .tog .z::after,.go:checked~.cap .tog .z::after{transform:scaleX(1)}
+.tog:hover .trk::after{transform:translateX(3px)}
+.sw:checked~.cap .tog:hover .trk::after,.go:checked~.cap .tog:hover .trk::after{transform:translateX(13px)}
+.sw:focus-visible~.cap .tog{outline:1px solid currentColor;outline-offset:5px}
+.atrest{display:none;flex:none;white-space:nowrap}
+
+/* tempo and freeze */
+
+@keyframes turn{to{transform:rotate(360deg)}}
+
+@media (min-aspect-ratio:3/2) and (min-width:1100px){
+  .num{
+    left:4vw;bottom:auto;top:calc(50% - var(--s)/2);
+    font-size:clamp(90px,11vw,190px);
+  }
+  .note{
+    display:block;position:absolute;left:4vw;bottom:calc(50% - var(--s)/2);
+    width:min(230px,calc((100vw - var(--s))/2 - 4vw - 34px));
+    padding-top:10px;border-top:1px solid currentColor;
+  }
+}
+@media (max-width:700px){
+  .cap{flex-direction:column;justify-content:flex-start;gap:14px}
+}
+@media (orientation:landscape) and (max-height:560px){
+  .room{grid-template-rows:1fr var(--s) 1fr;grid-template-columns:1fr var(--s) 1fr}
+  .work{grid-column:2}
+  .cap{grid-row:2;grid-column:3;width:auto;padding:0 44px 0 18px;flex-direction:column;align-self:end;justify-self:start}
+  .num{left:3vw;top:7vh;bottom:auto;font-size:52px}
+}
+
+/* ---------- I · SLOW INTERFERENCE ---------- */
+.v1{background:#fff}
+.v1 .ax,.v1 .bx{inset:-32%}
+.v1 .a,.v1 .b{
+  inset:0;
+  background:repeating-radial-gradient(circle,#000 0 var(--p),#fff var(--p) calc(var(--p)*2));
+}
+.v1 .ax{animation:ox 31s var(--sine) -9s infinite alternate;--d:5cqw}
+.v1 .a{animation:oy 23s var(--sine) -4s infinite alternate;--d:4cqw}
+.v1 .bw{inset:0;mix-blend-mode:difference;animation:sway 9s var(--sine) -4.5s infinite alternate}
+.v1 .bx{animation:ox 26s var(--sine) -21s infinite alternate;--d:17cqw}
+.v1 .b{animation:oy 26s var(--sine) -8s infinite alternate;--d:14cqw}
+@keyframes ox{from{transform:translateX(calc(var(--d)*-1))}to{transform:translateX(var(--d))}}
+@keyframes oy{from{transform:translateY(calc(var(--d)*-1))}to{transform:translateY(var(--d))}}
+@keyframes sway{from{transform:translate(-8cqw,6cqw) scale(.94)}to{transform:translate(8cqw,-6cqw) scale(1.06)}}
+
+/* ---------- II · BULGE ---------- */
+.v2{--t:14.6667cqw;background:#fff}
+.v2 .spin{
+  inset:-21%;
+  background:repeating-conic-gradient(#000 0 25%,#fff 0 50%) 50% 50%/var(--t) var(--t);
+  animation:turn 80s linear infinite;
+}
+.v2 .spin i{
+  inset:0;margin:auto;width:calc(var(--r)*88cqw);height:calc(var(--r)*88cqw);
+  border-radius:50%;overflow:hidden;
+}
+.v2 .spin b{
+  inset:0;background:repeating-conic-gradient(#000 0 25%,#fff 0 50%) 50% 50%/var(--t) var(--t);
+  animation:swell 6.5s var(--inout) infinite alternate;
+}
+@keyframes swell{
+  from{transform:scale(calc(1 + var(--w)*.0035))}
+  to{transform:scale(calc(1 + var(--w)*.015))}
+}
+
+/* ---------- III · TREMOR ---------- */
+.v3{background:#fff;--m:26cqw}
+.v3 .fld{inset:0 -14%;animation:lean 10s var(--inout) -5s infinite alternate}
+.v3 .fld i{
+  inset:0;
+  background:linear-gradient(90deg,#000 50%,#fff 0) calc(var(--ph)*var(--u)) 0/calc(var(--u)*8) 100%;
+}
+.v3 .fld i:not(.m0){
+  -webkit-mask-size:var(--m) var(--m);mask-size:var(--m) var(--m);
+  animation:slide 7s steps(28) infinite;
+}
+.v3 .m1{-webkit-mask-image:repeating-linear-gradient(135deg,transparent 0 9.8%,#000 0 15.7%,transparent 0 44.3%,#000 0 50%);mask-image:repeating-linear-gradient(135deg,transparent 0 9.8%,#000 0 15.7%,transparent 0 44.3%,#000 0 50%)}
+.v3 .m2{-webkit-mask-image:repeating-linear-gradient(135deg,transparent 0 15.3%,#000 0 19.7%,transparent 0 40.3%,#000 0 44.7%,transparent 0 50%);mask-image:repeating-linear-gradient(135deg,transparent 0 15.3%,#000 0 19.7%,transparent 0 40.3%,#000 0 44.7%,transparent 0 50%)}
+.v3 .m3{-webkit-mask-image:repeating-linear-gradient(135deg,transparent 0 19.3%,#000 0 25.2%,transparent 0 34.8%,#000 0 40.7%,transparent 0 50%);mask-image:repeating-linear-gradient(135deg,transparent 0 19.3%,#000 0 25.2%,transparent 0 34.8%,#000 0 40.7%,transparent 0 50%)}
+.v3 .m4{-webkit-mask-image:repeating-linear-gradient(135deg,transparent 0 24.8%,#000 0 35.2%,transparent 0 50%);mask-image:repeating-linear-gradient(135deg,transparent 0 24.8%,#000 0 35.2%,transparent 0 50%)}
+@keyframes slide{to{-webkit-mask-position:var(--m) 0;mask-position:var(--m) 0}}
+@keyframes lean{from{transform:skewX(-11deg)}to{transform:skewX(11deg)}}
+
+/* ---------- IV · CURRENT ---------- */
+.v4{border-radius:50%}
+.v4 .a{inset:0;background:repeating-conic-gradient(#000 0 3deg,#fff 0 6deg);animation:turn 240s linear infinite}
+.v4 .bw{inset:0;mix-blend-mode:difference;animation:turn 46s linear infinite reverse}
+.v4 .b{
+  inset:0;border-radius:50%;
+  background:repeating-conic-gradient(#fff 0 2.5deg,#000 0 5deg);
+  -webkit-mask-image:radial-gradient(circle closest-side,transparent 0 54%,#000 0);
+  mask-image:radial-gradient(circle closest-side,transparent 0 54%,#000 0);
+  animation:turn 200s linear infinite reverse;
+}
+.v4 .c{
+  inset:23%;border-radius:50%;
+  background:repeating-conic-gradient(#fff 0 3.3333deg,#000 0 6.6667deg);
+  animation:turn 200s linear infinite reverse;
+}
+.v4 .hub{inset:0;margin:auto;width:11%;height:11%;border-radius:50%;background:#000;border:.9cqw solid #fff;outline:.9cqw solid #000}
+
+/* ---------- V · FOLD ---------- */
+.v5{display:flex;background:#000}
+.v5>i{position:relative;flex:1 1 0;overflow:hidden;margin-right:-.4px}
+.v5 b{inset:9% 0;overflow:hidden;animation:pleatA 7.5s var(--inout) infinite alternate}
+.v5>i:nth-child(even) b{animation-name:pleatB}
+.v5 em{
+  inset:calc(var(--lp)*-4) 0;
+  background:repeating-linear-gradient(0deg,#fff 0 calc(var(--lp)*.625),#000 0 var(--lp));
+  animation:run 2.2s linear infinite;
+}
+.v5>i:nth-child(even) em{background:repeating-linear-gradient(0deg,#fff 0 calc(var(--lp)*.3125),#000 0 var(--lp))}
+@keyframes pleatA{from{transform:skewY(1.5deg)}to{transform:skewY(25deg)}}
+@keyframes pleatB{from{transform:skewY(-1.5deg)}to{transform:skewY(-25deg)}}
+@keyframes run{to{transform:translateY(calc(var(--lp)*2))}}
+
+/* ---------- VI · AFTERIMAGE ---------- */
+.v6{background:#fff}
+.v6 .disc{inset:0;margin:auto;width:62cqw;height:62cqw;border-radius:50%;background:#000}
+.v6 .ring{inset:0;margin:auto;width:70cqw;height:70cqw;transform:rotate(-90deg);overflow:visible}
+.v6 .ring circle{fill:none;stroke:#000;stroke-width:.5;stroke-dasharray:100 100;stroke-dashoffset:0}
+.v6 .tick{inset:0;margin:auto;width:70cqw;height:70cqw;border-radius:50%;
+  background:repeating-conic-gradient(#000 0 .5deg,#fff 0 18deg);
+  -webkit-mask-image:radial-gradient(circle closest-side,transparent 0 96%,#000 0 100%);
+  mask-image:radial-gradient(circle closest-side,transparent 0 96%,#000 0 100%);
+  transform:scale(1.07) rotate(-.25deg)}
+.v6 .fix{inset:0;margin:auto;width:15px;height:15px;color:#fff}
+.v6 .fix::before,.v6 .fix::after{content:"";position:absolute;background:currentColor}
+.v6 .fix::before{left:0;right:0;top:7px;height:1px}
+.v6 .fix::after{top:0;bottom:0;left:7px;width:1px}
+.v6 .ins{left:0;right:0;bottom:1.2cqw;text-align:center;padding:0 8px}
+.v6 .ins.b,.v6 .ins.c{visibility:hidden}
+.go:checked~.work .ins.a{visibility:hidden}
+.go:checked~.work .ins.b{animation:showfirst 20s step-end forwards}
+.go:checked~.work .ins.c{animation:showlast 20s step-end forwards}
+.go:checked~.work .disc,.go:checked~.work .tick{animation:vanish 20s step-end forwards}
+.go:checked~.work .ring{animation:vanish 20s step-end forwards}
+.go:checked~.work .ring circle{animation:deplete 20s linear forwards}
+.go:checked~.work .fix{animation:crossflip 20s step-end forwards}
+@keyframes vanish{to{visibility:hidden}}
+@keyframes showfirst{from{visibility:visible}to{visibility:hidden}}
+@keyframes showlast{from{visibility:hidden}to{visibility:visible}}
+@keyframes deplete{to{stroke-dashoffset:100}}
+@keyframes crossflip{to{color:#000}}
+.cnt{display:inline-block;height:1.55em;overflow:hidden;vertical-align:top;font-weight:700}
+.cnt i{display:block}
+.go:checked~.cap .cnt i{animation:count 20s steps(20) forwards}
+@keyframes count{to{transform:translateY(calc(-100% * 20 / 21))}}
+
+/* tempo and freeze */
+.room .work .boost{animation-play-state:paused}
+.room .work:hover .boost,.room .tp:checked~.work .boost{animation-play-state:running}
+.room .sw:checked~.work *{animation-play-state:paused!important}
+
+/* ============================== INDEX ============================== */
+.idx{
+  position:fixed;z-index:10;right:0;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;align-items:flex-end;
+  mix-blend-mode:difference;color:#fff;
+}
+.idx a{
+  position:relative;display:flex;align-items:center;justify-content:center;
+  width:max(26px,3.2vw);height:22px;text-decoration:none;
+}
+.idx a i{
+  display:block;width:7px;height:7px;border:1px solid #fff;
+  transition:transform .5s var(--spring);
+}
+.idx a.home i{height:1px;border-width:1px 0 0;width:11px}
+.idx a span{
+  position:absolute;right:100%;top:50%;transform:translateY(-50%);white-space:nowrap;padding-right:6px;
+  clip-path:inset(0 0 0 100%);transition:clip-path .55s var(--ease);pointer-events:none;
+}
+.idx a:hover span,.idx a:focus-visible span{clip-path:inset(0 0 0 -2%)}
+.idx a:hover i,.idx a:focus-visible i{transform:scale(1.6) rotate(90deg)}
+@supports (animation-timeline:view()){
+  body{timeline-scope:--r1,--r2,--r3,--r4,--r5,--r6}
+  #r1{view-timeline:--r1 block}#r2{view-timeline:--r2 block}#r3{view-timeline:--r3 block}
+  #r4{view-timeline:--r4 block}#r5{view-timeline:--r5 block}#r6{view-timeline:--r6 block}
+  .idx a:not(.home) i{animation:here 1s linear both}
+  .idx a:nth-of-type(2) i{animation-timeline:--r1}
+  .idx a:nth-of-type(3) i{animation-timeline:--r2}
+  .idx a:nth-of-type(4) i{animation-timeline:--r3}
+  .idx a:nth-of-type(5) i{animation-timeline:--r4}
+  .idx a:nth-of-type(6) i{animation-timeline:--r5}
+  .idx a:nth-of-type(7) i{animation-timeline:--r6}
+}
+@keyframes here{
+  0%,30%{background-color:transparent;outline:0 solid #fff}
+  30.01%,69.99%{background-color:#fff;outline:2px solid #fff}
+  70%,100%{background-color:transparent;outline:0 solid #fff}
+}
+@supports not (animation-timeline:view()){
+  html:has(#r1:target) .idx a:nth-of-type(2) i,
+  html:has(#r2:target) .idx a:nth-of-type(3) i,
+  html:has(#r3:target) .idx a:nth-of-type(4) i,
+  html:has(#r4:target) .idx a:nth-of-type(5) i,
+  html:has(#r5:target) .idx a:nth-of-type(6) i,
+  html:has(#r6:target) .idx a:nth-of-type(7) i{background:#fff;outline:2px solid #fff}
+}
+@media (max-width:700px){ .idx a span{display:none} .idx a{height:20px} }
+
+/* ============================== CALM VERSION ============================== */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .wall *,.wall *::after,.work *{animation:none!important}
+  .ttl{animation:none!important;background-position:100% 0,0 0,0 38px}
+  .tog{display:none}
+  .atrest{display:block}
+  .cap .hint{display:none}
+  .v1 .ax{transform:translateX(-4cqw)}
+  .v1 .a{transform:translateY(3cqw)}
+  .v1 .bx{transform:translateX(12cqw)}
+  .v1 .b{transform:translateY(-7cqw)}
+  .v2 .spin b{transform:scale(calc(1 + var(--w)*.0135))}
+  .v3 .fld i:not(.m0){-webkit-mask-position:calc(var(--m)*.25) 0;mask-position:calc(var(--m)*.25) 0}
+  .v4 .a{transform:rotate(7deg)}
+  .v5 b{transform:skewY(19deg)}
+  .v5>i:nth-child(even) b{transform:skewY(-19deg)}
+  /* Room VI keeps its clock: a held disc, then a blank wall. Nothing glides. */
+  .v6~.cap .tog{display:flex}
+  .go:checked~.work .ins.b{animation:showfirst 20s step-end forwards!important}
+  .go:checked~.work .ins.c{animation:showlast 20s step-end forwards!important}
+  .go:checked~.work .disc,.go:checked~.work .tick,.go:checked~.work .ring{animation:vanish 20s step-end forwards!important}
+  .go:checked~.work .ring circle{animation:deplete 20s steps(20) forwards!important}
+  .go:checked~.work .fix{animation:crossflip 20s step-end forwards!important}
+  .tog .trk::after,.tog span::after,.idx a i,.idx a span,.plan a{transition:none}
+}
+</style>
+</head>
+<body>
+
+<nav class="idx" aria-label="Rooms">
+  <a class="home" href="#wall" aria-label="Title wall"><i></i><span>Title wall</span></a>
+  <a href="#r1" aria-label="Room I, Slow Interference"><i></i><span>I — Slow Interference</span></a>
+  <a href="#r2" aria-label="Room II, Bulge"><i></i><span>II — Bulge</span></a>
+  <a href="#r3" aria-label="Room III, Tremor"><i></i><span>III — Tremor</span></a>
+  <a href="#r4" aria-label="Room IV, Current"><i></i><span>IV — Current</span></a>
+  <a href="#r5" aria-label="Room V, Fold"><i></i><span>V — Fold</span></a>
+  <a href="#r6" aria-label="Room VI, Afterimage"><i></i><span>VI — Afterimage</span></a>
+</nav>
+
+<header class="wall" id="wall">
+  <div class="top">
+    <span>Gallery 0 — Title wall</span>
+    <span>Six works for the unaided eye</span>
+    <span>#000000 / #FFFFFF</span>
+  </div>
+
+  <h1 class="ttl wide" aria-label="Six Rooms of Optical Pressure">
+    <span class="ln l1" aria-hidden="true"><span>SIX</span><span>ROOMS</span><span>OF</span></span>
+    <span class="ln l2" aria-hidden="true"><span>OPTICAL</span><span>PRESSURE</span></span>
+  </h1>
+  <div class="ttl tall" aria-hidden="true">
+    <span class="ln l1"><span>SIX</span><span>ROOMS</span></span>
+    <span class="ln l2"><span>OF</span><span>OPTICAL</span></span>
+    <span class="ln l3"><span>P</span><span>R</span><span>E</span><span>S</span><span>S</span><span>U</span><span>R</span><span>E</span></span>
+  </div>
+
+  <div class="low">
+    <p class="intro">Nothing in these six rooms moves the way you will see it move. Each work is a pair of plain instructions — rings, a checkerboard, stripes, spokes, ruled lines, one disc — laid over one another in black and in white. The swelling, the shimmer, the greys and the faint colours that gather at the edges are manufactured behind your eyes. The screen only nudges. Stand close, then stand back.</p>
+    <div class="adv" role="note">
+      <i class="glyph" aria-hidden="true"></i>
+      <p><b>Advisory</b>These works flicker. A calm version is shown if your device asks for reduced motion.</p>
+    </div>
+    <ol class="plan" aria-label="Floor plan">
+      <li><a href="#r1"><span>I</span><span>Slow Interference</span><span>Rings</span></a></li>
+      <li><a href="#r2"><span>II</span><span>Bulge</span><span>Checks</span></a></li>
+      <li><a href="#r3"><span>III</span><span>Tremor</span><span>Stripes</span></a></li>
+      <li><a href="#r4"><span>IV</span><span>Current</span><span>Spokes</span></a></li>
+      <li><a href="#r5"><span>V</span><span>Fold</span><span>Lines</span></a></li>
+      <li><a href="#r6"><span>VI</span><span>Afterimage</span><span>Disc</span></a></li>
+    </ol>
+  </div>
+  <a class="enter" href="#r1"><i aria-hidden="true"></i>Enter Room I</a>
+</header>
+
+<main>
+
+<!-- I -->
+<section class="room k" id="r1" aria-labelledby="t1">
+  <input type="checkbox" id="s1" class="sw" aria-label="Hold Slow Interference still">
+  <input type="checkbox" id="p1" class="tp" aria-label="Press on Slow Interference">
+  <span class="num" aria-hidden="true">I</span>
+  <p class="note">Two identical fields of rings. Neither one holds a single curve of the kind you are watching.</p>
+  <label class="work v1" for="p1">
+    <i class="ax"><i class="a"></i></i>
+    <i class="bw boost"><i class="bx"><i class="b"></i></i></i>
+  </label>
+  <footer class="cap">
+    <p class="t"><b id="t1">I — Slow Interference</b>, synthetic polymer on screen, dimensions variable
+      <span class="hint"><span class="off">Hover or tap the work to press on it</span><span class="on">Pressed — tap again to release</span></span></p>
+    <label class="tog" for="s1"><span class="a">Moving</span><i class="trk"></i><span class="z">Still</span></label>
+    <span class="atrest">Held at rest</span>
+  </footer>
+</section>
+
+<!-- II -->
+<section class="room w" id="r2" aria-labelledby="t2">
+  <input type="checkbox" id="s2" class="sw" aria-label="Hold Bulge still">
+  <input type="checkbox" id="p2" class="tp" aria-label="Press on Bulge">
+  <span class="num" aria-hidden="true">II</span>
+  <p class="note">Twenty-seven flat checkerboards, stacked like lenses and each a little larger than the last. The sphere is supplied by habit.</p>
+  <label class="work v2" for="p2">
+    <i class="spin boost">
+      <i style="--r:0.9186;--w:1.09"><b></b></i>
+      <i style="--r:0.8438;--w:2.27"><b></b></i>
+      <i style="--r:0.7752;--w:3.56"><b></b></i>
+      <i style="--r:0.7121;--w:4.97"><b></b></i>
+      <i style="--r:0.6541;--w:6.50"><b></b></i>
+      <i style="--r:0.6009;--w:8.16"><b></b></i>
+      <i style="--r:0.5520;--w:9.97"><b></b></i>
+      <i style="--r:0.5070;--w:11.95"><b></b></i>
+      <i style="--r:0.4658;--w:14.09"><b></b></i>
+      <i style="--r:0.4279;--w:16.43"><b></b></i>
+      <i style="--r:0.3930;--w:18.97"><b></b></i>
+      <i style="--r:0.3610;--w:21.74"><b></b></i>
+      <i style="--r:0.3317;--w:24.76"><b></b></i>
+      <i style="--r:0.3047;--w:28.04"><b></b></i>
+      <i style="--r:0.2799;--w:31.61"><b></b></i>
+      <i style="--r:0.2571;--w:35.50"><b></b></i>
+      <i style="--r:0.2362;--w:39.74"><b></b></i>
+      <i style="--r:0.2169;--w:44.35"><b></b></i>
+      <i style="--r:0.1993;--w:49.36"><b></b></i>
+      <i style="--r:0.1831;--w:54.83"><b></b></i>
+      <i style="--r:0.1682;--w:60.77"><b></b></i>
+      <i style="--r:0.1545;--w:67.25"><b></b></i>
+      <i style="--r:0.1419;--w:74.29"><b></b></i>
+      <i style="--r:0.1304;--w:81.97"><b></b></i>
+      <i style="--r:0.1197;--w:90.32"><b></b></i>
+      <i style="--r:0.1100;--w:99.41"><b></b></i>
+    </i>
+  </label>
+  <footer class="cap">
+    <p class="t"><b id="t2">II — Bulge</b>, synthetic polymer on screen, dimensions variable
+      <span class="hint"><span class="off">Hover or tap the work to roll it</span><span class="on">Rolling — tap again to release</span></span></p>
+    <label class="tog" for="s2"><span class="a">Moving</span><i class="trk"></i><span class="z">Still</span></label>
+    <span class="atrest">Held at rest</span>
+  </footer>
+</section>
+
+<!-- III -->
+<section class="room k" id="r3" aria-labelledby="t3">
+  <input type="checkbox" id="s3" class="sw" aria-label="Hold Tremor still">
+  <input type="checkbox" id="p3" class="tp" aria-label="Press on Tremor">
+  <span class="num" aria-hidden="true">III</span>
+  <p class="note">Every stripe is ruled perfectly upright. Only the seams between the bands step sideways, four times a second.</p>
+  <label class="work v3" for="p3">
+    <i class="fld boost">
+      <i class="m0" style="--ph:0"></i>
+      <i class="m1" style="--ph:1"></i>
+      <i class="m2" style="--ph:2"></i>
+      <i class="m3" style="--ph:3"></i>
+      <i class="m4" style="--ph:4"></i>
+    </i>
+  </label>
+  <footer class="cap">
+    <p class="t"><b id="t3">III — Tremor</b>, synthetic polymer on screen, dimensions variable
+      <span class="hint"><span class="off">Hover or tap the work to lean on it</span><span class="on">Leaning — tap again to release</span></span></p>
+    <label class="tog" for="s3"><span class="a">Moving</span><i class="trk"></i><span class="z">Still</span></label>
+    <span class="atrest">Held at rest</span>
+  </footer>
+</section>
+
+<!-- IV -->
+<section class="room w" id="r4" aria-labelledby="t4">
+  <input type="checkbox" id="s4" class="sw" aria-label="Hold Current still">
+  <input type="checkbox" id="p4" class="tp" aria-label="Press on Current">
+  <span class="num" aria-hidden="true">IV</span>
+  <p class="note">Sixty spokes turn one way; seventy-two and fifty-four turn the other. The petals belong to none of them.</p>
+  <label class="work v4" for="p4">
+    <i class="a"></i>
+    <i class="bw boost"><i class="b"></i><i class="c"></i></i>
+    <i class="hub"></i>
+  </label>
+  <footer class="cap">
+    <p class="t"><b id="t4">IV — Current</b>, synthetic polymer on screen, dimensions variable
+      <span class="hint"><span class="off">Hover or tap the work to quicken it</span><span class="on">Quickened — tap again to release</span></span></p>
+    <label class="tog" for="s4"><span class="a">Moving</span><i class="trk"></i><span class="z">Still</span></label>
+    <span class="atrest">Held at rest</span>
+  </footer>
+</section>
+
+<!-- V -->
+<section class="room k" id="r5" aria-labelledby="t5">
+  <input type="checkbox" id="s5" class="sw" aria-label="Hold Fold still">
+  <input type="checkbox" id="p5" class="tp" aria-label="Press on Fold">
+  <span class="num" aria-hidden="true">V</span>
+  <p class="note">Twelve strips of ruled paper, leaning left and right in turn. The shadow in each fold is a difference of two pixels in the weight of a line.</p>
+  <label class="work v5" for="p5">
+    <i><b><em class="boost"></em></b></i><i><b><em class="boost"></em></b></i><i><b><em class="boost"></em></b></i><i><b><em class="boost"></em></b></i>
+    <i><b><em class="boost"></em></b></i><i><b><em class="boost"></em></b></i><i><b><em class="boost"></em></b></i><i><b><em class="boost"></em></b></i>
+    <i><b><em class="boost"></em></b></i><i><b><em class="boost"></em></b></i><i><b><em class="boost"></em></b></i><i><b><em class="boost"></em></b></i>
+  </label>
+  <footer class="cap">
+    <p class="t"><b id="t5">V — Fold</b>, synthetic polymer on screen, dimensions variable
+      <span class="hint"><span class="off">Hover or tap the work to let the lines run</span><span class="on">Running — tap again to release</span></span></p>
+    <label class="tog" for="s5"><span class="a">Moving</span><i class="trk"></i><span class="z">Still</span></label>
+    <span class="atrest">Held at rest</span>
+  </footer>
+</section>
+
+<!-- VI -->
+<section class="room w" id="r6" aria-labelledby="t6">
+  <input type="checkbox" id="g6" class="go" aria-label="Begin the twenty second stare">
+  <span class="num" aria-hidden="true">VI</span>
+  <p class="note">The last work is not on the screen. It is made on your retina, glows brighter than white, and lasts about as long as a breath.</p>
+  <label class="work v6" for="g6">
+    <i class="tick"></i>
+    <i class="disc"></i>
+    <svg class="ring" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="49.5" pathLength="100"/></svg>
+    <i class="fix"></i>
+    <span class="ins a">Tap the disc, then stare at the cross for twenty seconds</span>
+    <span class="ins b">Hold the cross. Try not to blink</span>
+    <span class="ins c">Keep looking. The disc is yours now</span>
+  </label>
+  <footer class="cap">
+    <p class="t"><b id="t6">VI — Afterimage</b>, retinal fatigue on a white wall, duration
+      <span class="cnt" aria-hidden="true"><i>20<br>19<br>18<br>17<br>16<br>15<br>14<br>13<br>12<br>11<br>10<br>09<br>08<br>07<br>06<br>05<br>04<br>03<br>02<br>01<br>00</i></span> seconds</p>
+    <label class="tog" for="g6"><span class="a">Ready</span><i class="trk"></i><span class="z">Staring</span></label>
+  </footer>
+</section>
+
+</main>
+</body>
+</html>

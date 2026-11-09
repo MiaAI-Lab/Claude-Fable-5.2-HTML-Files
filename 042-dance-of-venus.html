@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Dance of Venus</title>
+<style>
+:root{
+  --paper:#F3EAD7; --ink:#26221C; --red:#9C3D2A; --blue:#2F5D73;
+  --ink-rgb:38,34,28; --red-rgb:156,61,42; --blue-rgb:47,93,115;
+  --serif:Baskerville,"Baskerville Old Face","Hoefler Text","Libre Baskerville",Georgia,"Times New Roman",serif;
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --spring:cubic-bezier(.34,1.56,.64,1);
+}
+*{box-sizing:border-box}
+html{background:var(--paper);-webkit-text-size-adjust:100%}
+body{
+  margin:0;color:var(--ink);font-family:var(--serif);font-size:17px;line-height:1.5;
+  font-variant-numeric:oldstyle-nums;font-feature-settings:"onum" 1,"liga" 1,"dlig" 1;
+  background-color:var(--paper);
+  background-image:
+    repeating-linear-gradient(90deg,rgba(var(--ink-rgb),.035) 0 1px,transparent 1px 31px),
+    repeating-linear-gradient(0deg,rgba(var(--ink-rgb),.022) 0 1px,transparent 1px 3px);
+  overflow-x:hidden;min-height:100vh;
+}
+.grain{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:40;opacity:.6}
+.candle{
+  position:fixed;inset:0;pointer-events:none;z-index:41;
+  background:
+    radial-gradient(120% 95% at 28% 30%,rgba(var(--ink-rgb),0) 38%,rgba(var(--ink-rgb),.13) 78%,rgba(var(--ink-rgb),.3) 100%),
+    radial-gradient(60% 50% at 24% 22%,rgba(var(--red-rgb),.0) 0,rgba(var(--red-rgb),.05) 100%);
+  animation:flicker 7.3s infinite cubic-bezier(.45,.05,.55,.95);
+}
+@keyframes flicker{
+  0%,100%{opacity:.86} 9%{opacity:.97} 17%{opacity:.82} 31%{opacity:1} 44%{opacity:.88}
+  52%{opacity:.95} 63%{opacity:.8} 78%{opacity:.98} 90%{opacity:.84}
+}
+::selection{background:rgba(var(--red-rgb),.25)}
+:focus-visible{outline:2px solid var(--red);outline-offset:4px;border-radius:2px}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+i,em{font-style:italic}
+.sc{font-variant:small-caps;letter-spacing:.06em}
+
+/* ---------- sheet & star border ---------- */
+.sheet{
+  position:relative;max-width:1560px;margin:0 auto;padding:46px 56px 60px;
+  display:grid;gap:26px 40px;align-items:start;
+  grid-template-columns:minmax(290px,340px) auto minmax(250px,1fr);
+  grid-template-areas:"cart plate plates" "bench plate plates" "lower lower lower";
+  grid-template-rows:auto 1fr auto;
+}
+.stars{position:absolute;pointer-events:none;opacity:.8}
+.stars.t{top:14px;left:14px;right:14px;height:14px;width:calc(100% - 28px)}
+.stars.b{bottom:14px;left:14px;height:14px;width:calc(100% - 28px)}
+.stars.l{top:14px;left:14px;width:14px;height:calc(100% - 28px)}
+.stars.r{top:14px;right:14px;width:14px;height:calc(100% - 28px)}
+.corner{position:absolute;width:22px;height:22px;background:var(--paper);pointer-events:none}
+.corner svg{display:block;width:22px;height:22px}
+.corner.tl{top:10px;left:10px}.corner.tr{top:10px;right:10px}
+.corner.bl{bottom:10px;left:10px}.corner.br{bottom:10px;right:10px}
+
+/* ---------- cartouche ---------- */
+.cart{grid-area:cart;text-align:center;padding-top:4px}
+.swash{display:block;width:min(100%,300px);height:auto;margin:0 auto;overflow:visible}
+#sw path{fill:none;stroke:var(--ink);stroke-width:1.1;stroke-linecap:round}
+#sw .dia{fill:var(--red);stroke:none}
+.title{margin:8px 0 6px;font-weight:400;line-height:1.08}
+.title>span{display:block;opacity:0;transform:translateY(14px);animation:rise 1.1s var(--ease-out) forwards}
+.title>span:nth-child(1){animation-delay:.05s}.title>span:nth-child(2){animation-delay:.14s}
+.title>span:nth-child(3){animation-delay:.23s}.title>span:nth-child(4){animation-delay:.32s}
+.title>span:nth-child(5){animation-delay:.46s}.title>span:nth-child(6){animation-delay:.54s}
+.title>span:nth-child(7){animation-delay:.62s}
+@keyframes rise{to{opacity:1;transform:none}}
+.t1{font-style:italic;font-size:1.55rem}
+.t2{font-size:clamp(3.3rem,5.2vw,4.7rem);letter-spacing:.13em;margin-right:-.13em;line-height:.98}
+.t3{font-style:italic;font-size:1.35rem;display:flex!important;align-items:center;justify-content:center;gap:.7em;margin:.05em 0}
+.t3::before,.t3::after{content:"";height:1px;width:3.2em;background:linear-gradient(90deg,transparent,var(--ink))}
+.t3::after{transform:scaleX(-1)}
+.t4{font-size:clamp(2.5rem,3.9vw,3.5rem);letter-spacing:.24em;margin-right:-.24em;color:var(--red);line-height:1.05}
+.t5,.t6,.t7{font-size:1.04rem;line-height:1.42}
+.t5{margin-top:.75em}
+.t6 b,.t5 b{font-weight:400;letter-spacing:.14em;font-size:.93em}
+.t7 .sc{font-size:1.25em}
+.plateno{font-style:italic;font-size:.86rem;margin:8px 0 0;opacity:.75;letter-spacing:.04em}
+
+/* ---------- the plate ---------- */
+.plate{
+  grid-area:plate;justify-self:center;position:relative;
+  width:min(100%,max(380px,calc(100vh - 256px)));
+  padding:16px 16px 14px;
+  background:linear-gradient(180deg,rgba(var(--ink-rgb),.035),rgba(var(--ink-rgb),.018));
+  box-shadow:
+    inset 1.5px 1.5px 0 rgba(var(--ink-rgb),.3), inset -1.5px -1.5px 0 rgba(255,252,240,.85),
+    inset 5px 5px 9px rgba(var(--ink-rgb),.09), inset -4px -4px 8px rgba(255,252,240,.35),
+    1px 1px 0 rgba(255,252,240,.6), -1px -1px 0 rgba(var(--ink-rgb),.08);
+  animation:press 1.4s var(--ease-out) both;
+}
+@keyframes press{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:none}}
+.figure{position:relative;width:100%;aspect-ratio:1;touch-action:pan-y;cursor:crosshair;user-select:none;-webkit-user-select:none}
+.figure canvas{position:absolute;inset:0;width:100%;height:100%}
+#inst{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#inst text{font-family:var(--serif);fill:var(--ink)}
+.ring{animation:ringIn 2s var(--ease-out) both;transform-origin:0 0}
+@keyframes ringIn{from{opacity:0;transform:rotate(-28deg)}to{opacity:1;transform:none}}
+.halo{paint-order:stroke;stroke:var(--paper);stroke-width:5px;stroke-linejoin:round}
+.olabel{font-size:17px;letter-spacing:.12em;font-style:italic}
+.olabel tspan{font-style:normal;letter-spacing:.2em}
+.cornertext{font-size:27px}
+.ratio{font-size:52px;letter-spacing:.02em;transition:fill .9s}
+.complete .ratio{fill:var(--red)!important}
+#conj .cm{opacity:0;transform:scale(.1);transform-box:fill-box;transform-origin:center}
+.complete #conj .cm{opacity:1;transform:none;transition:opacity .5s,transform 1s var(--spring)}
+#hair{opacity:0;transition:opacity .25s}
+.peeking #hair{opacity:1}
+.body-move{transition:none}
+
+.ruler{position:relative;margin-top:8px;height:50px;touch-action:none;cursor:ew-resize}
+.ruler svg{display:block;width:100%;height:50px;overflow:visible}
+.ruler text{font-family:var(--serif);font-size:13px;fill:var(--ink);text-anchor:middle}
+.meta{display:flex;justify-content:space-between;align-items:baseline;gap:14px;margin:4px 2px 0;flex-wrap:wrap}
+.readout{font-variant:small-caps;letter-spacing:.07em;font-size:1.02rem;margin:0;white-space:nowrap}
+.readout b{font-weight:400;color:var(--red)}
+.hint{font-style:italic;font-size:.8rem;opacity:.72;margin:0;text-align:right}
+.caption{font-style:italic;font-size:1rem;line-height:1.42;margin:8px 2px 0;min-height:2.9em;text-wrap:pretty}
+.caption b{font-style:normal;font-weight:400;font-variant:small-caps;letter-spacing:.06em}
+.caption .num{font-style:normal}
+.fin{display:block;width:170px;height:22px;margin:2px auto 0;overflow:visible}
+.fin path{fill:none;stroke:var(--red);stroke-width:1.2;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 0s}
+.fin .dia{fill:var(--red);stroke:none;opacity:0;transform:scale(.2);transform-origin:150px 13px;transition:none}
+.complete .fin path{stroke-dashoffset:0;transition:stroke-dashoffset 1.8s cubic-bezier(.65,0,.2,1)}
+.complete .fin .dia{opacity:1;transform:none;transition:opacity .5s .2s,transform .9s .2s var(--spring)}
+.imprint{font-size:.74rem;font-style:italic;opacity:.7;margin:6px 2px 0;text-align:center;letter-spacing:.02em}
+
+/* ---------- bench (instruments) ---------- */
+.bench{grid-area:bench;display:grid;gap:17px;padding-top:4px;animation:rise 1.2s .7s var(--ease-out) both;transform:translateY(14px);opacity:0}
+.bench h2,.plates h2,.lower h2{
+  font-weight:400;font-size:.84rem;letter-spacing:.3em;text-transform:uppercase;margin:0;text-align:center;
+  display:flex;align-items:center;gap:.9em
+}
+.bench h2::before,.bench h2::after,.plates h2::before,.plates h2::after,.lower h2::before,.lower h2::after{
+  content:"";flex:1;height:3px;border-top:1px solid var(--ink);border-bottom:1px solid rgba(var(--ink-rgb),.35)
+}
+.row{display:flex;align-items:center;gap:16px}
+.lbl{font-variant:small-caps;letter-spacing:.09em;font-size:.95rem}
+.val{font-style:italic;font-size:1rem}
+.rbtn{
+  width:48px;height:48px;border-radius:50%;flex:none;display:grid;place-items:center;
+  border:1.3px solid var(--ink);box-shadow:inset 0 0 0 3px var(--paper),inset 0 0 0 3.8px rgba(var(--ink-rgb),.5);
+  transition:transform .45s var(--spring),background-color .3s
+}
+.rbtn:hover{background:rgba(var(--ink-rgb),.07);transform:scale(1.06)}
+.rbtn:active{transform:scale(.94)}
+.rbtn svg{width:18px;height:18px;fill:var(--ink)}
+#play .ic-play{display:none}
+#play[aria-pressed="false"] .ic-play{display:block}
+#play[aria-pressed="false"] .ic-pause{display:none}
+.tbtn{display:flex;align-items:center;gap:11px;text-align:left;white-space:nowrap}
+.tbtn .lbl{border-bottom:1px solid transparent;transition:border-color .3s}
+.tbtn:hover .lbl{border-color:var(--ink)}
+.transport{justify-content:space-between}
+.knob{width:118px;height:118px;flex:none;touch-action:none;cursor:grab;border-radius:50%}
+.knob:active{cursor:grabbing}
+.knob svg{display:block;width:100%;height:100%;overflow:visible}
+.knob text{font-family:var(--serif);font-style:italic;font-size:12px;fill:var(--ink)}
+#knobBody{transition:transform .6s var(--spring);transform-origin:0 0}
+.pace .val{display:block;margin-top:2px;color:var(--red);font-size:1.12rem;line-height:1.25}
+.pace small{display:block;font-size:.78rem;font-style:italic;opacity:.72;margin-top:5px;line-height:1.35}
+.weave{display:grid;gap:4px}
+.weave .top{display:flex;justify-content:space-between;align-items:baseline}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:30px;margin:0;background:transparent;cursor:ew-resize;
+  background-image:
+    linear-gradient(var(--ink),var(--ink)),
+    repeating-linear-gradient(90deg,var(--ink) 0 1px,transparent 1px calc((100% - 13px)/19));
+  background-size:calc(100% - 12px) 1px,calc(100% - 12px) 7px;background-position:6px 14px,6px 15px;background-repeat:no-repeat;
+}
+input[type=range]::-webkit-slider-runnable-track{height:30px;background:transparent}
+input[type=range]::-moz-range-track{height:30px;background:transparent}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:12px;height:24px;margin-top:3px;border-radius:1px;
+  background:var(--red);border:2px solid var(--paper);box-shadow:0 0 0 1px var(--ink);transition:transform .3s var(--spring)
+}
+input[type=range]::-moz-range-thumb{width:9px;height:20px;border-radius:1px;background:var(--red);border:2px solid var(--paper);box-shadow:0 0 0 1px var(--ink)}
+input[type=range]:hover::-webkit-slider-thumb{transform:scaleY(1.12)}
+.ends{display:flex;justify-content:space-between;font-style:italic;font-size:.78rem;opacity:.72;margin-top:-4px}
+.views{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);position:relative}
+.views button{padding:9px 2px 8px;display:grid;justify-items:center;gap:3px;font-style:italic;font-size:1rem;position:relative;transition:color .3s}
+.views button+button{border-left:1px solid rgba(var(--ink-rgb),.3)}
+.views svg{width:34px;height:34px;fill:none;stroke:currentColor;stroke-width:1;transition:transform .6s var(--spring)}
+.views button:hover svg{transform:rotate(36deg)}
+.views button[aria-checked="true"]{color:var(--red)}
+.views button::after{content:"";position:absolute;left:18%;right:18%;bottom:-1px;height:3px;background:var(--red);transform:scaleX(0);transition:transform .5s var(--ease-out)}
+.views button[aria-checked="true"]::after{transform:scaleX(1)}
+
+/* ---------- small plates ---------- */
+.plates{grid-area:plates;animation:rise 1.2s .85s var(--ease-out) both;opacity:0;padding-top:4px}
+.thumbs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+.thumb{
+  display:block;text-align:center;padding:8px 6px 9px;position:relative;
+  background:rgba(var(--ink-rgb),.022);
+  box-shadow:inset 1px 1px 0 rgba(var(--ink-rgb),.26),inset -1px -1px 0 rgba(255,252,240,.85),inset 3px 3px 6px rgba(var(--ink-rgb),.07);
+  transition:transform .55s var(--spring),box-shadow .4s,background-color .4s
+}
+.thumb:hover{transform:translateY(-3px) rotate(-.6deg);background:rgba(var(--ink-rgb),.05)}
+.thumb canvas{display:block;width:100%;aspect-ratio:1}
+.thumb .fg{display:block;font-style:italic;font-size:.74rem;opacity:.75;margin-top:2px}
+.thumb .nm{display:block;font-variant:small-caps;letter-spacing:.04em;font-size:.82rem;line-height:1.2;white-space:nowrap}
+.thumb .rt{display:block;font-size:1.08rem;line-height:1.25;margin-top:1px}
+.thumb .lp{display:block;font-size:.76rem;font-style:italic;line-height:1.2;opacity:.85}
+.thumb[aria-pressed="true"]{box-shadow:inset 0 0 0 1.4px var(--red),inset 0 0 0 4px var(--paper),inset 0 0 0 4.8px rgba(var(--red-rgb),.6)}
+.thumb[aria-pressed="true"] .nm{color:var(--red)}
+.plates .note{font-style:italic;font-size:.8rem;opacity:.74;margin:14px 2px 0;line-height:1.4}
+
+/* ---------- lower: essay & table ---------- */
+.lower{grid-area:lower;display:grid;grid-template-columns:minmax(0,640px) minmax(260px,360px);gap:30px 64px;justify-content:center;margin-top:26px;padding-top:30px;border-top:1px solid rgba(var(--ink-rgb),.4)}
+.essay .cols{column-count:2;column-gap:34px;column-rule:1px solid rgba(var(--ink-rgb),.25);text-align:justify;hyphens:auto;-webkit-hyphens:auto;margin-top:18px;font-size:1rem;line-height:1.52}
+.essay p{margin:0;text-indent:1.3em}
+.essay p:first-child{text-indent:0}
+.essay p:first-child::first-letter{
+  float:left;font-size:4.5em;line-height:.8;padding:.07em .09em 0 0;color:var(--red);font-style:normal
+}
+.essay p:first-child::first-line{font-variant:small-caps;letter-spacing:.05em}
+.elements table{width:100%;border-collapse:collapse;margin-top:18px;font-size:.98rem}
+.elements th{font-weight:400;font-style:italic;font-size:.84rem;text-align:right;padding:0 0 6px;border-bottom:1px solid var(--ink)}
+.elements th:first-child,.elements td:first-child{text-align:left}
+.elements td{text-align:right;padding:5px 0;border-bottom:1px solid rgba(var(--ink-rgb),.18)}
+.elements td:first-child{font-variant:small-caps;letter-spacing:.08em}
+.elements tr.v td:first-child{color:var(--red)}.elements tr.e td:first-child{color:var(--blue)}
+.elements tr{transition:background-color .3s}
+.elements tbody tr:hover{background:rgba(var(--ink-rgb),.05)}
+.elements .note{font-style:italic;font-size:.82rem;opacity:.78;margin:12px 0 0;line-height:1.42}
+.tail{display:block;width:120px;height:auto;margin:30px auto 0;grid-column:1/-1}
+.tail path{fill:none;stroke:var(--ink);stroke-width:1}
+
+/* ---------- responsive ---------- */
+@media (max-width:1240px){
+  .sheet{grid-template-columns:minmax(280px,330px) 1fr;grid-template-areas:"cart plate" "bench plate" "plates plates" "lower lower";grid-template-rows:auto 1fr auto auto;gap:24px 36px;padding:50px 44px}
+  .thumbs{grid-template-columns:repeat(6,1fr)}
+}
+@media (max-width:1000px){
+  .thumbs{grid-template-columns:repeat(3,1fr)}
+  .lower{grid-template-columns:1fr}
+}
+@media (max-width:860px){
+  body{font-size:16px}
+  .sheet{grid-template-columns:minmax(0,1fr);grid-template-areas:"cart" "plate" "bench" "plates" "lower";grid-template-rows:none;padding:40px 22px 46px;gap:22px}
+  .stars.t,.stars.b{left:6px;width:calc(100% - 12px)}.stars.l,.stars.r{height:calc(100% - 12px)}
+  .stars.t,.stars.l{top:6px}.stars.b{bottom:6px}.stars.l{left:6px}.stars.r{right:6px}
+  .corner.tl,.corner.tr{top:2px}.corner.bl,.corner.br{bottom:2px}.corner.tl,.corner.bl{left:2px}.corner.tr,.corner.br{right:2px}
+  .plate{width:min(100%,560px);padding:9px 9px 12px}
+  .bench{max-width:440px;width:100%;justify-self:center}
+  .t1{font-size:1.2rem}.t2{font-size:3rem}.t3{font-size:1.1rem}.t4{font-size:2.2rem}
+  .t5,.t6,.t7{font-size:.92rem}.t5{margin-top:.5em}
+  .swash{width:210px}
+  .olabel{font-size:25px;letter-spacing:.08em}
+  .cornertext{font-size:38px}.ratio{font-size:60px}
+  #key circle{r:11px}#keyAt,#keyBt{transform:translate(8px,3px)}#keyBt,#keyB{translate:0 8px}
+  .lbl{font-size:.9rem}.tbtn{gap:8px}
+  .ringnum{font-size:21px!important}
+  .hint{text-align:left}
+  .caption{min-height:5.8em}
+}
+@media (max-width:520px){
+  .essay .cols{column-gap:20px;font-size:.9rem;line-height:1.48}
+  .thumbs{grid-template-columns:repeat(2,1fr)}
+  .meta{flex-direction:column;gap:2px}
+}
+@media (prefers-reduced-motion:reduce){
+  .candle{animation:none;opacity:.9}
+  .title>span,.bench,.plates,.plate,.ring{animation:none;opacity:1;transform:none}
+  #knobBody,.rbtn,.thumb,.views svg{transition:none}
+  .complete #conj .cm{transition:none}
+  .complete .fin path,.complete .fin .dia{transition:none}
+}
+</style>
+</head>
+<body>
+<svg class="grain" aria-hidden="true">
+  <defs>
+    <filter id="paperGrain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="3" seed="11" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 .15  0 0 0 0 .13  0 0 0 0 .11  0 0 0 .62 -.2" result="fine"/>
+      <feTurbulence type="fractalNoise" baseFrequency=".008 .011" numOctaves="2" seed="4" result="m"/>
+      <feColorMatrix in="m" type="matrix" values="0 0 0 0 .42  0 0 0 0 .3  0 0 0 0 .16  0 0 0 .55 -.2" result="blot"/>
+      <feMerge><feMergeNode in="blot"/><feMergeNode in="fine"/></feMerge>
+    </filter>
+    <pattern id="ast" width="14" height="14" patternUnits="userSpaceOnUse">
+      <path d="M7 3.6V10.4M4.05 5.3 9.95 8.7M4.05 8.7 9.95 5.3" stroke="#26221C" stroke-width=".85" stroke-linecap="round" fill="none"/>
+    </pattern>
+    <filter id="wobble" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="3"/>
+      <feDisplacementMap in="SourceGraphic" scale="1.6"/>
+    </filter>
+    <symbol id="cstar" viewBox="0 0 22 22">
+      <path d="M11 1.5 12.6 9.4 20.5 11 12.6 12.6 11 20.5 9.4 12.6 1.5 11 9.4 9.4Z" fill="#26221C"/>
+      <path d="M5 5 17 17M17 5 5 17" stroke="#26221C" stroke-width=".7"/>
+    </symbol>
+    <symbol id="sw" viewBox="0 0 300 26">
+      <path d="M150 13C128 13 118 3 100 3C86 3 80 12 87 18C93 23 101 17 96 12M150 13C110 20 60 24 6 12"/>
+      <path d="M150 13C172 13 182 3 200 3C214 3 220 12 213 18C207 23 199 17 204 12M150 13C190 20 240 24 294 12"/>
+      <path class="dia" d="M150 7.5 154.5 13 150 18.5 145.5 13Z"/>
+    </symbol>
+  </defs>
+  <rect width="100%" height="100%" filter="url(#paperGrain)"/>
+</svg>
+<div class="candle" aria-hidden="true"></div>
+
+<main class="sheet">
+  <svg class="stars t" aria-hidden="true"><rect width="100%" height="14" fill="url(#ast)"/></svg>
+  <svg class="stars b" aria-hidden="true"><rect width="100%" height="14" fill="url(#ast)"/></svg>
+  <svg class="stars l" aria-hidden="true"><rect width="14" height="100%" fill="url(#ast)"/></svg>
+  <svg class="stars r" aria-hidden="true"><rect width="14" height="100%" fill="url(#ast)"/></svg>
+  <span class="corner tl" aria-hidden="true"><svg><use href="#cstar"/></svg></span>
+  <span class="corner tr" aria-hidden="true"><svg><use href="#cstar"/></svg></span>
+  <span class="corner bl" aria-hidden="true"><svg><use href="#cstar"/></svg></span>
+  <span class="corner br" aria-hidden="true"><svg><use href="#cstar"/></svg></span>
+
+  <header class="cart">
+    <svg class="swash" viewBox="0 0 300 26" aria-hidden="true"><use href="#sw"/></svg>
+    <h1 class="title" aria-label="The Dance of Venus, being the Figure traced by a Line joining the Earth and Venus over Eight Years">
+      <span class="t1">The</span>
+      <span class="t2">DANCE</span>
+      <span class="t3">of</span>
+      <span class="t4">VENUS,</span>
+      <span class="t5"><i>being the</i> <span class="sc">Figure</span> <i>traced by a</i> <span class="sc">Line</span></span>
+      <span class="t6"><i>joining the</i> <b>EARTH</b> <i>and</i> <b>VENUS</b></span>
+      <span class="t7"><i>over</i> <span class="sc">Eight Years.</span></span>
+    </h1>
+    <svg class="swash" viewBox="0 0 300 26" aria-hidden="true" style="transform:scaleY(-1)"><use href="#sw"/></svg>
+    <p class="plateno">Plate XLII. &nbsp;Drawn to the true Periods.</p>
+  </header>
+
+  <section class="plate" id="plate" aria-label="The principal plate">
+    <div class="figure" id="figure">
+      <canvas id="ink" aria-hidden="true"></canvas>
+      <canvas id="redc" aria-hidden="true"></canvas>
+      <svg id="inst" viewBox="-500 -500 1000 1000" role="img" aria-label="Two planets circling the Sun, joined by a line that is ruled again every few days">
+        <defs>
+          <path id="arcA" d=""/><path id="arcB" d=""/>
+        </defs>
+        <g class="ring"><g id="ring" filter="url(#wobble)"></g></g>
+        <g id="orbits" fill="none" stroke="#26221C">
+          <circle id="orbA" r="100" stroke-width=".9"/>
+          <circle id="orbAt" r="100" stroke-width="7"/>
+          <circle id="orbB" r="400" stroke-width=".9"/>
+          <circle id="orbBt" r="400" stroke-width="7"/>
+        </g>
+        <text class="olabel halo" text-anchor="middle"><textPath id="tpA" href="#arcA" startOffset="34%"></textPath></text>
+        <text class="olabel halo" text-anchor="middle"><textPath id="tpB" href="#arcB" startOffset="15%"></textPath></text>
+        <line id="chord" stroke="#26221C" stroke-width="1.5" stroke-linecap="round"/>
+        <g id="conj"></g>
+        <g id="sun"></g>
+        <circle id="mid" r="5" fill="#F3EAD7" stroke="#2F5D73" stroke-width="2" visibility="hidden"/>
+        <g id="plA"><circle r="10.5" fill="#F3EAD7"/><circle class="d" r="7.5" stroke="#26221C" stroke-width="1"/></g>
+        <g id="plB"><circle r="10.5" fill="#F3EAD7"/><circle class="d" r="7.5" stroke="#26221C" stroke-width="1"/></g>
+        <line id="hair" y2="500" stroke="#9C3D2A" stroke-width="1.2" stroke-dasharray="2 5"/>
+        <!-- corners -->
+        <g id="key" class="cornertext">
+          <circle id="keyA" cx="-478" cy="-466" r="8" stroke="#26221C" stroke-width="1"/>
+          <text id="keyAt" x="-460" y="-457" class="sc"></text>
+          <circle id="keyB" cx="-478" cy="-428" r="8" stroke="#26221C" stroke-width="1"/>
+          <text id="keyBt" x="-460" y="-419" class="sc"></text>
+        </g>
+        <text id="figno" class="cornertext" x="486" y="-455" text-anchor="end" font-style="italic">Fig. 1.</text>
+        <text class="cornertext" x="486" y="432" text-anchor="end" font-style="italic" style="font-size:.8em">periods nearly as</text>
+        <text id="ratio" class="ratio" x="486" y="482" text-anchor="end">13 : 8</text>
+        <g id="rose" transform="translate(-436 436)" filter="url(#wobble)"></g>
+      </svg>
+    </div>
+    <div class="ruler" id="ruler" role="slider" tabindex="0" aria-label="Scale of years: the date shown on the plate" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+    <div class="meta">
+      <p class="readout" id="readout" aria-live="off">Year 1, day 1</p>
+      <p class="hint">Pass the hand across the plate to turn the years back.</p>
+    </div>
+    <p class="caption" id="caption"></p>
+    <svg class="fin" viewBox="65 0 170 26" aria-hidden="true">
+      <path pathLength="1" d="M150 13C128 13 118 3 100 3C86 3 80 12 87 18C93 23 101 17 96 12"/>
+      <path pathLength="1" d="M150 13C172 13 182 3 200 3C214 3 220 12 213 18C207 23 199 17 204 12"/>
+      <path pathLength="1" d="M150 13C125 19 95 23 70 14"/><path pathLength="1" d="M150 13C175 19 205 23 230 14"/>
+      <path class="dia" d="M150 7 155 13 150 19 145 13Z"/>
+    </svg>
+    <p class="imprint">The orbits are here drawn as perfect circles about the Sun, which is a simplification; the periods and distances are the true mean values.</p>
+  </section>
+
+  <aside class="bench" aria-label="Instruments">
+    <h2>The Instruments</h2>
+    <div class="row transport">
+      <button class="tbtn" id="play" aria-pressed="true" aria-label="Pause or resume the drawing">
+        <span class="rbtn"><svg viewBox="0 0 18 18" aria-hidden="true"><g class="ic-pause"><rect x="3.5" y="2.5" width="3.6" height="13"/><rect x="10.9" y="2.5" width="3.6" height="13"/></g><path class="ic-play" d="M4.5 2.2 15.5 9 4.5 15.8Z"/></svg></span>
+        <span class="lbl" id="playLbl">Stay the pen</span>
+      </button>
+      <button class="tbtn" id="again" aria-label="Begin the drawing anew">
+        <span class="lbl">Begin anew</span>
+        <span class="rbtn"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M9 3.2A5.8 5.8 0 1 0 14.8 9h-1.7A4.1 4.1 0 1 1 9 4.9V7.6L13.2 4 9 .4Z"/></svg></span>
+      </button>
+    </div>
+    <div class="row">
+      <div class="knob" id="knob" role="slider" tabindex="0" aria-label="Pace of the heavens" aria-valuemin="0" aria-valuemax="6" aria-valuenow="5">
+        <svg viewBox="-70 -70 140 140" aria-hidden="true">
+          <g id="knobTicks" stroke="#26221C" fill="none"></g>
+          <text x="-52" y="60" text-anchor="middle">slow</text><text x="52" y="60" text-anchor="middle">swift</text>
+          <g id="knobBody">
+            <circle r="35" fill="#F3EAD7" stroke="#26221C" stroke-width="1.4"/>
+            <circle r="32.4" fill="none" stroke="#26221C" stroke-width="3.4" stroke-dasharray="1 2.39"/>
+            <circle r="28" fill="none" stroke="#26221C" stroke-width=".7"/>
+            <path d="M-17 15A23 23 0 0 0 17 15M-13 12A18 18 0 0 0 13 12M-9 9.5A13 13 0 0 0 9 9.5M-5 7A8 8 0 0 0 5 7" fill="none" stroke="#26221C" stroke-width=".55"/>
+            <circle r="3" fill="#26221C"/>
+            <path d="M0 -26 3.4 -12H-3.4Z" fill="#9C3D2A" stroke="#26221C" stroke-width=".6"/>
+          </g>
+        </svg>
+      </div>
+      <div class="pace">
+        <span class="lbl">The Pace</span>
+        <span class="val" id="paceVal">one year per second</span>
+        <small>Turn the knob, from a decade in a breath down to the true leisure of the sky.</small>
+      </div>
+    </div>
+    <div class="weave">
+      <div class="top"><label class="lbl" for="iv">The Weave</label><span class="val" id="ivVal">a line every 4 days</span></div>
+      <input type="range" id="iv" min="1" max="20" step="1" value="4" aria-label="Days between successive lines">
+      <div class="ends"><span>dense</span><span>sparse</span></div>
+    </div>
+    <div class="views" role="radiogroup" aria-label="Three views of the same motion">
+      <button role="radio" aria-checked="true" data-view="lines"><svg viewBox="-17 -17 34 34" aria-hidden="true"><circle r="15"/><path d="M0 -15 14.3 4.6M0 -15 -14.3 4.6M14.3 4.6 -8.8 12.1M-14.3 4.6 8.8 12.1M-8.8 12.1 0 -15M8.8 12.1 0 -15M14.3 4.6 -14.3 4.6" stroke-width=".7"/></svg>Lines</button>
+      <button role="radio" aria-checked="false" data-view="path" tabindex="-1"><svg viewBox="-17 -17 34 34" aria-hidden="true"><path d="M0 -15C9 -15 15 -8 15 0S9 15 0 15-15 9-15 0-8 -11 -1 -8 7 3 0 4-5 -5 0 -15"/></svg>Path</button>
+      <button role="radio" aria-checked="false" data-view="mid" tabindex="-1"><svg viewBox="-17 -17 34 34" aria-hidden="true"><circle r="15" stroke-dasharray="1 3"/><path d="M-10.6 -10.6 13 7.5" stroke-width=".7"/><circle cx="1.2" cy="-1.5" r="2.6" fill="currentColor" stroke="none"/></svg>Midpoints</button>
+    </div>
+  </aside>
+
+  <section class="plates" aria-label="Other pairs of planets">
+    <h2>Other Pairs</h2>
+    <div class="thumbs" id="thumbs"></div>
+    <p class="note">Each small plate shows its figure finished. Choose one, and it is ruled afresh upon the great plate, with its ratio worked out and the number of loops foretold.</p>
+  </section>
+
+  <section class="lower">
+    <article class="essay">
+      <h2>Of the Arithmetic</h2>
+      <div class="cols">
+        <p>Take two planets and a ruler. Every few days join them with a straight line, then let them move on. Nothing else is done here. Venus completes her circuit of the Sun in 224.70 days, the Earth in 365.26, and the quotient of those numbers, 1.6256, lies very near to thirteen eighths. So while the Earth goes round eight times Venus goes round thirteen, overtaking us five times on the way, at five places set evenly about the circle. Each line falls close beside the last; where they cross, their envelope shows as a curve, and the curve has five petals.</p>
+        <p>No influence passes between the two worlds to arrange this. The rose is a fact of division, as plain as a remainder. Change the pair and the fraction changes, and with it the count of loops, which is always the difference of the two terms. Nor is the fit exact: thirteen circuits of Venus fall about a day short of eight years, so each rose lies a hair askew of the last, and none is traced twice. That a sum should prove so handsome is no reason to distrust the sum.</p>
+      </div>
+    </article>
+    <div class="elements">
+      <h2>The Elements</h2>
+      <table>
+        <thead><tr><th scope="col">Planet</th><th scope="col">Period, in days</th><th scope="col">Distance, Earth&nbsp;=&nbsp;1</th></tr></thead>
+        <tbody>
+          <tr><td>Mercury</td><td>87.97</td><td>0.387</td></tr>
+          <tr class="v"><td>Venus</td><td>224.70</td><td>0.723</td></tr>
+          <tr class="e"><td>Earth</td><td>365.26</td><td>1.000</td></tr>
+          <tr><td>Mars</td><td>686.98</td><td>1.524</td></tr>
+          <tr><td>Jupiter</td><td>4,332.6</td><td>5.203</td></tr>
+          <tr><td>Saturn</td><td>10,759</td><td>9.537</td></tr>
+        </tbody>
+      </table>
+      <p class="note">Sidereal periods and mean distances from the Sun. Every figure on this sheet is computed from these twelve numbers and no others; the true orbits are ellipses, a little off-centre, and the true figures a little less tidy.</p>
+    </div>
+    <svg class="tail" viewBox="0 0 120 22" aria-hidden="true"><path d="M2 11H42M78 11H118M60 3 68 11 60 19 52 11ZM60 7.5 63.5 11 60 14.5 56.500 11Z"/></svg>
+  </section>
+</main>
+
+<script>
+(function(){
+'use strict';
+var INK='#26221C', RED='#9C3D2A', BLUE='#2F5D73', PAPER='#F3EAD7';
+var YEAR=365.26, TAU=Math.PI*2, R=400;
+var $=function(s){return document.querySelector(s);};
+var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+var P={
+  Mercury:{T:87.97,r:0.387,s:'87.97'}, Venus:{T:224.70,r:0.723,s:'224.70'}, Earth:{T:365.26,r:1.000,s:'365.26'},
+  Mars:{T:686.98,r:1.524,s:'686.98'}, Jupiter:{T:4332.6,r:5.203,s:'4,332.6'}, Saturn:{T:10759,r:9.537,s:'10,759'}
+};
+var WORD=['nought','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen','twenty'];
+function word(n){
+  if(n<=20) return WORD[n];
+  var tens=['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'][Math.floor(n/10)];
+  return n<100 ? tens+(n%10?'-'+WORD[n%10]:'') : String(n);
+}
+function the(n){return n==='Earth'?'the Earth':n;}
+
+/* nearest simple fraction: first continued-fraction convergent within 1.25 per cent */
+function makePair(a,b,fig){
+  var Ti=P[a].T, To=P[b].T, x=To/Ti;
+  var h0=1,k0=0,h1=Math.floor(x),k1=1,f=x-Math.floor(x),guard=0;
+  while(Math.abs(h1/k1-x)/x>0.0125 && guard++<12){
+    var c=Math.floor(1/f); f=1/f-c;
+    var h2=c*h1+h0,k2=c*k1+k0; h0=h1;k0=k1;h1=h2;k1=k2;
+  }
+  var p=h1,q=k1,cycle=q*To,miss=Math.abs(p*Ti-q*To);
+  var pr={a:a,b:b,fig:fig,p:p,q:q,loops:p-q,x:x,cycle:cycle,miss:miss,years:cycle/YEAR,
+    off:miss/Ti*360, obs:(a==='Earth'||b==='Earth')?'Earth':b};
+  pr.oth=pr.obs===a?b:a;
+  pr.ivDefault=Math.max(1,Math.min(20,Math.round(cycle/730)));
+  return pr;
+}
+var PAIRS=[['Venus','Earth'],['Earth','Mars'],['Mercury','Venus'],['Jupiter','Saturn'],['Earth','Jupiter'],['Venus','Mars']]
+  .map(function(d,i){return makePair(d[0],d[1],i+1);});
+
+var SPEEDS=[
+  {v:1/86400,n:'as the heavens go'},{v:1,n:'a day per second'},{v:7,n:'a week per second'},
+  {v:30.44,n:'a month per second'},{v:91.3,n:'a season per second'},{v:YEAR,n:'one year per second'},
+  {v:YEAR*10,n:'ten years per second'}
+];
+
+/* ---------- state ---------- */
+var pair=PAIRS[0], view='lines', iv=pair.ivDefault, speedIdx=5;
+var t=0, playing=!reduce, phase='draw', doneAt=0, lastTouch=0;
+var peek=null, seeking=false, size=0, dpr=1, spec=null, S=1;
+var fig=$('#figure'), plate=$('#plate');
+var inkL={c:$('#ink'),drawn:0}, redL={c:$('#redc'),drawn:0};
+inkL.ctx=inkL.c.getContext('2d'); redL.ctx=redL.c.getContext('2d');
+
+/* ---------- geometry ---------- */
+function hel(n,tt){var a=Math.PI/2+TAU*tt/P[n].T,r=P[n].r;return [r*Math.cos(a),-r*Math.sin(a)];}
+function scaleFor(pr,vw){return vw==='path'? R/(P[pr.a].r+P[pr.b].r) : R/P[pr.b].r;}
+function pointOf(pr,vw,tt){
+  var A=hel(pr.a,tt),B=hel(pr.b,tt);
+  if(vw==='path'){var O=pr.obs===pr.a?A:B,X=pr.obs===pr.a?B:A;return [X[0]-O[0],X[1]-O[1]];}
+  return [(A[0]+B[0])/2,(A[1]+B[1])/2];
+}
+function hash(k,s){var x=Math.sin(k*12.9898+s*78.233)*43758.5453;return x-Math.floor(x);}
+function mkSpec(pr,vw,step,px){
+  var N=Math.floor(pr.cycle/step+1e-9)+1, lw=Math.max(.5,px/900);
+  return {pair:pr,view:vw,iv:step,size:px,N:N,lw:lw,U:px/1000,S:scaleFor(pr,vw),
+    alpha:Math.max(.035,Math.min(.6,.19*px/(N*lw))),
+    sub:Math.max(1,Math.ceil(step/(P[pr.a].T/140)))};
+}
+function drawStep(ctx,sp,k,pass){
+  var pr=sp.pair,tt=k*sp.iv+(pass?pr.cycle:0),c=sp.size/2,m=sp.S*sp.U;
+  if(sp.view==='lines'){
+    var A=hel(pr.a,tt),B=hel(pr.b,tt);
+    ctx.globalAlpha=Math.min(1,sp.alpha*(pass?1.5:1)*(.6+.8*hash(k,1)));
+    ctx.lineWidth=sp.lw*(.75+.6*hash(k,2));
+    ctx.strokeStyle=pass?RED:INK;
+    ctx.beginPath();ctx.moveTo(c+A[0]*m,c+A[1]*m);ctx.lineTo(c+B[0]*m,c+B[1]*m);ctx.stroke();
+    return;
+  }
+  var q;
+  if(k>0){
+    ctx.globalAlpha=pass?.9:.92;ctx.lineWidth=Math.max(.7,sp.size/620)*(.85+.3*hash(k,2));
+    ctx.strokeStyle=pass?RED:INK;ctx.lineCap='round';
+    ctx.beginPath();
+    for(var j=0;j<=sp.sub;j++){
+      q=pointOf(pr,sp.view,tt-sp.iv+sp.iv*j/sp.sub);
+      if(j) ctx.lineTo(c+q[0]*m,c+q[1]*m); else ctx.moveTo(c+q[0]*m,c+q[1]*m);
+    }
+    ctx.stroke();
+  }
+  q=pointOf(pr,sp.view,tt);
+  ctx.globalAlpha=.6;ctx.fillStyle=pass?INK:(sp.view==='path'?RED:BLUE);
+  ctx.beginPath();ctx.arc(c+q[0]*m,c+q[1]*m,Math.max(.9,sp.size/420),0,TAU);ctx.fill();
+}
+function sync(L,target,pass){
+  if(target<L.drawn){L.ctx.clearRect(0,0,size,size);L.drawn=0;}
+  var n=0;
+  while(L.drawn<target && n<5000){drawStep(L.ctx,spec,L.drawn,pass);L.drawn++;n++;}
+}
+function respec(){spec=mkSpec(pair,view,iv,size);inkL.drawn=1e9;redL.drawn=1e9;}
+
+/* ---------- instruments (SVG) ---------- */
+var svgNS='http://www.w3.org/2000/svg';
+function el(n,at){var e=document.createElementNS(svgNS,n);for(var k in at)e.setAttribute(k,at[k]);return e;}
+(function buildRing(){
+  var g=$('#ring'),d='',i,a,r1=429,r2;
+  for(i=0;i<360;i++){
+    a=Math.PI/2+i*Math.PI/180; r2=i%10===0?443:(i%5===0?438:434);
+    d+='M'+(r1*Math.cos(a)).toFixed(2)+' '+(-r1*Math.sin(a)).toFixed(2)+'L'+(r2*Math.cos(a)).toFixed(2)+' '+(-r2*Math.sin(a)).toFixed(2);
+  }
+  g.appendChild(el('circle',{r:429,fill:'none',stroke:INK,'stroke-width':.8}));
+  g.appendChild(el('circle',{r:446,fill:'none',stroke:INK,'stroke-width':.7}));
+  g.appendChild(el('circle',{r:449.5,fill:'none',stroke:INK,'stroke-width':2}));
+  g.appendChild(el('path',{d:d,stroke:INK,'stroke-width':.8,fill:'none'}));
+  for(i=0;i<360;i+=30){
+    var tx=el('text',{transform:'rotate('+(-i)+') translate(0 -458)','text-anchor':'middle','font-size':15,'class':'ringnum'});
+    tx.textContent=i; g.appendChild(tx);
+  }
+})();
+(function buildSun(){
+  var s='',i;
+  for(i=0;i<16;i++){
+    if(i%2===0) s+='<g transform="rotate('+(i*22.5)+')"><path d="M-3.4 -15 0 -35 3.4 -15Z" fill="'+PAPER+'" stroke="'+INK+'" stroke-width=".8"/><path d="M-3.4 -15 0 -35V-15Z" fill="'+INK+'"/></g>';
+    else s+='<path transform="rotate('+(i*22.5)+')" d="M-2.6 -15C-6 -20 3.4 -23 0 -30C5 -24 -2.4 -20 2.6 -15Z" fill="'+PAPER+'" stroke="'+INK+'" stroke-width=".8"/>';
+  }
+  s+='<circle r="16" fill="'+PAPER+'" stroke="'+INK+'" stroke-width="1.3"/><circle r="12.6" fill="none" stroke="'+INK+'" stroke-width=".6"/>'+
+     '<circle r="9.4" fill="none" stroke="'+INK+'" stroke-width=".6" stroke-dasharray="2.2 1.2"/><circle r="6" fill="none" stroke="'+INK+'" stroke-width=".6" stroke-dasharray="1.4 1.1"/>'+
+     '<circle r="2.6" fill="'+RED+'"/>';
+  $('#sun').innerHTML=s;
+})();
+(function buildRose(){
+  var s='<circle r="34" fill="none" stroke="'+INK+'" stroke-width=".8"/><circle r="30.5" fill="none" stroke="'+INK+'" stroke-width=".5"/><circle r="32.2" fill="none" stroke="'+INK+'" stroke-width="2.6" stroke-dasharray=".8 5.52"/>',i;
+  for(i=0;i<4;i++) s+='<g transform="rotate('+(45+i*90)+')"><path d="M0 -29 5 -5 0 0Z" fill="'+PAPER+'" stroke="'+INK+'" stroke-width=".7"/><path d="M0 -29 -5 -5 0 0Z" fill="'+BLUE+'" stroke="'+INK+'" stroke-width=".7"/></g>';
+  for(i=0;i<4;i++) s+='<g transform="rotate('+(i*90)+')"><path d="M0 -50 7 -7 0 0Z" fill="'+PAPER+'" stroke="'+INK+'" stroke-width=".8"/><path d="M0 -50 -7 -7 0 0Z" fill="'+INK+'"/></g>';
+  s+='<path d="M0 -50 4.5 -58 0 -66 -4.500 -58Z" fill="'+RED+'"/><circle r="2.2" fill="'+PAPER+'" stroke="'+INK+'" stroke-width=".8"/>';
+  $('#rose').innerHTML=s;
+})();
+(function buildKnobTicks(){
+  var g=$('#knobTicks'),i,a,d='';
+  for(i=0;i<=6;i++){a=(-135+i*45)*Math.PI/180;d+='M'+(42*Math.sin(a)).toFixed(2)+' '+(-42*Math.cos(a)).toFixed(2)+'L'+(50*Math.sin(a)).toFixed(2)+' '+(-50*Math.cos(a)).toFixed(2);}
+  g.appendChild(el('path',{d:d,'stroke-width':1.3}));
+  g.appendChild(el('path',{d:'M'+(54*Math.sin(-2.356)).toFixed(2)+' '+(-54*Math.cos(-2.356)).toFixed(2)+'A54 54 0 1 1 '+(54*Math.sin(2.356)).toFixed(2)+' '+(-54*Math.cos(2.356)).toFixed(2),'stroke-width':.7}));
+})();
+
+var orbA=$('#orbA'),orbAt=$('#orbAt'),orbB=$('#orbB'),orbBt=$('#orbBt'),sunEl=$('#sun'),chord=$('#chord'),
+    plA=$('#plA'),plB=$('#plB'),midEl=$('#mid'),hair=$('#hair');
+function colourOf(n){return n==='Venus'?RED:(n==='Earth'?BLUE:INK);}
+function arcD(r){return 'M'+(-r)+' 0A'+r+' '+r+' 0 1 1 '+r+' 0A'+r+' '+r+' 0 1 1 '+(-r)+' 0';}
+function ticks(c,r){var C=TAU*r;c.setAttribute('r',r);c.setAttribute('stroke-dasharray','1 '+(C/36-1).toFixed(4));}
+function labelHTML(n){return 'Orbit of '+(n==='Earth'?'the ':'')+'<tspan>'+n.toUpperCase()+'</tspan>';}
+function layoutInst(){
+  var a=pair.a,b=pair.b; S=scaleFor(pair,view);
+  var ca=colourOf(a),cb=colourOf(b),hollow=(ca===INK&&cb===INK);
+  plA.querySelector('.d').setAttribute('fill',ca);
+  plB.querySelector('.d').setAttribute('fill',hollow?PAPER:cb);
+  plB.querySelector('.d').setAttribute('stroke-width',hollow?2.4:1);
+  $('#keyA').setAttribute('fill',ca);$('#keyB').setAttribute('fill',hollow?PAPER:cb);
+  $('#keyB').setAttribute('stroke-width',hollow?2.4:1);
+  $('#keyAt').textContent=a;$('#keyBt').textContent=b;
+  $('#figno').textContent='Fig. '+pair.fig+'.';
+  $('#ratio').textContent=pair.p+' : '+pair.q;
+  var rA,rB;
+  if(view==='path'){
+    rA=P[pair.obs].r*S; rB=P[pair.oth].r*S;
+    orbA.setAttribute('stroke-dasharray','5 4');orbB.setAttribute('stroke-dasharray','2 4');
+    orbBt.setAttribute('visibility','hidden');
+    $('#tpA').innerHTML='apparent Circle of the <tspan>SUN</tspan>';$('#tpB').innerHTML='';
+    chord.setAttribute('stroke',BLUE);
+  }else{
+    rA=P[a].r*S; rB=P[b].r*S;
+    orbA.removeAttribute('stroke-dasharray');orbB.removeAttribute('stroke-dasharray');
+    orbBt.setAttribute('visibility','visible');
+    orbB.setAttribute('cx',0);orbB.setAttribute('cy',0);
+    $('#tpA').innerHTML=labelHTML(a);$('#tpB').innerHTML=labelHTML(b);
+    chord.setAttribute('stroke',INK);
+  }
+  orbA.setAttribute('r',rA);orbB.setAttribute('r',rB);ticks(orbAt,rA);ticks(orbBt,rB);
+  $('#arcA').setAttribute('d',arcD(rA+9));$('#arcB').setAttribute('d',arcD(rB+8));
+  midEl.setAttribute('visibility',view==='mid'?'visible':'hidden');
+  /* the places where the inner planet overtakes the outer: one mark to each loop */
+  var h='',n=pair.loops,syn=1/(1/P[a].T-1/P[b].T),k,q,x,y;
+  if(n<=14) for(k=0;k<n;k++){
+    if(view==='path'){q=pointOf(pair,'path',k*syn);x=q[0]*S;y=q[1]*S;}
+    else if(view==='mid'){q=pointOf(pair,'mid',k*syn);x=q[0]*S;y=q[1]*S;}
+    else{q=hel(b,k*syn);x=q[0]*S;y=q[1]*S;}
+    h+='<g transform="translate('+x.toFixed(1)+' '+y.toFixed(1)+')"><g class="cm" style="transition-delay:'+(.25+k*.14).toFixed(2)+'s"><circle r="9" fill="'+PAPER+'" stroke="'+RED+'" stroke-width="1"/><path d="M0 -6V6M-5.2 -3 5.2 3M-5.2 3 5.2 -3" stroke="'+RED+'" stroke-width="1.5" stroke-linecap="round"/></g></g>';
+  }
+  $('#conj').innerHTML=h;
+}
+function tr(e,x,y){e.setAttribute('transform','translate('+x.toFixed(2)+' '+y.toFixed(2)+')');}
+function place(T){
+  var A=hel(pair.a,T),B=hel(pair.b,T),x1,y1,x2,y2;
+  if(view==='path'){
+    var O=pair.obs===pair.a?A:B,X=pair.obs===pair.a?B:A;
+    var sx=-O[0]*S,sy=-O[1]*S,ox=(X[0]-O[0])*S,oy=(X[1]-O[1])*S;
+    tr(sunEl,sx,sy);orbB.setAttribute('cx',sx.toFixed(2));orbB.setAttribute('cy',sy.toFixed(2));
+    tr(pair.obs===pair.a?plA:plB,0,0);tr(pair.obs===pair.a?plB:plA,ox,oy);
+    x1=0;y1=0;x2=ox;y2=oy;
+  }else{
+    tr(sunEl,0,0);x1=A[0]*S;y1=A[1]*S;x2=B[0]*S;y2=B[1]*S;
+    tr(plA,x1,y1);tr(plB,x2,y2);
+    if(view==='mid'){midEl.setAttribute('cx',((x1+x2)/2).toFixed(2));midEl.setAttribute('cy',((y1+y2)/2).toFixed(2));}
+  }
+  chord.setAttribute('x1',x1.toFixed(2));chord.setAttribute('y1',y1.toFixed(2));
+  chord.setAttribute('x2',x2.toFixed(2));chord.setAttribute('y2',y2.toFixed(2));
+}
+
+/* ---------- ruler ---------- */
+var rulerEl=$('#ruler'),rulerW=0,RPAD=14,marker=null;
+function rx(tt){return RPAD+(rulerW-2*RPAD)*tt/pair.cycle;}
+function buildRuler(){
+  rulerW=rulerEl.clientWidth||size; if(!rulerW) return;
+  var Y=pair.years,W=rulerW,s='',y,x,m;
+  m=Y<=9.5?1:(Y<=19?(W<430?2:1):(Y<=40?5:10));
+  s+='<rect x="'+RPAD+'" y="14" width="'+(W-2*RPAD)+'" height="7" fill="'+PAPER+'" stroke="'+INK+'" stroke-width=".9"/>';
+  for(y=0;y<Y;y+=2*m){
+    var xa=rx(y*YEAR),xb=rx(Math.min((y+m)*YEAR,pair.cycle));
+    s+='<rect x="'+xa.toFixed(1)+'" y="14" width="'+(xb-xa).toFixed(1)+'" height="7" fill="'+INK+'"/>';
+  }
+  s+='<path stroke="'+INK+'" stroke-width=".8" d="';
+  var q=Y<=9.5?4:1;
+  for(y=0;y<=Y*q+1e-6;y++){
+    x=rx(y/q*YEAR);var major=(y%(q*m)===0),mid=(y%q===0);
+    s+='M'+x.toFixed(1)+' 21V'+(major?31:(mid?27:24.5));
+  }
+  s+='"/>';
+  for(y=0;y<=Y+1e-6;y+=m){
+    x=rx(y*YEAR);
+    if(rx(pair.cycle)-x<15 && y*YEAR<pair.cycle-1 ) continue;
+    s+='<text x="'+x.toFixed(1)+'" y="45">'+y+'</text>';
+  }
+  x=rx(pair.cycle);
+  s+='<path d="M'+x.toFixed(1)+' 9V31" stroke="'+RED+'" stroke-width="1.4"/>';
+  s+='<g id="marker"><path d="M0 22V8" stroke="'+RED+'" stroke-width="1.6"/><path d="M0 13 -6.500 1H6.5Z" fill="'+RED+'" stroke="'+INK+'" stroke-width=".8" stroke-linejoin="round"/><circle cy="24" r="2.6" fill="'+PAPER+'" stroke="'+RED+'" stroke-width="1.4"/></g>';
+  rulerEl.innerHTML='<svg width="'+W+'" height="50" viewBox="0 0 '+W+' 50" aria-hidden="true">'+s+'</svg>';
+  marker=rulerEl.querySelector('#marker');
+}
+
+/* ---------- words ---------- */
+var capEl=$('#caption'),readEl=$('#readout'),lastRead='';
+function yearsWords(Y){var r=Math.round(Y);return Math.abs(Y-r)<.12?word(r):Y.toFixed(1);}
+function caption(){
+  var pr=pair,done=plate.classList.contains('complete'),h;
+  var rose=(pr.fig===1);
+  if(done){
+    var miss=pr.miss<1.3?'a day':(pr.miss<2?'a day and a half':Math.round(pr.miss)+' days');
+    var tail=pr.off<5?'so each '+(rose?'rose':'figure')+' is turned a hair from the last.'
+      :(pr.off<20?'so each figure is turned a visible step from the last, and the ends do not quite meet.'
+      :'so the ends stand plainly apart: a rough fraction makes a rough figure.');
+    h='<b><span class="num">'+pr.p+' : '+pr.q+',</span></b> the pattern missing closure by about '+miss+' in '+yearsWords(pr.years)+' years, '+tail;
+  }else{
+    var what=view==='lines'?'A line ruled from '+the(pr.b)+' to '+the(pr.a)+' every '+(iv===1?'day':iv+' days')
+      :(view==='path'?'The path of '+the(pr.oth)+' as seen from '+the(pr.obs)+' held still, pricked every '+(iv===1?'day':iv+' days')
+      :'The middle point of the line joining '+the(pr.a)+' and '+the(pr.b)+', pricked every '+(iv===1?'day':iv+' days'));
+    h='<b>Fig. '+pr.fig+'.</b> '+what+'. Their periods stand as <span class="num">'+P[pr.b].s+'</span> to <span class="num">'+P[pr.a].s+
+      '</span> days: '+pr.b+' : '+pr.a+' &asymp; <span class="num">'+pr.p+' : '+pr.q+'</span> &hellip; '+word(pr.loops)+' '+(rose&&view==='lines'?'petals':'loops')+'.';
+  }
+  capEl.innerHTML=h;
+}
+function readout(T){
+  var y=Math.floor(T/YEAR+1e-9),d=T-y*YEAR,s='Year '+(y+1)+', day '+(Math.floor(d)+1);
+  if(speedIdx===0&&peek===null){var hh=(d-Math.floor(d))*24,mm=(hh-Math.floor(hh))*60,ss=Math.floor((mm-Math.floor(mm))*60);
+    s+=', '+Math.floor(hh)+'h '+('0'+Math.floor(mm)).slice(-2)+'m '+('0'+ss).slice(-2)+'s';}
+  var dg=((T/P[pair.oth].T-T/P[pair.obs].T)*360)%360; if(dg>180)dg-=360; if(dg<=-180)dg+=360;
+  if(pair.obs!=='Earth'){dg=((T/P[pair.a].T-T/P[pair.b].T)*360)%360;if(dg>180)dg-=360;if(dg<=-180)dg+=360;}
+  var who=pair.obs==='Earth'?pair.oth:pair.a;
+  var txt=s+' · '+who+' '+Math.abs(Math.round(dg))+'° '+(dg>=0?'ahead':'behind')+(pair.obs==='Earth'?'':(dg>=0?' of ':' ')+pair.b);
+  if(txt!==lastRead){lastRead=txt;readEl.textContent=txt;}
+}
+
+/* ---------- lifecycle ---------- */
+function setDone(on,instant){
+  if(on===plate.classList.contains('complete')) return;
+  plate.classList.toggle('complete',on);caption();
+}
+function complete(now){phase='done';doneAt=now;setDone(true);}
+function restart(){t=0;phase='draw';playing=true;setDone(false);caption();syncPlay();}
+function syncPlay(){
+  var on=playing&&phase!=='rest';
+  $('#play').setAttribute('aria-pressed',on?'true':'false');
+  $('#playLbl').textContent=on?'Stay the pen':(phase==='rest'?'Draw it again':'Let it run');
+}
+function render(){
+  var T=peek!==null?peek:t, cyc=pair.cycle;
+  sync(inkL,Math.min(spec.N,Math.floor(Math.min(T,cyc)/iv+1e-9)+1),0);
+  sync(redL,T>cyc?Math.min(spec.N,Math.floor((T-cyc)/iv+1e-9)+1):0,1);
+  place(T);
+  if(marker){var mt=T>cyc?T-cyc:T;marker.setAttribute('transform','translate('+rx(mt).toFixed(1)+' 0)');}
+  readout(T);
+}
+var raf=0,last=0;
+function frame(now){
+  raf=requestAnimationFrame(frame);
+  var dt=Math.min(.2,(now-last)/1000);last=now;
+  var cyc=pair.cycle;
+  if(playing&&peek===null&&!seeking){
+    if(phase==='draw'){t=Math.min(cyc,t+SPEEDS[speedIdx].v*dt);if(t>=cyc)complete(now);}
+    else if(phase==='done'){if(now-doneAt>3200&&now-lastTouch>3200&&!reduce){phase='redraw';}}
+    else if(phase==='redraw'){t=Math.min(2*cyc,t+cyc/55*dt);if(t>=2*cyc){phase='rest';syncPlay();}}
+  }
+  render();
+}
+function start(){if(!raf){last=performance.now();raf=requestAnimationFrame(frame);}}
+function stop(){cancelAnimationFrame(raf);raf=0;}
+document.addEventListener('visibilitychange',function(){if(document.hidden)stop();else start();});
+
+function resize(){
+  var w=fig.clientWidth;if(!w)return;
+  size=w;dpr=Math.min(2,window.devicePixelRatio||1);
+  [inkL,redL].forEach(function(L){L.c.width=Math.round(w*dpr);L.c.height=Math.round(w*dpr);L.ctx.setTransform(dpr,0,0,dpr,0,0);});
+  respec();buildRuler();render();
+}
+if('ResizeObserver' in window){new ResizeObserver(resize).observe(fig);}else{window.addEventListener('resize',resize);}
+
+/* ---------- thumbnails ---------- */
+var thumbsEl=$('#thumbs');
+PAIRS.forEach(function(pr,i){
+  var b=document.createElement('button');b.className='thumb';b.type='button';
+  b.setAttribute('aria-pressed',i===0?'true':'false');
+  b.setAttribute('aria-label','Fig. '+pr.fig+': '+pr.a+' and '+pr.b+', nearly '+pr.p+' to '+pr.q+', '+word(pr.loops)+' loops');
+  b.innerHTML='<canvas width="10" height="10"></canvas><span class="fg">Fig. '+pr.fig+'.</span><span class="nm">'+pr.a+' &amp; '+pr.b+
+    '</span><span class="rt">'+pr.p+' : '+pr.q+'</span><span class="lp">'+word(pr.loops)+' loops</span>';
+  b.addEventListener('click',function(){choose(i);});
+  thumbsEl.appendChild(b);pr.btn=b;pr.cv=b.querySelector('canvas');
+});
+function drawThumbs(){
+  var d=Math.min(2,window.devicePixelRatio||1),px=160;
+  PAIRS.forEach(function(pr){
+    var c=pr.cv,ctx=c.getContext('2d');c.width=px*d;c.height=px*d;ctx.setTransform(d,0,0,d,0,0);
+    var sp=mkSpec(pr,view,pr.ivDefault,px);
+    /* thumbnail scale: leave a margin and add the outer circle */
+    sp.S*=.94;sp.alpha=Math.min(.7,sp.alpha*1.7);
+    for(var k=0;k<sp.N;k++)drawStep(ctx,sp,k,0);
+    ctx.globalAlpha=.7;ctx.strokeStyle=INK;ctx.lineWidth=.7;ctx.beginPath();ctx.arc(px/2,px/2,px/2*.8*.94+3,0,TAU);ctx.stroke();
+  });
+}
+function choose(i){
+  pair=PAIRS[i];iv=pair.ivDefault;ivEl.value=iv;ivText();
+  PAIRS.forEach(function(p,j){p.btn.setAttribute('aria-pressed',j===i?'true':'false');});
+  setSpeed(pair.years>20?6:5);
+  layoutInst();respec();buildRuler();restart();
+  if(reduce){t=pair.cycle;phase='rest';playing=false;setDone(true);syncPlay();}
+  if(window.innerWidth<=1240){plate.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});}
+}
+
+/* ---------- controls ---------- */
+$('#play').addEventListener('click',function(){
+  if(phase==='rest'||(reduce&&t>=pair.cycle&&!playing)){restart();return;}
+  playing=!playing;syncPlay();
+});
+$('#again').addEventListener('click',restart);
+
+var knob=$('#knob'),knobBody=$('#knobBody');
+function setSpeed(i){
+  speedIdx=Math.max(0,Math.min(6,i));
+  knobBody.style.transform='rotate('+(-135+speedIdx*45)+'deg)';
+  knob.setAttribute('aria-valuenow',speedIdx);knob.setAttribute('aria-valuetext',SPEEDS[speedIdx].n);
+  $('#paceVal').textContent=SPEEDS[speedIdx].n;
+}
+function knobFromEvent(e){
+  var r=knob.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);
+  if(dx*dx+dy*dy<64)return;
+  var a=Math.atan2(dx,-dy)*180/Math.PI;a=Math.max(-135,Math.min(135,a));
+  setSpeed(Math.round((a+135)/45));
+}
+var knobDown=false;
+knob.addEventListener('pointerdown',function(e){knobDown=true;knob.setPointerCapture(e.pointerId);knobFromEvent(e);e.preventDefault();knob.focus();});
+knob.addEventListener('pointermove',function(e){if(knobDown)knobFromEvent(e);});
+knob.addEventListener('pointerup',function(){knobDown=false;});
+knob.addEventListener('pointercancel',function(){knobDown=false;});
+knob.addEventListener('keydown',function(e){
+  var k=e.key;
+  if(k==='ArrowRight'||k==='ArrowUp'){setSpeed(speedIdx+1);e.preventDefault();}
+  else if(k==='ArrowLeft'||k==='ArrowDown'){setSpeed(speedIdx-1);e.preventDefault();}
+  else if(k==='Home'){setSpeed(0);e.preventDefault();}else if(k==='End'){setSpeed(6);e.preventDefault();}
+});
+knob.addEventListener('wheel',function(e){e.preventDefault();setSpeed(speedIdx+(e.deltaY<0?1:-1));},{passive:false});
+
+var ivEl=$('#iv');
+function ivText(){$('#ivVal').textContent=view==='lines'?(iv===1?'a line every day':'a line every '+iv+' days'):(iv===1?'a point every day':'a point every '+iv+' days');}
+ivEl.addEventListener('input',function(){iv=+ivEl.value;ivText();respec();caption();});
+
+var viewBtns=[].slice.call(document.querySelectorAll('.views button'));
+function setView(v,focus){
+  view=v;
+  viewBtns.forEach(function(b){var on=b.dataset.view===v;b.setAttribute('aria-checked',on?'true':'false');b.tabIndex=on?0:-1;if(on&&focus)b.focus();});
+  layoutInst();respec();ivText();caption();drawThumbs();
+}
+viewBtns.forEach(function(b,i){
+  b.addEventListener('click',function(){setView(b.dataset.view);});
+  b.addEventListener('keydown',function(e){
+    var d=(e.key==='ArrowRight'||e.key==='ArrowDown')?1:((e.key==='ArrowLeft'||e.key==='ArrowUp')?-1:0);
+    if(d){e.preventDefault();setView(viewBtns[(i+d+3)%3].dataset.view,true);}
+  });
+});
+
+/* scrub the plate: a temporary look at another date */
+function peekFrom(e){
+  var r=fig.getBoundingClientRect(),u=1000/r.width;
+  var x=(e.clientX-r.left)*u-500,y=(e.clientY-r.top)*u-500;
+  if(x*x+y*y>452*452&&e.pointerType==='mouse'){endPeek();return;}
+  var f=Math.max(0,Math.min(1,(e.clientX-r.left-RPAD)/(r.width-2*RPAD)));
+  peek=f*pair.cycle;fig.classList.add('peeking');
+  var hx=(RPAD+f*(r.width-2*RPAD))*u-500;
+  hair.setAttribute('x1',hx);hair.setAttribute('x2',hx);hair.setAttribute('y1',Math.max(-500,Math.min(500,y)));
+}
+function endPeek(){if(peek!==null){peek=null;fig.classList.remove('peeking');}}
+var touching=false;
+fig.addEventListener('pointerdown',function(e){if(e.pointerType!=='mouse'){touching=true;peekFrom(e);}});
+fig.addEventListener('pointermove',function(e){if(e.pointerType==='mouse'||touching)peekFrom(e);});
+fig.addEventListener('pointerleave',function(){touching=false;endPeek();});
+fig.addEventListener('pointerup',function(e){if(e.pointerType!=='mouse'){touching=false;endPeek();}});
+fig.addEventListener('pointercancel',function(){touching=false;endPeek();});
+
+/* the ruler sets the date in earnest */
+function seekTo(tt,now){
+  var cyc=pair.cycle;t=Math.max(0,Math.min(cyc,tt));
+  if(t>=cyc-1e-6){t=cyc;if(phase!=='done'){complete(now||performance.now());}}
+  else{phase='draw';setDone(false);}
+  syncPlay();
+  rulerEl.setAttribute('aria-valuenow',Math.round(t/cyc*100));
+  rulerEl.setAttribute('aria-valuetext',lastRead);
+}
+function seekFrom(e){var r=rulerEl.getBoundingClientRect();seekTo((e.clientX-r.left-RPAD)/(r.width-2*RPAD)*pair.cycle,e.timeStamp);}
+rulerEl.addEventListener('pointerdown',function(e){seeking=true;rulerEl.setPointerCapture(e.pointerId);seekFrom(e);e.preventDefault();rulerEl.focus();});
+rulerEl.addEventListener('pointermove',function(e){if(seeking)seekFrom(e);});
+rulerEl.addEventListener('pointerup',function(){seeking=false;});
+rulerEl.addEventListener('pointercancel',function(){seeking=false;});
+rulerEl.addEventListener('keydown',function(e){
+  var st=pair.cycle/100,k=e.key,base=Math.min(t,pair.cycle);
+  if(k==='ArrowRight'||k==='ArrowUp'){seekTo(base+st);e.preventDefault();}
+  else if(k==='ArrowLeft'||k==='ArrowDown'){seekTo(base-st);e.preventDefault();}
+  else if(k==='PageUp'){seekTo(base+st*10);e.preventDefault();}else if(k==='PageDown'){seekTo(base-st*10);e.preventDefault();}
+  else if(k==='Home'){seekTo(0);e.preventDefault();}else if(k==='End'){seekTo(pair.cycle);e.preventDefault();}
+});
+['pointerdown','keydown','wheel'].forEach(function(n){window.addEventListener(n,function(e){lastTouch=e.timeStamp||performance.now();},{passive:true,capture:true});});
+document.addEventListener('keydown',function(e){
+  if(e.key===' '&&(e.target===document.body||e.target===fig)){e.preventDefault();$('#play').click();}
+});
+
+/* ---------- begin ---------- */
+setSpeed(5);ivText();layoutInst();
+size=fig.clientWidth||600;
+if(reduce){t=pair.cycle;phase='rest';plate.classList.add('complete');}
+caption();syncPlay();resize();drawThumbs();
+if(!document.hidden)start();
+})();
+</script>
+</body>
+</html>

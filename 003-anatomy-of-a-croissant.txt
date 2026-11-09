@@ -1,0 +1,37 @@
+TITLE
+The Anatomy of a Croissant
+
+PROMPT
+A food-magazine editorial feature that explains lamination, built around one large SVG cross-section of a croissant that transforms as the reader scrolls. Concept: geometry you can eat: three letter folds make 27 layers of butter (3×3×3), steam inflates them into a honeycomb.
+
+Mood: warm, generous, precise; a Sunday supplement with the rigour of a technical drawing. Palette: flour paper #FBF3E0, butter #F7D98B, baked gold #E9B44C, crust brown #8A4B14, espresso ink #3A2412. Light page with a faint paper grain (SVG turbulence filter at low opacity) and occasional scattered crumbs/flour dust drawn as tiny irregular dots.
+
+Typography: classic serif editorial. A huge Didot/Bodoni-style display headline ("The Anatomy of a Croissant") with extreme thick–thin contrast, set in two lines with a swash-like italic "of a"; a drop cap; body in Georgia/Palatino at comfortable measure in a two-column asymmetrical grid; captions and measurements in small caps and a monospace for numbers (27 layers, a 1:3 butter-to-dough ratio by weight — 280 g of butter to 840 g of dough made from 500 g of flour — 16 °C butter, a 2 h proof at 26 °C and a 200 °C oven for 18 minutes are generic baking facts; quantities are plausible and described as the author's recipe, summarised in a small "recipe in numbers" card beside the introduction). Margin notes with thin leader lines pointing into the diagram. Pull quote: "A croissant is mostly a decision not to rush."
+
+Structure (long vertical scroll with a sticky diagram column on desktop, inline diagrams on phone): 1) Title spread with a whole croissant drawn in SVG (crescent built from overlapping segments with gradient shading and flaky stroke marks). 2) "The Block": a butter slab enclosed in dough. 3) "Three Turns": an animated fold diagram: the dough folds in thirds three times, a counter ticks 3 → 9 → 27 as stripes multiply. 4) "The Roll": a triangle rolls up into a spiral. 5) "The Oven": the signature moment. 6) "The Shatter": tasting notes and a small "troubleshooting" table (butter leaked: too warm; bready crumb: under-proofed; etc.).
+
+Signature moment: the sticky cross-section. It begins as a tight spiral of 27 thin alternating dough/butter lines; as the reader scrolls through "The Oven", scroll progress drives proofing and baking: the layers separate, air cells open between them into an irregular honeycomb (alveoli drawn as morphing paths), the outline swells by about 40%, colour moves from pale dough to deep gold, and wisps of steam (animated stroke-dashoffset paths) escape. A thermometer in the margin climbs with the scroll. Hovering or tapping any layer in the cross-section highlights it and names it with a leader-line tag and a one-line definition (crust, membrane, alveolus, butter line; before baking the same parts answer to skin, dough sheet and butter line). Three legend chips under the figure (crust, membrane, butter line/alveolus) highlight every layer of that kind at once and make the naming keyboard-operable. A readout row under the figure reports stage, clock, air temperature and width gained.
+
+Motion: scroll-linked with eased interpolation (lerp towards target so it never jumps), section headings slide in from the left with a clip-path wipe rather than fade-up. Small surprise: clicking the whole croissant on the title spread tears off its end with a scatter of crumbs that fall with gravity; a second click tears the other end and a third bakes a fresh one. Reduced motion: diagrams show their final states with a stepper instead of scroll-linked morphing. Writing voice: a knowledgeable baker-essayist, specific and a little wry; about 500–700 words of real copy, bylined to the invented writer Odile Marchetti for the invented magazine "Crumb Quarterly, No. 14".
+
+DESCRIPTION
+A long-read feature from the invented magazine Crumb Quarterly, No. 14, laid out like a Sunday supplement crossed with a draughtsman's sheet: flour-coloured paper with grain and stray crumbs, a towering Didone headline with a swashed italic "of a", a drop cap, small-caps captions and monospaced measurements. A hand-drawn croissant sits on the title spread; below it, five chapters pair Odile Marchetti's wry essay in the left column with a sticky technical figure on the right that is driven by the reader's scroll. Butter is posted into an envelope of dough, a slab folds in thirds while a counter ticks 1, 3, 9, 27, a triangle winds into a spiral in plan and elevation, and finally the cross-section proofs and bakes: butter lines open into a honeycomb of alveoli, the outline swells by forty percent, the crust browns, steam escapes and a thermometer climbs to 200 °C. The piece closes with tasting notes and a troubleshooting table of the author's own mistakes.
+
+VISUAL TECHNIQUES
+- Paper grain from an SVG feTurbulence filter laid over the whole page at low opacity with multiply blending
+- Procedurally scattered crumbs and flour dust drawn as tiny irregular seeded polygons and dots
+- Whole croissant built in SVG from seven overlapping crescent segments with per-segment gradients, tuck shadows and dashed flaky stroke marks
+- Cross-section modelled as a parametric spiral: about 150 butter cells laid along 12.5 turns, each a path that morphs from a flat butter band into a tapered air cell
+- Layered sine noise on the spiral, a swelling dome outline with a flattened base, and colour interpolation from pale dough to deep gold
+- Steam wisps as dashed paths animated with stroke-dashoffset; thermometer mercury and pointer tied to scroll
+- Letter-fold elevation with hinged thirds rotating in SVG, a travelling rolling pin and stripes that triple each turn
+- Triangle-to-spiral figure with an Archimedean spiral in elevation, stepped tiers in plan and dashed projection lines between the two views
+- Envelope figure with flaps folding by mirrored scaling about their fold lines
+- SVG labels held at a constant on-screen size at every figure scale, with dimension lines, hatching and leader lines
+- Margin notes with thin leader lines and end dots reaching toward the diagram column
+- Clip-path wipes for headlines and the pull quote, sprung entrance of the croissant segments, a drawn swash under the italic
+- Spring physics for the torn croissant ends and gravity, bounce and rest for the crumbs
+- Sticky figure column on desktop, sticky figure header band on phones; stacked troubleshooting cards on small screens
+
+INTERACTION MODEL
+Scrolling is the main control. Each chapter's figure stays pinned while its text passes, and the scroll position within the chapter sets a target that the drawing eases toward, so folding, rolling, proofing and baking never jump and can be scrubbed backwards. In the oven chapter, pointing at or tapping the cross-section highlights the layer under the pointer, drops a tagged leader line on it and prints its name and a one-line definition beneath the figure; the three chips under the figure highlight all crust, all membranes or all butter lines and alveoli at once, and work from the keyboard. On the title spread, clicking or tapping the croissant (or pressing Enter or Space on it) tears off one end with a spring and a fall of crumbs, a second press tears the other, and a third bakes a new one. Contents links jump to chapters and table rows warm on hover. With reduced motion requested, the scroll-linked morphing is switched off: every figure shows its finished state and gains a previous/next stepper for moving through named stages, and entrances and steam are stilled.

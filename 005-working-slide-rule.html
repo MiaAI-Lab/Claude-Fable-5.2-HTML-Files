@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Slide Rule · Halloran &amp; Voss No. 4081</title>
+<style>
+:root{
+  --ivory:#F4EBD3; --ink:#1C1B19; --red:#B3261E; --blue:#2B5C8A; --brass:#C9B98F; --table:#DCE3DA;
+  --slab:Rockwell,"Rockwell Nova","Roboto Slab",Clarendon,Georgia,"Times New Roman",serif;
+  --eng:"Gill Sans","Gill Sans MT","Gill Sans Nova",Calibri,"Trebuchet MS",sans-serif;
+  --mono:Menlo,Consolas,"DejaVu Sans Mono","Courier New",monospace;
+  --hand:"Bradley Hand","Segoe Print","Ink Free","Marker Felt",Noteworthy,Georgia,serif;
+  --serif:Georgia,"Iowan Old Style",Palatino,"Times New Roman",serif;
+  --mech:cubic-bezier(.3,0,.2,1);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; color:var(--ink); font-family:var(--serif); overflow-x:hidden;
+  background-color:var(--table);
+  background-image:
+    radial-gradient(120% 80% at 12% -10%, rgba(255,255,255,.55), rgba(255,255,255,0) 60%),
+    linear-gradient(rgba(43,92,138,.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(43,92,138,.16) 1px, transparent 1px),
+    linear-gradient(rgba(43,92,138,.075) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(43,92,138,.075) 1px, transparent 1px);
+  background-size:100% 900px, 25mm 25mm, 25mm 25mm, 5mm 5mm, 5mm 5mm;
+  background-repeat:no-repeat, repeat, repeat, repeat, repeat;
+  min-height:100vh;
+}
+button,input{font:inherit;color:inherit}
+:focus{outline:none}
+:focus-visible{outline:2px dashed var(--blue); outline-offset:3px}
+
+/* ---------- header ---------- */
+.head{display:flex; justify-content:space-between; align-items:flex-end; gap:24px;
+  padding:30px clamp(18px,4vw,56px) 4px; max-width:1560px; margin:0 auto}
+.title h1{font:700 clamp(25px,2.3vw,33px)/1 var(--slab); margin:0; letter-spacing:.005em}
+.title h1 span{display:inline-block; border-bottom:3px solid var(--ink); padding-bottom:7px}
+.title p{margin:10px 0 0; font:italic 15.5px/1.3 var(--serif); color:#3c3a35}
+.block{display:grid; grid-template-columns:auto auto auto; font:600 10px/1 var(--eng); letter-spacing:.16em;
+  text-transform:uppercase; border:1.2px solid rgba(28,27,25,.75); color:rgba(28,27,25,.82); background:rgba(244,235,211,.35)}
+.block div{padding:8px 12px 7px; border-right:1px solid rgba(28,27,25,.5); border-top:1px solid rgba(28,27,25,.5)}
+.block div:nth-child(3n){border-right:0}
+.block div.wide{grid-column:1/-1; border-top:0; border-right:0; font-size:11px; letter-spacing:.22em}
+.block small{display:block; font:500 8px/1 var(--eng); letter-spacing:.2em; color:rgba(28,27,25,.55); margin-bottom:5px}
+
+/* ---------- stage ---------- */
+.stage{position:relative; margin-top:6px}
+.minimap{display:none; margin:6px 12px 2px; border:1px solid rgba(28,27,25,.35); background:rgba(244,235,211,.4);
+  touch-action:none; cursor:pointer; position:relative}
+.minimap svg{display:block; width:100%; max-width:560px; margin:0 auto; height:auto}
+.minimap::before{content:"WHOLE RULE"; position:absolute; left:6px; top:4px; font:600 8px/1 var(--eng); letter-spacing:.2em; color:rgba(28,27,25,.55)}
+.frame{overflow:hidden; scrollbar-width:none; -webkit-overflow-scrolling:touch}
+.frame::-webkit-scrollbar{display:none}
+#rule{position:relative; width:max(100%,1700px); aspect-ratio:4/1; user-select:none; -webkit-user-select:none; touch-action:pan-x pan-y}
+.layer{position:absolute; inset:0; width:100%; height:100%; display:block; pointer-events:none}
+.mv{position:absolute; inset:0; pointer-events:none; will-change:transform}
+.wo,.wi{position:absolute; inset:0; pointer-events:none}
+.wo{overflow:hidden}
+.wiping .wo,.wiping .wi{will-change:transform}
+.hit,.sl{pointer-events:all}
+.small .frame{overflow-x:auto; overscroll-behavior-x:contain}
+.small .minimap{display:block}
+@media (max-width:620px){ #rule{width:1320px} }
+
+#rule text{font-family:var(--eng); fill:var(--ink)}
+#rule .num{font-size:11.2px; font-weight:700; text-anchor:middle}
+#rule .num.s{font-size:7px; font-weight:600}
+#rule .num.m{font-size:9px}
+#rule .num.k{font-size:7.8px}
+#rule .red{fill:var(--red)}
+#rule .gauge{font:italic 9.5px var(--serif); text-anchor:middle}
+#rule .fx{font:italic 9px var(--serif); text-anchor:start; fill:rgba(28,27,25,.8)}
+#rule .fx.red{fill:var(--red)}
+#rule .mark{text-anchor:middle; font-weight:600; letter-spacing:1px; font-size:8.4px}
+#rule .mark.sm{font-size:6.2px; letter-spacing:1.7px; font-weight:500}
+.sl{cursor:help}
+.sl text{font-size:11.5px; font-weight:700; text-anchor:end; transition:fill .2s}
+.sl:hover text,.sl:focus-visible text{fill:var(--blue)}
+.sl.red text{fill:var(--red)}
+.sl .lring{fill:none; stroke:var(--blue); stroke-width:.8; opacity:0; transition:opacity .2s}
+.sl:hover .lring,.sl:focus-visible .lring{opacity:.9}
+#rule :focus-visible{outline:none}
+.fring{fill:none; stroke:var(--blue); stroke-width:1.6; stroke-dasharray:6 4; opacity:0; pointer-events:none; transition:opacity .15s}
+#slide:focus-visible .fring,#cursor:focus-visible .fring{opacity:1}
+#slide.flash .fring,#cursor.flash .fring{opacity:1; stroke-dasharray:none; stroke-width:3}
+#slide,#cursor{touch-action:pan-y}
+#slide .hit{cursor:grab}
+#cursor .hit{cursor:ew-resize}
+#slide.dragging .hit,#cursor.dragging .hit{cursor:grabbing}
+.pencil-mark{stroke:rgba(28,27,25,.34); fill:none; stroke-width:.8}
+.pencil-text{font-family:var(--hand)!important; font-style:italic; font-size:13px; fill:rgba(28,27,25,.5)!important}
+
+#ruleRoot.enter{animation:push 1250ms cubic-bezier(.14,.78,.22,1) both}
+@keyframes push{from{transform:translateX(-112%)} 82%{transform:translateX(.3%)} to{transform:translateX(0)}}
+
+/* annotations */
+.note text{font-family:var(--hand)!important; font-style:italic; font-size:15.5px; fill:var(--blue)!important; font-weight:600}
+.note text.write{animation:write .8s cubic-bezier(.4,0,.2,1) both}
+.note text .ans{fill:var(--red); font-size:21px; font-weight:700}
+@keyframes write{from{clip-path:inset(-30% 100% -30% 0); opacity:.2} to{clip-path:inset(-30% -5% -30% 0); opacity:1}}
+.note .dot{fill:var(--blue); transform-box:fill-box; transform-origin:center; animation:dot .28s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes dot{from{opacity:0; transform:scale(0)} to{opacity:1; transform:scale(1)}}
+.note .head{fill:none; stroke:var(--blue); stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; animation:dot .3s cubic-bezier(.3,1.6,.5,1) both; transform-box:fill-box; transform-origin:center}
+.note .loop{fill:none; stroke-linecap:round; stroke-dasharray:1; stroke-dashoffset:1; animation:draw .75s cubic-bezier(.45,0,.2,1) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.note.out{opacity:0; transition:opacity .35s}
+
+.tip{position:absolute; z-index:5; max-width:260px; padding:9px 12px 10px; background:var(--blue); color:var(--ivory);
+  font:500 12.5px/1.4 var(--eng); letter-spacing:.02em; pointer-events:none; opacity:0; transform:translateY(4px);
+  transition:opacity .18s, transform .25s cubic-bezier(.2,.9,.3,1.3); box-shadow:2px 3px 0 rgba(28,27,25,.18)}
+.tip b{display:block; font:700 10px/1 var(--eng); letter-spacing:.2em; text-transform:uppercase; margin-bottom:5px; color:#fff}
+.tip.on{opacity:1; transform:none}
+
+/* ---------- lower ---------- */
+.lower{display:grid; grid-template-columns:minmax(0,1fr) minmax(300px,372px); gap:clamp(28px,4.4vw,72px);
+  max-width:1350px; margin:0 auto; padding:2px clamp(14px,4vw,40px) 60px; align-items:start}
+.tabs{display:flex; flex-wrap:wrap; align-items:flex-end; gap:5px; padding-left:14px; position:relative; z-index:1}
+.tab{appearance:none; border:0; cursor:pointer; background:var(--brass); padding:10px 14px 9px; border-radius:9px 9px 0 0;
+  font:600 12.5px/1.15 var(--eng); letter-spacing:.09em; text-transform:uppercase; text-align:left; color:var(--ink);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45), inset 0 -7px 7px -6px rgba(28,27,25,.32), 1px 0 0 rgba(28,27,25,.12);
+  transform:translateY(3px); transition:transform .35s cubic-bezier(.2,.9,.25,1.25), background .25s}
+.tab i{font:italic 400 11px var(--serif); text-transform:none; letter-spacing:0; opacity:.75}
+.tab b{font:700 14px/1 var(--mono); letter-spacing:0; margin-left:3px}
+.tab small{display:block; font:600 8px/1 var(--eng); letter-spacing:.24em; color:var(--blue); margin-bottom:4px}
+.tab:hover,.tab:focus-visible{transform:translateY(0)}
+.tab.on{background:var(--ivory); transform:translateY(0); box-shadow:inset 0 1px 0 rgba(255,255,255,.7), inset 0 3px 0 -1px var(--red)}
+.tab.own{display:flex; align-items:flex-end; gap:8px; cursor:default; flex-wrap:wrap; margin-left:auto}
+.tab.own label{display:block}
+.own .fields{display:flex; align-items:center; gap:6px; font:700 14px var(--mono)}
+.own input{width:3.7em; border:0; border-bottom:1.5px solid var(--ink); background:rgba(244,235,211,.55); padding:3px 4px 2px;
+  font:700 14px/1 var(--mono); text-align:center; border-radius:0}
+.own input:focus-visible{outline-offset:1px; background:var(--ivory)}
+.own input.bad{border-bottom-color:var(--red); color:var(--red)}
+.own button{appearance:none; background:var(--blue); color:var(--ivory); border:0; padding:6px 11px 5px; cursor:pointer;
+  font:700 10.5px/1 var(--eng); letter-spacing:.18em; text-transform:uppercase; transition:transform .2s cubic-bezier(.2,.9,.25,1.4), background .2s}
+.own button:hover{background:#1f4a73; transform:translateY(-1px)}
+.own button:active{transform:translateY(1px)}
+
+.paper{position:relative; background-color:#F8F1DE; padding:20px 26px 16px 74px;
+  background-image:
+    radial-gradient(circle at 27px 34px, var(--table) 6.5px, rgba(28,27,25,.25) 7.2px, transparent 8px),
+    radial-gradient(circle at 27px calc(100% - 34px), var(--table) 6.5px, rgba(28,27,25,.25) 7.2px, transparent 8px),
+    linear-gradient(90deg, transparent 55px, rgba(179,38,30,.55) 55px, rgba(179,38,30,.55) 56.2px, transparent 56.2px),
+    repeating-linear-gradient(transparent 0 27px, rgba(43,92,138,.2) 27px 28px);
+  box-shadow:0 1px 0 rgba(255,255,255,.8) inset, 3px 5px 0 rgba(28,27,25,.07), 10px 16px 26px -14px rgba(28,27,25,.4)}
+.paper h2{margin:0 0 9px; font:700 10px/1 var(--eng); letter-spacing:.26em; text-transform:uppercase; color:var(--blue);
+  display:flex; justify-content:space-between; gap:10px}
+.paper h2 em{font-style:normal; color:rgba(28,27,25,.5); letter-spacing:.18em}
+.vals{display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); border-top:1.5px solid var(--ink); border-bottom:1px solid rgba(28,27,25,.5)}
+.val{padding:8px 0 7px 9px; border-left:1px solid rgba(28,27,25,.22)}
+.val:first-child{border-left:0; padding-left:0}
+.val dt{font:700 10px/1 var(--eng); letter-spacing:.14em; color:rgba(28,27,25,.62); display:flex; gap:6px; align-items:baseline}
+.val dt b{font-size:13px; color:var(--ink); letter-spacing:0}
+.val dt i{font:italic 10.5px var(--serif); letter-spacing:0}
+.val dd{margin:5px 0 0; font:700 clamp(15px,1.55vw,21px)/1 var(--mono); font-variant-numeric:tabular-nums; letter-spacing:-.02em; white-space:nowrap}
+.val.red dt b,.val.red dd{color:var(--red)}
+.val.off dd{color:rgba(28,27,25,.3)}
+.val.slidev{background:rgba(43,92,138,.055)}
+dl{margin:0}
+#say{margin:14px 0 0; font:16.5px/28px var(--serif); min-height:84px}
+#say b{font:700 15px/1 var(--mono)}
+#say .eq{display:block; font:700 21px/28px var(--slab); color:var(--ink); white-space:nowrap}
+#say .eq u{text-decoration:none; color:var(--red)}
+#say .alt{display:block; font:italic 14px/28px var(--serif); color:#4a4841}
+#result{margin:0; font:italic 600 15.5px/28px var(--hand); color:var(--blue); min-height:28px}
+#result strong{color:var(--red); font-size:18px}
+.hint{display:flex; flex-wrap:wrap; gap:6px 22px; margin:0; padding:0; list-style:none;
+  font:600 9.5px/28px var(--eng); letter-spacing:.17em; text-transform:uppercase; color:rgba(28,27,25,.62)}
+.hint svg{width:22px; height:10px; vertical-align:-1px; margin-right:6px; overflow:visible}
+.hint kbd{font:700 9.5px var(--mono); border:1px solid rgba(28,27,25,.5); padding:1px 4px; border-radius:2px; letter-spacing:0; background:rgba(255,255,255,.4)}
+
+.desk{position:relative; margin-top:34px; padding-bottom:20px}
+.desk svg{overflow:visible; display:block}
+.lengths{width:100%; max-width:820px; height:auto}
+.lengths .lh{font:italic 600 17px var(--hand); fill:rgba(28,27,25,.72)}
+.lengths .lt{font:italic 600 15px var(--hand)}
+.lengths .ln{font:italic 12.5px var(--hand); fill:rgba(28,27,25,.62); text-anchor:middle}
+.lengths .lp{fill:none; stroke:rgba(28,27,25,.5); stroke-width:1}
+.pencil{margin:16px 0 0 34%; width:min(500px,64%); transform:rotate(-4deg); transform-origin:20% 50%; filter:drop-shadow(3px 7px 3px rgba(28,27,25,.28));
+  transition:transform .9s cubic-bezier(.2,.8,.2,1)}
+.pencil:hover{transform:rotate(-2deg) translateY(5px)}
+.crumbs{position:absolute; left:16%; bottom:34px; width:90px}
+
+/* leaflet */
+.leaflet{background:linear-gradient(180deg,#F8F1DE 0, #F8F1DE calc(50% - 1px), #e9dfc3 50%, #F8F1DE calc(50% + 7px));
+  padding:26px 30px 26px; position:relative; transform:rotate(.55deg);
+  box-shadow:2px 4px 0 rgba(28,27,25,.06), 12px 18px 28px -16px rgba(28,27,25,.45)}
+.leaflet .kicker{font:700 9px/1 var(--eng); letter-spacing:.3em; text-transform:uppercase; display:flex; justify-content:space-between;
+  border-bottom:1.5px solid var(--ink); padding-bottom:8px}
+.leaflet .kicker span:last-child{color:var(--red)}
+.leaflet h2{font:700 19px/1.15 var(--slab); margin:16px 0 4px}
+.leaflet .formula{font:italic 700 clamp(25px,2.2vw,29px)/1.1 var(--serif); margin:14px 0 14px; white-space:nowrap; letter-spacing:-.01em}
+.leaflet .formula span{color:var(--red); font-style:normal; font-weight:400; padding:0 .08em}
+.leaflet p{font:14px/1.58 var(--serif); margin:0 0 11px; text-align:justify; hyphens:auto; -webkit-hyphens:auto}
+.leaflet p:first-of-type::first-letter{font:700 43px/.82 var(--slab); float:left; padding:5px 7px 0 0; color:var(--blue)}
+.inset{margin:18px 0 0; border:1.2px solid var(--ink); padding:12px 13px 11px; background:rgba(244,235,211,.7)}
+.inset h3{margin:0 0 6px; font:700 9.5px/1 var(--eng); letter-spacing:.26em; text-transform:uppercase; color:var(--blue)}
+.inset svg{display:block; width:100%; height:auto; margin:4px 0 6px}
+.inset p{font:12.5px/1.5 var(--serif); margin:0; text-align:left}
+.inset p::first-letter{all:unset}
+.leaflet .inset p:first-of-type::first-letter{font:inherit; float:none; padding:0; color:inherit}
+.leaflet p.colophon{margin:16px 0 0; font:600 8.5px/1.7 var(--eng); letter-spacing:.2em; text-transform:uppercase; color:rgba(28,27,25,.6); text-align:center; hyphens:manual}
+.leaflet p.colophon::first-letter{font:inherit; float:none; padding:0; color:inherit}
+
+/* entrance for the paper things */
+.rise{animation:place .9s cubic-bezier(.16,.84,.26,1) both}
+.d1{animation-delay:.5s}.d2{animation-delay:.62s}.d3{animation-delay:.74s}.d4{animation-delay:.86s}.d5{animation-delay:1s}.d6{animation-delay:1.25s}
+@keyframes place{from{opacity:0; translate:-26px 0} to{opacity:1; translate:0 0}}
+
+@media (max-width:980px){
+  .lower{grid-template-columns:minmax(0,1fr)}
+  .leaflet{max-width:430px; margin:0 auto}
+  .block{display:none}
+}
+@media (max-width:620px){
+  .head{padding:18px 16px 2px}
+  .title p{font-size:13.5px; margin-top:8px}
+  .tabs{padding-left:0; display:grid; grid-template-columns:repeat(3,1fr); gap:4px; align-items:stretch}
+  .tab{padding:8px 8px 7px; font-size:10.5px; letter-spacing:.05em}
+  .tab b{display:block; margin:3px 0 0; font-size:13px}
+  .tab i{display:block}
+  .tab.own{grid-column:1/-1; order:-1; border-radius:9px 9px 0 0; margin:0 0 2px; justify-content:space-between}
+  .paper{padding:16px 12px 14px 44px;
+    background-image:
+    radial-gradient(circle at 16px 34px, var(--table) 5.5px, rgba(28,27,25,.25) 6.2px, transparent 7px),
+    radial-gradient(circle at 16px calc(100% - 34px), var(--table) 5.5px, rgba(28,27,25,.25) 6.2px, transparent 7px),
+    linear-gradient(90deg, transparent 33px, rgba(179,38,30,.55) 33px, rgba(179,38,30,.55) 34.2px, transparent 34.2px),
+    repeating-linear-gradient(transparent 0 27px, rgba(43,92,138,.2) 27px 28px)}
+  .vals{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .val{border-left:0; padding-left:0}
+  .val:nth-child(n+5){border-top:1px solid rgba(28,27,25,.22)}
+  .val.slidev{background:none}
+  .val dd{font-size:17px}
+  #say{font-size:15px; min-height:112px}
+  #say .eq{font-size:18px; white-space:normal}
+  .paper h2 em{display:none}
+  .desk{margin-top:22px}
+  .lengths{width:calc(100% + 30px); max-width:none; margin-left:-18px}
+  .pencil{margin-left:12%; width:84%}
+  .lengths .lh{font-size:27px}
+  .lengths .lt{font-size:25px}
+  .lengths .ln{font-size:20px}
+  .crumbs{left:2%}
+  .leaflet{padding:22px 20px}
+}
+@media (prefers-reduced-motion:reduce){
+  .rise,#ruleRoot.enter{animation:none}
+  .note text.write,.note .dot,.note .head{animation:none}
+  .note .loop{animation:none; stroke-dashoffset:0}
+  .tab,.pencil,.tip,.own button{transition:none}
+}
+</style>
+</head>
+<body>
+
+<header class="head">
+  <div class="title rise">
+    <h1><span>The Slide Rule</span></h1>
+    <p>Addition of lengths is multiplication of numbers</p>
+  </div>
+  <div class="block rise d1" aria-hidden="true">
+    <div class="wide">Halloran &amp; Voss · Instrument Makers</div>
+    <div><small>Model</small>No. 4081</div>
+    <div><small>Scales</small>K A [B CI C] D L</div>
+    <div><small>Drawn</small>Full size · 10 in.</div>
+  </div>
+</header>
+
+<main>
+<section class="stage" id="stage" aria-label="The instrument">
+  <div class="minimap" id="minimap" aria-hidden="true">
+    <svg viewBox="-400 -34 1800 320">
+      <rect x="-190" y="0" width="1380" height="252" fill="#F4EBD3" stroke="#1C1B19" stroke-width="3"/>
+      <g id="mmSlide"><rect x="-190" y="76" width="1380" height="100" fill="#fbf5e4" stroke="#1C1B19" stroke-width="3"/>
+        <path id="mmTicksS" stroke="#1C1B19" stroke-width="3" fill="none"/></g>
+      <path id="mmTicks" stroke="#1C1B19" stroke-width="3" fill="none"/>
+      <g id="mmCursor"><rect x="-42" y="-16" width="84" height="284" fill="rgba(43,92,138,.16)" stroke="#1C1B19" stroke-width="3"/>
+        <line y1="-16" y2="268" stroke="#B3261E" stroke-width="5"/></g>
+      <rect id="mmWin" x="-400" y="-30" width="500" height="312" fill="rgba(43,92,138,.1)" stroke="#2B5C8A" stroke-width="6"/>
+    </svg>
+  </div>
+  <div class="frame" id="frame">
+    <div class="board" id="rule" role="group" aria-label="Ten-inch logarithmic slide rule with scales K, A, B, CI, C, D and L">
+      <svg class="layer" viewBox="-400 -90 1800 450" aria-hidden="true">
+        <defs>
+          <linearGradient id="gIvory" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#f9f2df"/><stop offset=".5" stop-color="#F4EBD3"/><stop offset="1" stop-color="#ece1c4"/>
+          </linearGradient>
+          <linearGradient id="gSlide" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#fdf8ea"/><stop offset=".1" stop-color="#f8f1dc"/><stop offset=".9" stop-color="#F4EBD3"/><stop offset="1" stop-color="#e3d6b3"/>
+          </linearGradient>
+          <linearGradient id="gWell" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#6f6548"/><stop offset=".22" stop-color="#a39570"/><stop offset="1" stop-color="#C9B98F"/>
+          </linearGradient>
+          <linearGradient id="gMetal" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#a39570"/><stop offset=".3" stop-color="#e9dfc0"/><stop offset=".55" stop-color="#C9B98F"/><stop offset="1" stop-color="#8f8260"/>
+          </linearGradient>
+          <linearGradient id="gBar" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#ece3c8"/><stop offset=".45" stop-color="#C9B98F"/><stop offset="1" stop-color="#8f8260"/>
+          </linearGradient>
+          <linearGradient id="gGlass" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#2B5C8A" stop-opacity=".2"/><stop offset=".1" stop-color="#ffffff" stop-opacity=".12"/>
+            <stop offset=".9" stop-color="#ffffff" stop-opacity=".05"/><stop offset="1" stop-color="#2B5C8A" stop-opacity=".24"/>
+          </linearGradient>
+          <linearGradient id="gShine" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#fff" stop-opacity=".6"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+          </linearGradient>
+          <linearGradient id="gSh" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#1C1B19" stop-opacity=".3"/><stop offset="1" stop-color="#1C1B19" stop-opacity="0"/>
+          </linearGradient>
+          <filter id="soft" x="-5%" y="-30%" width="110%" height="170%"><feGaussianBlur stdDeviation="6"/></filter>
+          <g id="screw"><circle r="4.6" fill="#b5a67c" stroke="#6f6548" stroke-width=".7"/><circle r="3.2" fill="#ddd2ae"/><line x1="-3.2" x2="3.2" stroke="#4d4633" stroke-width="1.1"/></g>
+        </defs>
+        <path class="pencil-mark" stroke-dasharray="26 5 3 5" d="M-396 126H1396"/>
+        <path class="pencil-mark" d="M0-4V-80M1000-4V-80M6-70H1000M0-70l11-3.4v6.8zM1000-70l-11-3.4v6.8z"/>
+        <rect x="424" y="-80" width="152" height="20" fill="#DCE3DA"/>
+        <text class="pencil-text" x="500" y="-65" text-anchor="middle">one decade, 1 to 10</text>
+        <path class="pencil-mark" d="M-300 108v36M-318 126h36M1300 108v36M1282 126h36"/>
+        <path class="pencil-mark" d="M-346 60a80 80 0 0 1 0 132"/>
+      </svg>
+
+      <div class="mv" id="ruleRoot">
+        <div class="mv" id="slideShadow"><svg class="layer" viewBox="-400 -90 1800 450" aria-hidden="true">
+          <rect x="-186" y="84" width="1376" height="100" rx="3" fill="#1C1B19" opacity=".3" filter="url(#soft)"/>
+        </svg></div>
+
+        <svg class="layer" viewBox="-400 -90 1800 450">
+          <rect x="-186" y="10" width="1376" height="250" rx="4" fill="#1C1B19" opacity=".36" filter="url(#soft)"/>
+          <rect x="-190" y="76" width="1380" height="100" fill="url(#gWell)"/>
+          <rect x="-190" y="0" width="1380" height="76" fill="url(#gIvory)"/>
+          <rect x="-190" y="176" width="1380" height="76" fill="url(#gIvory)"/>
+          <rect x="-190" y="0" width="1380" height="3.2" fill="#C9B98F"/>
+          <rect x="-190" y="248.8" width="1380" height="3.2" fill="#C9B98F"/>
+          <path d="M-190 .4H1190M-190 251.6H1190" stroke="#8f8260" stroke-width=".8"/>
+          <g id="grainStock"></g>
+        </svg>
+        <div class="wo"><div class="wi"><svg class="layer" viewBox="-400 -90 1800 450"><g id="stockScales"></g></svg></div></div>
+
+        <div class="mv" id="slide" tabindex="0" role="slider" aria-label="Slide: scales B, CI and C" aria-orientation="horizontal" aria-valuemin="-1000" aria-valuemax="1000" aria-valuenow="0">
+          <svg class="layer" viewBox="-400 -90 1800 450">
+            <rect class="hit" x="-190" y="76" width="1380" height="100" fill="url(#gSlide)"/>
+            <path d="M-190 76.4H1190M-190 175.6H1190" stroke="#1C1B19" stroke-opacity=".5" stroke-width=".8"/>
+            <path d="M-190 76V176M1190 76V176" stroke="#8f8260" stroke-width="1.6"/>
+            <g id="grainSlide"></g>
+            <rect class="fring" x="-194" y="72" width="1388" height="108" rx="3"/>
+          </svg>
+          <div class="wo"><div class="wi"><svg class="layer" viewBox="-400 -90 1800 450"><g id="slideScales"></g></svg></div></div>
+        </div>
+
+        <svg class="layer" viewBox="-400 -90 1800 450" aria-hidden="true">
+          <rect x="-192" y="-3" width="26" height="258" rx="3" fill="url(#gMetal)" stroke="#6f6548" stroke-width=".8"/>
+          <path d="M-187 0V252" stroke="#fff" stroke-opacity=".45" stroke-width=".8"/>
+          <use href="#screw" x="-179" y="20" transform="rotate(24 -179 20)"/><use href="#screw" x="-179" y="232" transform="rotate(-38 -179 232)"/>
+          <rect x="1166" y="-3" width="26" height="258" rx="3" fill="url(#gMetal)" stroke="#6f6548" stroke-width=".8"/>
+          <path d="M1171 0V252" stroke="#fff" stroke-opacity=".45" stroke-width=".8"/>
+          <use href="#screw" x="1179" y="20" transform="rotate(-12 1179 20)"/><use href="#screw" x="1179" y="232" transform="rotate(61 1179 232)"/>
+        </svg>
+
+        <div class="mv" id="cursor" tabindex="0" role="slider" aria-label="Cursor with hairline" aria-orientation="horizontal" aria-valuemin="1" aria-valuemax="10" aria-valuenow="1">
+          <svg class="layer" viewBox="-400 -90 1800 450">
+            <rect x="-34" y="8" width="84" height="262" fill="#1C1B19" opacity=".1" filter="url(#soft)"/>
+            <rect x="-39" y="2" width="84" height="262" fill="#1C1B19" opacity=".06"/>
+            <rect x="-42" y="-3" width="84" height="258" fill="url(#gGlass)" stroke="#1C1B19" stroke-opacity=".45" stroke-width=".7"/>
+            <path d="M-30-3h17L-42 150V96z" fill="url(#gShine)" opacity=".55"/>
+            <path d="M12-3h5L-24 255h-5z" fill="#fff" opacity=".16"/>
+            <line y1="-3" y2="255" stroke="#B3261E" stroke-width="1"/>
+            <rect x="-47" y="-16" width="94" height="15" rx="2.2" fill="url(#gBar)" stroke="#6f6548" stroke-width=".8"/>
+            <rect x="-47" y="253" width="94" height="15" rx="2.2" fill="url(#gBar)" stroke="#6f6548" stroke-width=".8"/>
+            <use href="#screw" x="-36" y="-8.5" transform="rotate(30 -36 -8.5)"/><use href="#screw" x="36" y="-8.5" transform="rotate(-50 36 -8.5)"/>
+            <use href="#screw" x="-36" y="260.5" transform="rotate(75 -36 260.5)"/><use href="#screw" x="36" y="260.5" transform="rotate(10 36 260.5)"/>
+            <rect class="hit" x="-48" y="-18" width="96" height="288" fill="transparent"/>
+            <rect class="fring" x="-52" y="-21" width="104" height="294" rx="4"/>
+          </svg>
+        </div>
+      </div>
+
+      <svg class="layer" viewBox="-400 -90 1800 450" aria-hidden="true"><g id="notes"></g></svg>
+    </div>
+  </div>
+  <div class="tip" id="tip" role="tooltip"></div>
+</section>
+
+<div class="lower">
+  <div>
+    <section class="pad" aria-label="Readout and demonstrations">
+      <div class="tabs">
+        <button class="tab rise d2" type="button" data-demo="mul"><small>Lesson I</small>Multiply <b>2 × 3</b></button>
+        <button class="tab rise d3" type="button" data-demo="div"><small>Lesson II</small>Divide <b>8.4 ÷ 2.1</b></button>
+        <button class="tab rise d4" type="button" data-demo="sqrt"><small>Lesson III</small><b style="margin-left:0">√</b> of 49 <i>(A and D)</i></button>
+        <form class="tab own rise d5" id="own" novalidate>
+          <label for="fa"><small>Try your own</small>a × b</label>
+          <span class="fields">
+            <input id="fa" inputmode="decimal" autocomplete="off" value="3.6" aria-label="First factor a">×
+            <input id="fb" inputmode="decimal" autocomplete="off" value="4.5" aria-label="Second factor b">
+            <button type="submit">Work it</button>
+          </span>
+        </form>
+      </div>
+      <div class="paper rise d2">
+        <h2><span>Under the hairline</span><em>Three figures · you keep the decimal point</em></h2>
+        <dl class="vals" id="vals">
+          <div class="val"><dt><b>K</b><i>x³</i></dt><dd id="vK">1.00</dd></div>
+          <div class="val"><dt><b>A</b><i>x²</i></dt><dd id="vA">1.00</dd></div>
+          <div class="val slidev"><dt><b>B</b><i>slide</i></dt><dd id="vB">1.00</dd></div>
+          <div class="val slidev red"><dt><b>CI</b><i>1/x</i></dt><dd id="vCI">10.0</dd></div>
+          <div class="val slidev"><dt><b>C</b><i>slide</i></dt><dd id="vC">1.00</dd></div>
+          <div class="val"><dt><b>D</b><i>x</i></dt><dd id="vD">1.00</dd></div>
+          <div class="val"><dt><b>L</b><i>log x</i></dt><dd id="vL">0.000</dd></div>
+        </dl>
+        <p id="say"></p>
+        <p id="result" aria-live="polite"></p>
+        <ul class="hint">
+          <li><svg viewBox="0 0 22 10"><path d="M1 5h20M5 1 1 5l4 4M17 1l4 4-4 4" fill="none" stroke="#1C1B19" stroke-width="1.3"/></svg>Drag the slide</li>
+          <li><svg viewBox="0 0 22 10"><rect x="6" y="0" width="10" height="10" fill="none" stroke="#1C1B19" stroke-width="1.1"/><path d="M11 0v10" stroke="#B3261E" stroke-width="1.3"/></svg>Drag the cursor</li>
+          <li><kbd>←</kbd> <kbd>→</kbd> nudge · <kbd>Shift</kbd> fine</li>
+        </ul>
+      </div>
+    </section>
+
+    <div class="desk rise d6" aria-hidden="true">
+      <svg class="lengths" id="lengths" viewBox="0 0 800 214" role="img" aria-label="Pencil sketch: the two lengths set on the rule, laid end to end along a two-decade logarithmic line">
+        <defs>
+          <pattern id="hA" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(48)"><path d="M0 2.5H5" stroke="#2B5C8A" stroke-width="1.1" opacity=".75"/></pattern>
+          <pattern id="hB" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(-48)"><path d="M0 2.5H5" stroke="#B3261E" stroke-width="1.1" opacity=".75"/></pattern>
+        </defs>
+        <text class="lh" x="40" y="24">On paper: lengths add, numbers multiply</text>
+        <path d="M40 31c60 3 150-2 262 1" class="lp"/>
+        <g id="lgAxis"></g>
+        <path id="lgDrop" class="lp" stroke-dasharray="2 4"/>
+        <rect id="barA" x="40" y="78" width="0" height="20" fill="url(#hA)" stroke="#2B5C8A" stroke-width="1.3"/>
+        <rect id="barB" x="40" y="104" width="0" height="20" fill="url(#hB)" stroke="#B3261E" stroke-width="1.3"/>
+        <text id="lblA" class="lt" x="40" y="70" style="fill:#2B5C8A"></text>
+        <text id="lblB" class="lt" x="40" y="119" style="fill:#B3261E"></text>
+        <path id="lgBrace" class="lp" style="stroke:rgba(28,27,25,.7)"/>
+        <text id="lblT" class="lt" x="40" y="206" style="fill:#1C1B19"></text>
+      </svg>
+      <svg class="pencil" viewBox="0 0 520 40">
+        <rect x="1" y="7" width="27" height="26" rx="5" fill="#B3261E"/><rect x="1" y="7" width="27" height="9" rx="4" fill="#fff" opacity=".22"/>
+        <rect x="26" y="5.5" width="32" height="29" fill="#C9B98F"/><path d="M31 5.5v29M36 5.5v29M48 5.5v29M53 5.5v29" stroke="#8f8260" stroke-width="1.2"/>
+        <rect x="26" y="5.5" width="32" height="8" fill="#fff" opacity=".35"/>
+        <rect x="58" y="6" width="384" height="28" fill="#2B5C8A"/>
+        <rect x="58" y="6" width="384" height="9" fill="#fff" opacity=".2"/><rect x="58" y="25" width="384" height="9" fill="#1C1B19" opacity=".22"/>
+        <text x="96" y="23.4" style="font:700 8px var(--eng);letter-spacing:2.4px;fill:#C9B98F">HALLORAN &amp; VOSS · DRAUGHTSMAN 2H</text>
+        <path d="M442 6c9 3 9 6 0 9.3c9 3 9 6.4 0 9.4c9 3 9 6.3 0 9.3L505 20z" fill="#ead9ad"/>
+        <path d="M442 6c9 3 9 6 0 9.3L505 20z" fill="#fff" opacity=".3"/>
+        <path d="M486 17 514 20 486 23z" fill="#1C1B19"/>
+      </svg>
+      <svg class="crumbs" viewBox="0 0 90 30">
+        <path d="M8 12c3-3 8-2 9 1s-4 5-8 4-3-3-1-5zM30 20c2-2 6-1 6 1s-5 3-7 2 0-2 1-3zM52 8c2-1 4 0 4 2s-3 2-4 1-1-2 0-3zM70 22c1-1 3-1 3 1s-3 2-4 1z" fill="#b9655d" opacity=".8"/>
+        <path d="M20 26c2-1 4 0 3 2s-4 1-3-2zM62 16c1-1 3 0 2 1s-3 0-2-1z" fill="#8f8a80" opacity=".7"/>
+      </svg>
+    </div>
+  </div>
+
+  <aside class="leaflet rise d3" aria-label="Instruction leaflet">
+    <div class="kicker"><span>Instructions for use</span><span>Leaflet 4081/A</span></div>
+    <h2>Why sliding two sticks multiplies</h2>
+    <div class="formula" aria-label="log a plus log b equals log a b">log a <span>+</span> log b <span>=</span> log ab</div>
+    <p>A slide rule has no gears and no memory. It has two strips engraved so that the distance from 1 to any number is the logarithm of that number. That is why the graduations crowd together toward the right: the step from 1 to 2 is exactly as long as the step from 2 to 4, or from 4 to 8.</p>
+    <p>Lay one length after another and you have added them. Because log&nbsp;a + log&nbsp;b = log&nbsp;ab, the length for a followed by the length for b ends precisely at the mark for a&nbsp;×&nbsp;b. The stock carries the first length, the slide the second, and the hairline keeps your eye honest. Division is the same motion run backwards: take a length away.</p>
+    <p>The rule gives digits, never the decimal point; that part is yours. Three figures come easily, a fourth by judging between the ticks at the roomy left-hand end. For some three hundred and fifty years, until pocket calculators arrived in the 1970s, that was enough to size a beam, a boiler or a wing spar.</p>
+    <div class="inset">
+      <h3>How to read a scale</h3>
+      <svg id="howto" viewBox="0 0 300 92" role="img" aria-label="A magnified piece of the D scale with the hairline at 1.37"></svg>
+      <p>The large numeral is the first digit. Between 1 and 2 the small numerals give the second, and every tick is one hundredth: the hairline above stands at <b>1.37</b>. Further along a tick means more: two hundredths from 2 to 4, five hundredths from 4 to 10.</p>
+    </div>
+    <p class="colophon">Keep the rule dry and the cursor clean<br>Halloran &amp; Voss · Instrument Makers</p>
+  </aside>
+</div>
+</main>
+
+<script>
+(function(){
+'use strict';
+var NS='http://www.w3.org/2000/svg';
+var RM=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var $=function(id){return document.getElementById(id)};
+var lg=function(v){return Math.log(v)/Math.LN10};
+function el(name,attrs,text){var e=document.createElementNS(NS,name);for(var k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;return e}
+function clamp(v,a,b){return v<a?a:v>b?b:v}
+
+var svg=$('rule'), frame=$('frame'), stage=$('stage'), slideG=$('slide'), cursorG=$('cursor'), slideSh=$('slideShadow'),
+    notes=$('notes'), tip=$('tip'), say=$('say'), resultP=$('result');
+
+/* ================= scales, computed from logarithms ================= */
+var LEN=[5.4,8.2,10.6,13];
+var R_CD=[[100,200,1,5,10],[200,400,2,10,50],[400,1000,5,10,50]];
+var R_AB=[[100,200,2,10,50],[200,500,5,50,100],[500,1000,10,50,100]];
+var R_K =[[100,300,5,10,50],[300,600,10,50,100],[600,1000,20,100,100]];
+function logTicks(dec,upd,ranges){
+  var t=[],d,r,i;
+  for(d=0;d<dec;d++)for(r=0;r<ranges.length;r++){
+    var R=ranges[r];
+    for(i=R[0];i<R[1];i+=R[2]) t.push({x:(d+lg(i/100))*upd, c:i%100===0?3:(i%R[4]===0?2:(i%R[3]===0?1:0)), i:i, d:d});
+  }
+  t.push({x:dec*upd,c:3,i:100,d:dec});
+  return t;
+}
+function tickPath(ticks,base,dir,flip){
+  var a='',b='';
+  ticks.forEach(function(t){var x=(flip?1000-t.x:t.x).toFixed(2), s='M'+x+' '+base+'v'+(dir*LEN[t.c]).toFixed(1); if(t.c===3)b+=s; else a+=s;});
+  return [a,b];
+}
+function drawScale(g,ticks,base,dir,flip){
+  var p=tickPath(ticks,base,dir,flip);
+  g.appendChild(el('path',{d:p[0],stroke:'#1C1B19','stroke-width':.62,fill:'none'}));
+  g.appendChild(el('path',{d:p[1],stroke:'#1C1B19','stroke-width':.95,fill:'none'}));
+}
+function num(g,x,y,txt,cls){g.appendChild(el('text',{x:x.toFixed(2),y:y,'class':'num '+(cls||'')},txt))}
+var TIPS={
+  K:['K · cubes','Three decades, 1 to 1000. Whatever D shows under the hairline, K shows its cube.'],
+  A:['A · squares','Two decades, 1 to 100. A reads the square of D; go the other way for square roots.'],
+  B:['B · squares, on the slide','The twin of A. Multiply with A and B when you would rather not reset the slide.'],
+  CI:['CI · reciprocals','C inverted, running right to left in red. It reads 1/x of C and turns a division into a multiplication.'],
+  C:['C · the working scale','One decade on the slide. Its two ends, both marked 1, are the indexes you set against D.'],
+  D:['D · the working scale','One decade on the stock. Numbers are set here and answers are read here.'],
+  L:['L · common logarithm','The only evenly divided scale. It reads log₁₀ of D: the mantissa.']
+};
+function letter(g,name,y,fx,red){
+  var s=el('g',{'class':'sl'+(red?' red':''),tabindex:0,role:'img','aria-label':TIPS[name][0]+'. '+TIPS[name][1],'data-s':name});
+  s.appendChild(el('rect',{x:-40,y:y-13,width:26,height:18,fill:'transparent'}));
+  s.appendChild(el('rect',{'class':'lring',x:-39,y:y-12,width:23,height:16,rx:8}));
+  s.appendChild(el('text',{x:-20-(name==='CI'?0:3.5),y:y},name));
+  g.appendChild(s);
+  g.appendChild(el('text',{x:1016,y:y,'class':'fx'+(red?' red':'')},fx));
+}
+(function build(){
+  var st=$('stockScales'), sg=$('slideScales');
+  var cd=logTicks(1,1000,R_CD), ab=logTicks(2,500,R_AB), kk=logTicks(3,1000/3,R_K);
+  var PI=1000*lg(Math.PI);
+  // K — top edge of stock
+  drawScale(st,kk,5.5,1);
+  kk.forEach(function(t){ if(t.c===3){var m=t.i/100; if(m===7||m===9)return; num(st,t.x,27.5,String(Math.round(m*Math.pow(10,t.d))),'k');} });
+  // A — lower edge of top rail
+  drawScale(st,ab,76,-1);
+  ab.forEach(function(t){ if(t.c===3) num(st,t.x,58.5,String(Math.round(t.i/100*Math.pow(10,t.d))),'m'); });
+  // D
+  drawScale(st,cd,176,1);
+  cd.forEach(function(t){ if(t.c===3) num(st,t.x,200,String(t.i/100)); else if(t.i<200&&t.c===2) num(st,t.x,196.5,String(t.i/10%10),'s'); });
+  st.appendChild(el('path',{d:'M'+PI.toFixed(2)+' 176v13',stroke:'#1C1B19','stroke-width':.8}));
+  st.appendChild(el('text',{x:PI.toFixed(2)-(-9),y:199,'class':'gauge'},'π'));
+  // L — linear
+  var lp='',lq='',i;
+  for(i=0;i<=500;i++){var c=i%50===0?3:(i%25===0?2:(i%5===0?1:0)); var s='M'+(i*2)+' 246.5v'+(-LEN[c]); if(c===3)lq+=s;else lp+=s; }
+  st.appendChild(el('path',{d:lp,stroke:'#1C1B19','stroke-width':.62,fill:'none'}));
+  st.appendChild(el('path',{d:lq,stroke:'#1C1B19','stroke-width':.95,fill:'none'}));
+  for(i=0;i<=10;i++) num(st,i*100,229.5,i===0?'0':(i===10?'1':'.'+i),'m');
+  letter(st,'K',22,'x³'); letter(st,'A',66,'x²'); letter(st,'D',193,'x'); letter(st,'L',241,'lg x');
+  // maker's mark
+  st.appendChild(el('text',{x:-106,y:31,'class':'mark'},'HALLORAN & VOSS'));
+  st.appendChild(el('path',{d:'M-150 36.5h34M-62 36.5h-34',stroke:'#1C1B19','stroke-width':.6}));
+  st.appendChild(el('text',{x:-106,y:39,'class':'mark sm'},'·'));
+  st.appendChild(el('text',{x:-106,y:48,'class':'mark sm'},'No. 4081'));
+  st.appendChild(el('text',{x:-106,y:59,'class':'mark sm'},'PRECISION RULE'));
+  st.appendChild(el('text',{x:-106,y:212,'class':'mark sm'},'SYSTEM RIETZ'));
+  st.appendChild(el('text',{x:-106,y:223,'class':'mark sm'},'10 IN · 25 CM'));
+  // slide: B, CI, C
+  drawScale(sg,ab,76,1);
+  ab.forEach(function(t){ if(t.c===3) num(sg,t.x,98.5,String(Math.round(t.i/100*Math.pow(10,t.d))),'m'); });
+  drawScale(sg,cd,138,-1,true);
+  sg.appendChild(el('path',{d:'M0 138H1000',stroke:'#1C1B19','stroke-width':.5}));
+  cd.forEach(function(t){ var x=1000-t.x; if(t.c===3) num(sg,x,121.5,String(t.i/100),'m red'); else if(t.i<200&&t.c===2) num(sg,x,123,String(t.i/10%10),'s red'); });
+  drawScale(sg,cd,176,-1);
+  cd.forEach(function(t){ if(t.c===3) num(sg,t.x,159.5,String(t.i/100)); else if(t.i<200&&t.c===2) num(sg,t.x,161,String(t.i/10%10),'s'); });
+  sg.appendChild(el('path',{d:'M'+PI.toFixed(2)+' 176v-13',stroke:'#1C1B19','stroke-width':.8}));
+  sg.appendChild(el('text',{x:PI.toFixed(2)-(-9),y:160,'class':'gauge'},'π'));
+  letter(sg,'B',93,'x²'); letter(sg,'CI',131,'1/x',true); letter(sg,'C',170,'x');
+  // celluloid grain: long faint streaks
+  var seed=4081; function rnd(){seed=(seed*16807)%2147483647;return seed/2147483647}
+  function grain(g,y0,y1,n){var d='';for(var j=0;j<n;j++){var x=-190+rnd()*1300,w=40+rnd()*260,y=y0+rnd()*(y1-y0);d+='M'+x.toFixed(0)+' '+y.toFixed(1)+'h'+Math.min(w,1190-x).toFixed(0);}
+    g.appendChild(el('path',{d:d,stroke:'#C9B98F','stroke-width':.5,opacity:.42,fill:'none'}));}
+  grain($('grainStock'),4,74,46); grain($('grainStock'),178,248,46); grain($('grainSlide'),78,174,56);
+  // minimap ticks
+  var m1='',m2='';
+  [1,2,3,4,5,6,7,8,9,10].forEach(function(v){var x=(1000*lg(v)).toFixed(0); m1+='M'+x+' 176v34'; m2+='M'+x+' 176v-34';});
+  $('mmTicks').setAttribute('d',m1); $('mmTicksS').setAttribute('d',m2);
+  // "how to read" inset
+  var h=$('howto'), a0=lg(1.265), a1=lg(1.535), X=function(v){return 6+(lg(v)-a0)/(a1-a0)*288};
+  h.appendChild(el('rect',{x:0,y:20,width:300,height:50,fill:'#F4EBD3',stroke:'#1C1B19','stroke-width':.8}));
+  var hp='';
+  for(i=127;i<=153;i++){var L2=i%10===0?24:(i%5===0?17:11); hp+='M'+X(i/100).toFixed(1)+' 20v'+L2;
+    if(i%10===0) h.appendChild(el('text',{x:X(i/100).toFixed(1),y:58,'text-anchor':'middle',style:'font:600 12px var(--eng);fill:#1C1B19'},String(i/10%10))); }
+  h.appendChild(el('path',{d:hp,stroke:'#1C1B19','stroke-width':1,fill:'none'}));
+  h.appendChild(el('text',{x:8,y:66,style:'font:700 15px var(--eng);fill:#1C1B19;opacity:.35'},'1'));
+  h.appendChild(el('path',{d:'M'+X(1.37).toFixed(1)+' 10v68',stroke:'#B3261E','stroke-width':1.4}));
+  h.appendChild(el('text',{x:(X(1.37)+6).toFixed(1),y:13,style:'font:italic 600 12.5px var(--hand);fill:#B3261E'},'hairline: 1.37'));
+  var b0=X(1.3),b1=X(1.37);
+  h.appendChild(el('path',{d:'M'+b0.toFixed(1)+' 76v5H'+b1.toFixed(1)+'v-5',stroke:'#2B5C8A','stroke-width':1,fill:'none','stroke-dasharray':'1.5 2.5','stroke-linecap':'round'}));
+  h.appendChild(el('text',{x:((b0+b1)/2).toFixed(1),y:91,'text-anchor':'middle',style:'font:italic 600 11.5px var(--hand);fill:#2B5C8A'},'7 ticks past 1.3'));
+})();
+
+/* ================= pencil sketch of the two lengths ================= */
+var LX=function(v){return 40+360*lg(v)};
+(function(){
+  var g=$('lgAxis'), d='M40 150H772', v;
+  [1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100].forEach(function(v){
+    var x=LX(v).toFixed(1), big=v===1||v===10||v===100; d+='M'+x+' 150v'+(big?11:7);
+    if(big||v<6||v===20||v===30||v===50) g.appendChild(el('text',{x:x,y:174,'class':'ln'},String(v)));
+  });
+  g.appendChild(el('path',{d:d,'class':'lp',style:'stroke:rgba(28,27,25,.72);stroke-width:1.2'}));
+})();
+var sketchKey='';
+function sketch(a,b,ok){
+  var key=a.toPrecision(3)+'|'+(ok?b.toPrecision(3):'x'); if(key===sketchKey)return; sketchKey=key;
+  var xa=LX(a), xt=LX(a*b);
+  $('barA').setAttribute('width',Math.max(0,xa-40).toFixed(1));
+  $('lblA').textContent='log '+sh(a)+' = '+lg(a).toFixed(3);
+  var B=$('barB'), LB=$('lblB'), LT=$('lblT'), BR=$('lgBrace'), DR=$('lgDrop');
+  if(!ok){ B.setAttribute('width',0); B.setAttribute('x',xa.toFixed(1)); LB.textContent=''; BR.setAttribute('d','');
+    DR.setAttribute('d','M'+xa.toFixed(1)+' 98V150'); LT.setAttribute('x',40); LT.setAttribute('text-anchor','start'); LT.textContent='hairline off the C scale: no second length'; return; }
+  B.setAttribute('x',xa.toFixed(1)); B.setAttribute('width',Math.max(0,xt-xa).toFixed(1));
+  var right=xt<(small?400:560); LB.setAttribute('x',(right?xt+9:xa-9).toFixed(1)); LB.setAttribute('text-anchor',right?'start':'end');
+  if(!right&&xa<230){ LB.setAttribute('x',(xa+6).toFixed(1)); LB.setAttribute('text-anchor','start'); LB.setAttribute('y',142);} else LB.setAttribute('y',119);
+  LB.textContent='+ log '+sh(b)+' = '+lg(b).toFixed(3);
+  DR.setAttribute('d','M'+xa.toFixed(1)+' 98V150M'+xt.toFixed(1)+' 124V150');
+  var m=(40+xt)/2;
+  BR.setAttribute('d','M40 181q0 7 7 7H'+(m-7).toFixed(1)+'q6 0 7 6q1-6 7-6H'+(xt-7).toFixed(1)+'q7 0 7-7');
+  if(xt-40<60) BR.setAttribute('d','M40 184H'+xt.toFixed(1));
+  LT.setAttribute('x',clamp(m,150,650).toFixed(1)); LT.setAttribute('text-anchor','middle');
+  LT.textContent='= log '+sh(a*b)+' = '+lg(a*b).toFixed(3);
+}
+
+/* ================= state and motion ================= */
+var slide={pos:0,vel:0,min:-1000,max:1000,mode:'idle',g:slideG,tau:330};
+var cursor={pos:RM?0:640,vel:0,min:0,max:1000,mode:'idle',g:cursorG,tau:170};
+var wipe={on:false,t:0,dur:1050};
+var running=false,last=0,demoId=0,userTouched=false;
+
+function bezier(x1,y1,x2,y2){
+  function cx(t){return ((1-3*x2+3*x1)*t+(3*x2-6*x1))*t*t+3*x1*t}
+  function cy(t){return ((1-3*y2+3*y1)*t+(3*y2-6*y1))*t*t+3*y1*t}
+  function dx(t){return 3*(1-3*x2+3*x1)*t*t+2*(3*x2-6*x1)*t+3*x1}
+  return function(x){var t=x,i;for(i=0;i<6;i++){var e=cx(t)-x,d=dx(t);if(Math.abs(e)<1e-5||!d)break;t-=e/d}return cy(clamp(t,0,1))};
+}
+var mech=bezier(.3,0,.2,1);
+var SETTLE=300;
+
+function stepMover(m,dt){
+  if(m.mode==='tween'){
+    var w=m.tw; w.t+=dt;
+    if(w.t<w.dur){ m.pos=w.from+(w.to+w.over-w.from)*mech(w.t/w.dur); return true; }
+    var q=(w.t-w.dur)/SETTLE;
+    if(q<1){ m.pos=w.to+w.over*Math.cos(q*Math.PI*1.5)*(1-q)*(1-q); return true; }
+    m.pos=w.to; m.mode='idle'; m.tw=null; w.res(); return false;
+  }
+  if(m.mode==='coast'){
+    var left=dt;
+    while(left>0){
+      var h=Math.min(6,left); left-=h;
+      var over=m.pos<m.min?m.pos-m.min:(m.pos>m.max?m.pos-m.max:0);
+      if(over) m.vel+=(-0.00042*over-0.04*m.vel)*h; else m.vel*=Math.exp(-h/m.tau);
+      m.pos+=m.vel*h;
+    }
+    var o=m.pos<m.min?m.pos-m.min:(m.pos>m.max?m.pos-m.max:0);
+    if(!o&&Math.abs(m.vel)<0.006){m.mode='idle';m.vel=0;return false}
+    if(o&&Math.abs(o)<0.08&&Math.abs(m.vel)<0.004){m.pos=clamp(m.pos,m.min,m.max);m.mode='idle';m.vel=0;return false}
+    return true;
+  }
+  return false;
+}
+function frameLoop(now){
+  var dt=Math.min(80,now-last); last=now;
+  var busy=stepMover(slide,dt); busy=stepMover(cursor,dt)||busy;
+  if(wipe.on){ wipe.t+=dt; var p=Math.min(1,wipe.t/wipe.dur); setWipe(p*p*(3-2*p));
+    if(wipe.t>=wipe.dur){wipe.on=false; setWipe(-1);} else busy=true; }
+  render();
+  if(busy) requestAnimationFrame(frameLoop); else running=false;
+}
+var WO=Array.prototype.slice.call(document.querySelectorAll('.wo')), WI=Array.prototype.slice.call(document.querySelectorAll('.wi'));
+function setWipe(p){ // p in 0..1 reveals the engraving left to right; -1 clears
+  var done=p<0, f=(190+1400*p)/1800, a=done?'':'translateX('+(-(1-f)*100).toFixed(3)+'%)', b=done?'':'translateX('+((1-f)*100).toFixed(3)+'%)';
+  WO.forEach(function(e){e.style.transform=a}); WI.forEach(function(e){e.style.transform=b});
+  svg.classList.toggle('wiping',!done);
+}
+function kick(){ if(!running){running=true; last=performance.now(); requestAnimationFrame(frameLoop);} }
+document.addEventListener('visibilitychange',function(){ last=performance.now(); });
+
+function stopTween(m){ if(m.tw){var r=m.tw.res; m.tw=null; m.mode='idle'; r();} }
+function wait(ms){return new Promise(function(r){setTimeout(r,ms)})}
+function tweenTo(m,to,dur){
+  stopTween(m);
+  var d=to-m.pos;
+  if(Math.abs(d)<0.05){m.pos=to;render();return wait(RM?250:120)}
+  if(RM){ m.pos=to; m.mode='idle'; m.vel=0; render(); m.g.classList.add('flash');
+    return wait(950).then(function(){m.g.classList.remove('flash')}); }
+  return new Promise(function(res){
+    m.mode='tween'; m.vel=0;
+    m.tw={from:m.pos,to:to,t:0,dur:dur||clamp(520+Math.abs(d)*1.05,620,1500),over:clamp(d*0.014,-5,5),res:res};
+    kick();
+  });
+}
+
+/* ================= reading the rule ================= */
+function f3(v){ if(!isFinite(v))return '—'; if(v>=999.5)return String(Math.round(v)); return v.toPrecision(3); }
+function sh(v){ v=Number(Number(v).toPrecision(5)); var s=String(Number(v.toPrecision(3))); if(s.indexOf('e')>-1){var p=Number(v).toExponential(2).split('e'); s=Number(p[0])+' × 10^'+Number(p[1]);} return s; }
+var cache={};
+function setText(id,v){ if(cache[id]!==v){cache[id]=v; $(id).textContent=v;} }
+var mmSlide=$('mmSlide'), mmCursor=$('mmCursor'), mmWin=$('mmWin');
+function render(){
+  var s=slide.pos, c=cursor.pos, cc=clamp(c,0,1000), u=cc-s;
+  slideG.style.transform=slideSh.style.transform='translate3d('+(s*U).toFixed(2)+'px,0,0)';
+  cursorG.style.transform='translate3d('+(c*U).toFixed(2)+'px,0,0)';
+  mmSlide.setAttribute('transform','translate('+s.toFixed(1)+' 0)');
+  mmCursor.setAttribute('transform','translate('+c.toFixed(1)+' 0)');
+  var on=u>=-0.4&&u<=1000.4; u=clamp(u,0,1000);
+  var D=Math.pow(10,cc/1000), C=Math.pow(10,u/1000);
+  setText('vK',f3(Math.pow(10,cc*3/1000))); setText('vA',f3(Math.pow(10,cc/500))); setText('vD',f3(D)); setText('vL',(cc/1000).toFixed(3));
+  setText('vB',on?f3(Math.pow(10,u/500)):'—'); setText('vCI',on?f3(10/C):'—'); setText('vC',on?f3(C):'—');
+  var vals=$('vals').children, k; for(k=2;k<5;k++) vals[k].classList.toggle('off',!on);
+  var html;
+  if(Math.abs(s)<0.6){
+    html='Slide closed: C and D agree. Cursor at <b>'+f3(D)+'</b> on D reads <b>'+f3(D*D)+'</b> on A, straight above.'+
+      '<span class="eq">→ '+sh(D)+'² = <u>'+sh(D*D)+'</u></span><span class="alt">Read it upward for squares, downward for roots: √'+sh(D*D)+' = '+sh(D)+'.</span>';
+  } else {
+    var right=s<0, a=Math.pow(10,(right?s+1000:s)/1000);
+    var lead=(right?'Right-hand C index':'C index')+' over <b>'+f3(a)+'</b> on D. ';
+    if(on){
+      var prod=right?D*10:D;
+      html=lead+'Cursor at <b>'+f3(C)+'</b> on C reads <b>'+f3(D)+'</b> on D'+
+        '<span class="eq">→ '+sh(a)+' × '+sh(C)+' = <u>'+sh(prod)+'</u></span>'+
+        '<span class="alt">Read the other way, it divides: '+sh(prod)+' ÷ '+sh(C)+' = '+sh(a)+'.</span>';
+    } else {
+      html=lead+'The hairline is beyond the end of the C scale.<span class="eq">→ no reading here</span>'+
+        '<span class="alt">Bring the cursor back over the slide, or set the other index.</span>';
+    }
+  }
+  if(cache.say!==html){cache.say=html; say.innerHTML=html;}
+  sketch(Math.abs(s)<0.6?1:Math.pow(10,(s<0?s+1000:s)/1000), C, on);
+  slideG.setAttribute('aria-valuenow',Math.round(s)); slideG.setAttribute('aria-valuetext','C index at '+f3(Math.pow(10,(s<0?s+1000:s)/1000))+' on D');
+  cursorG.setAttribute('aria-valuenow',f3(D)); cursorG.setAttribute('aria-valuetext','Hairline at '+f3(D)+' on D');
+}
+
+/* ================= dragging, momentum, soft stops ================= */
+function userTakes(){ demoId++; userTouched=true; stopTween(slide); stopTween(cursor); clearNotes(); setTabs(null); }
+function draggable(m){
+  var g=m.g, pid=null, grab=null, samples=[];
+  g.addEventListener('pointerdown',function(e){
+    if(e.button)return;
+    userTakes(); pid=e.pointerId; try{g.setPointerCapture(pid)}catch(_){}
+    m.mode='drag'; m.vel=0; grab={x:e.clientX,pos:m.pos,upp:1800/svg.getBoundingClientRect().width};
+    samples=[[e.timeStamp,m.pos]]; g.classList.add('dragging');
+  });
+  g.addEventListener('pointermove',function(e){
+    if(e.pointerId!==pid||m.mode!=='drag')return;
+    var raw=grab.pos+(e.clientX-grab.x)*grab.upp;
+    if(raw<m.min) raw=m.min+(raw-m.min)*0.28; else if(raw>m.max) raw=m.max+(raw-m.max)*0.28;
+    m.pos=raw; samples.push([e.timeStamp,raw]); if(samples.length>8)samples.shift();
+    kick();
+  });
+  function release(e){
+    if(e.pointerId!==pid)return; pid=null; g.classList.remove('dragging');
+    if(m.mode!=='drag')return;
+    var v=0, n=samples.length;
+    if(n>1){ var a=samples[0], b=samples[n-1], dt=b[0]-a[0]; if(dt>4&&e.timeStamp-b[0]<70) v=(b[1]-a[1])/dt; }
+    if(RM){ m.pos=clamp(m.pos,m.min,m.max); m.mode='idle'; render(); return; }
+    m.vel=clamp(v,-6,6); m.mode='coast'; kick();
+  }
+  g.addEventListener('pointerup',release); g.addEventListener('pointercancel',release);
+  g.addEventListener('keydown',function(e){
+    var d=0;
+    if(e.key==='ArrowLeft')d=-1; else if(e.key==='ArrowRight')d=1;
+    else if(e.key==='Home'){e.preventDefault();userTakes();tweenTo(m,0);return}
+    else return;
+    e.preventDefault(); userTakes();
+    m.mode='idle'; m.pos=clamp(m.pos+d*(e.shiftKey?0.2:2),m.min,m.max); render();
+  });
+}
+draggable(slide); draggable(cursor);
+
+/* ================= annotations ================= */
+function clearNotes(){
+  var old=Array.prototype.slice.call(notes.children);
+  old.forEach(function(n){n.classList.add('out'); setTimeout(function(){if(n.parentNode)n.parentNode.removeChild(n)},380)});
+  resultP.innerHTML='';
+}
+function textW(lines){var w=0;lines.forEach(function(l){w=Math.max(w,l.replace(/[{}]/g,'').length)});return w*7.7}
+function addNote(o){ // o: x,y (text start baseline), anchor, lines, from[], ctrl[], to[]
+  var g=el('g',{'class':'note'});
+  var n=18, i, pts=[];
+  var len=Math.hypot(o.to[0]-o.from[0],o.to[1]-o.from[1]); n=Math.max(3,Math.round(len/7.5));
+  for(i=0;i<=n;i++){var t=i/n,mt=1-t; pts.push([mt*mt*o.from[0]+2*mt*t*o.ctrl[0]+t*t*o.to[0], mt*mt*o.from[1]+2*mt*t*o.ctrl[1]+t*t*o.to[1]]);}
+  for(i=0;i<n;i++){ var c=el('circle',{'class':'dot',cx:pts[i][0].toFixed(1),cy:pts[i][1].toFixed(1),r:1.45}); c.style.animationDelay=(380+i*26)+'ms'; g.appendChild(c); }
+  var e=pts[n], p=pts[n-1], ang=Math.atan2(e[1]-p[1],e[0]-p[0]), L=8;
+  var hd=el('path',{'class':'head',d:'M'+(e[0]-L*Math.cos(ang-.5)).toFixed(1)+' '+(e[1]-L*Math.sin(ang-.5)).toFixed(1)+'L'+e[0].toFixed(1)+' '+e[1].toFixed(1)+'L'+(e[0]-L*Math.cos(ang+.5)).toFixed(1)+' '+(e[1]-L*Math.sin(ang+.5)).toFixed(1)});
+  hd.style.animationDelay=(380+n*26)+'ms'; g.appendChild(hd);
+  o.lines.forEach(function(line,k){
+    var t=el('text',{x:o.x,y:o.y+k*18,'text-anchor':o.anchor,'class':'write',transform:'rotate(-1.2 '+o.x+' '+o.y+')'});
+    t.style.animationDelay=(k*260)+'ms';
+    var parts=line.split(/[{}]/); parts.forEach(function(s,j){ if(!s)return; var ts=el('tspan',j%2?{'class':'ans'}:{},s); t.appendChild(ts); });
+    g.appendChild(t);
+  });
+  notes.appendChild(g); return g;
+}
+function loop(cx,cy,rx,ry,color,width,seedv,delay){
+  var N=46, pts=[], i, a0=-2.5+seedv, d;
+  for(i=0;i<=N;i++){ var t=i/N, a=a0+t*Math.PI*2*1.13, f=0.93+0.07*Math.sin(a*2+seedv*3)+t*0.13;
+    pts.push([cx+rx*f*Math.cos(a)+ry*0.12*Math.sin(a), cy+ry*f*Math.sin(a)]); }
+  d='M'+pts[0][0].toFixed(1)+' '+pts[0][1].toFixed(1);
+  for(i=1;i<N;i++){ d+='Q'+pts[i][0].toFixed(1)+' '+pts[i][1].toFixed(1)+' '+((pts[i][0]+pts[i+1][0])/2).toFixed(1)+' '+((pts[i][1]+pts[i+1][1])/2).toFixed(1); }
+  var p=el('path',{'class':'loop',d:d,pathLength:1,stroke:color,'stroke-width':width,opacity:.85});
+  p.style.animationDelay=(delay||0)+'ms';
+  return p;
+}
+function circleAt(x,y,color,rx,ry){
+  var g=el('g',{'class':'note'});
+  g.appendChild(loop(x,y,rx||24,ry||17,color,2.5,0.3,0));
+  g.appendChild(loop(x+.8,y+.6,(rx||24)-1.2,(ry||17)-.6,color,1.1,0.9,90));
+  notes.appendChild(g);
+}
+function side(x,w){ return x>520||x+24+w>1250 ? 'end':'start'; }
+function below(x,lines,level,anchor,ty){
+  var w=textW(lines); anchor=anchor||side(x,w);
+  var y=level?336:298, sgn=anchor==='start'?1:-1;
+  return addNote({x:x+sgn*24,y:y,anchor:anchor,lines:lines,from:[x+sgn*19,y-5],ctrl:[x,y-4],to:[x,ty||205]});
+}
+function above(x,lines,anchor){
+  var w=textW(lines); anchor=anchor||side(x,w);
+  var sgn=anchor==='start'?1:-1, y=lines.length>1?-44:-30;
+  return addNote({x:x+sgn*62,y:y,anchor:anchor,lines:lines,from:[x+sgn*57,-34],ctrl:[x+sgn*14,-36],to:[x+sgn*4,-19]});
+}
+function pairBelow(xi,li,xa,la){ // index note + answer note, never crossing
+  var wi=textW(li), wa=textW(la), iLeft=xi<=xa;
+  var xl=iLeft?xi:xa, xr=iLeft?xa:xi, wl=iLeft?wi:wa, wr=iLeft?wa:wi;
+  var l={anchor:'end',level:0}, r={anchor:'start',level:0};
+  if(xl-24-wl<-255){ l={anchor:'start',level:1}; }
+  else if(xr+24+wr>1255){ r={anchor:'end',level:1}; }
+  return {i:iLeft?l:r, a:iLeft?r:l};
+}
+
+/* ================= panning (small screens) and minimap ================= */
+var small=false, U=1;
+function upp(){return 1800/svg.getBoundingClientRect().width}
+function layout(){
+  var w=window.innerWidth; var was=small; small=w<1240;
+  stage.classList.toggle('small',small);
+  var sw=svg.getBoundingClientRect().width, fw=frame.clientWidth; U=sw/1800;
+  if(!small) frame.scrollLeft=(sw-fw)/2;
+  else if(!was||!layout.done) frame.scrollLeft=Math.max(0,(-212+400)/1800*sw);
+  layout.done=true; updateWin();
+}
+function updateWin(){
+  var sw=svg.getBoundingClientRect().width||1, fw=frame.clientWidth;
+  mmWin.setAttribute('x',(-400+frame.scrollLeft/sw*1800).toFixed(0)); mmWin.setAttribute('width',Math.min(1800,fw/sw*1800).toFixed(0));
+}
+function focusX(x){
+  if(!small)return;
+  var sw=svg.getBoundingClientRect().width, fw=frame.clientWidth;
+  frame.scrollTo({left:clamp((x+400)/1800*sw-fw/2,0,sw-fw),behavior:RM?'auto':'smooth'});
+}
+frame.addEventListener('scroll',updateWin,{passive:true});
+window.addEventListener('resize',function(){layout();render()});
+(function(){
+  var mm=$('minimap'), down=false;
+  function go(e){ var r=mm.getBoundingClientRect(), sw=svg.getBoundingClientRect().width, fw=frame.clientWidth;
+    frame.scrollLeft=clamp((e.clientX-r.left)/r.width*sw-fw/2,0,sw-fw); }
+  mm.addEventListener('pointerdown',function(e){down=true;try{mm.setPointerCapture(e.pointerId)}catch(_){ } go(e)});
+  mm.addEventListener('pointermove',function(e){if(down)go(e)});
+  mm.addEventListener('pointerup',function(){down=false}); mm.addEventListener('pointercancel',function(){down=false});
+})();
+
+/* ================= scale-letter tooltips ================= */
+(function(){
+  var cur=null;
+  function show(g){
+    var t=TIPS[g.getAttribute('data-s')]; cur=g;
+    tip.innerHTML='<b></b><span></span>'; tip.firstChild.textContent=t[0]; tip.lastChild.textContent=t[1];
+    var r=g.getBoundingClientRect(), s=stage.getBoundingClientRect();
+    tip.style.left='0px'; tip.style.top='0px';
+    var tw=tip.offsetWidth, th=tip.offsetHeight;
+    var x=clamp(r.right+10-s.left,8,s.width-tw-8), y=r.top-s.top+r.height/2-th/2;
+    if(r.right+10+tw>window.innerWidth-8){ x=clamp(r.left-s.left-tw/2,8,s.width-tw-8); y=r.top-s.top-th-8; }
+    tip.style.left=x+'px'; tip.style.top=y+'px'; tip.classList.add('on');
+  }
+  function hide(){cur=null;tip.classList.remove('on')}
+  Array.prototype.forEach.call(svg.querySelectorAll('.sl'),function(g){
+    g.addEventListener('pointerenter',function(){show(g)});
+    g.addEventListener('pointerleave',hide);
+    g.addEventListener('focus',function(){show(g)});
+    g.addEventListener('blur',hide);
+    g.addEventListener('pointerdown',function(e){ if(e.pointerType!=='mouse'){ setTimeout(function(){show(g)},0); } });
+  });
+  document.addEventListener('pointerdown',function(e){ if(cur&&!(e.target.closest&&e.target.closest('.sl')))hide(); });
+})();
+
+/* ================= guided demonstrations ================= */
+var tabs=Array.prototype.slice.call(document.querySelectorAll('.tab'));
+function setTabs(t){ tabs.forEach(function(b){b.classList.toggle('on',b===t)}); }
+function mant(v){ var e=Math.floor(lg(v)+1e-12), m=v/Math.pow(10,e); if(m>=9.9995){m=1;e++} if(m<1){m=1} return {m:m,e:e}; }
+function begin(tab){ demoId++; var id=demoId; stopTween(slide); stopTween(cursor); slide.mode=cursor.mode='idle'; clearNotes(); setTabs(tab); return id; }
+var PAUSE=RM?500:850;
+
+async function demoMultiply(a,b,tab){
+  var id=begin(tab), A=mant(a), B=mant(b), prod=A.m*B.m, right=prod>=10-1e-9;
+  var xa=1000*lg(A.m), xb=1000*lg(B.m), sT=right?xa-1000:xa, cT=clamp(sT+xb,0,1000);
+  var scaled=A.e!==0||B.e!==0, digits=right?prod/10:prod;
+  focusX(xa);
+  await tweenTo(cursor,xa); if(id!==demoId)return;
+  await wait(180); if(id!==demoId)return;
+  await tweenTo(slide,sT); if(id!==demoId)return;
+  var l1=right?['1. '+sh(A.m)+' × '+sh(B.m)+' would run off the end,','so set the right-hand index over '+sh(A.m)+' on D']
+              :['1. Set the C index (the 1) over '+sh(A.m)+' on D'];
+  if(scaled&&!right) l1.push('(decimal points come later)');
+  var l3=right?['3. D reads '+sh(digits)+'; the index was 10, so {'+sh(prod)+'}']:['3. Read D under the hairline: {'+sh(digits)+'}'];
+  var P=pairBelow(xa,l1,cT,l3);
+  below(xa,l1,P.i.level,P.i.anchor,180);
+  await wait(PAUSE+500); if(id!==demoId)return;
+  focusX(cT);
+  await tweenTo(cursor,cT); if(id!==demoId)return;
+  above(cT,['2. Move the hairline to '+sh(B.m)+' on C']);
+  await wait(PAUSE+350); if(id!==demoId)return;
+  below(cT,l3,P.a.level,P.a.anchor,212);
+  await wait(RM?200:700); if(id!==demoId)return;
+  circleAt(cT,193,'#B3261E');
+  var exact=a*b, approx=Number(Number((digits*Math.pow(10,A.e+B.e+(right?1:0))).toPrecision(5)).toPrecision(3));
+  var msg=sh(a)+' × '+sh(b)+' = <strong>'+sh(approx)+'</strong>';
+  if(scaled) msg+=' — the rule gives the digits '+sh(digits).replace('.','')+'; a rough '+sh(Number(a.toPrecision(1)))+' × '+sh(Number(b.toPrecision(1)))+' places the point.';
+  else if(right) msg+=' — worked from the right-hand index, so the answer is ten times what D shows.';
+  else msg+=' — two lengths laid end to end.';
+  if(Math.abs(exact-approx)/exact>6e-4) msg=msg.replace(' = ',' ≈ ');
+  resultP.innerHTML=msg;
+}
+async function demoDivide(a,b,tab){
+  var id=begin(tab), A=mant(a), B=mant(b), xa=1000*lg(A.m), xb=1000*lg(B.m), sT=xa-xb, ix=sT>=0?sT:sT+1000;
+  var q=A.m/B.m; if(q<1)q*=10;
+  focusX(xa);
+  await tweenTo(cursor,xa); if(id!==demoId)return;
+  above(xa,['1. Hairline on '+sh(A.m)+' on D'],'end');
+  await wait(PAUSE+400); if(id!==demoId)return;
+  await tweenTo(slide,sT); if(id!==demoId)return;
+  above(xa,['2. Slide '+sh(B.m)+' on C','under the hairline'],'start');
+  await wait(PAUSE+500); if(id!==demoId)return;
+  focusX(ix);
+  below(ix,['3. Read D under the '+(sT>=0?'':'right-hand ')+'C index: {'+sh(q)+'}'],0,null,206);
+  await wait(RM?200:750); if(id!==demoId)return;
+  circleAt(ix,193,'#B3261E');
+  resultP.innerHTML=sh(a)+' ÷ '+sh(b)+' = <strong>'+sh(a/b)+'</strong> — one length taken from another.';
+}
+async function demoSqrt(n,tab){
+  var id=begin(tab), x=500*lg(n);
+  focusX(x);
+  if(Math.abs(slide.pos)>0.05){ await tweenTo(slide,0); if(id!==demoId)return; await wait(200); if(id!==demoId)return; }
+  await tweenTo(cursor,x); if(id!==demoId)return;
+  above(x,['1. Hairline on '+n+' on A, right-hand half','(two digits before the point)'],'end');
+  circleAt(x,54,'#2B5C8A',17,12);
+  await wait(PAUSE+700); if(id!==demoId)return;
+  below(x,['2. Read D straight below: {'+sh(Math.sqrt(n))+'}'],0,'end',212);
+  await wait(RM?200:750); if(id!==demoId)return;
+  circleAt(x,193,'#B3261E');
+  resultP.innerHTML='√'+n+' = <strong>'+sh(Math.sqrt(n))+'</strong> — A is D squared, so reading downward halves the length.';
+}
+tabs.forEach(function(t){
+  if(t.tagName!=='BUTTON')return;
+  t.addEventListener('click',function(){
+    userTouched=true;
+    var d=t.getAttribute('data-demo');
+    if(d==='mul')demoMultiply(2,3,t); else if(d==='div')demoDivide(8.4,2.1,t); else demoSqrt(49,t);
+    if(small) stage.scrollIntoView({behavior:RM?'auto':'smooth',block:'start'});
+  });
+});
+(function(){
+  var form=$('own'), fa=$('fa'), fb=$('fb');
+  function parse(i){ var v=parseFloat(String(i.value).replace(',','.').trim()); var ok=isFinite(v)&&v>=1e-6&&v<=1e9; i.classList.toggle('bad',!ok); return ok?v:null; }
+  [fa,fb].forEach(function(i){ i.addEventListener('input',function(){i.classList.remove('bad')}); });
+  form.addEventListener('submit',function(e){
+    e.preventDefault(); userTouched=true;
+    var a=parse(fa), b=parse(fb);
+    if(a==null||b==null){ begin(null); resultP.textContent='Give the rule two positive numbers, such as 3.6 and 4.5.'; (a==null?fa:fb).focus(); return; }
+    demoMultiply(a,b,form);
+    if(small) stage.scrollIntoView({behavior:RM?'auto':'smooth',block:'start'});
+  });
+})();
+
+/* ================= entrance ================= */
+layout(); render();
+if(!RM){
+  setWipe(0);
+  $('ruleRoot').classList.add('enter');
+  setTimeout(function(){ wipe.on=true; wipe.t=0; kick(); },900);
+  setTimeout(function(){ if(!userTouched) tweenTo(cursor,0,1300); },1150);
+}
+
+})();
+</script>
+</body>
+</html>

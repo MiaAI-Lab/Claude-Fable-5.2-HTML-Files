@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ARES-HORT Console — Greenhouse B</title>
+<style>
+:root{--bg:#0A0600;--amber:#FFB000;--hot:#FF6A00;--dim:#5A3A00;
+  --cw:9px;--rh:18px;--fs:15px;--cols:80;--m:16px;--bz:28px;--px:28px;--py:22px;--chin:50px;--mw:800px}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#040200}
+body{color:var(--amber);font-family:Menlo,Consolas,"DejaVu Sans Mono","Liberation Mono","Courier New",monospace;overflow-x:hidden;-webkit-text-size-adjust:100%}
+.room{position:relative;min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;overflow:hidden;
+  background:radial-gradient(ellipse 58% 62% at 50% 47%,#2a1700 0%,#140b00 34%,#0A0600 62%,#040200 100%)}
+.room.save{--spill:.55}
+.room::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .6 0 0 0 0 .4 0 0 0 0 .1 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* the wall: 412 sols, counted by hand */
+.wall{position:absolute;top:50%;width:200px;transform:translateY(-52%);opacity:0;transition:opacity 2.4s ease 1.2s;pointer-events:none}
+.wall svg{display:block;width:100%;height:auto;overflow:visible}
+.wallL{right:calc(50% + var(--mw)/2 + 54px);transform:translateY(-52%) rotate(-1.2deg)}
+.wallR{left:calc(50% + var(--mw)/2 + 54px);transform:translateY(-52%) rotate(.8deg)}
+.room.wide .wall{opacity:.8}
+
+/* the terminal */
+.monitor{position:relative;flex:none;margin:var(--m);padding:var(--bz) var(--bz) 0;border-radius:calc(var(--bz)*.9 + 12px);
+  background:linear-gradient(176deg,#33241394 0%,transparent 14%),linear-gradient(176deg,#2a1d10 0%,#1b1209 16%,#130c05 58%,#0b0703 100%);
+  box-shadow:inset 0 1px 0 rgba(255,214,150,.16),inset 0 -3px 4px rgba(0,0,0,.85),inset 1px 0 0 rgba(255,200,130,.05),inset -1px 0 0 rgba(0,0,0,.6),
+    0 34px 90px rgba(0,0,0,.9),0 0 160px rgba(255,150,0,.11)}
+.monitor::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:.55;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .7 0 0 0 0 .55 0 0 0 0 .35 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E")}
+.well{position:relative;padding:5px;border-radius:34px/38px;background:#030200;
+  box-shadow:inset 0 4px 10px #000,inset 0 0 0 1px #000,0 1px 0 rgba(255,214,150,.10),0 -1px 0 rgba(0,0,0,.7)}
+.tube{position:relative;overflow:hidden;border-radius:30px/34px;padding:var(--py) var(--px);
+  background:radial-gradient(ellipse 75% 70% at 50% 46%,#1c1000 0%,#110900 55%,#0A0600 100%);
+  touch-action:pan-y;transition:filter 1.4s cubic-bezier(.3,.1,.2,1)}
+.tube.save{filter:brightness(.78) saturate(.94)}
+.raster{position:relative;transform-origin:50% 50%}
+.txt{position:relative;width:calc(var(--cw)*var(--cols));font-size:var(--fs);line-height:var(--rh);white-space:pre;color:var(--amber);
+  font-variant-ligatures:none;font-kerning:none;-webkit-user-select:none;user-select:none;cursor:default;
+  text-shadow:0 0 1px rgba(255,176,0,.85),0 0 6px rgba(255,160,0,.55),0 0 17px rgba(255,106,0,.24)}
+.txt div{height:var(--rh)}
+.txt i{display:inline-block;width:var(--cw);font-style:normal;text-align:center;white-space:pre}
+.c1{color:rgba(255,176,0,.62);text-shadow:0 0 5px rgba(255,150,0,.34)}
+.c2{color:var(--dim);text-shadow:0 0 5px rgba(255,140,0,.16)}
+.c3{color:var(--hot);text-shadow:0 0 2px rgba(255,106,0,.9),0 0 10px rgba(255,106,0,.7),0 0 22px rgba(255,80,0,.35)}
+.c4{background:var(--amber);color:var(--bg);text-shadow:none;box-shadow:0 0 9px rgba(255,176,0,.55)}
+.c5{background:rgba(255,176,0,.62);color:var(--bg);text-shadow:none;box-shadow:0 0 7px rgba(255,176,0,.3)}
+.c6{background:var(--dim);color:var(--amber);text-shadow:none}
+.c7{background:var(--hot);color:var(--bg);text-shadow:none;box-shadow:0 0 12px rgba(255,106,0,.75)}
+
+.gh{position:absolute;left:0;top:0;pointer-events:none;font-size:var(--fs);line-height:var(--rh)}
+.gh span{position:absolute;white-space:pre;color:var(--amber);filter:blur(.7px);text-shadow:0 0 8px rgba(255,150,0,.8);animation:ghost .75s cubic-bezier(.2,.6,.3,1) forwards}
+@keyframes ghost{0%{opacity:.62}40%{opacity:.26}100%{opacity:0}}
+
+.zones{position:absolute;left:0;top:0}
+.zones button{position:absolute;margin:0;padding:0;border:0;border-radius:0;background:transparent;color:transparent;font:inherit;font-size:0;
+  cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:background .18s cubic-bezier(.2,.7,.2,1)}
+.zones button:hover{background:rgba(255,176,0,.06)}
+.zones button:active{background:rgba(255,176,0,.17)}
+.zones button:focus{outline:none}
+.zones button:focus-visible{outline:1px solid var(--hot);outline-offset:1px}
+.zones button[data-z="pop-bg"]{cursor:default;background:transparent}
+#cmd{position:absolute;left:0;margin:0;padding:0;border:0;width:100%;opacity:0;background:transparent;color:transparent;caret-color:transparent;font:16px/1 monospace;outline:none;cursor:text}
+
+/* glass, raster and tube artefacts */
+.fx{position:absolute;inset:0;pointer-events:none}
+.scan{background:repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0,rgba(0,0,0,0) 1.6px,rgba(0,0,0,.34) 1.6px,rgba(0,0,0,.34) 3px)}
+.roll{inset:auto 0 auto 0;top:0;height:24%;background:linear-gradient(to bottom,transparent 0%,rgba(255,176,0,.035) 40%,rgba(255,190,60,.085) 50%,rgba(255,176,0,.02) 62%,transparent 100%);
+  animation:roll 8.5s linear infinite;will-change:transform}
+@keyframes roll{0%{transform:translateY(-110%)}100%{transform:translateY(520%)}}
+.glass{border-radius:inherit;
+  background:radial-gradient(ellipse 120% 90% at 22% 4%,rgba(255,236,200,.075) 0%,rgba(255,236,200,.02) 26%,transparent 46%),
+    radial-gradient(ellipse 78% 76% at 50% 50%,transparent 58%,rgba(0,0,0,.34) 86%,rgba(0,0,0,.74) 100%);
+  box-shadow:inset 0 0 60px 14px rgba(0,0,0,.72),inset 0 0 6px 2px #000}
+.beam{background:linear-gradient(to bottom,#FFB000,#FFE1A0 50%,#FFB000);box-shadow:0 0 40px 10px rgba(255,176,0,.8);opacity:0;transform:scale(0,.004)}
+.beam.on{animation:warm .62s cubic-bezier(.22,.9,.24,1) both}
+@keyframes warm{0%{transform:scale(0,.004);opacity:1}26%{transform:scale(1,.004);opacity:1}34%{transform:scale(1,.004);opacity:1}82%{transform:scale(1,1);opacity:.2}100%{transform:scale(1,1);opacity:0}}
+.raster.live{animation:flick 6.1s steps(1,end) infinite}
+@keyframes flick{0%{opacity:1}7%{opacity:.965}8%{opacity:1}31%{opacity:.985}33%{opacity:1}58%{opacity:.955}59%{opacity:.99}60%{opacity:1}83%{opacity:.975}85%{opacity:1}}
+.tube.storm .raster.live{animation-duration:1.7s}
+
+/* chin: plate, vents, lamp */
+.chin{height:var(--chin);display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 6px}
+.plate{display:flex;align-items:baseline;gap:.9em;padding:7px 13px 6px;border-radius:3px;white-space:nowrap;
+  font:600 9.5px/1 "Gill Sans","Gill Sans MT","Trebuchet MS",Futura,"Century Gothic",sans-serif;letter-spacing:.34em;text-transform:uppercase;
+  color:#4b3923;text-shadow:0 1px 0 rgba(255,220,170,.13),0 -1px 0 rgba(0,0,0,.95);
+  background:linear-gradient(#1c130a,#140d06);box-shadow:inset 0 1px 1px rgba(0,0,0,.9),inset 0 -1px 0 rgba(255,214,150,.05),0 1px 0 rgba(255,214,150,.07)}
+.plate b{font-size:13px;letter-spacing:.2em;font-weight:700}
+.vents{flex:1;max-width:190px;height:13px;border-radius:2px;opacity:.9;
+  background:repeating-linear-gradient(90deg,#040301 0,#040301 3px,rgba(255,214,150,.05) 3px,rgba(255,214,150,.05) 4px,transparent 4px,transparent 9px)}
+.lamp{display:flex;align-items:center;gap:9px;font:600 8px/1 "Gill Sans","Gill Sans MT","Trebuchet MS",sans-serif;letter-spacing:.3em;color:#4b3923;text-shadow:0 1px 0 rgba(255,220,170,.1),0 -1px 0 #000}
+.led{width:8px;height:8px;border-radius:50%;background:radial-gradient(circle at 38% 34%,#FFE2A0 0%,#FFB000 45%,#8a5a00 100%);
+  box-shadow:0 0 0 2px #050301,0 0 9px 3px rgba(255,176,0,.6);transition:background .6s,box-shadow .6s}
+.led.save{background:radial-gradient(circle at 38% 34%,#FFC090 0%,#FF6A00 50%,#7a2c00 100%);box-shadow:0 0 0 2px #050301,0 0 10px 3px rgba(255,106,0,.7);animation:pulse 1.6s cubic-bezier(.45,0,.55,1) infinite}
+@keyframes pulse{50%{opacity:.35}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.nojs{padding:3em 1em;text-align:center;font-size:14px;letter-spacing:.08em;text-shadow:0 0 8px rgba(255,160,0,.6)}
+#probe{position:absolute;visibility:hidden;white-space:pre;font-size:100px;left:-9999px;top:0}
+
+@media (max-width:699px){
+  .well{padding:3px;border-radius:20px/22px}.tube{border-radius:18px/20px}
+  .plate{font-size:6.5px;padding:5px 8px 4px;letter-spacing:.2em;gap:.6em}.plate b{font-size:9px}
+  .vents{max-width:44px;height:9px}.lamp{font-size:6.5px;gap:6px}
+  .glass{box-shadow:inset 0 0 26px 6px rgba(0,0,0,.7),inset 0 0 4px 1px #000}
+  .zones button::after{content:"";position:absolute;inset:-3px 0}
+}
+@media (prefers-reduced-motion:reduce){
+  .roll{display:none}.raster.live{animation:none}.beam.on{animation:none}.gh span{animation:none;opacity:0}
+  .led.save{animation:none}.tube,.wall{transition:none}
+}
+</style>
+</head>
+<body>
+<main class="room" id="room">
+  <div class="wall wallL" id="wallL" aria-hidden="true"></div>
+  <div class="wall wallR" id="wallR" aria-hidden="true"></div>
+  <div class="monitor" id="mon">
+    <div class="well">
+      <div class="tube" id="tube">
+        <div class="raster" id="raster">
+          <div class="txt" id="txt" aria-hidden="true"></div>
+          <div class="gh" id="gh" aria-hidden="true"></div>
+          <input id="cmd" type="text" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="send" aria-label="Command line. Type HELP for commands.">
+          <div class="zones" id="zones"></div>
+        </div>
+        <div class="fx beam" id="beam"></div>
+        <div class="fx roll"></div>
+        <div class="fx scan"></div>
+        <div class="fx glass"></div>
+        <noscript><p class="nojs">HST-9 &#9608; NO INTERPRETER FOUND. THIS TERMINAL NEEDS JAVASCRIPT TO BOOT.</p></noscript>
+      </div>
+    </div>
+    <div class="chin">
+      <div class="plate"><span>Horticultural Systems Terminal</span><b>HST-9</b></div>
+      <div class="vents" aria-hidden="true"></div>
+      <div class="lamp"><span>PWR</span><i class="led" id="led"></i></div>
+    </div>
+  </div>
+  <div class="sr" id="live" aria-live="polite"></div>
+  <span id="probe" aria-hidden="true">MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM</span>
+</main>
+<script>
+(function(){'use strict';
+var $=function(id){return document.getElementById(id)};
+var room=$('room'),mon=$('mon'),tube=$('tube'),raster=$('raster'),txt=$('txt'),ghEl=$('gh'),zonesEl=$('zones'),cmdEl=$('cmd'),beam=$('beam'),led=$('led'),live=$('live');
+var RMQ=window.matchMedia('(prefers-reduced-motion: reduce)'),reduced=RMQ.matches;
+var clamp=function(v,a,b){return v<a?a:v>b?b:v},rnd=Math.random;
+var N=0,M=1,D=2,H=3,INV=4,G=8,LHT=1.2;
+var COLS=0,ROWS=0,narrow=false,cw=9,rh=18;
+var ch=[],st=[],prevHTML=[],pch=[],rowEls=[];
+var booted=false,bt=0,P6=[0,0,0,0,0,0];
+
+/* ───────────── Mars time: Coordinated Mars Time from the real clock ───────────── */
+function msd(){var jdtt=2440587.5+Date.now()/864e5+69.184/86400;return (jdtt-2451549.5)/1.0274912517+44796.0-0.0009626}
+var MSD0=msd(),OFFH=14-Math.floor((MSD0%1)*24);
+function localHours(){return (msd()-Math.floor(MSD0))*24+OFFH}
+function clock(sec){var L=localHours(),h=((L%24)+24)%24,hh=Math.floor(h),mm=Math.floor((h-hh)*60),ss=Math.floor(((h-hh)*60-mm)*60);
+  var p=function(n){return (n<10?'0':'')+n};return p(hh)+':'+p(mm)+(sec?':'+p(ss):'')}
+function sol(){return 412+Math.floor(localHours()/24)}
+
+/* ───────────── station state ───────────── */
+var CROPS={POTATO:{t:34,dry:1,seeds:[3,8],kg:3.1},WHEAT:{t:30,dry:.9,seeds:[1,3,5,7,9],kg:.8},LETTUCE:{t:22,dry:1.2,seeds:[3,9],kg:.9},
+  SOY:{t:32,dry:1.1,seeds:[3,9],kg:.6},RADISH:{t:16,dry:1,seeds:[1,4,7,10],kg:.7},SUNFLOWER:{t:40,dry:.8,seeds:[5],kg:0}};
+function bed(n,crop,name,stage,prog,moist){return {n:n,crop:crop,name:name,stage:stage,prog:prog,moist:moist,irrig:0,droop:0,shown:0,fx:null,dryLogged:false}}
+var LOADS=[];
+(function(){for(var i=1;i<=6;i++)LOADS.push({id:'L'+i,name:'LAMP '+i,kw:.24,lamp:i-1,on:true,manual:false});
+  LOADS.push({id:'HTR',name:'DOME HEATER',kw:1.2,on:true,manual:false},{id:'PMP',name:'IRRIGATION PUMP',kw:.3,on:true,manual:false},
+    {id:'LNK',name:'EARTH LINK RADIO',kw:.2,on:true,manual:false},{id:'LSS',name:'LIFE SUPPORT',kw:.5,on:true,manual:false,lock:true})})();
+var S={t:0,lights:100,vent:0,page:3,sel:-1,larder:41.6,face:1,faceT:21,delay:702,delayT:40,
+  atm:{o2:20.9,co2:1180,kpa:61.8,rh:66,temp:22.4},
+  pwr:{dust:.10,batt:86,solar:3.7,load:3.64,net:0},
+  water:{res:412,cond:1.8,flow:0},
+  storm:{phase:'clear',next:50,pt:0,level:0,idx:2.1,warned:false},
+  save:false,shedT:0,brown:false,restoreT:0,restoring:false,scrub:null,alarm:null,dustWarned:false,rhWarned:false,frostWarned:false,
+  noteT:13,noteI:0,sysT:24,sysI:0,readyHint:false,
+  beds:[bed(1,'POTATO','KENNEBEC',5,.5,66),bed(2,'WHEAT','APOGEE',4,.75,58),bed(3,'LETTUCE','OUTREDGEOUS',6,.7,71),
+        bed(4,'SOY','HOYT',4,.2,41),bed(5,'RADISH','CHERRY BELLE',7,0,63),bed(6,'SUNFLOWER','GERALD',5,.55,60)],
+  log:[]};
+var HIST={o2:[],co2:[],kpa:[],rh:[],sol:[],idx:[]},histT=0;
+(function(){for(var i=0;i<24;i++){HIST.o2.push(20.86+Math.sin(i*.7)*.08);HIST.co2.push(1210-i*1.3+Math.sin(i)*14);HIST.kpa.push(61.8+Math.sin(i*1.3)*.12);
+  HIST.rh.push(60+i*.25+Math.sin(i*.9));HIST.sol.push(3.95-i*.011+Math.sin(i*.8)*.04);HIST.idx.push(2.1+Math.sin(i*.9)*.3)}})();
+var NOTES=['Operator note: talked to the wheat for ten minutes. Wheat unmoved. Logged for science.',
+ 'Operator note: sol 412. Still the best botanist on the planet. Also the worst.',
+ 'Operator note: Earth asks how morale is. Asked the lettuce. It says crisp.',
+ 'Operator note: resupply ETA 96 sols. Radishes ETA 3. Guess which I trust.',
+ 'Operator note: valve 4 sticks. Hit it with the trowel. It no longer sticks. Briefly.',
+ 'Operator note: my mother\u2019s voice memo arrived 11 min 42 s late and exactly on time.',
+ 'Operator note: yes, potatoes. Everyone back home makes the same joke. I laugh every time. Alone.',
+ 'Operator note: dreamt of rain again. Woke up and checked the condensate trap.',
+ 'Operator note: Gerald is 0.4 cm taller. Told nobody. There is nobody.',
+ 'Operator note: the soy smells like a field after mowing. I stood there a while.',
+ 'Operator note: counted stars through the dome. Lost count at dust.',
+ 'Operator note: named the trowel. Not logging the name. Some things are private.'];
+var SYSM=['CONDENSATE TRAP EMPTIED \u2014 1.8 L RETURNED TO RESERVOIR','LAMP SPECTRUM CHECK \u2014 ALL SIX NOMINAL','THERMAL: DOME SKIN -61 C / INSIDE HOLDING',
+ 'UPLINK: 3 PACKETS QUEUED, 0 REPLIES PENDING','CO2 SCRUBBER CYCLE COMPLETE','SEISMOMETER: ONE SMALL EVENT. PROBABLY THE FRIDGE.',
+ 'NUTRIENT DOSER: N-P-K WITHIN 2 % OF RECIPE','AIRLOCK B SEAL TEST PASSED (NOBODY WENT ANYWHERE)'];
+
+function logAdd(s,style){S.log.push({t:clock(false),s:s,style:style||0,n:reduced||!booted?1e9:0});if(S.log.length>70)S.log.shift()}
+function seedLog(){var L=localHours();var tm=function(m){var h=(((L-m/60)%24)+24)%24,hh=Math.floor(h),mm=Math.floor((h-hh)*60);return (hh<10?'0':'')+hh+':'+(mm<10?'0':'')+mm};
+  [[47,'LAMP SPECTRUM CHECK \u2014 ALL SIX NOMINAL',M],[41,'Operator note: Gerald has turned to face the lamp again. Good lad.',N],
+   [25,'BED 3 MOISTURE LOW \u2014 irrigating 40 s',M],[12,'UPLINK: weekly report sent. 11 min 42 s until anyone can be bored by it.',M],
+   [3,'Operator note: back from EVA. Brushed the array by hand. SCRUB exists. I forget this every time.',N]].forEach(function(e){S.log.push({t:tm(e[0]),s:e[1],style:e[2],n:1e9})})}
+
+/* ───────────── sound (off until F9) ───────────── */
+var AC=null,snd=false,master=null,noiseBuf=null;
+function sndToggle(){snd=!snd;
+  if(snd&&!AC){try{var C=window.AudioContext||window.webkitAudioContext;AC=new C();master=AC.createGain();master.gain.value=.5;master.connect(AC.destination);
+      noiseBuf=AC.createBuffer(1,Math.floor(AC.sampleRate*.03),AC.sampleRate);var d=noiseBuf.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=(rnd()*2-1)*(1-i/d.length)}catch(e){snd=false;AC=null}}
+  if(AC&&snd&&AC.state==='suspended')AC.resume();
+  say(snd?'SOUND ON. Key clicks, soft beeps. Try MUSIC \u2014 it is the only song in ROM.':'SOUND OFF. Back to the fans and the pump.');if(snd)tone(880,0,.07);}
+function tone(f,at,dur,vol){if(!snd||!AC)return;var t=AC.currentTime+(at||0),o=AC.createOscillator(),g=AC.createGain();o.type='square';o.frequency.value=f;
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol||.05,t+.006);g.gain.setValueAtTime(vol||.05,t+dur*.7);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(master);o.start(t);o.stop(t+dur+.02)}
+function click(){if(!snd||!AC)return;var s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();s.buffer=noiseBuf;f.type='bandpass';f.frequency.value=2100+rnd()*900;f.Q.value=1.2;
+  g.gain.value=.22;s.connect(f);f.connect(g);g.connect(master);s.start()}
+function alarmBeep(){tone(660,0,.11,.06);tone(495,.15,.11,.06);tone(660,.3,.11,.06);tone(495,.45,.16,.06)}
+function music(){var F={D4:293.66,E4:329.63,'F#4':369.99,G4:392,B4:493.88,D5:587.33},seq=[['D5',3],['B4',3],['G4',3],['D4',3],['E4',1],['F#4',1],['G4',1],['E4',2],['G4',1],['D4',5]],t=.05,u=.165;
+  seq.forEach(function(n){tone(F[n[0]],t,n[1]*u*.92,.055);t+=n[1]*u})}
+
+/* ───────────── console output ───────────── */
+var out=[],hist=[],histI=0;
+function wrap(s,w,ind){var o=[],line='',pad=new Array((ind||0)+1).join(' '),ws=s.split(' ');
+  for(var i=0;i<ws.length;i++){var wd=ws[i];if(line.length&&(line+' '+wd).length>w){o.push(line);line=pad+wd}else line=line.length?line+' '+wd:wd}o.push(line);return o}
+function say(s,style,instant){wrap(s,COLS-2,0).forEach(function(l){out.push({s:l,style:style||0,n:(reduced||instant)?1e9:0})});if(out.length>30)out.splice(0,out.length-30);live.textContent=s}
+
+/* ───────────── commands ───────────── */
+function bedArg(a,verb){if(a===undefined){say(verb+' WHICH BED? Give a number, 1 to 6.');return -1}var n=parseInt(a,10);if(!(n>=1&&n<=6)){say('THERE ARE SIX BEDS. "'+a+'" IS NOT ONE OF THEM.');return -1}return n-1}
+function driest(){var k=0;S.beds.forEach(function(b,i){if(b.moist<S.beds[k].moist)k=i});return k}
+function doWater(i){var b=S.beds[i];
+  if(!LOADS[7].on){say('NO PRESSURE: THE IRRIGATION PUMP IS SHED. PWR (F8) brings it back.',H);tone(180,0,.15);return}
+  if(b.irrig>0){say('BED '+b.n+' IS ALREADY BEING WATERED. Enthusiasm noted.');return}
+  if(b.moist>86){say('BED '+b.n+' IS AT '+Math.round(b.moist)+' %. Any wetter and it becomes hydroponics.');return}
+  b.irrig=5;b.dryLogged=false;logAdd('BED '+b.n+' IRRIGATING 40 s \u2014 manual'+(b.n===4?' (valve 4 persuaded)':''),M);say('WATERING BED '+b.n+' '+b.crop+' \u2014 40 s.');tone(520,0,.06)}
+function doHarvest(i){var b=S.beds[i];
+  if(b.fx){say('BED '+b.n+' IS MID-HARVEST. One thing at a time.');return}
+  if(b.crop==='SUNFLOWER'){say('HARVEST '+b.n+' REFUSED \u2014 OPERATOR LOCKOUT. Reason on file: "He is not a crop. He is a colleague."',H);tone(180,0,.18);return}
+  if(b.stage<7){say('BED '+b.n+' '+b.crop+' NOT READY (STAGE '+b.stage+'/7). Patience is also a crop.');return}
+  var parts=[],rows=plantRows(b,7,0,true);
+  for(var y=0;y<8;y++)for(var x=0;x<12;x++){var c=rows[y].charAt(x);if(c!==' ')parts.push({x:x,y:y,c:c,vy:0,d:(7-y)*.1+rnd()*.5,dx:(rnd()-.5)*1.6})}
+  var kg=CROPS[b.crop].kg;b.fx={t:0,parts:parts,txt:'+'+kg.toFixed(1)+' kg',kg:kg,done:false};
+  say('HARVESTING BED '+b.n+' \u2014 '+b.crop+', "'+b.name+'".');tone(784,0,.07);tone(988,.09,.07);tone(1175,.18,.1)}
+function setLights(v){S.lights=v;logAdd('LAMPS SET TO '+v+' %',M);
+  say(v===0?'LAMPS OFF. It is very dark and very quiet in here.':v<60?'LAMPS AT '+v+' %. Growth slows. The lettuce will complain in its own way.':'LAMPS AT '+v+' %.');tone(440+v*4,0,.06)}
+function doVent(){if(S.vent>0){say('ALREADY VENTING. '+Math.ceil(S.vent)+' s to go.');return}S.vent=8;logAdd('VENT OPEN 8 s \u2014 humid air to hab loop, CO2 make-up in',M);
+  say('VENTING TO HAB LOOP \u2014 8 s. Hold onto your hat. Figuratively. There are no hats.');tone(330,0,.25,.03)}
+function doScrub(){if(S.scrub){say('ALREADY BRUSHING.');return}S.scrub={t:0,d0:S.pwr.dust};
+  say(S.storm.level>.5?'SCRUBBING THE ARRAY IN A DUST STORM. Optimistic. Proceeding anyway.':'SCRUBBING SOLAR ARRAY \u2014 brush arm deployed. Watch the POWER panel.');
+  if(narrow&&!pop)S.page=1;for(var i=0;i<8;i++)tone(300+i*70,i*.38,.05,.03)}
+function ack(){if(!S.alarm)return;S.alarm=null;logAdd('ALARM ACKNOWLEDGED BY OPERATOR',M);say('ACKNOWLEDGED. PWR (F8) decides what stays lit. Choose well.');tone(880,0,.05)}
+function selectBed(i){S.sel=i;var b=S.beds[i],L=LOADS[i];
+  say('BED '+b.n+' '+b.crop+' "'+b.name+'" \u2014 STAGE '+b.stage+'/7, H2O '+Math.round(b.moist)+' %, LAMP '+(L.on?(S.lights+' %'):'SHED')+'.  F2 WATER \u00b7 F6 HARVEST',0,true);click()}
+function exec(raw,quiet){var line=raw.trim().toUpperCase();
+  if(!line){if(S.alarm)ack();return}
+  if(!quiet){hist.push(line);histI=hist.length}
+  out.push({s:'> '+line.slice(0,COLS-4),style:M,n:1e9});
+  var a=line.split(/\s+/),c=a[0],i;
+  if(c==='HELP'||c==='?')openPop('HELP');
+  else if(c==='STATUS'||c==='STAT')openPop('STATUS');
+  else if(c==='LOG')openPop('LOG');
+  else if(c==='PWR'||c==='POWER')openPop('PWR');
+  else if(c==='WATER'){if(a[1]==='ALL'){S.beds.forEach(function(b,k){if(b.irrig<=0&&b.moist<=86&&LOADS[7].on)b.irrig=5});say(LOADS[7].on?'WATERING ALL BEDS. The reservoir sighs.':'NO PRESSURE: THE PUMP IS SHED.')}
+    else if(a[1]===undefined){i=S.sel>=0?S.sel:driest();doWater(i)}else{i=bedArg(a[1],'WATER');if(i>=0)doWater(i)}}
+  else if(c==='LIGHTS'||c==='LIGHT'||c==='LAMPS'){var v=parseInt(a[1],10);if(a[1]===undefined||isNaN(v)||v<0||v>100)say('LIGHTS TAKES A PERCENTAGE, 0 TO 100. Currently '+S.lights+' %.');else setLights(v)}
+  else if(c==='VENT')doVent();
+  else if(c==='SCRUB')doScrub();
+  else if(c==='HARVEST'){if(a[1]===undefined&&S.sel>=0)doHarvest(S.sel);else{i=bedArg(a[1],'HARVEST');if(i>=0)doHarvest(i)}}
+  else if(c==='NAME'){i=bedArg(a[1],'NAME');if(i>=0){var nm=a.slice(2).join(' ').slice(0,12);if(!nm)say('NAME '+(i+1)+' WHAT? A name needs at least one letter.');else{var old=S.beds[i].name;S.beds[i].name=nm;
+      logAdd('BED '+(i+1)+' RENAMED "'+nm+'"',M);say(i===5?'BED 6 IS NOW "'+nm+'". '+old+' has been informed. He took it well.':'BED '+(i+1)+' '+S.beds[i].crop+' IS NOW "'+nm+'".')}}}
+  else if(c==='MUSIC'){if(snd){music();say('NOW PLAYING: "DAISY BELL" (1892), SQUARE WAVE. It is tradition for lonely computers.')}else say('MUSIC NEEDS SOUND. F9 SND first. Until then: fans, pump, me.')}
+  else if(c==='ACK'){if(S.alarm)ack();else say('NOTHING TO ACKNOWLEDGE. Enjoy it.')}
+  else if(c==='SND'||c==='SOUND')sndToggle();
+  else if(c==='GERALD')say('BED 6: '+(31+S.beds[5].stage)+' cm, facing the lamp, morale excellent. Better than yours, per the log.');
+  else if(c==='HELLO'||c==='HI')say('HELLO, IMANI. It has been 23 minutes. I counted.');
+  else if(c==='EARTH')say('EARTH LINK '+(LOADS[8].on?'NOMINAL':'SHED')+'. A reply takes 23 min 24 s, plus however long they take to care.');
+  else if(c==='EXIT'||c==='QUIT'||c==='LOGOUT')say('LOGOUT DENIED. You are the only operator. Someone has to water things.');
+  else say('"'+line.slice(0,24)+'" IS NOT A COMMAND. Try HELP. I am a greenhouse, not a conversationalist.');}
+function fkey(n,viaKey){click();
+  if(n===1)exec('HELP',true);else if(n===2)exec('WATER',true);
+  else if(n===3){var seq=[100,75,50,25,0],k=seq.indexOf(S.lights);exec('LIGHTS '+seq[(k+1)%5],true)}
+  else if(n===4)exec('VENT',true);else if(n===5)exec('SCRUB',true);
+  else if(n===6){var i=S.sel;if(i<0||S.beds[i].stage<7){for(var k2=0;k2<5;k2++)if(S.beds[k2].stage>=7&&!S.beds[k2].fx){i=k2;break}}
+    if(i<0){out.push({s:'> HARVEST',style:M,n:1e9});say('NOTHING IS READY TO HARVEST. Tap a bed to check on it.')}else exec('HARVEST '+(i+1),true)}
+  else if(n===7)exec('LOG',true);else if(n===8)exec('PWR',true);else if(n===9)sndToggle();
+  if(viaKey&&pop&&pop.kind==='PWR')pendingFocus='pw-L1';}
+
+/* ───────────── pop-up windows ───────────── */
+var pop=null,pendingFocus=null;
+function openPop(kind){var w=narrow?38:48,lines=[],T=function(s,style){lines.push({s:s,style:style||0})};
+  if(kind==='HELP'){T('HELP            this card');T('STATUS          station summary');T('WATER <1-6>     irrigate a bed');T('LIGHTS <0-100>  lamp level, percent');
+    T('VENT            purge humid air');T('SCRUB           brush the solar array');T('HARVEST <1-6>   cut, weigh, replant');T('NAME <1-6> <n>  name a bed\u2019s crop');
+    T('PWR             choose what stays on');T('LOG             full event log');T('ACK             acknowledge an alarm');T('MUSIC           needs F9 SND on');T('');
+    T('Tap a bed to select it. F2 and F6',M);T('act on the selected bed.',M)}
+  else if(kind==='STATUS'){var ready=S.beds.filter(function(b){return b.stage>=7&&b.crop!=='SUNFLOWER'}).length,thirsty=S.beds.filter(function(b){return b.moist<24}).length,W=S.storm;
+    T('SOL '+sol()+' OF 540    LMST '+clock(false));T('CREW ABOARD 1     CREW AWAKE 1');T('');
+    T('ATMOS  '+(S.atm.rh>=85?'HUMID \u2014 VENT':'NOMINAL')+'  '+S.atm.temp.toFixed(1)+' C',S.atm.rh>=85?H:0);
+    T('POWER  NET '+(S.pwr.net>=0?'+':'')+S.pwr.net.toFixed(2)+' kW  BATT '+Math.round(S.pwr.batt)+' %',S.pwr.batt<25?H:0);
+    T('ARRAY  '+Math.round(S.pwr.dust*100)+' % DUSTED'+(S.pwr.dust>.3?' \u2014 SCRUB':''));T('WATER  '+S.water.res.toFixed(0)+' L IN RESERVOIR');
+    T('STORM  '+(W.phase==='clear'?'CLEAR, INDEX '+W.idx.toFixed(1):'OVERHEAD, INDEX '+W.idx.toFixed(1)),W.phase==='clear'?0:H);
+    T('BEDS   '+ready+' READY, '+thirsty+' THIRSTY');T('LARDER '+S.larder.toFixed(1)+' kg');T('');
+    T('OPERATOR  DR. I. OKORO-LINDQVIST',M);T('OPERATOR STATUS  "fine."',M)}
+  else if(kind==='LOG'){var max=ROWS-9,all=[];S.log.forEach(function(e){wrap(e.t+' '+e.s,w-4,6).forEach(function(l){all.push({s:l,style:e.style})})});lines=all.slice(-max)}
+  pop={kind:kind,title:kind==='PWR'?'POWER ALLOCATION':kind==='LOG'?'EVENT LOG':kind,w:kind==='PWR'?(narrow?38:46):w,lines:lines,n:reduced?1e9:0,p:reduced?1:0,dyn:kind==='PWR'};
+  tone(620,0,.04)}
+function closePop(){pop=null;pendingFocus=null;click()}
+function pwrLines(iw){var P=S.pwr,L=[],net=P.net,eta=net<-.05?P.batt/(-net*.36):0;
+  L.push({s:'SOLAR '+P.solar.toFixed(2)+'  LOAD '+P.load.toFixed(2)+'  NET '+(net>=0?'+':'')+net.toFixed(2)+' kW',style:net<-1?H:0});
+  L.push({s:'BATTERY '+String(Math.round(P.batt)).padStart(3)+' %  '+(net<-.05?'EMPTY IN '+(eta>=60?Math.floor(eta/60)+' MIN '+String(Math.floor(eta%60)).padStart(2,'0')+' S':Math.floor(eta)+' S'):'CHARGING'),style:P.batt<25?H:0});
+  L.push({s:''});
+  LOADS.forEach(function(l){var nm=l.lamp!==undefined?l.name+' '+(l.lamp===5?S.beds[5].name:S.beds[l.lamp].crop):l.name;if(l.lock)nm+=' (YOU)';
+    var kw=(l.lamp!==undefined?l.kw*S.lights/100:l.kw).toFixed(2)+' kW',s='['+(l.lock?'\u2261':l.on?'\u25a0':' ')+'] '+nm;
+    L.push({s:s.padEnd(iw-2-kw.length).slice(0,iw-2-kw.length)+kw,style:l.lock||!l.on?M:N,load:l})});
+  L.push({s:''});L.push({s:(narrow?'TAP A ROW TO SWITCH IT':'ENTER / TAP SWITCHES A ROW. \u2191\u2193 MOVE.'),style:M});return L}
+function toggleLoad(l){
+  if(l.lock){say('LIFE SUPPORT IS LOCKED ON. This is the one decision already made for you.');tone(180,0,.15);return}
+  if(S.brown&&!l.on&&l.id!=='HTR'){say('BROWNOUT PROTECTION: battery under 12 %. Nothing new comes on until it reads 25 %.',H);tone(180,0,.15);return}
+  l.on=!l.on;l.manual=true;click();tone(l.on?700:350,0,.05);
+  if(l.lamp!==undefined){if(l.lamp===5)logAdd(l.on?'Operator restored LAMP 6. Reason given: "He was two seconds from blooming."':'Operator shed LAMP 6. Operator will feel bad about this.',N);
+    else logAdd('Operator '+(l.on?'restored':'shed')+' LAMP '+(l.lamp+1)+' ('+S.beds[l.lamp].crop+')',M)}
+  else if(l.id==='HTR')logAdd(l.on?'Operator restored DOME HEATER. Sensible.':'Operator shed DOME HEATER. Bold. Outside is -61 C.',l.on?M:H);
+  else if(l.id==='PMP')logAdd('Operator '+(l.on?'restored':'shed')+' IRRIGATION PUMP',M);
+  else logAdd(l.on?'Operator restored EARTH LINK. Nobody noticed it was gone.':'Operator shed EARTH LINK. They will notice in 11 min 42 s.',M)}
+
+/* ───────────── simulation, 10 Hz ───────────── */
+function setAlarm(long,short){S.alarm={long:long,short:short};alarmBeep()}
+function sim(dt){var T=(S.t+=dt),W=S.storm,P=S.pwr,A=S.atm,i,b;
+  if(W.phase==='clear'){W.next-=dt;if(W.next<11&&!W.warned){W.warned=true;logAdd('ORBITAL RELAY: dust front 9 km WSW and closing. Sorry. \u2014 HST-9',M)}if(W.next<=0){W.phase='rise';W.pt=0}}
+  else if(W.phase==='rise'){W.pt+=dt;W.level=Math.min(1,W.pt/18);if(W.pt>=18){W.phase='peak';W.pt=0}}
+  else if(W.phase==='peak'){W.pt+=dt;W.level=1;if(W.pt>=32){W.phase='fall';W.pt=0}}
+  else{W.pt+=dt;W.level=Math.max(0,1-W.pt/24);if(W.pt>=24){W.phase='clear';W.level=0;W.next=150+rnd()*70;W.warned=false}}
+  W.idx=2.1+Math.sin(T*.7)*.14+Math.sin(T*.23)*.2+W.level*6.3;
+  /* power */
+  var hr=((localHours()%24)+24)%24,clear=Math.max(0,Math.sin(Math.PI*(hr-6)/12))*5.2;
+  if(S.scrub){S.scrub.t+=dt;P.dust=Math.max(.03,S.scrub.d0*(1-S.scrub.t/3.2)+.03*(S.scrub.t/3.2));
+    if(S.scrub.t>=3.2){S.scrub=null;P.dust=.03;S.dustWarned=false;logAdd('ARRAY SCRUB COMPLETE \u2014 brush stowed, cells clear',M);say('ARRAY CLEAN. Output recovering. The brush arm has earned its keep.');tone(988,0,.08);tone(1318,.1,.12)}}
+  else P.dust=clamp(P.dust+dt*(.0021+W.level*.0105),0,.7);
+  P.solar=clear*(1-P.dust)*(1-.84*W.level)*(1+Math.sin(T*1.9)*.006);
+  var load=0;LOADS.forEach(function(l){if(l.on)load+=l.lamp!==undefined?l.kw*S.lights/100:l.kw});
+  if(W.level>.2&&LOADS[6].on)load+=.3*W.level;
+  P.load=load;P.net=P.solar-load;P.batt=clamp(P.batt+P.net*(P.net>0?.9:.36)*dt,0,100);
+  if(P.dust>.34&&!S.dustWarned&&W.phase==='clear'&&!S.scrub){S.dustWarned=true;logAdd('ARRAY '+Math.round(P.dust*100)+' % DUSTED \u2014 output falling. SCRUB advised.',M);if(!pop)say('SOLAR ARRAY IS '+Math.round(P.dust*100)+' % DUST. SCRUB (F5) will fix that.',0)}
+  /* power-save autopilot */
+  if(W.level>.35&&!S.save&&W.phase!=='fall'){S.save=true;S.shedT=0;S.restoring=false;LOADS.forEach(function(l){l.manual=false});
+    setAlarm('DUST STORM OVERHEAD \u2014 POWER-SAVE ENGAGED \u2014 ENTER OR TAP HERE TO ACKNOWLEDGE','DUST STORM \u00b7 POWER-SAVE \u00b7 TAP TO ACK');
+    logAdd('DUST STORM OVERHEAD \u2014 POWER-SAVE ENGAGED. Shedding lamps by priority. PWR (F8) to overrule me.',H)}
+  if(S.save){S.shedT-=dt;
+    if(S.shedT<=0&&P.net<-.5){for(i=5;i>=0;i--){var l=LOADS[i];if(l.on&&!l.manual){l.on=false;S.shedT=3.4;
+        logAdd(i===5?'POWER-SAVE: LAMP 6 SHED \u2014 priority 6 of 6 (ornamental)':'POWER-SAVE: LAMP '+(i+1)+' SHED \u2014 '+S.beds[i].crop+', priority '+(i+1)+' of 6',H);tone(300,0,.08);break}}}
+    if(W.phase==='fall'&&W.level<.25){S.save=false;S.restoring=true;S.restoreT=1;logAdd('STORM PASSED \u2014 restoring loads. The array is filthy: SCRUB advised.',M);
+      if(!pop)say('STORM HAS PASSED. Restoring loads. Array is '+Math.round(P.dust*100)+' % dust \u2014 SCRUB (F5).');if(S.alarm)S.alarm=null}}
+  if(P.batt<12&&!S.brown){S.brown=true;for(i=0;i<9;i++)if(i!==6)LOADS[i].on=false;
+    setAlarm('BATTERY 12 % \u2014 BROWNOUT LOCK \u2014 LAMPS, PUMP, LINK OFF \u2014 ENTER OR TAP TO ACK','BATTERY 12 % \u00b7 BROWNOUT \u00b7 TAP');
+    logAdd('BATTERY 12 % \u2014 BROWNOUT PROTECTION. Everything but heat and air is off.',H);
+    if(W.phase==='clear'&&!S.scrub){S.scrub={t:0,d0:P.dust};logAdd('Running SCRUB myself. You are welcome. \u2014 HST-9',M)}}
+  if(S.brown&&P.batt>25){S.brown=false;S.restoring=true;S.restoreT=.5;logAdd('BATTERY 25 % \u2014 brownout lock released',M)}
+  if(S.brown&&P.batt<20&&W.phase==='clear'&&!S.scrub&&P.dust>.25){S.scrub={t:0,d0:P.dust}}
+  if(S.restoring&&!S.save&&!S.brown){S.restoreT-=dt;if(S.restoreT<=0){var any=false;for(i=0;i<9;i++)if(!LOADS[i].on){LOADS[i].on=true;any=true;S.restoreT=1.1;tone(600+i*40,0,.04,.03);break}if(!any){S.restoring=false;LOADS.forEach(function(l){l.manual=false})}}}
+  /* atmosphere */
+  var lit=0;for(i=0;i<6;i++)if(LOADS[i].on)lit+=S.lights/600;
+  if(S.vent>0){S.vent-=dt;A.rh=Math.max(52,A.rh-3.6*dt);A.o2+=(20.9-A.o2)*dt*.5;A.co2+=(1210-A.co2)*dt*.45;A.kpa+=(61.3-A.kpa)*dt*.8;
+    if(S.vent<=0){S.vent=0;S.rhWarned=false;logAdd('VENT SHUT \u2014 humidity '+Math.round(A.rh)+' %',M)}}
+  else{A.rh=Math.min(96,A.rh+dt*(.05+.16*lit));A.o2=Math.min(21.6,A.o2+dt*.0035*lit);A.co2=Math.max(590,A.co2-dt*2.1*lit);A.kpa+=(61.8+Math.sin(T*.31)*.12-A.kpa)*dt*.6}
+  if(A.rh>=85&&!S.rhWarned){S.rhWarned=true;logAdd('HUMIDITY 85 % \u2014 VENT advised before the lettuce grows gills',M)}
+  A.temp+=((LOADS[6].on?22.4:1.5)-A.temp)*dt*.014+Math.sin(T*.9)*.004;
+  if(A.temp<10&&!S.frostWarned){S.frostWarned=true;setAlarm('DOME AT '+A.temp.toFixed(1)+' C \u2014 FROST RISK \u2014 RESTORE THE HEATER (F8) \u2014 ENTER OR TAP TO ACK','FROST RISK \u00b7 HEATER OFF \u00b7 TAP');logAdd('DOME BELOW 10 C \u2014 FROST RISK. The plants have opinions about this.',H)}
+  if(A.temp>14)S.frostWarned=false;
+  /* water + beds */
+  var flow=0;
+  for(i=0;i<6;i++){b=S.beds[i];var L=LOADS[i],isLit=L.on&&S.lights>0;
+    if(b.fx)continue;
+    if(b.irrig>0){b.irrig-=dt;if(LOADS[7].on){b.moist=Math.min(94,b.moist+dt*11);S.water.res-=dt*.55;flow++}}
+    else b.moist=Math.max(0,b.moist-dt*(.22+(isLit?.24*S.lights/100:0))*CROPS[b.crop].dry);
+    if(b.moist<30&&b.irrig<=0&&!b.dryLogged){b.dryLogged=true;
+      if(b.n===4)logAdd('BED 4 MOISTURE LOW \u2014 valve 4 not responding. Again. Manual WATER 4 required.',H);
+      else if(LOADS[7].on){b.irrig=5;b.dryLogged=false;logAdd('BED '+b.n+' MOISTURE LOW \u2014 irrigating 40 s',M)}
+      else logAdd('BED '+b.n+' MOISTURE LOW \u2014 pump is shed, cannot irrigate',H)}
+    if(b.moist>45)b.dryLogged=false;
+    b.droop=b.moist<12?2:b.moist<24?1:0;if(A.temp<10)b.droop=Math.max(b.droop,A.temp<5?2:1);
+    if(b.stage<7&&isLit&&b.droop===0&&b.shown>=b.stage){b.prog+=dt/CROPS[b.crop].t*(S.lights/100);
+      if(b.prog>=1){b.prog=0;b.stage++;
+        if(b.stage===7){if(b.crop==='SUNFLOWER')logAdd('Operator note: Gerald is in bloom. Nobody else saw it. I did.',N);else logAdd('BED '+b.n+' '+b.crop+' READY FOR HARVEST',M);tone(1046,0,.06,.035)}
+        else if(b.stage===5&&b.crop==='WHEAT')logAdd('BED 2 WHEAT HEADING \u2014 first ears visible',M)}}}
+  S.water.flow=flow;S.water.res=Math.min(430,S.water.res+dt*(.05+.06*(A.rh/100)));
+  S.water.cond=1.2+A.rh/100+Math.sin(T*.4)*.05;
+  for(i=0;i<6;i++){b=S.beds[i];if(b.shown<b.stage&&!b.fx){b.growT=(b.growT||0)-dt;if(b.growT<=0){b.shown++;b.growT=.17+i*.012}}else if(b.shown>b.stage)b.shown=b.stage}
+  /* small talk */
+  S.faceT-=dt;if(S.faceT<=0){S.face=-S.face;S.faceT=17+rnd()*9}
+  S.delayT-=dt;if(S.delayT<=0){S.delay++;S.delayT=44}
+  S.noteT-=dt;if(S.noteT<=0){logAdd(NOTES[S.noteI%NOTES.length],N);S.noteI++;S.noteT=27+rnd()*13}
+  S.sysT-=dt;if(S.sysT<=0){logAdd(SYSM[S.sysI%SYSM.length],M);S.sysI++;S.sysT=33+rnd()*17}
+  if(!S.readyHint&&T>9&&!pop){S.readyHint=true;if(S.beds[4].stage>=7&&!S.beds[4].fx&&out.length<3)say('BED 5 RADISH IS READY. Type HARVEST 5, or tap the bed and press F6.')}
+  histT+=dt;if(histT>=1.5){histT=0;var ps=function(k,v){HIST[k].push(v);if(HIST[k].length>40)HIST[k].shift()};ps('o2',A.o2);ps('co2',A.co2);ps('kpa',A.kpa);ps('rh',A.rh);ps('sol',P.solar);ps('idx',W.idx)}
+  tube.classList.toggle('save',S.save||S.brown);tube.classList.toggle('storm',W.level>.4);led.classList.toggle('save',S.save||S.brown);}
+
+/* ───────────── character-cell buffer ───────────── */
+function cls(){for(var y=0;y<ROWS;y++){var a=ch[y],s=st[y];for(var x=0;x<COLS;x++){a[x]=' ';s[x]=0}}}
+function put(x,y,s,style){if(y<0||y>=ROWS)return;style=style||0;var a=ch[y],t=st[y];for(var i=0;i<s.length;i++){var xx=x+i;if(xx>=0&&xx<COLS){a[xx]=s.charAt(i);t[xx]=style}}}
+function putR(xr,y,s,style){put(xr-s.length,y,s,style)}
+function per(i,w,h){if(i<w)return [i,0,i===0?'\u250c':i===w-1?'\u2510':'\u2500'];i-=w;if(i<h-1)return [w-1,i+1,i===h-2?'\u2518':'\u2502'];i-=h-1;
+  if(i<w-1)return [w-2-i,h-1,i===w-2?'\u2514':'\u2500'];i-=w-1;return [0,h-2-i,'\u2502']}
+function box(x,y,w,h,title,p,fs){var n=2*(w+h)-4,k=p>=1?n:Math.floor(n*Math.min(1,p/.82)),c;if(p<=0)return false;
+  for(var i=0;i<k;i++){c=per(i,w,h);put(x+c[0],y+c[1],c[2],fs===undefined?D:fs)}
+  if(k<n){c=per(k,w,h);put(x+c[0],y+c[1],'\u2588',H)}
+  if(title&&k>=title.length+6)put(x+1,y,'[ '+title+' ]',N);return p>=1}
+var EI=' \u258f\u258e\u258d\u258c\u258b\u258a\u2589',SP='\u2581\u2582\u2583\u2584\u2585\u2586\u2587\u2588';
+function bar(x,y,w,f,style){f=clamp(f,0,1);var full=Math.round(f*w*2)>>1,half=Math.round(f*w*2)&1;put(x,y,new Array(full+1).join('\u2584'),style);
+  var k=full;if(half&&full<w){put(x+full,y,'\u2596',style);k++}if(k<w)put(x+k,y,new Array(w-k+1).join('\u2581'),D)}
+function spark(a,n,lo,hi,abs){var s='',st0=Math.max(0,a.length-n),i,mn=1e9,mx=-1e9;for(i=st0;i<a.length;i++){if(a[i]<mn)mn=a[i];if(a[i]>mx)mx=a[i]}
+  if(!abs){var span=Math.max(mx-mn,(hi-lo)*.22);lo=Math.max(lo-span,(mn+mx)/2-span/2-span*.12);hi=lo+span*1.12}
+  for(i=st0;i<a.length;i++)s+=SP.charAt(clamp(Math.floor((a[i]-lo)/(hi-lo)*8),0,7));return s.padStart(n)}
+var zl=[],zel={},zfn={},zinfo={},zsig='',focusId=null;
+function zone(id,x,y,w,h,label,fn,opt){if(!booted)return;var z={id:id,x:x,y:y,w:w,h:h,label:label,fn:fn};if(opt){z.inv=opt.inv;z.hot=opt.hot;z.th=opt.th;z.ty=opt.ty}zl.push(z)}
+function syncZones(){var sig=cw+','+rh+';',i,z;zfn={};zinfo={};for(i=0;i<zl.length;i++){z=zl[i];sig+=z.id+','+z.x+','+z.y+','+z.w+','+z.h+';';zfn[z.id]=z.fn;zinfo[z.id]=z}
+  if(sig!==zsig){zsig=sig;var seen={};for(i=0;i<zl.length;i++){z=zl[i];var el=zel[z.id];if(!el){el=document.createElement('button');el.type='button';el.setAttribute('data-z',z.id);zel[z.id]=el}
+      var ty=z.ty!==undefined?z.ty:z.y,th=z.th!==undefined?z.th:z.h;
+      el.style.left=z.x*cw+'px';el.style.top=ty*rh+'px';el.style.width=z.w*cw+'px';el.style.height=th*rh+'px';el.setAttribute('aria-label',z.label);
+      if(zonesEl.children[i]!==el)zonesEl.insertBefore(el,zonesEl.children[i]||null);seen[z.id]=1}
+    for(var id in zel)if(!seen[id]){zel[id].remove();delete zel[id];if(focusId===id)focusId=null}}
+  if(pendingFocus&&zel[pendingFocus]){zel[pendingFocus].focus();pendingFocus=null}}
+function rowHTML(y){var rc=ch[y],rs=st[y],h='',cur=0,open=false;
+  for(var x=0;x<COLS;x++){var s=rs[x]&7;if(s!==cur){if(open)h+='</span>';open=s!==0;if(open)h+='<span class="c'+s+'">';cur=s}
+    var c=rc[x],code=c.charCodeAt(0);h+=code<127?(code===38?'&amp;':code===60?'&lt;':code===62?'&gt;':c):'<i>'+c+'</i>'}
+  if(open)h+='</span>';return h}
+var ghosts=0;
+function render(){for(var y=0;y<ROWS;y++){var h=rowHTML(y);if(h!==prevHTML[y]){
+    if(booted&&!reduced&&pch[y]){var rc=ch[y],rs=st[y],old=pch[y],x=0;while(x<COLS){if((rs[x]&G)&&!(rs[x]&INV)&&old.charAt(x)!==rc[x]&&old.charAt(x)!==' '){var x0=x,s='';
+          while(x<COLS&&(rs[x]&G)&&old.charAt(x)!==rc[x]){s+=old.charAt(x);x++}
+          if(ghosts<36){var g=document.createElement('span');g.textContent=s;g.style.left=x0*cw+'px';g.style.top=y*rh+'px';if(s.length>1)g.style.letterSpacing='0';ghEl.appendChild(g);ghosts++}}else x++}}
+    rowEls[y].innerHTML=h;prevHTML[y]=h;pch[y]=ch[y].join('')}}}
+ghEl.addEventListener('animationend',function(e){if(e.target.parentNode===ghEl){ghEl.removeChild(e.target);ghosts--}});
+
+/* ───────────── the crops, drawn in characters ───────────── */
+var ART={
+POTATO:[['  oO    Oo','  \\|    |/'],
+ ['  oOo  oOo',' o\\|/oo\\|/o','  ~|~  ~|~'],
+ ['  oOo  oOo',' Oo%Oo oO%oO',' o\\|/Oo\\|/o',' ~~|~~~~|~~'],
+ ['   *    *',' oOoOo oOoOo',' O%oO%oO%oO%',' oO\\|/oO\\|/o',' ~~~|~~~~|~~'],
+ ['  * *  * *',' oO*OooO*OoO','O%oO%OO%oO%O','oO%\\|/Oo\\|/%','~~oO|~~oO|~~','~~~~|~~~~|~~']],
+LETTUCE:[['  (o)   (o)'],
+ ['  ,~.   ,~.',' ((@)) ((@))'],
+ [' .~~~. .~~~.','((~@~)((~@~)',' `~~~\' `~~~\''],
+ [' .~~~. .~~~.','(( ~ )(( ~ )','((~@~)((~@~)',' `~-~\' `~-~\''],
+ [' .~-~. .~-~.','((~~~)((~~~)','{(~@~){(~@~)','((~~~)((~~~)',' `~-~\' `~-~\'']],
+SOY:[['  \u2663 \u2663   \u2663 \u2663','   Y     Y'],
+ ['  \u2663 \u2663   \u2663 \u2663',' \u2663\\|/\u2663 \u2663\\|/\u2663','   |     |'],
+ ['  \u2663 \u2663   \u2663 \u2663',' \u2663\\|/\u2663 \u2663\\|/\u2663','  \u2663|\u2663   \u2663|\u2663',' \u2663\\|/\u2663 \u2663\\|/\u2663','   |     |'],
+ ['  \u2663 \u2663   \u2663 \u2663',' \u2663\\|/\u2663 \u2663\\|/\u2663','  (|\u2663   \u2663|)',' \u2663\\|/\u2663 \u2663\\|/\u2663','  \u2663|)   (|\u2663','   |     |'],
+ ['  \u2663 \u2663   \u2663 \u2663',' \u2663\\|/\u2663 \u2663\\|/\u2663','  \u00a7|\u2663   \u2663|\u00a7',' \u2663\\|/\u00a7 \u00a7\\|/\u2663','  \u00a7|\u2663   \u2663|\u00a7',' \u2663\\|/\u2663 \u2663\\|/\u2663','   |     |']],
+RADISH:[[' v  v  v  v'],['\\|/\\|/\\|/\\|/'],[' w  w  w  w','\\|/\\|/\\|/\\|/'],['\\W/\\W/\\W/\\W/',' Y  Y  Y  Y'],[' w  w  w  w','\\W/\\W/\\W/\\W/',' Y  Y  Y  Y']],
+SUNFLOWER:[['    \\|/','     |'],
+ ['    \\|/','    _|','     |_','     |'],
+ ['    \\|/','     |_/','   \\_|','     |_/','     |'],
+ ['     _','    (o)','     |_/','   \\_|','     |_/','   \\_|','     |'],
+ ['   \\ | /','  --(@)--','   / | \\','     |_/','   \\_|','     |_/','   \\_|','     |']]};
+var BL12='            ';
+function wheat(stage){var hts=[0,0,0,2,3,5,6,7][stage],g=[],y,k;for(y=0;y<8;y++)g.push(BL12.split(''));
+  for(k=0;k<11;k++){var main=k%2===1,h=main?hts-((k*7)%3===0?1:0):Math.max(0,hts-2-(k%4===0?1:0));
+    for(var j=0;j<h;j++){var c='\u2502';if(main&&j>0&&j<h-1&&(j+k)%3===0)c=(k%4===1)?'\u251c':'\u2524';
+      if(j===h-1)c=main?(stage===7?'\u03a8':stage===6?'\u03c8':stage===5?(k%4===1?'\u03c8':'\u0131'):'\u0131'):(stage===7?'\u03c8':'\u2575');
+      g[7-j][k]=c}}
+  return g.map(function(r){return r.join('')})}
+var DROOP={'/':'\\','\\':'/','O':'o','*':'.','\u03c8':'?','\u03a8':'?','\u2663':',','@':'o','W':'w','\u00a7':';','-':' ','Y':'v'};
+function shiftRow(r,o){return o>0?(BL12.slice(0,o)+r).slice(0,12):o<0?(r.slice(-o)+BL12).slice(0,12):r}
+function plantRows(b,stage,t,still){var rows,i;
+  if(stage<=2){var r=BL12.split(''),c='.,\u0131'.charAt(stage);CROPS[b.crop].seeds.forEach(function(x){r[x]=c});rows=[r.join('')]}
+  else if(b.crop==='WHEAT')rows=wheat(stage);
+  else rows=ART[b.crop][stage-3].map(function(s){return s.padEnd(12)});
+  rows=rows.slice();while(rows.length<8)rows.unshift(BL12);
+  var top=0;while(top<8&&rows[top]===BL12)top++;
+  if(b.droop&&!still){rows=rows.map(function(s){var o='';for(var k=0;k<s.length;k++){var c2=s.charAt(k);o+=DROOP[c2]!==undefined?DROOP[c2]:c2}return o});
+    if(b.droop>1&&top<6){rows.splice(top,1);rows.unshift(BL12);top++}}
+  if(still||stage<=2)return rows;
+  var span=8-top,sun=b.crop==='SUNFLOWER',heads=sun?(stage===7?3:stage===6?2:1):0;
+  for(i=top;i<8;i++){var rel=(i-top)/span,amp=rel<.34?1:(S.vent>0&&rel<.67?1:0),o=0;
+    if(!reduced&&amp){var sv=Math.sin(t*(S.vent>0?3.1:1.15)+b.n*1.7-rel*2.2);o=sv>.5?1:sv<-.5?-1:0;if(S.vent>0&&rel<.2&&Math.abs(sv)>.9)o*=2}
+    if(sun){o=(i-top<heads)?clamp((stage>=6&&!b.droop?S.face:0)+(o?o:0),-1,1):0}
+    if(o)rows[i]=shiftRow(rows[i],o)}
+  return rows}
+function fxStep(dt){for(var i=0;i<6;i++){var b=S.beds[i],f=b.fx;if(!f)continue;f.t+=dt;
+    for(var k=0;k<f.parts.length;k++){var p=f.parts[k];if(f.t>p.d&&p.y<7){p.vy+=15*dt;p.y+=p.vy*dt;p.x+=p.dx*dt;if(p.y>=7){p.y=7;p.land=f.t}}}
+    if(f.t>(reduced?1.6:3.5)){b.fx=null;b.stage=0;b.shown=0;b.prog=0;b.droop=0;S.larder+=f.kg;logAdd('BED '+b.n+' '+b.crop+' HARVESTED +'+f.kg.toFixed(1)+' kg \u2014 reseeded',M);say('BED '+b.n+': +'+f.kg.toFixed(1)+' kg TO THE LARDER ('+S.larder.toFixed(1)+' kg). Reseeded. Here we go again.')}}}
+function drawBed(b,x,y,now){var i=b.n-1,sel=S.sel===i,L=LOADS[i],lit=L.on&&S.lights>0,t=now/1000,r,k;
+  put(x,y,' '+b.n+' ',sel?INV:M);put(x+3,y,b.crop,N);
+  if(lit)put(x+1,y+1,new Array(11).join(S.lights>66?'\u2580':S.lights>33?'\u2594':'\u2500'),S.lights>33?N:M);
+  else{put(x+1,y+1,new Array(11).join('\u2500'),D);put(x+(L.on?4:3),y+1,L.on?' OFF ':' SHED ',L.on?M:H)}
+  if(b.fx){var f=b.fx;if(reduced){/* no cascade */}else for(k=0;k<f.parts.length;k++){var p=f.parts[k];if(!p.land||f.t-p.land<.5){var px=Math.round(p.x),py=Math.round(p.y);if(px>=0&&px<12)put(x+px,y+2+py,p.land?'.':p.vy>7?'\u00b7':p.c,p.land?D:p.vy>3?M:N)}}
+    if(f.t>(reduced?0:1.5)){var s=f.txt.slice(0,Math.floor((f.t-1.5)*26)+(reduced?99:0)),bx=x+((12-f.txt.length)>>1);put(bx-1,y+5,' '+s+' ',INV)}}
+  else{var rows=plantRows(b,Math.min(b.shown,b.stage),t,false),ps=(b.droop||!lit)?M:N;for(r=0;r<8;r++){var s2=rows[r];for(k=0;k<12;k++){var c=s2.charAt(k);if(c!==' ')put(x+k,y+2+r,c,ps)}}}
+  put(x,y+10,new Array(13).join(b.moist>55?'\u2593':b.moist>28?'\u2592':'\u2591'),b.moist>28?M:D);
+  var sh=Math.min(b.shown,b.stage);
+  if(!b.fx){if(b.crop==='RADISH'&&sh>=3)CROPS.RADISH.seeds.forEach(function(sx){put(x+sx,y+10,'.ooO\u25cf'.charAt(sh-3),N)});
+    if(b.crop==='POTATO'&&sh>=5)[[3],[3,8],[2,5,8,10]][sh-5].forEach(function(sx,q){put(x+sx,y+10,sh===7&&q%2===0?'O':'o',N)})}
+  var dry=b.moist<24;put(x,y+11,'H2O',M);put(x+(b.irrig>0?3:4),y+11,(b.irrig>0?'\u25b2':'')+String(Math.min(99,Math.round(b.moist))).padStart(2)+'%',(dry?H:N)|G);put(x+8,y+11,'S'+Math.min(b.stage,7)+'/7',M);
+  var blink=reduced||(now%1300<800);
+  if(b.fx)put(x,y+12,'HARVESTED',M);
+  else if(b.irrig>0)put(x,y+12,'IRRIGATING'+'..'.slice(0,Math.floor(t*3)%3),N);
+  else if(dry)put(x,y+12,blink?'THIRSTY':b.name,blink?H:M);
+  else if(S.atm.temp<10)put(x,y+12,'COLD',H);
+  else if(b.stage>=7&&b.crop!=='SUNFLOWER'&&blink)put(x,y+12,' READY ',INV);
+  else put(x,y+12,b.name,M);
+  zone('bed'+b.n,x,y,12,13,'Bed '+b.n+', '+b.crop+', named '+b.name+'. Activate to select.',function(){selectBed(i)})}
+
+/* ───────────── panels ───────────── */
+function drawStatus(now){var W=S.storm,hotIdx=W.idx>4.5,ck=clock(true);
+  if(narrow){put(0,0,' ARES-HORT v4.2 ',INV);put(17,0,'GREENHOUSE B',N);putR(40,0,'SOL '+sol(),N);
+    put(0,1,'LMST',M);put(5,1,ck,N|G);put(15,1,'DUST',M);put(20,1,W.idx.toFixed(1),(hotIdx?H:N)|G);put(24,1,spark(HIST.idx,5,1.4,8.6,true),hotIdx?H:M);putR(40,1,'SND '+(snd?'ON':'OFF'),snd?N:M);
+    if(S.alarm)drawAlarm(2,now);else put(0,2,LOADS[8].on?'EARTH LINK: '+delayStr()+' LIGHT DELAY':'EARTH LINK: SHED. OFFICIALLY ALONE.',M)}
+  else{put(0,0,' ARES-HORT v4.2 ',INV);put(18,0,'GREENHOUSE B',N);put(32,0,'SOL '+sol(),N);put(41,0,'LMST',M);put(46,0,ck,N|G);
+    put(57,0,'DUST IDX',M);put(66,0,W.idx.toFixed(1),(hotIdx?H:N)|G);put(70,0,spark(HIST.idx,10,1.4,8.6,true),hotIdx?H:M);
+    if(S.alarm)drawAlarm(1,now);else{put(1,1,LOADS[8].on?'EARTH LINK: '+delayStr()+' LIGHT DELAY':'EARTH LINK: SHED. OFFICIALLY ALONE NOW.',M);
+      put(43,1,'LAMPS',M);put(49,1,String(S.lights).padStart(3)+' %',N|G);put(57,1,'DOME',M);put(62,1,S.atm.temp.toFixed(1).padStart(4)+' C',(S.atm.temp<10?H:N)|G);putR(80,1,'SND '+(snd?'ON ':'OFF'),snd?N:M)}}}
+function delayStr(){return Math.floor(S.delay/60)+' MIN '+(S.delay%60)+' S'}
+function drawAlarm(y,now){var on=reduced||(now%720<430),msg=narrow?S.alarm.short:S.alarm.long,pad=Math.max(0,(COLS-msg.length)>>1),t=(new Array(pad+1).join(' ')+msg).padEnd(COLS).slice(0,COLS);
+  put(0,y,t,on?(H|INV):H);zone('alarm',0,y,COLS,1,'Alarm: '+msg+'. Activate to acknowledge.',ack,{hot:true})}
+function drawAtmos(x,y,w,h,p){zone('p-atm',x,y,w,h,'Atmosphere panel. Activate to vent.',function(){exec('VENT',true)},{inv:[x+1,y,14,1]});
+  if(!box(x,y,w,h,'ATMOSPHERE',p))return;var A=S.atm,ix=x+1,iw=w-2,tall=h>12,sw=tall?18:8,yy=y+1;
+  [['O2',A.o2.toFixed(1),'%',(A.o2-19.5)/2.5,HIST.o2,20.5,21.7,false],['CO2',String(Math.round(A.co2)),'ppm',(A.co2-300)/1100,HIST.co2,560,1260,A.co2<640],
+   ['PRESS',A.kpa.toFixed(1),'kPa',(A.kpa-56)/8,HIST.kpa,61.1,62.2,false],['HUMID',String(Math.round(A.rh)),'%',A.rh/100,HIST.rh,48,97,A.rh>=85]].forEach(function(r){
+    put(ix,yy,r[0],M);put(ix+6,yy,r[1].padStart(6),(r[7]?H:N)|G);put(ix+13,yy,r[2],M);put(ix+iw-sw,yy,spark(r[4],sw,r[5],r[6]),M);bar(ix,yy+1,iw,r[3],r[7]?H:N);yy+=tall?4:2});
+  if(tall){put(ix,yy,'DOME AIR',M);putR(ix+iw,yy,A.temp.toFixed(1)+' C',(A.temp<10?H:N)|G);put(ix,yy+1,'DOME SKIN',M);putR(ix+iw,yy+1,'-61 C',N);
+    put(ix,yy+2,'VENT',M);putR(ix+iw,yy+2,S.vent>0?'OPEN '+Math.ceil(S.vent)+' s':'SHUT',S.vent>0?H:N);put(ix,yy+3,'CO2 FEED',M);putR(ix+iw,yy+3,'HAB LOOP (1 PERSON)',N);
+    var vo=S.vent>0,ph=Math.floor(S.t*4)%3;
+    put(ix+6,yy+5,vo?".-~'''''''        '''''''~-.":".-~''''''''''''''''''''''~-.",M);if(vo)put(ix+17+ph,yy+4,'^  ^  ^'.slice(0,7-ph),H);
+    put(ix+4,yy+6,".'                            '.",M);put(ix+9,yy+6,vo?'VENT FLAP  OPEN':'VENT FLAP  SHUT',vo?H:N);
+    put(ix+3,yy+7,'/  \u03c8 \u03c8 \u03c8  \u2663 \u2663  \\|/  (@)  \u03c8 \u03c8  \\',M);put(ix+2,yy+8,'\u2534'+new Array(33).join('\u2500')+'\u2534',D);
+    put(ix,yy+9,'TAP THIS PANEL OR F4 TO VENT',D)}
+  else if(S.vent>0)put(x+w-11,y,' VENTING ',H|INV)}
+function drawDay(x,y,w,rows){var hr=((localHours()%24)+24)%24,nowc=Math.floor(hr/24*w);
+  for(var i=0;i<w;i++){var h2=24*(i+.5)/w,v=Math.max(0,Math.sin(Math.PI*(h2-6)/12)),past=i<nowc;if(i===nowc)v=S.pwr.solar/5.2;else if(past)v*=.86;
+    for(var r=0;r<rows;r++){var lv=clamp(Math.round(v*rows*8)-(rows-1-r)*8,0,8);put(x+i,y+r,lv?SP.charAt(lv-1):(r===rows-1?'_':' '),i===nowc?H:past?M:D)}}}
+function hash(i){var v=Math.sin(i*127.1+311.7)*43758.5453;return v-Math.floor(v)}
+function drawArray(x,y,n){var d=S.pwr.dust,br=S.scrub?Math.floor(S.scrub.t/3.2*n):-1;
+  for(var i=0;i<n;i++){var hsh=hash(i),dusty=hsh<(S.scrub?S.scrub.d0:d)*1.38;if(S.scrub&&i<br)dusty=false;
+    if(i===br)put(x+i,y,'\u2590',H);else put(x+i,y,dusty?(hsh<d*.5?'\u2593':hsh<d*.95?'\u2592':'\u2591'):'\u256c',dusty?M:N)}}
+function drawPower(x,y,w,h,p){zone('p-pwr',x,y,w,h,'Power panel. Activate to choose what stays powered.',function(){exec('PWR',true)},{inv:[x+1,y,9,1]});
+  if(!box(x,y,w,h,'POWER',p))return;var P=S.pwr,ix=x+1,iw=w-2,tall=h>12,netS=(P.net>=0?'+':'')+P.net.toFixed(2),low=P.batt<25;
+  if(!tall){put(ix,y+1,'SOLAR',M);put(ix+6,y+1,P.solar.toFixed(2),N|G);put(ix+11,y+1,'kW',M);put(ix+iw-8,y+1,spark(HIST.sol,8,0,4.4),M);bar(ix,y+2,iw,P.solar/5.2,N);
+    put(ix,y+3,'DUST',M);put(ix+5,y+3,String(Math.round(P.dust*100)).padStart(2)+'%',(P.dust>.34?H:N)|G);drawArray(ix+9,y+3,iw-9);
+    put(ix,y+4,'BATT',M);put(ix+5,y+4,String(Math.round(P.batt)).padStart(3)+'%',(low?H:N)|G);bar(ix+10,y+4,iw-10,P.batt/100,low?H:N);
+    put(ix,y+5,'LOAD',M);put(ix+5,y+5,P.load.toFixed(2),N|G);put(ix+11,y+5,'NET',M);put(ix+15,y+5,netS,(P.net<-1?H:N)|G);put(ix+21,y+5,'kW',M);
+    put(ix,y+6,'SOL '+sol()+' ARRAY CURVE',D);if(S.save||S.brown)put(ix,y+6,S.brown?' BROWNOUT LOCK         ':' POWER-SAVE: F8 DECIDES ',H|INV);drawDay(ix,y+7,iw,2)}
+  else{put(ix,y+1,'SOLAR ARRAY',M);put(ix+12,y+1,P.solar.toFixed(2),N|G);put(ix+17,y+1,'kW',M);put(ix+iw-16,y+1,spark(HIST.sol,16,0,4.4),M);bar(ix,y+2,iw,P.solar/5.2,N);
+    put(ix,y+4,'ARRAY DUST',M);put(ix+12,y+4,String(Math.round(P.dust*100)).padStart(2)+' %',(P.dust>.34?H:N)|G);put(ix+iw-12,y+4,'F5 TO SCRUB',D);drawArray(ix,y+5,iw);
+    put(ix,y+7,'BATTERY',M);put(ix+12,y+7,String(Math.round(P.batt)).padStart(3)+' %',(low?H:N)|G);bar(ix+19,y+7,iw-19,P.batt/100,low?H:N);
+    put(ix,y+8,'LOAD',M);put(ix+12,y+8,P.load.toFixed(2),N|G);put(ix+19,y+8,'NET',M);put(ix+23,y+8,netS+' kW',(P.net<-1?H:N)|G);
+    put(ix,y+10,'SOL '+sol()+' ARRAY CURVE',D);drawDay(ix,y+11,iw,3);put(ix,y+14,'00       06        12       18      24'.slice(0,iw),D);
+    LOADS.forEach(function(l,k){var nm=l.lamp!==undefined?l.name+' '+(l.lamp===5?S.beds[5].name:S.beds[l.lamp].crop):l.name;put(ix,y+16+k,(l.on?'\u25a0 ':'\u25a1 ')+nm,l.on?N:D);putR(ix+iw,y+16+k,l.on?(l.lamp!==undefined?l.kw*S.lights/100:l.kw).toFixed(2)+' kW':'SHED',l.on?M:H)});
+    put(ix,y+26,S.save||S.brown?' TAP PANEL OR F8: DECIDE WHAT STAYS ON ':'TAP THIS PANEL OR F8 TO REALLOCATE',S.save||S.brown?(H|INV):D)}}
+function drawPipes(x,y){var W=S.water,pump=LOADS[7].on,flowing=W.flow>0&&pump,ph=Math.floor(S.t*9),ph2=Math.floor(S.t*2.4),i;
+  put(x,y,'\u250c   \u2500\u2510      \u250c\u2500    \u2500\u2500\u2500\u2500\u2500\u2500\u2510',D);put(x+1,y,'RES',M);put(x+14,y,'BEDS',M);
+  put(x,y+1,'\u2502    \u255e      \u2561           \u2502',D);put(x,y+2,'\u2502    \u2502      \u2514\u2500\u2500\u2500\u2500\u2500\u2565\u2500\u2500\u2500\u2500\u2500\u2518',D);
+  put(x,y+3,'\u2514\u2500\u2565\u2500\u2500\u2518            \u2551',D);put(x+2,y+4,'\u255a',D);put(x+18,y+4,'\u255d',D);
+  var lvl=clamp((W.res-250)/190,0,1)*16,l2=clamp(Math.round(lvl),0,8),l1=clamp(Math.round(lvl-8),0,8);
+  put(x+1,y+2,new Array(5).join(l2?SP.charAt(l2-1):' '),N);put(x+1,y+1,new Array(5).join(l1?SP.charAt(l1-1):' '),N);
+  for(i=0;i<6;i++)put(x+6+i,y+1,!pump?'\u00b7':flowing?((((i-ph)%3)+3)%3===0?'\u25ba':'\u2550'):'\u2550',flowing?N:D);
+  if(!pump)put(x+6,y+2,'NO PUMP',H);
+  for(i=0;i<6;i++){var b=S.beds[i];put(x+13+i*2,y+1,String(i+1),b.irrig>0?INV:b.moist<24?H:M)}
+  put(x+7,y+3,'+'+W.cond.toFixed(1)+' L/h',M);
+  for(i=3;i<18;i++)put(x+i,y+4,((i+ph2)%4===0&&!reduced)?'\u25c4':'\u2550',M);put(x+8,y+4,'[TRAP]',N)}
+function drawWater(x,y,w,h,p){zone('p-h2o',x,y,w,h,'Water loop panel. Activate to water the driest bed.',function(){exec('WATER '+(driest()+1),true)},{inv:[x+1,y,14,1]});
+  if(!box(x,y,w,h,'WATER LOOP',p))return;var W=S.water,ix=x+1,iw=w-2,tall=h>12;
+  put(ix,y+1,'RESERVOIR',M);putR(ix+iw-2,y+1,W.res.toFixed(1),N|G);putR(ix+iw,y+1,'L',M);bar(ix,y+2,iw,W.res/500,N);
+  if(!tall){put(ix,y+3,'RECOVERY 94%',M);putR(ix+iw,y+3,LOADS[7].on?(W.flow?'PUMPING':'PUMP IDLE'):'PUMP SHED',LOADS[7].on?(W.flow?N:M):H);drawPipes(ix,y+4)}
+  else{put(ix,y+4,'RECOVERY',M);putR(ix+iw,y+4,'94 %',N);put(ix,y+5,'PUMP',M);putR(ix+iw,y+5,LOADS[7].on?(W.flow?'PUMPING':'IDLE'):'SHED',LOADS[7].on?N:H);
+    drawPipes(ix+6,y+8);put(ix,y+15,'BED CROP',D);putR(ix+iw,y+15,'SOIL MOISTURE',D);
+    S.beds.forEach(function(b,k){var yy=y+16+k,dry=b.moist<24;put(ix,yy,b.n+' '+b.crop,dry?H:N);bar(ix+13,yy,iw-18,b.moist/100,dry?H:b.irrig>0?N:M);putR(ix+iw,yy,String(Math.round(b.moist)).padStart(3)+'%',(dry?H:N)|G)});
+    put(ix,y+23,'VALVE 4',M);putR(ix+iw,y+23,'STICKY SINCE SOL 388',H);put(ix,y+25,'TAP PANEL: WATER THE DRIEST BED',D)}}
+function drawBeds(x,y,w,h,p){if(!box(x,y,w,h,narrow?'BEDS':'BEDS 1-6',p))return;var now=performance.now();
+  var lar='[ LARDER '+S.larder.toFixed(1)+' kg ]';put(x+w-2-lar.length,y,lar,M);
+  for(var i=0;i<6;i++){var bx,by;if(narrow){bx=x+1+(i%3)*13;by=y+1+Math.floor(i/3)*13;if(i%3<2)for(var r=0;r<13;r++)put(bx+12,by+r,'\u2502',D)}
+    else{bx=x+1+i*13;by=y+1;if(i<5)for(var r2=0;r2<13;r2++)put(bx+12,by+r2,'\u2502',D)}
+    drawBed(S.beds[i],bx,by,now)}}
+function logLines(w,max){var L=[];for(var i=S.log.length-1;i>=0&&L.length<max;i--){var e=S.log[i];if(e.n<=0)continue;var ws=wrap(e.t+' '+e.s.slice(0,e.n),w,6);for(var k=ws.length-1;k>=0;k--)L.unshift({s:ws[k],style:e.style})}return L.slice(-max)}
+function drawLog(x,y,w,h,p){zone('p-log',x,y,w,h,'Event log. Activate to open the full log.',function(){exec('LOG',true)},{inv:[x+1,y,7,1]});
+  if(!box(x,y,w,h,'LOG',p))return;var L=logLines(w-3,h-2),y0=y+1+(h-2-L.length);L.forEach(function(l,k){put(x+1,y0+k,l.s,l.style)});
+  put(x+w-25,y,'[ OKORO-LINDQVIST, I. ]',D)}
+function drawOut(y,now){var idx=out.length-1;for(var i=0;i<out.length;i++)if(out[i].n<out[i].s.length){idx=i;break}
+  var vis=out.slice(Math.max(0,idx-2),idx+1),y0=y+3-vis.length;vis.forEach(function(l,k){put(1,y0+k,l.s.slice(0,Math.max(0,Math.floor(l.n))),l.style)})}
+function drawPrompt(y,now){var v=cmdEl.value.toUpperCase(),max=COLS-5;if(v.length>max)v=v.slice(v.length-max);put(0,y,'>',N);put(2,y,v,N);
+  if(reduced||now%1060<620)put(2+v.length,y,'\u2588',H);
+  if(!v&&!narrow)putR(COLS,y,'TYPE A COMMAND \u00b7 HELP LISTS THEM',D);if(!v&&narrow)putR(COLS,y,'TAP TO TYPE',D)}
+var FK=['HELP','WATER','LIGHT','VENT','SCRUB','HARVEST','LOG','PWR','SND'];
+function drawFkeys(y){var x,i,nm;
+  var mk=function(n,xx,yy,wInv,th,ty){nm=FK[n-1];var lab=(' '+nm+' ');if(wInv){var pad=wInv-nm.length;lab=new Array((pad>>1)+1).join(' ')+nm+new Array(pad-(pad>>1)+1).join(' ')}
+    put(xx,yy,'F'+n,n===9&&snd?N:M);put(xx+2,yy,lab,(n===9&&!snd)?(M|INV):INV);
+    zone('f'+n,xx,yy,2+lab.length,1,'F'+n+' '+nm+(n===9?(snd?', sound is on':', sound is off'):''),function(){fkey(n,false)},{hot:true,th:th,ty:ty});return 2+lab.length};
+  if(!narrow){x=3;for(i=1;i<=9;i++)x+=mk(i,x,y)}
+  else{for(i=1;i<=5;i++)mk(i,(i-1)*8,y,5,2,y-1);for(i=6;i<=9;i++)mk(i,(i-6)*10,y+2,7,2,y+1)}}
+var TABS=['ATMOS','POWER','WATER','BEDS','LOG'];
+function drawTabs(y){for(var i=0;i<5;i++){(function(i){var lab=(' '+TABS[i]+' ').padEnd(7);put(i*8,y,lab,S.page===i?INV:M);
+    zone('tab'+i,i*8,y,8,1,'Page '+(i+1)+': '+TABS[i],function(){S.page=i;click()},{hot:true,th:2,ty:y-1})})(i)}}
+function drawPop(now){var P=pop,w=P.w,lines=P.dyn?pwrLines(w-2):P.lines,h=lines.length+2,x=(COLS-w)>>1,y=Math.max(1,((ROWS-h)>>1)-1),i;
+  for(i=0;i<ROWS;i++)for(var q=0;q<COLS;q++)st[i][q]=D;
+  for(i=y-1;i<=y+h;i++)put(x-2,i,new Array(w+5).join(' '),0);
+  zone('pop-bg',0,0,COLS,ROWS,'Close window',closePop);
+  if(!box(x,y,w,h,P.title,P.p,N))return;var budget=P.dyn?1e9:P.n;
+  lines.forEach(function(l,k){var s=l.s;put(x+2,y+1+k,s.slice(0,Math.max(0,Math.floor(budget))),l.style||0);budget-=s.length;
+    if(l.load)zone('pw-'+l.load.id,x+1,y+1+k,w-2,1,l.load.name+', '+(l.load.lock?'locked on':l.load.on?'on':'off')+'. Activate to switch.',function(){toggleLoad(l.load)})});
+  var foot=P.dyn?'[ ESC CLOSES ]':'[ ANY KEY ]';put(x+w-2-foot.length,y+h-1,foot,M);
+  if(P.dyn)zone('pop-x',x+w-2-foot.length,y+h-1,foot.length,1,'Close power allocation',closePop,{hot:true})}
+
+/* ───────────── boot ───────────── */
+var LOGO={A:[' \u2588\u2588\u2588\u2588 ','\u2588\u2588  \u2588\u2588','\u2588\u2588\u2588\u2588\u2588\u2588','\u2588\u2588  \u2588\u2588','\u2588\u2588  \u2588\u2588'],R:['\u2588\u2588\u2588\u2588\u2588 ','\u2588\u2588  \u2588\u2588','\u2588\u2588\u2588\u2588\u2588 ','\u2588\u2588 \u2588\u2588 ','\u2588\u2588  \u2588\u2588'],
+  E:['\u2588\u2588\u2588\u2588\u2588\u2588','\u2588\u2588    ','\u2588\u2588\u2588\u2588  ','\u2588\u2588    ','\u2588\u2588\u2588\u2588\u2588\u2588'],S:[' \u2588\u2588\u2588\u2588\u2588','\u2588\u2588    ',' \u2588\u2588\u2588\u2588 ','    \u2588\u2588','\u2588\u2588\u2588\u2588\u2588 '],
+  '-':['      ','      ',' \u2588\u2588\u2588\u2588 ','      ','      '],H:['\u2588\u2588  \u2588\u2588','\u2588\u2588  \u2588\u2588','\u2588\u2588\u2588\u2588\u2588\u2588','\u2588\u2588  \u2588\u2588','\u2588\u2588  \u2588\u2588'],
+  O:[' \u2588\u2588\u2588\u2588 ','\u2588\u2588  \u2588\u2588','\u2588\u2588  \u2588\u2588','\u2588\u2588  \u2588\u2588',' \u2588\u2588\u2588\u2588 '],T:['\u2588\u2588\u2588\u2588\u2588\u2588','  \u2588\u2588  ','  \u2588\u2588  ','  \u2588\u2588  ','  \u2588\u2588  ']};
+function logoRows(word){var r=[];for(var k=0;k<5;k++){var s='';for(var i=0;i<word.length;i++)s+=(i?' ':'')+LOGO[word.charAt(i)][k];r.push(s)}return r}
+function drawBootText(){var x0=narrow?1:3,y=1,k=clamp(Math.floor((bt-.45)/.32*40)*16,0,640);
+  if(bt<.38)return;put(x0,y,'HST-9 ROM 2.11',N);putR(COLS-x0,y,narrow?'(C) 2079 ARES C.S.':'(C) 2079 ARES COLONIAL SUPPLY CO.',M);
+  if(bt>.45)put(x0,y+2,'MEMORY TEST  '+String(k).padStart(4,'0')+'K'+(k>=640?'  OK':''),N);
+  if(bt>.77)put(x0,y+3,'PHOSPHOR P3 AMBER  WARM',M);if(bt>.81)put(x0,y+4,'KEYBOARD  1 OPERATOR DETECTED',M);
+  if(bt<.86)return;var rows=narrow?logoRows('ARES').concat(['']).concat(logoRows('HORT')):logoRows('ARES-HORT'),n=Math.floor((bt-.86)/(narrow?.025:.05)),lx=(COLS-rows[0].length)>>1,ly=y+7;
+  for(var i=0;i<rows.length&&i<n;i++)put(lx,ly+i,rows[i],N);if(n<rows.length){put(lx,ly+n,rows[n].replace(/\u2588/g,'\u2592'),H);return}
+  var tl=narrow?['HORTICULTURAL CONTROL v4.2','GREENHOUSE B \u00b7 SOL '+sol()+' OF 540','OPERATOR: DR. I. OKORO-LINDQVIST','LAST LOGIN 23 MIN AGO.','NO OTHER LOGINS ON FILE. EVER.']
+    :['HORTICULTURAL CONTROL v4.2 \u2014 GREENHOUSE B \u2014 SOL '+sol()+' OF 540','OPERATOR: DR. I. OKORO-LINDQVIST, BOTANY (AND EVERYTHING ELSE)','LAST LOGIN 23 MIN AGO. NO OTHER LOGINS ON FILE. EVER.'];
+  var m=Math.floor((bt-.86-rows.length*(narrow?.025:.05))/.06);ly+=rows.length+2;
+  for(i=0;i<tl.length&&i<m;i++)put((COLS-tl[i].length)>>1,ly+i,tl[i],i===0?N:M);
+  if(m>=tl.length)put((COLS-18)>>1,ly+tl.length+1,'RESTORING BEDS '+'...'.slice(0,1+Math.floor(bt*9)%3),N);
+  putR(COLS-x0,ROWS-2,'ANY KEY SKIPS',D)}
+function finishBoot(){if(booted)return;booted=true;bt=9;P6=[1,1,1,1,1,1];raster.classList.add('live');beam.classList.remove('on');
+  if(reduced)S.beds.forEach(function(b){b.shown=b.stage});
+  logAdd('SESSION RESUMED \u2014 OPERATOR OKORO-LINDQVIST, I.',M);
+  say('GOOD AFTERNOON, DR. OKORO-LINDQVIST. Six beds restored. '+(narrow?'F1 for help.':'Type HELP or press F1.'));
+  if(window.matchMedia('(hover:hover) and (pointer:fine)').matches){try{cmdEl.focus({preventScroll:true})}catch(e){}}}
+
+/* ───────────── frame ───────────── */
+var glitch=null;
+function draw(now){cls();zl.length=0;
+  if(!booted&&bt<1.62){drawBootText()}
+  else{var P=P6;if(!booted)for(var i=0;i<6;i++)P[i]=clamp((bt-1.62-i*.14)/.42,0,1);
+    if(P[0]>0)drawStatus(now);
+    if(narrow){drawTabs(4);var fn=[drawAtmos,drawPower,drawWater,drawBeds,drawLog][S.page];fn(0,5,40,28,booted?1:P[2]);
+      if(P[5]>0){drawOut(33,now);drawPrompt(36,now);drawFkeys(38)}}
+    else{drawAtmos(0,2,27,10,P[0]);drawPower(27,2,26,10,P[1]);drawWater(53,2,27,10,P[2]);drawBeds(0,12,80,15,P[3]);drawLog(0,27,80,7,P[4]);
+      if(P[5]>0){drawOut(34,now);drawPrompt(37,now);drawFkeys(38)}}
+    if(pop)drawPop(now)}
+  if(booted&&!reduced&&S.storm.level>.45){if(!glitch&&rnd()<.035)glitch={y:Math.floor(rnd()*ROWS),o:rnd()<.5?1:-1,until:now+70+rnd()*80};
+    if(glitch){if(now>glitch.until)glitch=null;else{var a=ch[glitch.y],s=st[glitch.y];if(glitch.o>0){a.unshift(a.pop());s.unshift(s.pop())}else{a.push(a.shift());s.push(s.shift())}}}}else glitch=null;
+  if(focusId&&zinfo[focusId]){var z=zinfo[focusId],r=z.inv||[z.x,z.y,z.w,z.h];for(var yy=r[1];yy<r[1]+r[3]&&yy<ROWS;yy++)for(var xx=r[0];xx<r[0]+r[2]&&xx<COLS;xx++){var sv=st[yy][xx];st[yy][xx]=z.hot?((sv&G)|H|INV):(sv^INV)}}}
+var raf=0,last=0,acc=0,bt0=0;
+function frame(now){raf=requestAnimationFrame(frame);var dt=Math.min(.1,(now-last)/1000);last=now;
+  if(!booted){if(!bt0)bt0=now;bt=(now-bt0)/1000;if(bt>=2.8)finishBoot()}
+  else{acc+=dt;var n=0;while(acc>=.1&&n<3){sim(.1);acc-=.1;n++}if(acc>.3)acc=0;fxStep(dt);
+    for(var i=0;i<out.length;i++)if(out[i].n<out[i].s.length){out[i].n+=dt*150;break}
+    for(i=Math.max(0,S.log.length-4);i<S.log.length;i++)if(S.log[i].n<S.log[i].s.length){S.log[i].n+=dt*120;break}
+    if(pop){pop.p=Math.min(1,pop.p+dt/.2);if(pop.p>=1&&!pop.dyn)pop.n+=dt*640}}
+  draw(now);syncZones();render();
+  cmdEl.style.top=((narrow?36:37)*rh-4)+'px';cmdEl.style.height=(rh+8)+'px'}
+function start(){if(!raf){last=performance.now();raf=requestAnimationFrame(frame)}}
+document.addEventListener('visibilitychange',function(){if(document.hidden){cancelAnimationFrame(raf);raf=0}else start()});
+
+/* ───────────── layout: 80 columns on a desk, 40 in a hand ───────────── */
+function fit(){var vw=document.documentElement.clientWidth,vh=window.innerHeight,nw=vw<700,cols=nw?40:80,rows=nw?41:39;
+  var pr=$('probe'),ratio=pr.getBoundingClientRect().width/4000||.6;
+  var m=nw?4:Math.round(clamp(vh*.018,8,18)),bz=nw?7:Math.round(clamp(vw*.022,14,30)),chin=nw?28:50,px=nw?8:Math.round(clamp(vw*.02,14,28)),py=nw?10:22,well=nw?3:5;
+  var aw=vw-2*(m+bz+px+well),ah=vh-2*m-bz-chin-2*py-2*well,c=Math.floor(aw/cols);
+  if(!nw){var cH=Math.floor((ah-rows*.5)/(rows*LHT)*ratio);c=Math.max(6,Math.min(c,cH,13))}else c=Math.max(6,Math.min(c,13));
+  var fs=c/ratio,r=Math.round(fs*LHT);cw=c;rh=r;
+  var s=room.style;s.setProperty('--cw',c+'px');s.setProperty('--rh',r+'px');s.setProperty('--fs',fs.toFixed(3)+'px');s.setProperty('--cols',cols);
+  s.setProperty('--m',m+'px');s.setProperty('--bz',bz+'px');s.setProperty('--px',px+'px');s.setProperty('--py',py+'px');s.setProperty('--chin',chin+'px');
+  var mw=cols*c+2*(px+bz+well);s.setProperty('--mw',mw+'px');room.classList.toggle('wide',(vw-mw)/2>280&&vh>520);
+  if(cols!==COLS||rows!==ROWS){COLS=cols;ROWS=rows;narrow=nw;ch=[];st=[];prevHTML=[];pch=[];rowEls=[];txt.innerHTML='';ghEl.innerHTML='';ghosts=0;
+    for(var y=0;y<rows;y++){ch.push(new Array(cols));st.push(new Array(cols));prevHTML.push('');pch.push('');var d=document.createElement('div');txt.appendChild(d);rowEls.push(d)}
+    cls();if(pop)pop=null;out.forEach(function(l){if(l.s.length>cols-2)l.s=l.s.slice(0,cols-2)})}
+  zsig=''}
+var fitT=0;window.addEventListener('resize',function(){cancelAnimationFrame(fitT);fitT=requestAnimationFrame(fit)});
+
+/* 412 tally marks on the wall, one per sol */
+function tally(el,groups,extra,seed){var s=seed,r=function(){s=(s*16807)%2147483647;return s/2147483647},per5=5,gw=40,gh=38,d='',d2='',tot=groups+(extra?1:0);
+  for(var g=0;g<tot;g++){var cx=(g%per5)*gw+8+r()*3,cy=Math.floor(g/per5)*gh+6+r()*4,n=g<groups?4:extra,seg='';
+    for(var i=0;i<n;i++){var x=cx+i*6+r()*2;seg+='M'+x.toFixed(1)+' '+(cy+r()*3).toFixed(1)+'L'+(x+r()*2.4-1.2).toFixed(1)+' '+(cy+21+r()*4).toFixed(1)}
+    if(g<groups)seg+='M'+(cx-4).toFixed(1)+' '+(cy+16+r()*5).toFixed(1)+'L'+(cx+23).toFixed(1)+' '+(cy+3+r()*5).toFixed(1);
+    if(g<groups)d+=seg;else d2+=seg}
+  var hh=Math.ceil(tot/per5)*gh+10;
+  el.innerHTML='<svg viewBox="0 0 '+(per5*gw+8)+' '+hh+'" xmlns="http://www.w3.org/2000/svg"><path d="'+d+'" fill="none" stroke="#5A3A00" stroke-opacity=".62" stroke-width="1.5" stroke-linecap="round"/>'+(d2?'<path d="'+d2+'" fill="none" stroke="#FFB000" stroke-opacity=".5" stroke-width="1.6" stroke-linecap="round"/>':'')+'</svg>'}
+
+/* ───────────── input ───────────── */
+function submit(){var v=cmdEl.value;cmdEl.value='';exec(v)}
+document.addEventListener('keydown',function(e){
+  if(!booted){if(['Shift','Control','Alt','Meta','Tab'].indexOf(e.key)<0){finishBoot();if(e.key.length===1||e.key==='Enter'||/^F\d$/.test(e.key))e.preventDefault()}return}
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  var fm=/^F([1-9])$/.exec(e.key);if(fm){e.preventDefault();if(pop&&+fm[1]!==9)pop=null;fkey(+fm[1],true);return}
+  var t=e.target,onBtn=t&&t.tagName==='BUTTON';
+  if(pop){if(e.key==='Escape'){e.preventDefault();closePop();return}
+    if(pop.kind==='PWR'){if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();var ids=LOADS.map(function(l){return 'pw-'+l.id}),k=ids.indexOf(t&&t.getAttribute&&t.getAttribute('data-z')),nx=k<0?0:(k+(e.key==='ArrowDown'?1:ids.length-1))%ids.length;if(zel[ids[nx]])zel[ids[nx]].focus()}
+      else if(!onBtn&&(e.key==='Enter'||e.key===' ')){e.preventDefault()}return}
+    if(e.key!=='Tab'&&e.key!=='Shift'){e.preventDefault();closePop()}return}
+  if(onBtn&&(e.key==='Enter'||e.key===' ')&&t.matches(':focus-visible'))return;
+  if(e.key==='Enter'){e.preventDefault();click();submit();return}
+  if(e.key==='Escape'){cmdEl.value='';return}
+  if(e.key==='ArrowUp'||e.key==='ArrowDown'){if(hist.length){e.preventDefault();histI=clamp(histI+(e.key==='ArrowUp'?-1:1),0,hist.length);cmdEl.value=hist[histI]||''}return}
+  if(t===cmdEl){if(e.key.length===1||e.key==='Backspace')click();return}
+  if(e.key==='Backspace'){e.preventDefault();cmdEl.value=cmdEl.value.slice(0,-1);click();return}
+  if(e.key.length===1){e.preventDefault();if(cmdEl.value.length<70)cmdEl.value+=e.key;click();if(onBtn)t.blur()}});
+zonesEl.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var id=b.getAttribute('data-z'),kb=b.matches(':focus-visible');if(zfn[id])zfn[id]();
+  if(pop&&pop.kind==='PWR'&&kb&&id==='p-pwr')pendingFocus='pw-L1';if(!kb)b.blur()});
+zonesEl.addEventListener('focusin',function(e){var b=e.target;if(b.tagName==='BUTTON'&&b.matches(':focus-visible'))focusId=b.getAttribute('data-z')});
+zonesEl.addEventListener('focusout',function(){focusId=null});
+var sx=0,sy=0,sdown=false;
+tube.addEventListener('pointerdown',function(e){if(!booted){finishBoot();e.preventDefault();return}sx=e.clientX;sy=e.clientY;sdown=true});
+tube.addEventListener('pointerup',function(e){if(!sdown)return;sdown=false;var dx=e.clientX-sx,dy=e.clientY-sy;
+  if(narrow&&!pop&&Math.abs(dx)>46&&Math.abs(dx)>Math.abs(dy)*1.8){S.page=(S.page+(dx<0?1:4))%5;click()}});
+tube.addEventListener('pointercancel',function(){sdown=false});
+zonesEl.addEventListener('pointerdown',function(e){if(!booted){e.stopPropagation();finishBoot();booted=false;setTimeout(function(){booted=true},0)}},true);
+RMQ.addEventListener('change',function(e){reduced=e.matches;if(reduced&&!booted)finishBoot()});
+
+/* ───────────── go ───────────── */
+seedLog();fit();tally($('wallL'),41,0,412);tally($('wallR'),41,2,9041);
+if(reduced){finishBoot()}else{beam.classList.add('on')}
+start();
+})();
+</script>
+</body>
+</html>

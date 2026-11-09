@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SPORE PRINT no. 3 · The Wet Month · Damp Hands Press</title>
+<style>
+:root{
+  --paper:#F4EFE2; --pink:#FF48B0; --teal:#00838A; --shade:rgba(59,47,92,.16);
+  --rx:0px; --ry:0px; --g:1; --bx:0px; --by:0px;
+  --disp:Impact,Haettenschweiler,"Arial Narrow Bold","Franklin Gothic Condensed","Arial Narrow","Nimbus Sans Narrow","Liberation Sans Narrow","DejaVu Sans Condensed","Helvetica Neue",Arial,sans-serif;
+  --type:"American Typewriter","Courier Prime",Courier,"Courier New","Nimbus Mono PS","Liberation Mono",monospace;
+  --hand:"Bradley Hand","Segoe Print","Chalkboard SE","Comic Sans MS",Georgia,serif;
+  --grainT:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='g' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='2' seed='4' stitchTiles='stitch' result='a'/><feColorMatrix in='a' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3.6 0 0 0 -.74' result='f'/><feTurbulence type='fractalNoise' baseFrequency='.018' numOctaves='2' seed='9' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.7 0 0 .16' result='c'/><feComposite in='f' in2='c' operator='in'/></filter><rect width='300' height='300' fill='teal' filter='url(%23g)'/></svg>");
+  --grainP:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='340' height='340'><filter id='g' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='2' seed='31' stitchTiles='stitch' result='a'/><feColorMatrix in='a' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3.4 0 0 0 -.6' result='f'/><feTurbulence type='fractalNoise' baseFrequency='.014' numOctaves='2' seed='17' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.8 0 0 .1' result='c'/><feComposite in='f' in2='c' operator='in'/></filter><rect width='340' height='340' fill='teal' filter='url(%23g)'/></svg>");
+  --flecks:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420'><filter id='f' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='2' seed='21' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .56 0 0 0 0 .47 0 0 0 0 .36 -12 0 0 0 3.55'/></filter><rect width='420' height='420' filter='url(%23f)'/></svg>");
+  --fibres:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='520' height='520'><filter id='f' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='.05 .6' numOctaves='2' seed='5' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .62 0 0 0 0 .55 0 0 0 0 .42 0 -10 0 0 2.5'/></filter><rect width='520' height='520' filter='url(%23f)'/></svg>");
+}
+*{box-sizing:border-box}
+html{background:#E9E2CF}
+body{margin:0;color:var(--teal);font-family:var(--type);cursor:crosshair;
+  background:
+    linear-gradient(rgba(0,131,138,.07) 1px,transparent 1px) 0 0/48px 48px,
+    linear-gradient(90deg,rgba(0,131,138,.07) 1px,transparent 1px) 0 0/48px 48px,
+    linear-gradient(rgba(0,131,138,.035) 1px,transparent 1px) 0 0/12px 12px,
+    linear-gradient(90deg,rgba(0,131,138,.035) 1px,transparent 1px) 0 0/12px 12px,
+    #E9E2CF;
+  -webkit-font-smoothing:antialiased}
+::selection{background:var(--pink);color:var(--paper)}
+main{overflow-x:clip;padding:5vh 0 4vh}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.defs{position:absolute;width:0;height:0;overflow:hidden}
+
+/* ---------- plates ---------- */
+.ill{position:relative}
+.pl{position:absolute;inset:0;width:100%;height:100%;overflow:visible;mix-blend-mode:multiply;pointer-events:none;
+  -webkit-mask-image:var(--grainT);mask-image:var(--grainT);-webkit-mask-size:300px;mask-size:300px}
+.pl.t{fill:none;stroke:var(--teal);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.pl.p{fill:var(--pink);stroke:none;will-change:transform;
+  -webkit-mask-image:var(--grainP);mask-image:var(--grainP);-webkit-mask-size:340px;mask-size:340px;
+  transform:translate(calc(var(--bx)*var(--g) + var(--rx)),calc(var(--by)*var(--g) + var(--ry)))}
+.pl.raw{-webkit-mask-image:none;mask-image:none}
+.wh{fill:#fff;stroke:none}
+.f{fill:var(--teal);stroke:none}
+.hp{fill:url(#hp)}.hpl{fill:url(#hpl)}.lp{fill:url(#lp)}
+.ht{fill:url(#ht);stroke:none}.htl{fill:url(#htl);stroke:none}.lt{fill:url(#lt);stroke:none}
+.ps{fill:none;stroke:var(--pink);stroke-linecap:round;stroke-linejoin:round}
+.w{filter:url(#wob)}
+/* loose pink bits of HTML also ride the pink plate */
+.pk{color:var(--pink);mix-blend-mode:multiply;transform:translate(calc(var(--bx)*var(--g) + var(--rx)),calc(var(--by)*var(--g) + var(--ry))) rotate(var(--r,0deg))}
+.dd{display:inline-block;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+
+/* ---------- headlines: pink flat, teal keyline ---------- */
+.hl{font-family:var(--disp);font-weight:700;font-synthesis:none;font-stretch:condensed;text-transform:uppercase;line-height:.87;letter-spacing:.004em;
+  position:relative;color:transparent;margin:0;font-size:calc(var(--s,7)*var(--u));text-wrap:balance}
+.hl::before,.hl::after{content:attr(data-t);position:absolute;inset:0;mix-blend-mode:multiply}
+.hl::before{color:var(--pink);will-change:transform;-webkit-mask-image:var(--grainP);mask-image:var(--grainP);-webkit-mask-size:340px;mask-size:340px;
+  transform:translate(calc(var(--bx)*var(--g) + var(--rx)),calc(var(--by)*var(--g) + var(--ry)))}
+.hl::after{-webkit-text-stroke:.03em var(--teal);color:transparent}
+.hl.sm::after{-webkit-text-stroke:.045em var(--teal)}
+
+/* ---------- spreads ---------- */
+.spread{--u:1cqw;--rest:-.5deg;--from:3deg;
+  width:min(94vw,1180px,max(940px,(100vh - 70px)*1.414));aspect-ratio:297/210;margin:0 auto 11vh;position:relative;
+  container-type:inline-size;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  background:var(--flecks),var(--fibres),var(--paper);
+  transform:rotate(var(--from)) translateY(5vh) scale(1.035);transform-origin:50% 60%;
+  box-shadow:0 50px 70px -30px rgba(59,47,92,.4);
+  transition:transform .44s cubic-bezier(.16,1.42,.34,1),box-shadow .44s cubic-bezier(.2,.8,.2,1);
+  font-size:clamp(12.5px,1.2cqw,15px);line-height:1.42;font-weight:600}
+.spread.in{transform:rotate(var(--rest));box-shadow:0 1px 0 rgba(59,47,92,.14),0 3px 0 -1px #e3dcc8,0 4px 0 -1px rgba(59,47,92,.12),0 18px 26px -18px rgba(59,47,92,.45)}
+.pg{position:relative;padding:4.4cqw 4.3cqw 6.4cqw;min-width:0}
+.spine{position:absolute;left:50%;top:0;bottom:0;width:0;z-index:6;pointer-events:none}
+.spine::before{content:"";position:absolute;top:0;bottom:0;left:-1.6cqw;width:3.2cqw;
+  background:linear-gradient(90deg,transparent,rgba(59,47,92,.09) 46%,rgba(255,255,255,.75) 49.5%,rgba(59,47,92,.14) 51%,rgba(59,47,92,.05) 62%,transparent)}
+.spine i{position:absolute;left:-2.5px;width:5px;height:3cqw;border-radius:3px;top:24%;
+  background:linear-gradient(90deg,#8f8a7c,#e9e6dc 45%,#a8a394);box-shadow:1px 1px 0 rgba(59,47,92,.25),0 -3px 0 -1px rgba(59,47,92,.18),0 3px 0 -1px rgba(59,47,92,.18)}
+.spine i+i{top:auto;bottom:24%}
+.pn{position:absolute;bottom:1.9cqw;left:2.6cqw;width:2.6em;height:2.6em;display:grid;place-items:center;font-size:.92em;font-weight:700}
+.pg.R .pn{left:auto;right:2.6cqw}
+.pn svg{position:absolute;inset:0;width:100%;height:100%}
+/* printer's marks */
+.crop{position:absolute;width:14px;height:14px;pointer-events:none;opacity:.8}
+.crop::before,.crop::after{content:"";position:absolute;background:var(--teal)}
+.crop::before{left:0;right:0;top:50%;height:1px}.crop::after{top:0;bottom:0;left:50%;width:1px}
+.crop.a{left:8px;top:8px}.crop.b{right:8px;top:8px}.crop.c{left:8px;bottom:8px}.crop.d{right:8px;bottom:8px}
+.bar{position:absolute;right:2.6cqw;top:10px;display:flex;gap:0;z-index:4;pointer-events:none}
+.bar i{width:12px;height:7px;background:var(--teal);mix-blend-mode:multiply}
+.bar i:nth-child(1){background:var(--pink)}
+.bar i:nth-child(2){background:var(--pink);margin-left:-6px;transform:translate(var(--rx),var(--ry))}
+.bar i:nth-child(3){margin-left:-6px}
+.slug{position:absolute;left:2.6cqw;top:7px;font-size:9px;letter-spacing:.12em;text-transform:uppercase;opacity:.75;z-index:4;font-weight:400}
+
+.paste{background:#FAF7EC;padding:.9em 1.05em;position:relative;transform:rotate(var(--r,-1deg));
+  box-shadow:1px 1px 0 rgba(59,47,92,.14),2px 3px 0 rgba(59,47,92,.05)}
+.tape{position:absolute;width:4.4em;height:1.25em;top:-.6em;left:50%;margin-left:-2.2em;background:var(--pink);opacity:.55;mix-blend-mode:multiply;transform:rotate(var(--tr,-4deg));
+  clip-path:polygon(0 0,4% 12%,0 25%,4% 38%,0 52%,4% 66%,0 80%,4% 100%,96% 100%,100% 86%,96% 72%,100% 58%,96% 44%,100% 30%,96% 16%,100% 0)}
+.tape.tl{background:var(--teal);opacity:.4}
+.note{font-family:var(--hand);font-style:italic;font-weight:600;font-size:1.06em;line-height:1.25;transform:rotate(var(--r,-3deg));display:inline-block}
+.rule{position:relative;transform:rotate(var(--r,1.2deg));margin:1.2em 0}
+.rule::before{content:"";position:absolute;inset:0;background:var(--pink);mix-blend-mode:multiply;
+  -webkit-mask-image:var(--grainP);mask-image:var(--grainP);
+  transform:translate(calc(var(--bx)*var(--g)*2 + var(--rx)),calc(var(--by)*var(--g)*2 + var(--ry)))}
+.rule p{position:relative;margin:0;border:3px solid var(--teal);color:var(--teal);padding:.7em 1em;mix-blend-mode:multiply;font-weight:700;
+  background:repeating-linear-gradient(-38deg,var(--teal) 0 1.6px,transparent 1.6px 5px) 0 0/100% .5em no-repeat}
+.rule p{padding-top:1.1em}
+.rule b{display:block;font-family:var(--disp);font-weight:400;font-size:1.5em;letter-spacing:.06em;line-height:1}
+.nod .ill{transform-origin:50% 96%}
+@media (hover:hover){.nod:hover .ill{animation:nod .95s cubic-bezier(.3,1.5,.5,1)}}
+.nod:focus-visible .ill,.nod.go .ill{animation:nod .95s cubic-bezier(.3,1.5,.5,1)}
+@keyframes nod{0%{transform:rotate(0)}22%{transform:rotate(7deg) translateY(1.5%)}48%{transform:rotate(-4.5deg)}72%{transform:rotate(2deg)}100%{transform:rotate(0)}}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:3px solid var(--teal);outline-offset:4px;border-radius:2px}
+
+/* ---------- 1 cover ---------- */
+.cov{grid-column:1/-1;position:relative;padding:3cqw 3.6cqw;min-width:0}
+.cov-top{display:flex;justify-content:space-between;font-size:.86em;letter-spacing:.2em;text-transform:uppercase;margin-bottom:1.1cqw}
+.ttl.ph{display:none}
+.cov-m{position:absolute;left:28.5%;top:20.5%;width:47cqw}
+.cov-l{position:absolute;left:3.6cqw;bottom:4.2cqw;width:25cqw}
+.cov-l .iss{font-size:1.5em;line-height:1.15;font-weight:700;margin:0 0 .9em;text-transform:lowercase}
+.cov-l .iss span{display:block}
+.cov-l ol{list-style:none;margin:.9em 0 0;padding:0;font-size:.92em}
+.cov-l li{display:flex;gap:.4em;align-items:baseline}
+.cov-l li::after{content:"";order:1;flex:1;border-bottom:2px dotted var(--teal);opacity:.6;transform:translateY(-.25em)}
+.cov-l li em{order:2;font-style:normal}
+.cov-r{position:absolute;right:3.6cqw;bottom:4.2cqw;width:21cqw;text-align:right}
+.no3{--s:11.5;display:inline-block;line-height:.8}
+.burst{width:17cqw;margin:1.2cqw 0 0 auto;transform:rotate(9deg);aspect-ratio:1}
+.burst text{font-family:var(--disp);text-anchor:middle}
+.cov-note{position:absolute;left:-13%;top:24%;width:11cqw;--r:-6deg;z-index:2;margin:0}
+.cov-note svg{display:block;width:5.4cqw;height:2.4cqw;margin:.2em 0 0 55%;transform:rotate(-14deg)}
+.hint{position:absolute;right:3.6cqw;top:35%;width:13cqw;text-align:left;--r:4deg}
+
+/* ---------- 2 how to ---------- */
+.lead{margin:.9em 0 1.1em;max-width:34em}
+.steps{display:grid;grid-template-columns:1fr 1fr;gap:1.4cqw 2.2cqw;margin:0;padding:0;list-style:none}
+.steps li{position:relative}
+.steps .ill{aspect-ratio:200/128;margin-bottom:.3em}
+.steps .n{position:absolute;left:-.1em;top:-.28em;font-family:var(--disp);font-size:calc(4.6*var(--u));line-height:1;z-index:2}
+.steps p{margin:0}
+.steps b{text-transform:uppercase;letter-spacing:.06em}
+.sheet{position:relative;width:min(100%,39cqw);aspect-ratio:1;margin:1.4cqw auto 0;background:#FCFAF3;transform:rotate(1.3deg);
+  box-shadow:1px 1px 0 rgba(59,47,92,.16),3px 4px 0 rgba(59,47,92,.05)}
+.sheet canvas{position:absolute;inset:0;width:100%;height:100%;mix-blend-mode:multiply}
+.cap{position:absolute;left:25%;top:25%;width:50%;height:50%;border-radius:50%;touch-action:manipulation;
+  transition:transform .9s cubic-bezier(.5,-.25,.2,1.25)}
+.cap .ill{width:100%;height:100%;filter:drop-shadow(3px 5px 0 rgba(59,47,92,.13))}
+.cap:hover .ill{transform:scale(1.03) rotate(-3deg);transition:transform .35s cubic-bezier(.3,1.7,.5,1)}
+.cap .ill{transition:transform .35s cubic-bezier(.3,1.7,.5,1)}
+.sheet.night .cap .ill{animation:wait 1.15s cubic-bezier(.4,0,.6,1)}
+@keyframes wait{0%,100%{transform:rotate(0)}20%{transform:rotate(-5deg) scale(.98)}45%{transform:rotate(4deg)}70%{transform:rotate(-2deg) scale(.985)}}
+.sheet.off .cap{transform:translate(64%,-66%) rotate(31deg)}
+.moon{position:absolute;left:4%;top:16%;width:11%;opacity:0;pointer-events:none}
+.sheet.night .moon{animation:moon 1.15s cubic-bezier(.3,0,.7,1)}
+@keyframes moon{0%{opacity:1;transform:translate(0,0) rotate(-20deg)}50%{opacity:1;transform:translate(360%,-90%) rotate(0)}99%{opacity:1;transform:translate(730%,0) rotate(20deg)}100%{opacity:0;transform:translate(730%,0)}}
+.cap-line{margin:1.2em auto 0;min-height:2.9em;max-width:39cqw;text-align:center;font-weight:700}
+.foot{font-size:.9em;margin:1em 0 0;display:grid;grid-template-columns:auto 1fr;gap:.2em .6em;align-items:start}
+.foot svg{width:1.3em;height:1.3em;margin-top:.1em}
+.press{position:absolute;right:5%;top:19%;--r:7deg;text-align:center;z-index:3;pointer-events:none}
+.press svg{display:block;width:4.6cqw;height:2.2cqw;transform:rotate(128deg);margin:.2em auto 0}
+.sheet.off .press,.sheet.night .press{visibility:hidden}
+
+/* ---------- 3 five ---------- */
+.card{display:grid;grid-template-columns:41% 1fr;gap:1.6cqw;align-items:center;margin:1.5cqw 0;cursor:default}
+.card:nth-of-type(even){grid-template-columns:1fr 41%}
+.card:nth-of-type(even) .pic{order:2}
+.card .ill{aspect-ratio:220/170}
+.card h3{font-family:var(--disp);font-weight:400;font-size:calc(2.9*var(--u));letter-spacing:.03em;line-height:1;margin:0 0 .35em;text-transform:uppercase;display:inline-block;position:relative}
+.card h3 svg{position:absolute;left:-2%;bottom:-.4em;width:104%;height:.5em}
+.card p{margin:0;font-size:.95em;line-height:1.36}
+.card .wh2{display:block;margin-top:.35em;font-size:.9em;letter-spacing:.04em;text-transform:uppercase;font-weight:700}
+.card .txt{--r:0deg}
+
+/* ---------- 4 poster ---------- */
+.s4 .poster{grid-column:1/-1;position:absolute;inset:0;overflow:hidden}
+.th{stroke-dasharray:100;stroke-dashoffset:100;fill:none;stroke-linecap:round}
+.s4.grow .th{stroke-dashoffset:0;transition:stroke-dashoffset var(--v,2.4s) cubic-bezier(.35,.05,.2,1) var(--d,0s)}
+.lab{position:absolute;z-index:3;background:#FAF7EC;padding:.3em .6em;font-size:.9em;line-height:1.25;max-width:17em;transform:rotate(var(--r,-2deg));box-shadow:1px 1px 0 rgba(59,47,92,.14)}
+.lab svg{position:absolute;width:3.6cqw;height:1.7cqw}
+.l1{left:13.5%;top:6%}.l1 svg{right:100%;top:10%;transform:scaleX(-1) rotate(-10deg)}
+.l2{left:67.2%;top:13%;--r:2deg}.l2 svg{right:100%;top:20%;transform:scaleX(-1) rotate(8deg)}
+.l3{left:41%;top:8%;--r:1.5deg}.l3 svg{left:42%;top:112%;transform:rotate(58deg)}
+.l4{left:21.5%;top:14.5%;--r:-3deg}.l4 svg{left:14%;top:118%;transform:rotate(70deg)}
+.l5{left:66%;top:66%;--r:-1.5deg;max-width:20em}.l5 svg{left:8%;bottom:104%;transform:rotate(-70deg)}
+.under{position:absolute;left:4%;bottom:6.5%;width:60%;z-index:2;--s:9}
+.s4 .pn{z-index:4;background:#FAF7EC;border-radius:50%}
+.s4 .pn.r{left:auto;right:2.6cqw}
+
+/* ---------- 5 letters + weather ---------- */
+.letter{margin:1.3cqw 0 1.9cqw;font-size:.95em}
+.letter p{margin:0}
+.letter .re{margin-top:.6em;padding-left:1.1em;border-left:3px solid var(--pink);font-weight:700}
+.letter .who{display:block;text-align:right;margin-top:.2em;font-style:italic}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);margin-top:.8em;border-left:2px solid var(--teal);border-top:2px solid var(--teal);transform:rotate(.5deg);filter:url(#wobs)}
+.cal .hd{font-size:.8em;text-align:center;border-right:2px solid var(--teal);border-bottom:2px solid var(--teal);padding:.15em 0;font-weight:700;text-transform:uppercase}
+.day{position:relative;aspect-ratio:1;border-right:2px solid var(--teal);border-bottom:2px solid var(--teal);display:block;width:100%;touch-action:manipulation;transition:background-color .2s}
+.day b{position:absolute;left:.35em;top:.15em;font-size:.82em;font-weight:700}
+.day .pl{-webkit-mask-image:none;mask-image:none;stroke-width:2.2}
+.day.e{cursor:default}
+.day:not(.e):hover,.day.on{background:rgba(255,72,176,.16)}
+.day.on::after{content:"";position:absolute;inset:8%;border:3px solid var(--pink);border-radius:46% 54% 50% 50%/52% 48% 54% 46%;mix-blend-mode:multiply;transform:translate(var(--rx),var(--ry)) rotate(-8deg)}
+.day:not(.e):hover .pl.t{animation:rainy .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes rainy{40%{transform:translateY(7%)}}
+.calnote{min-height:3.4em;margin:.9em 0 .3em;font-weight:700;--r:-.7deg}
+.calnote b{font-family:var(--disp);font-weight:400;font-size:1.5em;letter-spacing:.04em;margin-right:.4em}
+.tot{font-size:.9em;margin:.5em 0 0}
+
+/* ---------- 6 back ---------- */
+.colo p{margin:.75em 0;max-width:36em}
+.colo .big{font-size:1.14em;font-weight:700}
+.copyno{display:inline-block;margin-top:.4em;--r:-2deg}
+.copyno b{font-family:var(--hand);font-style:italic;font-size:1.9em;display:inline-block;padding:0 .2em;border-bottom:2px solid var(--teal);line-height:1;transform:translate(calc(var(--rx)),var(--ry)) rotate(-4deg);color:var(--pink);mix-blend-mode:multiply}
+.back{display:flex;flex-direction:column;align-items:center;text-align:center;overflow:hidden}
+.stamp{width:58%;aspect-ratio:1;margin:1cqw 0 1.2cqw;transform:rotate(-11deg);touch-action:manipulation;border-radius:50%;position:relative;z-index:2}
+.stamp .ill{width:100%;height:100%;transition:transform .5s cubic-bezier(.2,1.8,.4,1)}
+.stamp:hover .ill{transform:rotate(4deg) scale(1.02)}
+.stamp.hit .ill{animation:hit .42s cubic-bezier(.2,1.6,.4,1)}
+@keyframes hit{0%{transform:scale(1.14) rotate(5deg)}35%{transform:scale(.93) rotate(-2deg)}100%{transform:scale(1)}}
+.stamp text,.ghost text{font-family:var(--disp)}
+.ghost{position:absolute;width:44%;aspect-ratio:1;pointer-events:none;mix-blend-mode:multiply;fill:var(--pink);z-index:1;
+  -webkit-mask-image:var(--grainP);mask-image:var(--grainP);-webkit-mask-size:190px;mask-size:190px;animation:ghost .3s cubic-bezier(.2,1.6,.4,1)}
+@keyframes ghost{0%{scale:1.25}100%{scale:1}}
+.back .how{max-width:26em;margin:0 0 1.6em}
+.hands{width:78%;text-align:left;margin-bottom:1.4em}
+.hands p{margin:0}.hands .sm{font-size:.85em;margin-top:.7em;font-weight:400}
+.hands ol{margin:.5em 0 0;padding:0 0 0 1.6em}
+.hands li{height:1.9em;border-bottom:2px dotted var(--teal);padding-top:.25em}
+.press-id{display:flex;align-items:center;gap:1em;text-align:left;margin-top:auto;font-size:.9em}
+.press-id .ill{width:7cqw;aspect-ratio:1;flex:none}
+.press-id b{font-family:var(--disp);font-weight:400;font-size:1.7em;letter-spacing:.05em;display:block;line-height:1}
+
+/* ---------- registration mark ---------- */
+.reg{position:fixed;right:14px;bottom:14px;z-index:50;width:104px;padding:8px 8px 6px;background:var(--flecks),#FAF7EC;text-align:center;
+  box-shadow:1px 1px 0 rgba(59,47,92,.2),0 10px 16px -10px rgba(59,47,92,.5);transform:rotate(-2deg);font-size:10px;line-height:1.25;letter-spacing:.04em;font-weight:700;user-select:none;-webkit-user-select:none}
+.reg button{display:block;position:relative;width:88px;height:88px;touch-action:none;cursor:grab;border-radius:50%;margin:0 auto 3px}
+.reg button:active{cursor:grabbing}
+.reg svg{position:absolute;inset:0;width:100%;height:100%;mix-blend-mode:multiply;overflow:visible;fill:none;stroke-width:2.4}
+.reg .rt{stroke:var(--teal)}
+.reg .rp{stroke:var(--pink);transform:translate(calc(var(--rx)*2.5),calc(var(--ry)*2.5))}
+.reg output{display:block;font-variant-numeric:tabular-nums;white-space:nowrap}
+.reg small{display:block;font-size:8.5px;font-weight:400;opacity:.85;text-transform:uppercase;letter-spacing:.08em}
+.reg.true output{color:var(--paper);background:var(--teal)}
+.desk{width:min(94vw,1180px);margin:-4vh auto 0;padding:0 0 3vh;font-size:12px;letter-spacing:.14em;text-transform:uppercase;display:flex;justify-content:space-between;gap:1em;padding-right:130px}
+
+/* ---------- phones: the zine turns sideways, pages stack ---------- */
+@media (max-width:820px){
+  .spread{--u:2cqw;width:min(93vw,520px);aspect-ratio:auto;grid-template-columns:minmax(0,1fr);grid-auto-rows:auto;font-size:13.5px;margin-bottom:8vh;--from:2deg}
+  .spread.in{transform:rotate(calc(var(--rest)*.4))}
+  .pg{padding:9cqw 6.5cqw 13cqw}
+  .spine{left:0;right:0;width:auto;top:var(--fold,50%);bottom:auto;height:0}
+  .spine::before{left:0;right:0;width:auto;top:-3cqw;bottom:auto;height:6cqw;background:linear-gradient(transparent,rgba(59,47,92,.09) 46%,rgba(255,255,255,.75) 49.5%,rgba(59,47,92,.14) 51%,rgba(59,47,92,.05) 62%,transparent)}
+  .spine i{top:-2.5px;left:22%;height:5px;width:6cqw;background:linear-gradient(#8f8a7c,#e9e6dc 45%,#a8a394)}
+  .spine i+i{left:auto;right:22%;bottom:auto;top:-2.5px}
+  .pn,.pg.R .pn{left:auto;right:5cqw;bottom:3.4cqw}
+  .slug{left:5cqw}.bar{right:5cqw}
+  .cov{padding:9cqw 5.5cqw 8cqw}
+  .ttl.dk{display:none}.ttl.ph{display:block}
+  .cov-top{font-size:.72em;letter-spacing:.14em;margin-bottom:3cqw}
+  .cov-m{position:relative;left:auto;top:auto;width:104%;margin:-9cqw -2% 0}
+  .cov-l,.cov-r{position:relative;left:auto;right:auto;bottom:auto;width:auto}
+  .cov-l{margin-top:4cqw}
+  .cov-r{display:flex;align-items:center;justify-content:space-between;margin-top:5cqw}
+  .no3{--s:11}.burst{width:40cqw;margin:0}
+  .cov-note{left:64%;top:62%;width:25cqw;--r:4deg}.cov-note svg{width:12cqw;height:5.4cqw;margin:.3em 0 0 0;transform:scaleX(-1) rotate(-24deg)}
+  .hint{display:none}
+  .steps{gap:5cqw 4cqw}
+  .sheet{width:100%}.cap-line{max-width:none}
+  .press svg{width:11cqw;height:5cqw}
+  .card{gap:4cqw;margin:6cqw 0}
+  .s4{aspect-ratio:600/1180!important}
+  .lab svg{width:9cqw;height:4.2cqw}
+  .l1{left:31%;top:1.6%}.l2{left:auto;right:30%;top:5.6%;max-width:10.5em}.l2 svg{right:auto;left:100%;transform:rotate(8deg)}
+  .l3{left:27%;top:24.6%}.l3 svg{left:40%;top:auto;bottom:108%;transform:rotate(-80deg)}.l4{display:none}
+  .s4 .pn:not(.r){left:5cqw;right:auto}
+  .l5{left:7%;top:47%;max-width:15em}
+  .under{--s:6.5;width:90%;left:5%;bottom:7%}
+  .stamp{width:74%;margin:6cqw 0 4cqw}
+  .press-id{margin-top:6cqw}.press-id .ill{width:16cqw}
+  .reg{width:74px;padding:5px 5px 4px;right:8px;bottom:8px;font-size:8.5px}
+  .reg button{width:62px;height:62px}
+  .reg small{display:none}
+  .desk{flex-direction:column;padding-right:90px;font-size:10px}
+}
+@media (prefers-reduced-motion:reduce){
+  .spread{transition:none;transform:rotate(var(--rest))!important}
+  .nod .ill,.sheet.night .cap .ill,.stamp.hit .ill,.ghost,.day .pl.t,.sheet.night .moon{animation:none!important}
+  .cap{transition:none}
+  .th{stroke-dashoffset:0;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<svg class="defs" aria-hidden="true" focusable="false">
+  <defs>
+    <pattern id="hp" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(15)"><circle cx="3.5" cy="3.5" r="2.25" fill="#FF48B0"/></pattern>
+    <pattern id="hpl" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(15)"><circle cx="3.5" cy="3.5" r="1.35" fill="#FF48B0"/></pattern>
+    <pattern id="ht" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(75)"><circle cx="3" cy="3" r="1.75" fill="#00838A"/></pattern>
+    <pattern id="htl" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(75)"><circle cx="3" cy="3" r="1.05" fill="#00838A"/></pattern>
+    <pattern id="lt" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(-38)"><rect width="5" height="1.7" fill="#00838A"/></pattern>
+    <pattern id="lp" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(52)"><rect width="6" height="2.4" fill="#FF48B0"/></pattern>
+    <filter id="wob" x="-6%" y="-6%" width="112%" height="112%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="5" xChannelSelector="R" yChannelSelector="G"/></filter>
+    <filter id="wobs" x="-3%" y="-3%" width="106%" height="106%"><feTurbulence type="fractalNoise" baseFrequency=".02" numOctaves="2" seed="8"/><feDisplacementMap in="SourceGraphic" scale="3.5" xChannelSelector="R" yChannelSelector="G"/></filter>
+    <symbol id="arrow" viewBox="0 0 100 44"><path d="M5 34C28 8 60 6 93 22M93 22 78 11M93 22 76 30"/></symbol>
+    <symbol id="uline" viewBox="0 0 200 14" preserveAspectRatio="none"><path d="M3 8C40 2 62 12 100 6S168 3 197 9"/></symbol>
+    <symbol id="aster" viewBox="0 0 30 30"><path d="M15 3 14 27M4 9 26 21M5 22 25 8"/></symbol>
+    <symbol id="ring" viewBox="0 0 60 60"><path d="M32 5C47 5 56 17 55 31 54 47 42 56 28 55 13 54 4 43 5 28 6 14 18 6 35 8"/></symbol>
+    <!-- weather -->
+    <symbol id="w-c" viewBox="0 0 40 40"><path d="M11 25C6 25 6 18 11 17 11 11 18 9 21 14 25 10 32 14 30 19 35 20 34 26 29 25Z"/></symbol>
+    <symbol id="w-r" viewBox="0 0 40 40"><path d="M11 23C6 23 6 16 11 15 11 9 18 7 21 12 25 8 32 12 30 17 35 18 34 24 29 23ZM13 28l-2 6M20 28l-2 6M27 28l-2 6"/></symbol>
+    <symbol id="w-R" viewBox="0 0 40 40"><path class="lt" d="M11 22C6 22 6 15 11 14 11 8 18 6 21 11 25 7 32 11 30 16 35 17 34 23 29 22Z"/><path d="M11 22C6 22 6 15 11 14 11 8 18 6 21 11 25 7 32 11 30 16 35 17 34 23 29 22ZM10 26l-3 9M15 26l-3 9M20 26l-3 9M25 26l-3 9M30 26l-3 9"/></symbol>
+    <symbol id="w-d" viewBox="0 0 40 40"><path d="M11 23C6 23 6 16 11 15 11 9 18 7 21 12 25 8 32 12 30 17 35 18 34 24 29 23ZM12 29v.5M18 32v.5M24 29v.5M29 33v.5M15 35v.5"/></symbol>
+    <symbol id="w-f" viewBox="0 0 40 40"><path d="M6 16q7-4 14 0t14 0M6 23q7-4 14 0t14 0M6 30q7-4 14 0t14 0"/></symbol>
+    <symbol id="w-w" viewBox="0 0 40 40"><path d="M10 18 34 12M5 24 33 17M9 31 35 24M14 36 30 32"/></symbol>
+    <symbol id="w-s" viewBox="0 0 40 40"><circle cx="22" cy="23" r="7"/><path class="ps" stroke-width="2.4" d="M22 10v-4M22 36v4M9 23H5M35 23h4M13 14l-3-3M31 14l3-3M13 32l-3 3M31 32l3 3"/></symbol>
+    <symbol id="w-m" viewBox="0 0 40 40"><path d="M3 35c0-9 13-9 13 0z"/></symbol>
+    <symbol id="capP" viewBox="0 0 24 20"><path d="M2 12C2 2 22 2 22 12Z"/></symbol>
+    <symbol id="capT" viewBox="0 0 24 20"><path d="M2 12C2 2 22 2 22 12ZM10 12 9 19M14 12l1 7"/></symbol>
+    <!-- stamp, pink plate -->
+    <symbol id="stampP" viewBox="0 0 300 300">
+      <path id="circ" fill="none" d="M150 150m-97 0a97 97 0 1 1 194 0a97 97 0 1 1-194 0"/>
+      <circle cx="150" cy="150" r="140" fill="none" stroke="#FF48B0" stroke-width="9"/>
+      <circle cx="150" cy="150" r="127" fill="none" stroke="#FF48B0" stroke-width="2.5"/>
+      <circle cx="150" cy="150" r="88" fill="none" stroke="#FF48B0" stroke-width="2.5" stroke-dasharray="3 6"/>
+      <text font-size="31" letter-spacing="3"><textPath href="#circ" textLength="664" lengthAdjust="spacingAndGlyphs">DAMP HANDS PRESS * READ IT * THEN * LET IT GO *</textPath></text>
+      <g transform="rotate(-8 150 150)"><rect x="18" y="113" width="264" height="74" rx="5"/><text x="150" y="176" font-size="70" text-anchor="middle" fill="#fff" textLength="238" lengthAdjust="spacingAndGlyphs">PASS IT ON</text></g>
+    </symbol>
+  </defs>
+</svg>
+
+<main>
+<!-- ================= 1 · COVER ================= -->
+<section class="spread s1" style="--bx:2.2px;--by:-1.4px;--rest:-.7deg;--from:3deg" aria-label="Cover">
+  <i class="crop a"></i><i class="crop b"></i><i class="crop c"></i><i class="crop d"></i>
+  <span class="bar"><i></i><i></i><i></i></span>
+  <div class="spine"><i></i><i></i></div>
+  <div class="cov">
+    <div class="cov-top"><span>Damp Hands Press</span><span>a zine about looking</span></div>
+    <h1 class="sr">Spore Print, issue 3: The Wet Month</h1>
+    <div class="ill ttl dk" style="aspect-ratio:1100/236" aria-hidden="true">
+      <svg class="pl p" viewBox="0 0 1100 236"><text x="0" y="230" font-family="Impact,Haettenschweiler,'Arial Narrow Bold','Franklin Gothic Condensed','Arial Narrow','Nimbus Sans Narrow','Liberation Sans Narrow',Arial,sans-serif" font-size="284" textLength="1100" lengthAdjust="spacingAndGlyphs">SPORE PRINT</text></svg>
+      <svg class="pl t" viewBox="0 0 1100 236">
+        <clipPath id="tc1"><text x="0" y="230" font-family="Impact,Haettenschweiler,'Arial Narrow Bold','Franklin Gothic Condensed','Arial Narrow','Nimbus Sans Narrow','Liberation Sans Narrow',Arial,sans-serif" font-size="284" textLength="1100" lengthAdjust="spacingAndGlyphs">SPORE PRINT</text></clipPath>
+        <rect x="0" y="150" width="1100" height="90" class="lt" clip-path="url(#tc1)"/>
+        <rect x="0" y="0" width="1100" height="46" class="htl" clip-path="url(#tc1)"/>
+        <text x="0" y="230" stroke-width="3.5" font-family="Impact,Haettenschweiler,'Arial Narrow Bold','Franklin Gothic Condensed','Arial Narrow','Nimbus Sans Narrow','Liberation Sans Narrow',Arial,sans-serif" font-size="284" textLength="1100" lengthAdjust="spacingAndGlyphs">SPORE PRINT</text>
+      </svg>
+    </div>
+    <div class="ill ttl ph" style="aspect-ratio:500/404" aria-hidden="true">
+      <svg class="pl p" viewBox="0 0 500 404" font-family="Impact,Haettenschweiler,'Arial Narrow Bold','Franklin Gothic Condensed','Arial Narrow','Nimbus Sans Narrow','Liberation Sans Narrow',Arial,sans-serif" font-size="242"><text x="0" y="194" textLength="500" lengthAdjust="spacingAndGlyphs">SPORE</text><text x="0" y="398" textLength="500" lengthAdjust="spacingAndGlyphs">PRINT</text></svg>
+      <svg class="pl t" viewBox="0 0 500 404" font-family="Impact,Haettenschweiler,'Arial Narrow Bold','Franklin Gothic Condensed','Arial Narrow','Nimbus Sans Narrow','Liberation Sans Narrow',Arial,sans-serif" font-size="242">
+        <clipPath id="tc2"><text x="0" y="194" textLength="500" lengthAdjust="spacingAndGlyphs">SPORE</text><text x="0" y="398" textLength="500" lengthAdjust="spacingAndGlyphs">PRINT</text></clipPath>
+        <rect x="0" y="130" width="500" height="70" class="lt" clip-path="url(#tc2)"/><rect x="0" y="334" width="500" height="70" class="lt" clip-path="url(#tc2)"/>
+        <text x="0" y="194" textLength="500" lengthAdjust="spacingAndGlyphs">SPORE</text><text x="0" y="398" textLength="500" lengthAdjust="spacingAndGlyphs">PRINT</text>
+      </svg>
+    </div>
+
+    <div class="cov-m nod" id="covm">
+      <p class="note pk cov-note" aria-hidden="true">we stared at this one for forty minutes<svg class="dd" viewBox="0 0 100 44"><use href="#arrow"/></svg></p>
+      <div class="ill" style="aspect-ratio:600/620" role="img" aria-label="A large red-capped, white-spotted toadstool printed in pink with teal line work">
+        <svg class="pl p" viewBox="0 0 600 620">
+          <circle cx="300" cy="306" r="286" class="hpl"/>
+          <ellipse cx="300" cy="250" rx="250" ry="56" class="wh"/>
+          <ellipse cx="304" cy="584" rx="200" ry="26" class="lp"/>
+          <path class="wh" d="M268 246C262 360 250 470 236 560 262 592 350 592 372 560 352 470 340 360 334 246Z"/>
+          <path class="hp" d="M254 326C286 350 322 350 348 326L362 384C338 366 322 396 302 376 284 398 268 362 242 386Z"/>
+          <g class="w">
+            <path d="M50 250C50 90 170 24 300 24 430 24 550 90 550 250A250 56 0 0 0 50 250Z"/>
+            <g class="wh">
+              <ellipse cx="300" cy="82" rx="36" ry="23"/><ellipse cx="208" cy="122" rx="27" ry="20" transform="rotate(-20 208 122)"/>
+              <ellipse cx="396" cy="116" rx="29" ry="19" transform="rotate(18 396 116)"/><ellipse cx="138" cy="180" rx="22" ry="19" transform="rotate(-35 138 180)"/>
+              <ellipse cx="470" cy="172" rx="25" ry="19" transform="rotate(30 470 172)"/><ellipse cx="296" cy="158" rx="31" ry="17"/>
+              <ellipse cx="232" cy="190" rx="16" ry="9"/><ellipse cx="372" cy="182" rx="18" ry="9"/>
+              <ellipse cx="88" cy="226" rx="13" ry="12" transform="rotate(-50 88 226)"/><ellipse cx="516" cy="220" rx="14" ry="12" transform="rotate(45 516 220)"/>
+              <ellipse cx="334" cy="40" rx="15" ry="7"/><ellipse cx="428" cy="74" rx="12" ry="8" transform="rotate(30 428 74)"/>
+              <ellipse cx="170" cy="96" rx="11" ry="8" transform="rotate(-30 170 96)"/><ellipse cx="250" cy="52" rx="10" ry="6" transform="rotate(-12 250 52)"/>
+              <ellipse cx="185" cy="172" rx="9" ry="7"/><ellipse cx="424" cy="150" rx="8" ry="6"/>
+            </g>
+          </g>
+        </svg>
+        <svg class="pl t" viewBox="0 0 600 620">
+          <g transform="translate(300 250) scale(1 .224)"><circle r="125" stroke-width="250" stroke-dasharray="2.4 9.68" stroke-linecap="butt"/></g>
+          <g class="w">
+            <path fill="#fff" stroke-width="4" d="M268 246C262 360 250 470 236 560 262 592 350 592 372 560 352 470 340 360 334 246Z"/>
+            <path class="lt" d="M316 262C322 360 336 470 352 566 364 568 372 564 372 560 352 470 340 360 334 262Z"/>
+            <ellipse cx="300" cy="250" rx="250" ry="56" stroke-width="4.5"/>
+            <path stroke-width="4.5" d="M50 250C50 90 170 24 300 24 430 24 550 90 550 250"/>
+            <path class="ht" d="M336 26C480 46 556 138 549 246L500 228C504 150 452 70 336 26Z"/>
+            <path class="htl" d="M50 250C50 190 66 140 96 104 80 150 80 200 92 236Z"/>
+            <path d="M254 326C286 350 322 350 348 326L362 384C338 366 322 396 302 376 284 398 268 362 242 386Z"/>
+            <path stroke-width="2.5" d="M268 88a36 23 0 0 0 66 6M186 128a27 20 -20 0 0 46 8M372 122a29 19 18 0 0 50 2M120 186a22 19 0 0 0 36 6M452 180a25 19 0 0 0 40 0M270 164a31 17 0 0 0 56 2"/>
+            <path d="M226 550C238 536 260 540 268 554M298 558C312 544 340 542 352 554M372 548C386 540 394 548 398 560M150 592l8-36M166 594l-2-27M182 592l12-31M420 592l-8-34M437 594l4-26M454 592l-12-30M96 598l6-18M508 598l-5-20"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <p class="note hint">move about. the plates slip. Gerald is not a precise machine.</p>
+
+    <div class="cov-l">
+      <p class="iss"><span>issue 3</span><span>the wet month</span><span>free or trade</span></p>
+      <svg class="dd pk" viewBox="0 0 200 14" preserveAspectRatio="none" style="width:70%;height:.8em;display:block;margin:-.6em 0 .6em" aria-hidden="true"><use href="#uline"/></svg>
+      <p style="margin:0">we go out. it rains. we look down. that is more or less all of it.</p>
+      <ol>
+        <li><span>how to take a spore print</span><em>3</em></li>
+        <li><span>five you will meet</span><em>5</em></li>
+        <li><span>the forest (underneath)</span><em>7</em></li>
+        <li><span>letters, weather</span><em>9</em></li>
+        <li><span>pass it on</span><em>12</em></li>
+      </ol>
+    </div>
+    <div class="cov-r">
+      <div class="hl no3" data-t="No.3" aria-hidden="true">No.3</div>
+      <div class="ill burst" role="img" aria-label="Sticker: free or trade">
+        <svg class="pl p" viewBox="0 0 200 200"><path d="M100 4 116 26 140 12 146 38 173 34 168 60 194 68 178 90 198 108 176 122 186 148 160 150 158 177 134 168 122 192 104 172 84 194 74 168 48 178 48 151 22 148 34 124 10 108 32 92 16 68 42 62 38 34 64 40 72 13 92 28Z"/></svg>
+        <svg class="pl t" viewBox="0 0 200 200"><circle cx="100" cy="102" r="60" stroke-width="2.5" stroke-dasharray="2 5"/><g class="f" transform="rotate(-6 100 100)"><text x="100" y="97" font-size="46">FREE</text><text x="100" y="118" font-size="17" font-family="Courier,monospace" font-weight="700">or</text><text x="100" y="156" font-size="42">TRADE</text></g></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2 · HOW TO ================= -->
+<section class="spread s2" style="--bx:-1.6px;--by:2.4px;--rest:.6deg;--from:-3deg" aria-label="How to take a spore print">
+  <i class="crop a"></i><i class="crop b"></i><i class="crop c"></i><i class="crop d"></i>
+  <span class="slug">plate 1 pink · plate 2 teal</span><span class="bar"><i></i><i></i><i></i></span>
+  <div class="spine"><i></i><i></i></div>
+  <div class="pg L">
+    <h2 class="hl" style="--s:6.5" data-t="How to take a spore print">How to take a spore print</h2>
+    <p class="lead">a mushroom is a machine for dropping dust. leave a cap alone on paper overnight and it draws its own portrait. this is how we do it, on the draining board.</p>
+    <ol class="steps">
+      <li><span class="n pk" aria-hidden="true">1</span>
+        <div class="ill" role="img" aria-label="A knife cutting the stem just under the cap">
+          <svg class="pl p" viewBox="0 0 200 128"><g class="w"><path d="M40 70C40 16 150 16 150 70 130 78 60 78 40 70Z"/><g class="wh"><ellipse cx="78" cy="42" rx="9" ry="6"/><ellipse cx="112" cy="38" rx="10" ry="6"/><ellipse cx="96" cy="58" rx="7" ry="4"/><ellipse cx="60" cy="60" rx="5" ry="4"/><ellipse cx="132" cy="58" rx="6" ry="4"/></g><path d="M150 96l42-10 2 9-42 11z"/></g></svg>
+          <svg class="pl t" viewBox="0 0 200 128"><g class="w"><path d="M40 70C40 16 150 16 150 70 130 78 60 78 40 70Z"/><path class="ht" d="M112 26C140 34 152 52 150 70L132 74C136 54 130 38 112 26Z"/><path d="M84 77 82 118C88 124 104 124 110 118L108 77"/><path class="lt" d="M100 78 101 121 110 118 108 77Z"/><path stroke-dasharray="5 5" stroke-width="2.4" d="M62 90H138"/><path fill="#fff" d="M96 86 152 104 150 96Z"/></g></svg>
+        </div>
+        <p><b>cut the stem</b> close to the cap. say sorry if you like. we do.</p></li>
+      <li><span class="n pk" aria-hidden="true">2</span>
+        <div class="ill" role="img" aria-label="The cap placed gills down on a sheet of paper">
+          <svg class="pl p" viewBox="0 0 200 128"><g class="w"><path d="M52 84C52 34 148 34 148 84 130 92 70 92 52 84Z"/><g class="wh"><ellipse cx="86" cy="58" rx="8" ry="5"/><ellipse cx="114" cy="54" rx="9" ry="6"/><ellipse cx="100" cy="72" rx="6" ry="4"/><ellipse cx="70" cy="76" rx="5" ry="3"/><ellipse cx="132" cy="74" rx="5" ry="3"/></g><path class="ps" stroke-width="4" d="M100 4V24M100 24 91 14M100 24l9-10"/></g></svg>
+          <svg class="pl t" viewBox="0 0 200 128"><g class="w"><path fill="#fff" d="M14 108 52 66H160L190 108Z"/><path class="htl" d="M56 96C80 104 130 104 152 94L160 100C130 112 70 112 46 100Z"/></g><g class="w"><path fill="none" d="M52 84C52 34 148 34 148 84 130 92 70 92 52 84Z"/><path stroke-width="2" d="M20 114H186M28 120H180"/></g></svg>
+        </div>
+        <p><b>gills down</b> on paper. white, dark, or half on each if you can't decide.</p></li>
+      <li><span class="n pk" aria-hidden="true">3</span>
+        <div class="ill" role="img" aria-label="An upturned glass covering the cap">
+          <svg class="pl p" viewBox="0 0 200 128"><g class="w"><path d="M70 98C70 62 130 62 130 98 118 104 82 104 70 98Z"/><g class="wh"><ellipse cx="90" cy="82" rx="6" ry="4"/><ellipse cx="110" cy="80" rx="6" ry="4"/></g><path class="hpl" d="M58 12H142L150 108H50Z"/></g></svg>
+          <svg class="pl t" viewBox="0 0 200 128"><g class="w"><path d="M58 12H142L150 108H50Z"/><path stroke-width="2.2" d="M70 24 66 92M132 22l2 30"/><path d="M70 98C70 62 130 62 130 98"/><path stroke-width="2" d="M18 108H184M30 116H172"/><path class="lt" d="M150 108H182L176 116H146Z"/></g></svg>
+        </div>
+        <p><b>cover with a glass.</b> a draught will smear it. so will the cat.</p></li>
+      <li><span class="n pk" aria-hidden="true">4</span>
+        <div class="ill" role="img" aria-label="Night: a moon above the glass">
+          <svg class="pl p" viewBox="0 0 200 128"><g class="w"><path d="M150 12A30 30 0 1 0 178 56 24 24 0 0 1 150 12Z"/><path d="M82 104C82 82 118 82 118 104 110 108 90 108 82 104Z"/></g></svg>
+          <svg class="pl t" viewBox="0 0 200 128"><g class="w"><path class="htl" d="M8 14C40 2 150 0 192 10 200 34 196 58 184 66 140 76 60 56 14 70 2 52 2 30 8 14Z"/><path d="M74 56H126L132 110H68Z"/><path stroke-width="2" d="M16 110H186"/><path stroke-width="2.4" d="M28 26h12l-12 14h13M50 12h9l-9 10h10M18 50h7l-7 8h8"/><path stroke-width="2" d="M96 22v10M91 27h10M112 44v8M108 48h8"/></g></svg>
+        </div>
+        <p><b>wait overnight.</b> do not peek. (we always peek.)</p></li>
+    </ol>
+    <span class="pn"><svg class="dd" viewBox="0 0 60 60" aria-hidden="true"><use href="#ring"/></svg>3</span>
+  </div>
+  <div class="pg R">
+    <h2 class="hl" style="--s:6.5" data-t="Now you.">Now you.</h2>
+    <p class="lead" style="margin-bottom:0">here is a cap we prepared earlier. press it and we will do the night for you.</p>
+    <div class="sheet" id="sheet">
+      <canvas id="spore" aria-hidden="true"></canvas>
+      <div class="moon ill" style="aspect-ratio:1"><svg class="pl p raw" viewBox="0 0 40 40"><path d="M24 4A16 16 0 1 0 37 26 13 13 0 0 1 24 4Z"/></svg></div>
+      <button class="cap" id="cap" aria-label="Lift the cap to take a spore print" aria-describedby="capline">
+        <div class="ill">
+          <svg class="pl p" viewBox="0 0 300 300"><g class="w"><circle cx="150" cy="150" r="136"/><g class="wh"><ellipse cx="150" cy="150" rx="20" ry="18"/><ellipse cx="104" cy="96" rx="19" ry="15" transform="rotate(-30 104 96)"/><ellipse cx="198" cy="92" rx="17" ry="14" transform="rotate(25 198 92)"/><ellipse cx="78" cy="168" rx="16" ry="14"/><ellipse cx="220" cy="170" rx="18" ry="14" transform="rotate(20 220 170)"/><ellipse cx="124" cy="222" rx="17" ry="13" transform="rotate(14 124 222)"/><ellipse cx="190" cy="226" rx="14" ry="12"/><ellipse cx="150" cy="50" rx="13" ry="9"/><ellipse cx="46" cy="118" rx="9" ry="11"/><ellipse cx="254" cy="122" rx="9" ry="11"/><ellipse cx="64" cy="226" rx="9" ry="8"/><ellipse cx="240" cy="226" rx="9" ry="8"/><ellipse cx="152" cy="262" rx="11" ry="6"/><ellipse cx="150" cy="100" rx="8" ry="7"/><ellipse cx="110" cy="150" rx="6" ry="6"/><ellipse cx="188" cy="140" rx="7" ry="6"/></g></g></svg>
+          <svg class="pl t" viewBox="0 0 300 300"><g class="w"><circle cx="150" cy="150" r="136" stroke-width="4"/><path class="ht" d="M150 14A136 136 0 0 1 150 286 170 170 0 0 0 226 150 170 170 0 0 0 150 14Z"/><circle cx="150" cy="150" r="46" stroke-width="2" stroke-dasharray="3 7"/><path stroke-width="2.4" d="M88 104a19 15 0 0 0 30 4M184 100a17 14 0 0 0 28 2M64 176a16 14 0 0 0 28 2M206 178a18 14 0 0 0 28 0M110 230a17 13 0 0 0 28 2"/></g></svg>
+        </div>
+      </button>
+      <p class="note pk press" aria-hidden="true">press<br>here<svg class="dd" viewBox="0 0 100 44"><use href="#arrow"/></svg></p>
+    </div>
+    <p class="cap-line" id="capline" aria-live="polite">the cap is on the paper, gills down. nothing to see yet.</p>
+    <p class="foot"><svg class="dd pk" viewBox="0 0 30 30" aria-hidden="true"><use href="#aster"/></svg><span>the print is the spores themselves, fallen straight down from between the gills. each line is one gill. the colour of the dust is a clue, not an answer. ours comes out teal because everything of ours comes out teal or pink.</span></p>
+    <span class="pn"><svg class="dd" viewBox="0 0 60 60" aria-hidden="true"><use href="#ring"/></svg>4</span>
+  </div>
+</section>
+
+<!-- ================= 3 · FIVE YOU WILL MEET ================= -->
+<section class="spread s3" style="--bx:2.8px;--by:1.2px;--rest:-.4deg;--from:3deg" aria-label="Five you will meet">
+  <i class="crop a"></i><i class="crop b"></i><i class="crop c"></i><i class="crop d"></i>
+  <span class="slug">spore print 3 · sig. b</span><span class="bar"><i></i><i></i><i></i></span>
+  <div class="spine"><i></i><i></i></div>
+  <div class="pg L">
+    <h2 class="hl" style="--s:7.4" data-t="Five you will meet">Five you will meet</h2>
+    <p class="lead">we are not experts. we are two people with wet knees and one hand lens between us. these are five we meet most months, described the way you'd describe a neighbour.</p>
+    <div class="rule"><p><b>HOUSE RULE</b>we don't eat anything from this zine. this is a zine about looking.</p></div>
+
+    <article class="card nod" tabindex="0">
+      <div class="pic"><div class="ill" role="img" aria-label="A stout brown mushroom with a bun-like cap and a spongy underside">
+        <svg class="pl p" viewBox="0 0 220 170"><g class="w"><path d="M34 80C36 22 184 22 186 80 186 96 34 96 34 80Z"/><path class="hpl" d="M88 94C66 132 70 160 110 160 150 160 154 132 132 94Z"/><ellipse cx="110" cy="161" rx="80" ry="7" class="lp"/></g></svg>
+        <svg class="pl t" viewBox="0 0 220 170"><g class="w"><path class="lt" d="M34 80C36 22 184 22 186 80 186 96 34 96 34 80Z"/><path d="M34 80C36 22 184 22 186 80 186 96 34 96 34 80Z"/><path class="ht" d="M40 86C80 100 140 100 180 86 176 104 44 104 40 86Z"/><path d="M88 96C66 132 70 160 110 160 150 160 154 132 132 96"/><path stroke-width="1.8" d="M92 112q6 4 12 0M108 118q6 4 12 0M96 128q6 4 12 0M114 132q6 4 12 0M90 142q6 4 12 0M108 146q6 4 12 0M124 108q4 3 8 0"/><path d="M40 160l4-14M52 162l-2-10M172 160l-4-14M182 162l3-10"/></g></svg>
+      </div></div>
+      <div class="txt"><h3>The brown bun<svg class="dd pk" viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true"><use href="#uline"/></svg></h3>
+        <p>fat stem, cap like a bread roll left out in the rain. turn it over: no gills, just a sponge full of tiny holes. we have never once walked past one without pressing it.<span class="wh2">seen: under birch, under the hedge</span></p></div>
+    </article>
+
+    <article class="card nod" tabindex="0">
+      <div class="pic"><div class="ill" role="img" aria-label="A tall shaggy white cap dripping ink from its rim">
+        <svg class="pl p" viewBox="0 0 220 170"><g class="w"><path d="M80 96C92 106 128 106 140 96L143 112 137 128 132 114 126 136 119 116 113 130 107 113 100 132 94 114 86 126 79 110Z"/><circle cx="126" cy="146" r="3.5"/><circle cx="100" cy="142" r="3"/><circle cx="86" cy="136" r="2.4"/><ellipse cx="112" cy="162" rx="46" ry="5"/></g></svg>
+        <svg class="pl t" viewBox="0 0 220 170"><g class="w"><path d="M80 100C74 54 92 14 110 14 128 14 146 54 140 100"/><path class="f" d="M80 96C92 106 128 106 140 96L143 112 137 128 132 114 126 136 119 116 113 130 107 113 100 132 94 114 86 126 79 110Z"/><circle class="f" cx="126" cy="146" r="3.5"/><circle class="f" cx="100" cy="142" r="3"/><ellipse class="f" cx="112" cy="162" rx="46" ry="5"/><path stroke-width="2.2" d="M100 30q7 5 2 12M116 28q8 6 3 13M92 48q7 6 1 13M108 50q8 6 2 14M124 48q8 6 3 13M88 68q7 6 1 13M103 70q8 6 2 13M119 70q8 6 2 13M133 66q6 6 1 12M96 86q6 4 2 9M112 88q6 4 2 9M127 86q6 4 2 9"/><path stroke-width="2.4" d="M106 118V160M116 118V160"/></g></svg>
+      </div></div>
+      <div class="txt"><h3>The shaggy one<svg class="dd pk" viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true"><use href="#uline"/></svg></h3>
+        <p>tall white cap covered in curls, like a judge's wig on a stick. gone by thursday: it melts itself from the rim up into ink. the third colour in this zine is our tribute.<span class="wh2">seen: verges, the car park</span></p></div>
+    </article>
+    <span class="pn"><svg class="dd" viewBox="0 0 60 60" aria-hidden="true"><use href="#ring"/></svg>5</span>
+  </div>
+  <div class="pg R">
+    <article class="card nod" tabindex="0" style="margin-top:0">
+      <div class="pic"><div class="ill" role="img" aria-label="Rounded bracket shelves growing from a birch trunk">
+        <svg class="pl p" viewBox="0 0 220 170"><g class="w"><path d="M132 52C170 44 196 60 192 74 172 84 146 80 132 78Z"/><path d="M88 96C54 90 30 104 34 116 54 126 76 122 88 120Z"/><path class="hpl" d="M132 118C160 112 180 124 176 134 160 142 142 138 132 136Z"/></g></svg>
+        <svg class="pl t" viewBox="0 0 220 170"><g class="w"><path d="M88 0C86 60 90 120 86 170M132 0C134 60 130 120 134 170"/><path class="htl" d="M112 0H132C134 60 130 120 134 170H114Z"/><path stroke-width="2.4" d="M94 20h12M112 34h14M96 58h9M108 74h16M94 140h10M110 152h14M100 98h8M116 104h10"/><path d="M132 52C170 44 196 60 192 74 172 84 146 80 132 78"/><path stroke-width="2" d="M140 60C162 56 180 64 184 72M88 96C54 90 30 104 34 116 54 126 76 122 88 120M80 104C62 102 46 108 42 114M132 118C160 112 180 124 176 134 160 142 142 138 132 136"/><path class="lt" d="M132 78C146 80 172 84 192 74 176 90 146 88 132 86ZM88 120C76 122 54 126 34 116 50 132 76 130 88 128Z"/></g></svg>
+      </div></div>
+      <div class="txt"><h3>The shelf<svg class="dd pk" viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true"><use href="#uline"/></svg></h3>
+        <p>a bracket on a birch, pale and rounded like a hoof or a small loaf. flat underneath, no gills. it stays put for months. you can knock on it. we knock on it.<span class="wh2">seen: birch, standing or fallen</span></p></div>
+    </article>
+
+    <article class="card nod" tabindex="0">
+      <div class="pic"><div class="ill" role="img" aria-label="Tiny bright cups sitting on a mound of moss, with a matchstick for scale">
+        <svg class="pl p" viewBox="0 0 220 170"><g class="w"><ellipse cx="92" cy="92" rx="26" ry="14"/><ellipse cx="136" cy="104" rx="17" ry="9"/><ellipse cx="64" cy="112" rx="11" ry="6"/><ellipse cx="112" cy="122" rx="8" ry="4.5"/><circle cx="196" cy="94" r="6"/><path class="hpl" d="M14 150C30 96 190 92 208 150Z"/></g></svg>
+        <svg class="pl t" viewBox="0 0 220 170"><g class="w"><path class="lt" d="M14 150C30 96 190 92 208 150Z" opacity=".8"/><ellipse cx="92" cy="92" rx="26" ry="14" fill="#fff"/><ellipse cx="136" cy="104" rx="17" ry="9" fill="#fff"/><ellipse cx="64" cy="112" rx="11" ry="6" fill="#fff"/><ellipse cx="112" cy="122" rx="8" ry="4.5" fill="#fff"/><ellipse class="ht" cx="94" cy="94" rx="17" ry="8"/><ellipse class="ht" cx="137" cy="105" rx="10" ry="5"/><path stroke-width="2.2" d="M22 150l4-16M34 150l-2-22M48 150l5-26M160 150l-4-26M176 150l3-24M192 150l-5-18M70 150l-3-14M130 150l3-16M100 150v-12"/><path stroke-width="3.4" d="M150 150 194 96"/><path stroke-width="2" d="M10 152H212"/></g></svg>
+      </div></div>
+      <div class="txt"><h3>The orange cup<svg class="dd pk" viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true"><use href="#uline"/></svg></h3>
+        <p>the size of a lentil. bright orange cups sat on moss. (printed here in pink. we have two inks and neither is orange. imagination is free.) match for scale.<span class="wh2">seen: damp moss, wall tops. kneel.</span></p></div>
+    </article>
+
+    <article class="card nod" tabindex="0">
+      <div class="pic"><div class="ill" role="img" aria-label="A ring of small pale caps on a lawn">
+        <svg class="pl p" viewBox="0 0 220 170"><g class="w"><ellipse cx="110" cy="98" rx="86" ry="36" class="ps" stroke-width="12" stroke-dasharray="1 9" opacity=".9"/><use href="#capP" x="14" y="80" width="24" height="20"/><use href="#capP" x="36" y="58" width="22" height="18"/><use href="#capP" x="70" y="48" width="20" height="17"/><use href="#capP" x="108" y="46" width="20" height="17"/><use href="#capP" x="146" y="52" width="22" height="18"/><use href="#capP" x="176" y="68" width="24" height="20"/><use href="#capP" x="184" y="96" width="26" height="22"/><use href="#capP" x="150" y="118" width="28" height="23"/><use href="#capP" x="100" y="128" width="30" height="25"/><use href="#capP" x="52" y="120" width="28" height="23"/><use href="#capP" x="18" y="104" width="26" height="22"/></g></svg>
+        <svg class="pl t" viewBox="0 0 220 170"><g class="w" stroke-width="2"><ellipse cx="110" cy="98" rx="66" ry="24" class="htl"/><use href="#capT" x="14" y="80" width="24" height="20"/><use href="#capT" x="36" y="58" width="22" height="18"/><use href="#capT" x="70" y="48" width="20" height="17"/><use href="#capT" x="108" y="46" width="20" height="17"/><use href="#capT" x="146" y="52" width="22" height="18"/><use href="#capT" x="176" y="68" width="24" height="20"/><use href="#capT" x="184" y="96" width="26" height="22"/><use href="#capT" x="150" y="118" width="28" height="23"/><use href="#capT" x="100" y="128" width="30" height="25"/><use href="#capT" x="52" y="120" width="28" height="23"/><use href="#capT" x="18" y="104" width="26" height="22"/><path d="M8 40l3-10M30 30l-2-9M190 34l3-10M206 50l2-9M96 96l2-8M120 104l-2-8M80 104l2-7M140 92l2-8M6 150l3-10M210 152l-3-10M110 20l1-9M60 24l2-8M160 22l-2-8"/></g></svg>
+      </div></div>
+      <div class="txt"><h3>The ring<svg class="dd pk" viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true"><use href="#uline"/></svg></h3>
+        <p>pale caps in a circle on a lawn, a bit wider every year. the ring is the outer edge of one creature living in the turf. we walked round it twice and felt watched.<span class="wh2">seen: lawns, the football pitch</span></p></div>
+    </article>
+    <div class="rule" style="--r:-1deg;margin-bottom:0"><p>again, in case you skipped it: we don't eat anything from this zine. this is a zine about looking.</p></div>
+    <span class="pn"><svg class="dd" viewBox="0 0 60 60" aria-hidden="true"><use href="#ring"/></svg>6</span>
+  </div>
+</section>
+
+<!-- ================= 4 · CENTREFOLD ================= -->
+<section class="spread s4" style="--bx:-2.4px;--by:-2px;--rest:.4deg;--from:-3deg" aria-label="Centrefold: the forest is mostly underneath">
+  <i class="crop a"></i><i class="crop b"></i><i class="crop c"></i><i class="crop d"></i>
+  <div class="spine"><i></i><i></i></div>
+  <div class="poster ill" id="poster" role="img" aria-label="A cross-section of a forest floor. Above the ground line, tree trunks, small mushrooms and a pair of boots in the rain. Below, roots spread out and fine threads of mycelium link every tree to every other."></div>
+  <p class="lab l1">a tree<svg class="dd pk" viewBox="0 0 100 44" aria-hidden="true"><use href="#arrow"/></svg></p>
+  <p class="lab l2">another tree. they are in touch.<svg class="dd pk" viewBox="0 0 100 44" aria-hidden="true"><use href="#arrow"/></svg></p>
+  <p class="lab l3">the bit we find (just the fruit)<svg class="dd pk" viewBox="0 0 100 44" aria-hidden="true"><use href="#arrow"/></svg></p>
+  <p class="lab l4">us, looking<svg class="dd pk" viewBox="0 0 100 44" aria-hidden="true"><use href="#arrow"/></svg></p>
+  <p class="lab l5">mycelium: the actual mushroom. threads, everywhere, tying the roots together. it was here first and has no opinion about the zine.<svg class="dd pk" viewBox="0 0 100 44" aria-hidden="true"><use href="#arrow"/></svg></p>
+  <h2 class="hl under" data-t="The forest is mostly underneath">The forest is mostly underneath</h2>
+  <span class="pn"><svg class="dd" viewBox="0 0 60 60" aria-hidden="true"><use href="#ring"/></svg>7</span>
+  <span class="pn r"><svg class="dd" viewBox="0 0 60 60" aria-hidden="true"><use href="#ring"/></svg>8</span>
+</section>
+
+<!-- ================= 5 · LETTERS + WEATHER ================= -->
+<section class="spread s5" style="--bx:1.4px;--by:2.8px;--rest:-.6deg;--from:3deg" aria-label="Letters and weather">
+  <i class="crop a"></i><i class="crop b"></i><i class="crop c"></i><i class="crop d"></i>
+  <span class="slug">spore print 3 · sig. c</span><span class="bar"><i></i><i></i><i></i></span>
+  <div class="spine"><i></i><i></i></div>
+  <div class="pg L">
+    <h2 class="hl" style="--s:7.4" data-t="Dear damp hands">Dear damp hands</h2>
+    <p class="lead" style="margin-bottom:.4em">write to us. we write back, slowly, in pencil.</p>
+    <div class="letter paste" style="--r:-1.2deg"><i class="tape"></i>
+      <p>I took a spore print as instructed in issue 2 and my flatmate threw it away, thinking it was a dirty piece of paper. Is there anything to be done?<span class="who">Odile, top flat</span></p>
+      <p class="re">"a dirty piece of paper" is the nicest thing this press has been called. do another. label the glass.</p></div>
+    <div class="letter paste" style="--r:1.4deg;margin-left:6%"><i class="tape tl" style="--tr:5deg"></i>
+      <p>You said issue 3 would be out "in spring". It is now autumn.<span class="who">a subscriber (the subscriber)</span></p>
+      <p class="re">Gerald had a drum fault, and then we went on holiday. thank you for being all of our subscribers.</p></div>
+    <div class="letter paste" style="--r:-.8deg"><i class="tape" style="--tr:3deg;left:22%"></i>
+      <p>I found one with a sponge underneath and I pressed it like you said. Why does everybody press it?<span class="who">Wren, age 9</span></p>
+      <p class="re">nobody knows, Wren. it is the bubble wrap of the woods.</p></div>
+    <span class="pn"><svg class="dd" viewBox="0 0 60 60" aria-hidden="true"><use href="#ring"/></svg>9</span>
+  </div>
+  <div class="pg R">
+    <h2 class="hl" style="--s:7.4" data-t="The wet month">The wet month</h2>
+    <p class="lead" style="margin-bottom:0">weather as seen from the back door, one square a day. pink cap = we found something. touch a day.</p>
+    <div class="cal" id="cal"></div>
+    <p class="calnote paste" id="calnote" aria-live="polite"><b>—</b>thirty-one days. pick one.</p>
+    <p class="tot" id="tot"></p>
+    <span class="pn"><svg class="dd" viewBox="0 0 60 60" aria-hidden="true"><use href="#ring"/></svg>10</span>
+  </div>
+</section>
+
+<!-- ================= 6 · BACK ================= -->
+<section class="spread s6" style="--bx:-2.6px;--by:1.6px;--rest:.5deg;--from:-3deg" aria-label="Colophon and back cover">
+  <i class="crop a"></i><i class="crop b"></i><i class="crop c"></i><i class="crop d"></i>
+  <span class="slug">end of plates</span><span class="bar"><i></i><i></i><i></i></span>
+  <div class="spine"><i></i><i></i></div>
+  <div class="pg L colo">
+    <h2 class="hl" style="--s:7.4" data-t="Colophon">Colophon</h2>
+    <p class="big">SPORE PRINT, issue 3: The Wet Month. written, drawn, folded and argued over by Damp Hands Press, which is two people and a cat.</p>
+    <p>printed in two colours on a machine named Gerald; 200 copies; stapled by hand.</p>
+    <p>inks: fluorescent pink and teal. where they overlap you get a violet we did not pay for. there is no black in this zine. we looked.</p>
+    <p>paper: recycled, with bits in. the bits are a feature. registration: approximate. Gerald does his best and so do we.</p>
+    <p>thank you: the birch, the car park verge, Odile, Wren, and everyone who traded us something. best trade this issue: a jar of damson jam and a drawing of a slug.</p>
+    <p>issue 4, The Frost Month, will be out when it's out.</p>
+    <p class="copyno paste">this is copy no. <b id="copyno">137</b> of 200</p>
+    <div class="rule" style="--r:1deg;margin-bottom:0"><p>one last time: we don't eat anything from this zine. this is a zine about looking.</p></div>
+    <span class="pn"><svg class="dd" viewBox="0 0 60 60" aria-hidden="true"><use href="#ring"/></svg>11</span>
+  </div>
+  <div class="pg R back" id="back">
+    <button class="stamp" id="stamp" aria-label="Pass it on stamp. Press to stamp the page again.">
+      <div class="ill">
+        <svg class="pl p" viewBox="0 0 300 300"><use href="#stampP"/></svg>
+        <svg class="pl t" viewBox="0 0 300 300"><g class="w"><circle cx="150" cy="150" r="133.5" stroke-width="2"/><g class="f"><path d="M150 70l4 10 11 1-8 7 2 11-9-6-9 6 2-11-8-7 11-1z"/><path d="M150 201l4 10 11 1-8 7 2 11-9-6-9 6 2-11-8-7 11-1z"/></g><circle cx="150" cy="150" r="146" stroke-width="2" stroke-dasharray="14 5 3 5"/></g></svg>
+      </div>
+    </button>
+    <p class="how">when you have finished, leave this on a bus, inside a library book, or under a windscreen wiper (dry days only, so: never). <span class="note pk" style="--r:-2deg">go on, stamp it again.</span></p>
+    <div class="hands paste" style="--r:1.2deg"><i class="tape tl" style="--tr:-3deg"></i>
+      <p>this copy has passed through:</p>
+      <ol><li><span class="note pk" style="--r:-2deg">us (damp)</span></li><li><span class="note" style="--r:1deg">Odile, top flat</span></li><li></li><li></li></ol>
+      <p class="sm">your name next. pencil is fine.</p>
+    </div>
+    <div class="press-id">
+      <div class="ill" role="img" aria-label="Damp Hands Press mark: a wet hand print">
+        <svg class="pl p" viewBox="0 0 100 100"><g class="w"><ellipse cx="50" cy="66" rx="22" ry="22"/><g class="ps" stroke-width="10"><path d="M34 52 26 26M44 46 41 14M56 46 60 12M67 52 78 24M30 70 12 58"/></g></g></svg>
+        <svg class="pl t" viewBox="0 0 100 100"><g class="w" stroke-width="2.4"><path d="M40 62q10 8 22 0M42 72q8 5 18 0"/><path class="f" d="M86 60c4 7 6 9 6 13a6 6 0 0 1-12 0c0-4 2-6 6-13zM14 80c3 5 4 6 4 9a4 4 0 0 1-8 0c0-3 1-4 4-9zM90 34c2 4 3 5 3 7a3 3 0 0 1-6 0c0-2 1-3 3-7z"/></g></svg>
+      </div>
+      <p style="margin:0"><b>Damp Hands Press</b>c/o the shed behind the allotments.<br>knock twice. mind the step.</p>
+    </div>
+    <span class="pn"><svg class="dd" viewBox="0 0 60 60" aria-hidden="true"><use href="#ring"/></svg>12</span>
+  </div>
+</section>
+
+<p class="desk"><span>Spore Print · issue 3 · the wet month</span><span>this copy is yours now. pass it on.</span></p>
+</main>
+
+<!-- printer's registration target -->
+<div class="reg" id="reg">
+  <button id="regmark" aria-label="Registration mark. Drag to push the pink plate out of register, or use the arrow keys. Double-click or press Enter to snap back into perfect register.">
+    <svg class="rt" viewBox="-44 -44 88 88" aria-hidden="true"><circle r="22"/><circle r="9"/><path d="M-40 0H40M0-40V40"/></svg>
+    <svg class="rp" viewBox="-44 -44 88 88" aria-hidden="true"><circle r="22"/><circle r="9"/><path d="M-40 0H40M0-40V40"/></svg>
+  </button>
+  <output id="regread">x +0.0  y +0.0</output>
+  <small>drag to slip<br>dbl-click = true</small>
+</div>
+
+<script>
+(function(){
+'use strict';
+var root=document.documentElement, $=function(s){return document.querySelector(s)};
+var RM=window.matchMedia('(prefers-reduced-motion: reduce)');
+var PORT=window.matchMedia('(max-width:820px)');
+function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function clamp(v,a,b){return v<a?a:v>b?b:v}
+
+/* ---------- registration: the pink plate slides against the teal ---------- */
+var drift={x:0,y:0}, manual={x:0,y:0}, scr={k:0,last:window.scrollY||0}, cur={x:0,y:0,g:1}, vel={x:0,y:0,g:0};
+var locked=false, lockAt={x:0,y:0,s:0}, raf=0, regEl=$('#reg'), read=$('#regread');
+function target(){
+  if(RM.matches) return {x:manual.x,y:manual.y,g:locked?0:1};
+  if(locked) return {x:0,y:0,g:0};
+  return {x:manual.x+drift.x+Math.sin((window.scrollY||0)/300)*1.3, y:manual.y+drift.y+scr.k, g:1};
+}
+function fmt(v){return (v<0?'−':'+')+Math.abs(v).toFixed(1)}
+function paint(){
+  root.style.setProperty('--rx',cur.x.toFixed(2)+'px');
+  root.style.setProperty('--ry',cur.y.toFixed(2)+'px');
+  root.style.setProperty('--g',cur.g.toFixed(3));
+  var inreg=locked&&Math.abs(cur.x)<.06&&Math.abs(cur.y)<.06;
+  read.textContent=inreg?'in register':'x '+fmt(cur.x)+'  y '+fmt(cur.y);
+  regEl.classList.toggle('true',inreg);
+}
+function tick(){
+  raf=0;
+  var t=target(), still=true;
+  if(RM.matches){cur.x=t.x;cur.y=t.y;cur.g=t.g}
+  else ['x','y','g'].forEach(function(k){
+    vel[k]=(vel[k]+(t[k]-cur[k])*.11)*.74; cur[k]+=vel[k];
+    if(Math.abs(vel[k])>.004||Math.abs(t[k]-cur[k])>.004) still=false; else cur[k]=t[k];
+  });
+  scr.k*=.9; if(Math.abs(scr.k)>.02) still=false; else scr.k=0;
+  paint();
+  if(!still&&!document.hidden) raf=requestAnimationFrame(tick);
+}
+function kick(){ if(!raf) raf=requestAnimationFrame(tick) }
+function unlockIfMoved(x,y){
+  if(!locked) return;
+  if(Math.hypot(x-lockAt.x,y-lockAt.y)>110||Math.abs((window.scrollY||0)-lockAt.s)>260) locked=false;
+}
+function point(x,y){
+  unlockIfMoved(x,y);
+  drift.x=(x/window.innerWidth-.5)*6.4; drift.y=(y/window.innerHeight-.5)*6.4; kick();
+}
+var lastPt={x:0,y:0};
+window.addEventListener('pointermove',function(e){lastPt.x=e.clientX;lastPt.y=e.clientY;if(e.pointerType!=='touch'&&!dragging)point(e.clientX,e.clientY)},{passive:true});
+window.addEventListener('touchmove',function(e){var t=e.touches[0];if(t&&!dragging){lastPt.x=t.clientX;lastPt.y=t.clientY;point(t.clientX,t.clientY)}},{passive:true});
+window.addEventListener('scroll',function(){
+  var y=window.scrollY||0; scr.k=clamp(scr.k+(y-scr.last)*.035,-3.2,3.2); scr.last=y; unlockIfMoved(lastPt.x,lastPt.y); kick();
+},{passive:true});
+if(window.DeviceOrientationEvent&&typeof DeviceOrientationEvent.requestPermission!=='function'){
+  window.addEventListener('deviceorientation',function(e){
+    if(e.gamma==null||dragging||RM.matches) return;
+    drift.x=clamp(e.gamma/14,-3.2,3.2); drift.y=clamp((e.beta-40)/14,-3.2,3.2); kick();
+  },{passive:true});
+}
+function snapTrue(){ manual.x=manual.y=0; locked=true; lockAt.x=lastPt.x; lockAt.y=lastPt.y; lockAt.s=window.scrollY||0; kick() }
+var mark=$('#regmark'), dragging=false, d0=null, lastTap=0, lastSnap=0;
+function snapOnce(){var n=Date.now(); if(n-lastSnap<350) return; lastSnap=n; snapTrue()}
+mark.addEventListener('pointerdown',function(e){
+  dragging=true; locked=false; mark.setPointerCapture(e.pointerId);
+  d0={x:e.clientX,y:e.clientY,mx:cur.x,my:cur.y}; drift.x=drift.y=0; manual.x=cur.x; manual.y=cur.y; e.preventDefault(); mark.focus({preventScroll:true});
+});
+mark.addEventListener('pointermove',function(e){
+  if(!dragging) return;
+  manual.x=clamp(d0.mx+(e.clientX-d0.x)/2.5,-12,12); manual.y=clamp(d0.my+(e.clientY-d0.y)/2.5,-12,12); kick();
+});
+function endDrag(e){
+  if(!dragging) return; dragging=false;
+  var moved=Math.hypot(e.clientX-d0.x,e.clientY-d0.y);
+  if(moved<5){var n=Date.now(); if(n-lastTap<340){snapOnce();lastTap=0}else lastTap=n}
+}
+mark.addEventListener('pointerup',endDrag); mark.addEventListener('pointercancel',function(){dragging=false});
+mark.addEventListener('keydown',function(e){
+  var s=e.shiftKey?2:.5, k=e.key;
+  if(k==='ArrowLeft')manual.x-=s; else if(k==='ArrowRight')manual.x+=s; else if(k==='ArrowUp')manual.y-=s; else if(k==='ArrowDown')manual.y+=s;
+  else if(k==='Enter'||k==='Escape'||k==='0'||k==='Home'){snapTrue();e.preventDefault();return} else return;
+  locked=false; manual.x=clamp(manual.x,-12,12); manual.y=clamp(manual.y,-12,12); e.preventDefault(); kick();
+});
+document.addEventListener('dblclick',function(e){ if(e.target.closest&&e.target.closest('#cap,#stamp,.day'))return; snapOnce(); var s=window.getSelection&&window.getSelection(); if(s&&s.removeAllRanges)s.removeAllRanges() });
+document.addEventListener('visibilitychange',function(){ if(!document.hidden) kick() });
+RM.addEventListener('change',kick);
+paint();
+
+/* ---------- paper slap ---------- */
+var spreads=[].slice.call(document.querySelectorAll('.spread'));
+if('IntersectionObserver' in window){
+  var io=new IntersectionObserver(function(es){es.forEach(function(en){
+    if(!en.isIntersecting) return;
+    var el=en.target; el.classList.add('in'); io.unobserve(el);
+    if(el.classList.contains('s4')) setTimeout(function(){el.classList.add('grow')},420);
+  })},{threshold:.14});
+  spreads.forEach(function(s){io.observe(s)});
+}else spreads.forEach(function(s){s.classList.add('in','grow')});
+
+/* phones: put the fold where the two pages actually meet */
+function folds(){
+  spreads.forEach(function(s){
+    var p=s.querySelector('.pg.R'), sp=s.querySelector('.spine');
+    sp.style.setProperty('--fold', p&&PORT.matches ? p.offsetTop+'px' : '50%');
+  });
+}
+
+/* ---------- 2 · the spore print ---------- */
+var sheet=$('#sheet'), cap=$('#cap'), cv=$('#spore'), cx=cv.getContext('2d'), capline=$('#capline');
+var dots=[], drawn=0, state='idle', printNo=0, sraf=0, st0=0, cw=0;
+function sizeCanvas(){
+  var r=cv.clientWidth, d=Math.min(window.devicePixelRatio||1,2);
+  if(!r) return; cw=Math.round(r*d);
+  if(cv.width!==cw){cv.width=cw;cv.height=cw;var n=drawn;drawn=0;drawTo(n)}
+}
+function makePrint(){
+  var R=Math.random, out=[], RR=.232, N=58+Math.floor(R()*46), gap=.028+R()*.03, dir=R()*6.283, smear=R()<.7?R()*.05:0;
+  var a1=R()*6.283, a2=R()*6.283, lob=2+Math.floor(R()*3), wob=R()*.012, oval=.94+R()*.1, rot=R()*3.14;
+  for(var i=0;i<N;i++){
+    var th=i/N*6.283+(R()-.5)*.035, start=i%4===0?gap:(i%2===0?RR*(.38+R()*.14):RR*(.62+R()*.14));
+    var dens=.5+.5*(.5+.5*Math.sin(th*lob+a1))*(.65+.35*Math.sin(th*7+a2)), curl=(R()-.5)*.1;
+    for(var r=start;r<RR;r+=.0026+R()*.0016){
+      if(R()>dens) continue;
+      var t=r/RR; if(t>.93&&R()<.55) continue;
+      var a=th+curl*t*t+Math.sin(t*9+a1)*wob, sm=smear*t*t*R();
+      var px=Math.cos(a)*r+(R()-.5)*.0045*(.4+t), py=Math.sin(a)*r+(R()-.5)*.0045*(.4+t);
+      var qx=px*Math.cos(rot)-py*Math.sin(rot), qy=(px*Math.sin(rot)+py*Math.cos(rot))*oval;
+      out.push([.5+qx*Math.cos(-rot)-qy*Math.sin(-rot)+Math.cos(dir)*sm, .5+qx*Math.sin(-rot)+qy*Math.cos(-rot)+Math.sin(dir)*sm,
+        (.0014+R()*.0024)*(1.15-t*.45), .35+R()*.6, t*.72+R()*.28]);
+    }
+  }
+  for(var j=0;j<620;j++){ var ang=R()*6.283, rr=RR*(.2+Math.pow(R(),.6)*.92), s2=smear*R()*1.6;
+    out.push([.5+Math.cos(ang)*rr+Math.cos(dir)*s2,.5+Math.sin(ang)*rr+Math.sin(dir)*s2,.0008+R()*.0012,.2+R()*.4,.3+R()*.7]) }
+  out.sort(function(p,q){return p[4]-q[4]});
+  return out;
+}
+function drawTo(n){
+  n=Math.min(n,dots.length); cx.fillStyle='#00838A';
+  for(var i=drawn;i<n;i++){ var p=dots[i]; cx.globalAlpha=p[3]; cx.beginPath(); cx.arc(p[0]*cw,p[1]*cw,Math.max(.5,p[2]*cw),0,6.2832); cx.fill() }
+  drawn=Math.max(drawn,n);
+}
+function bloom(now){
+  if(document.hidden){st0+=16; sraf=requestAnimationFrame(bloom); return}
+  if(!st0) st0=now;
+  var p=clamp((now-st0)/7200,0,1), e=1-Math.pow(1-p,2.2);
+  drawTo(Math.floor(e*dots.length));
+  if(p<1&&state==='show') sraf=requestAnimationFrame(bloom);
+  else if(state==='show'){ capline.textContent='print no. '+printNo+'. no two alike, which is the whole point. press the cap for a fresh sheet.' }
+}
+function lift(){
+  if(state!=='night') return;
+  state='show'; sheet.classList.remove('night'); sheet.classList.add('off');
+  printNo++; dots=makePrint(); drawn=0; st0=0; sizeCanvas(); cx.clearRect(0,0,cw,cw);
+  capline.textContent='glass off, cap up. look. it is still landing.';
+  cap.setAttribute('aria-label','Put the cap back on a fresh sheet');
+  if(RM.matches){ drawTo(dots.length); capline.textContent='print no. '+printNo+'. no two alike, which is the whole point. press the cap for a fresh sheet.' }
+  else sraf=requestAnimationFrame(bloom);
+}
+cap.addEventListener('click',function(){
+  if(state==='idle'){
+    state='night'; sheet.classList.add('night'); capline.textContent='…overnight… (we are speeding this up. do not peek.)';
+    setTimeout(lift,RM.matches?60:1150);
+  }else if(state==='show'){
+    state='back'; cancelAnimationFrame(sraf); sheet.classList.remove('off');
+    setTimeout(function(){ cx.clearRect(0,0,cw,cw); dots=[]; drawn=0; state='idle';
+      capline.textContent='fresh sheet, same cap. plenty more dust in there.';
+      cap.setAttribute('aria-label','Lift the cap to take a spore print') },RM.matches?0:520);
+  }
+});
+
+/* ---------- 4 · the forest ---------- */
+function buildPoster(){
+  var el=$('#poster'), port=PORT.matches, mode=port?'p':'l';
+  if(el.getAttribute('data-mode')===mode) return; el.setAttribute('data-mode',mode);
+  var W=port?600:1200, H=port?1180:848, k=port?1.6:1, G=port?262:262, R=rng(port?29:12), f=function(n){return n.toFixed(1)};
+  var xs=(port?[.19,.81]:[.09,.36,.635,.91]).map(function(v){return v*W}), tw=port?66:60;
+  var T='',P='',thP='',thT='',tipsBy=[],i,j;
+  function gy(x){return G+Math.sin(x/90)*6+Math.sin(x/37+2)*3}
+  function smooth(pts){
+    var d='M'+f(pts[0][0])+' '+f(pts[0][1]);
+    for(var q=1;q<pts.length-1;q++){var mx=(pts[q][0]+pts[q+1][0])/2,my=(pts[q][1]+pts[q+1][1])/2; d+='Q'+f(pts[q][0])+' '+f(pts[q][1])+' '+f(mx)+' '+f(my)}
+    var l=pts[pts.length-1]; return d+'L'+f(l[0])+' '+f(l[1]);
+  }
+  /* rain */
+  var rain='';
+  for(i=0;i<(port?70:120);i++){var rx=R()*W, ry=R()*(G-26); rain+='M'+f(rx)+' '+f(ry)+'l'+f(-4*k)+' '+f(13*k)}
+  T+='<path stroke-width="'+(1.5*k)+'" opacity=".7" d="'+rain+'"/>';
+  /* soil */
+  var gl='M-10 '+f(gy(-10)); for(i=20;i<=W+20;i+=30) gl+='L'+i+' '+f(gy(i));
+  var tear=''; for(i=W+10;i>=-10;i-=26) tear+='L'+i+' '+f(G+(H-G)*(port?.36:.4)+Math.sin(i/70)*14+(R()-.5)*16);
+  P+='<path class="lp" d="'+gl+'V'+f(G+30*k)+'H-10Z"/><path class="hpl" d="M-10 '+f(G+30*k)+'H'+(W+10)+'V'+f(G+(H-G)*.4)+tear+'Z"/>';
+  T+='<g class="w"><path stroke-width="'+(3.5*k)+'" d="'+gl+'"/>';
+  var tuft=''; for(i=0;i<(port?26:54);i++){var gx=R()*W; tuft+='M'+f(gx)+' '+f(gy(gx))+'l'+f((R()-.5)*9*k)+' '+f(-(6+R()*10)*k)}
+  T+='<path stroke-width="'+(1.8*k)+'" d="'+tuft+'"/>';
+  /* stones */
+  for(i=0;i<(port?7:11);i++){var sx=40+R()*(W-80), sy=G+80+R()*(H-G-140), sr=(9+R()*17)*k, ro=R()*180;
+    T+='<ellipse class="lt" opacity=".75" cx="'+f(sx+3)+'" cy="'+f(sy+3)+'" rx="'+f(sr)+'" ry="'+f(sr*.62)+'" transform="rotate('+f(ro)+' '+f(sx)+' '+f(sy)+')"/><ellipse fill="#fff" stroke-width="'+(2.2*k)+'" cx="'+f(sx)+'" cy="'+f(sy)+'" rx="'+f(sr)+'" ry="'+f(sr*.62)+'" transform="rotate('+f(ro)+' '+f(sx)+' '+f(sy)+')"/>'}
+  /* roots */
+  function root(x,y,ang,len,w,ti,depth){
+    var pts=[[x,y]], step=(port?27:25), aim=ang;
+    for(var s=0;s<len;s++){
+      ang+=(R()-.5)*.62; ang+=(aim-ang)*.12; if(depth===0&&s>3) aim+= (aim>1.5708?.03:-.03);
+      x+=Math.cos(ang)*step; y+=Math.sin(ang)*step+(depth?0:3);
+      if(x<24||x>W-24){ang=3.1416-ang;aim=3.1416-aim;x=clamp(x,24,W-24)}
+      if(y>H-46){y=H-46;ang*=.3;aim=aim>1.57?2.9:.25}
+      if(y<G+26*k){y=G+26*k;ang=Math.abs(ang)}
+      pts.push([x,y]);
+      if(depth<2&&s>1&&R()<.2) root(x,y,ang+(R()<.5?-1:1)*(.55+R()*.5),Math.max(3,Math.round((len-s)*.7)),w*(1-s/len)*.5+1,ti,depth+1);
+    }
+    var n=pts.length, a=Math.ceil(n*.4), b=Math.ceil(n*.72);
+    T+='<path stroke-width="'+f(Math.max(1.8*k,w))+'" d="'+smooth(pts.slice(0,a+1))+'"/><path stroke-width="'+f(Math.max(1.6*k,w*.55))+'" d="'+smooth(pts.slice(a-1,b+1))+'"/><path stroke-width="'+f(Math.max(1.4*k,w*.28))+'" d="'+smooth(pts.slice(b-1))+'"/>';
+    tipsBy[ti].push({x:x,y:y}); if(n>5) tipsBy[ti].push({x:pts[b][0],y:pts[b][1]});
+  }
+  xs.forEach(function(x,ti){
+    tipsBy[ti]=[]; var n=port?6:5;
+    for(var r=0;r<n;r++){var a=3.1416*(.14+.72*r/(n-1))+(R()-.5)*.2; root(x+Math.cos(a)*tw*.7,gy(x)+6,a,Math.round((port?10:10)+R()*(port?8:7)),tw*(.13+R()*.09),ti,0)}
+  });
+  T+='</g>';
+  /* trunks */
+  xs.forEach(function(x,ti){
+    var h=tw/2, y=gy(x), birch=ti===1;
+    var L='M'+f(x-h)+' -12C'+f(x-h-3)+' '+f(G*.55)+' '+f(x-h-5)+' '+f(G-46)+' '+f(x-tw*1.08)+' '+f(y+3);
+    var Rr='M'+f(x+h)+' -12C'+f(x+h+3)+' '+f(G*.55)+' '+f(x+h+5)+' '+f(G-46)+' '+f(x+tw*1.08)+' '+f(y+3);
+    var body=L+'L'+f(x+tw*1.08)+' '+f(y+3)+'C'+f(x+h+5)+' '+f(G-46)+' '+f(x+h+3)+' '+f(G*.55)+' '+f(x+h)+' -12Z';
+    if(!birch) P+='<path class="'+(ti%2?'hp':'hpl')+'" d="'+body+'"/>'; else P+='<path class="wh" d="'+body+'"/>';
+    T+='<g class="w"><path fill="#fff" stroke="none" d="'+body+'"/><path class="'+(birch?'htl':'lt')+'" d="M'+f(x+h*.15)+' -12L'+f(x+h*.3)+' '+f(y)+'L'+f(x+tw*1.08)+' '+f(y+3)+'C'+f(x+h+5)+' '+f(G-46)+' '+f(x+h+3)+' '+f(G*.55)+' '+f(x+h)+' -12Z"/><path stroke-width="'+(3.6*k)+'" d="'+L+Rr+'"/>';
+    var bark=''; for(var b=0;b<(birch?16:13);b++){var bx=x-h+6+R()*(tw-14), by=6+R()*(G-56);
+      bark+= birch ? 'M'+f(bx)+' '+f(by)+'h'+f(7+R()*12) : 'M'+f(bx)+' '+f(by)+'q'+f((R()-.5)*6)+' '+f(8)+' 0 '+f(14+R()*14)}
+    T+='<path stroke-width="'+((birch?3:2)*k)+'" d="'+bark+'"/></g>';
+  });
+  /* fruit above ground */
+  var fr=(port?[.4,.5,.6]:[.185,.47,.5,.535,.775,.8]), bases=[];
+  fr.forEach(function(v,n){
+    var x=v*W, y=gy(x), s=(port?[20,30,17]:[20,22,34,18,26,16])[n]*k*.9, lean=(R()-.5)*6;
+    P+='<path d="M'+f(x-s)+' '+f(y-s*1.5)+'C'+f(x-s)+' '+f(y-s*2.7)+' '+f(x+s)+' '+f(y-s*2.7)+' '+f(x+s)+' '+f(y-s*1.5)+'Z"/>';
+    T+='<g class="w" stroke-width="'+(2.6*k)+'"><path d="M'+f(x-s)+' '+f(y-s*1.5)+'C'+f(x-s)+' '+f(y-s*2.7)+' '+f(x+s)+' '+f(y-s*2.7)+' '+f(x+s)+' '+f(y-s*1.5)+'ZM'+f(x-s*.22)+' '+f(y-s*1.5)+'L'+f(x-s*.3+lean)+' '+f(y)+'M'+f(x+s*.22)+' '+f(y-s*1.5)+'L'+f(x+s*.34+lean)+' '+f(y)+'"/></g>';
+    bases.push({x:x+lean,y:y+2});
+  });
+  /* boots (landscape only) */
+  if(!port){ var bx0=.255*W, by0=gy(bx0);
+    [0,34].forEach(function(o){var bd='M'+f(bx0+o)+' '+f(by0-74)+'h20v50c16 2 24 8 24 22h-44z';
+      P+='<path d="'+bd+'"/>'; T+='<g class="w"><path d="'+bd+'"/><path stroke-width="2" d="M'+f(bx0+o)+' '+f(by0-64)+'h20"/></g>'}) }
+  /* mycelium */
+  var tn=0;
+  function thread(pts,pink,wd,delay,dur){
+    var s='<path class="th" pathLength="100" stroke-width="'+f(wd)+'" style="--d:'+delay.toFixed(2)+'s;--v:'+dur.toFixed(2)+'s" d="'+smooth(pts)+'"/>';
+    if(pink) thP+=s; else thT+=s; tn++;
+  }
+  function wander(x,y,ang,steps,delay,pink,depth){
+    var pts=[[x,y]];
+    for(var s=0;s<steps;s++){ang+=(R()-.5)*1.1; x+=Math.cos(ang)*16*k; y+=Math.sin(ang)*16*k; x=clamp(x,10,W-10); y=clamp(y,G+16*k,H-18); pts.push([x,y]);
+      if(depth<2&&R()<.22) wander(x,y,ang+(R()<.5?-.9:.9),Math.max(2,steps-s-1),delay+.25+s*.12,R()<.75,depth+1)}
+    thread(pts,pink,(1+R()*.8)*k,delay,.9+steps*.16);
+  }
+  function link(a,b,delay){
+    var dx=b.x-a.x, dy=b.y-a.y, dist=Math.hypot(dx,dy), n=Math.max(4,Math.round(dist/(port?40:46))), amp=Math.min(46*k,dist*.14), pts=[[a.x,a.y]], pink=R()<.72;
+    var sag=(R()-.25)*dist*.22;
+    for(var s=1;s<n;s++){var t=s/n, e=Math.sin(t*3.1416), px=a.x+dx*t+(-dy/dist)*(R()-.5)*amp*2*e, py=a.y+dy*t+(dx/dist)*(R()-.5)*amp*2*e+sag*e;
+      py=clamp(py,G+16*k,H-16); pts.push([px,py]);
+      if(R()<.16) wander(px,py,R()*6.28,3+Math.floor(R()*5),delay+t*1.6,R()<.7,1)}
+    pts.push([b.x,b.y]);
+    thread(pts,pink,(1.2+R()*1.1)*k,delay,1.6+dist/420);
+  }
+  function pick(ti){var a=tipsBy[ti]; return a[Math.floor(R()*a.length)]}
+  for(i=0;i<xs.length-1;i++) for(j=0;j<(port?16:8);j++) link(pick(i),pick(i+1),.1+R()*1.4+j*.08);
+  for(i=0;i<xs.length-2;i++) for(j=0;j<2;j++) link(pick(i),pick(i+2),.9+R()*1.2);
+  tipsBy.forEach(function(arr){arr.forEach(function(t){ if(R()<.75) wander(t.x,t.y,1.57+(R()-.5)*2.6,4+Math.floor(R()*6),R()*1.2,R()<.7,0) })});
+  bases.forEach(function(b){
+    var best=null,bd=1e9; tipsBy.forEach(function(arr){arr.forEach(function(t){var d=Math.hypot(t.x-b.x,t.y-b.y); if(d<bd){bd=d;best=t}})});
+    link(b,best,.3+R()); link(b,pick(Math.floor(R()*xs.length)),.6+R());
+  });
+  var nodes=''; tipsBy.forEach(function(arr){arr.forEach(function(t){nodes+='<circle cx="'+f(t.x)+'" cy="'+f(t.y)+'" r="'+f(2.6*k)+'"/>'})});
+  var vb='viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none"';
+  el.innerHTML='<svg class="pl p" '+vb+'>'+P+'</svg><svg class="pl t" '+vb+'>'+T+'</svg>'+
+    '<svg class="pl p raw" '+vb+'><g class="ps">'+thP+'</g><g>'+nodes+'</g></svg><svg class="pl t raw" '+vb+'>'+thT+'</svg>';
+}
+
+/* ---------- 5 · the wet month ---------- */
+var DAYS=[
+ ['d',0,'started as it meant to go on.'],['r',0,'first proper rain. we cheered. the neighbours saw.'],['r',0,'boots still wet from yesterday.'],
+ ['f',0,"fog. couldn't see the hedge. the hedge couldn't see us."],['R',0,'biblical. stayed in and drew mushrooms from memory, badly.'],
+ ['r',1,'the brown bun, under the birch, exactly where it was last year.'],['d',0,'drizzle so fine it was more of a rumour.'],['c',0,'dry. suspicious.'],
+ ['r',0,'back to normal.'],['R',0,'the gutter gave up.'],['r',1,'shaggy ones up along the car park verge. eleven of them.'],
+ ['w',0,'sideways rain. the umbrella is a different shape now.'],['r',0,'shaggy ones already melting. told you. thursday.'],
+ ['f',1,'found the ring on the football pitch in the fog. walked round it twice.'],['d',0,'printed pages 4 to 7. Gerald jammed on page 6.'],
+ ['r',0,'printed page 6 again.'],['s',0,'sun!! everyone outside, squinting. nothing to report.'],['r',0,'order restored.'],
+ ['r',1,'orange cups on the wall moss. knelt in a puddle to look. worth it.'],['R',0,'hail, briefly, for variety.'],
+ ['d',0,'collating. the cat sat on the centrefold.'],['f',0,'fog again. good listening weather.'],['r',0,'set up a spore print. peeked at 2am.'],
+ ['r',1,'the print came out. best one yet.'],['w',0,'the wind took a stack of page 9s down the road.'],['r',0,'got most of page 9 back.'],
+ ['R',0,'stapling day. 200 copies, 400 staples, one blister.'],['d',1,"knocked on the shelf on the birch. it's still in."],
+ ['r',0,'posted the trade copies. the postbox was wet inside.'],['c',0,'dry-ish. went out anyway, out of habit.'],['r',0,'last day. it rained on the zine. seems right.']];
+(function(){
+  var cal=$('#cal'), note=$('#calnote'), h='', lead=2, ord=function(n){var s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0])};
+  'mtwtfss'.split('').forEach(function(c){h+='<span class="hd" aria-hidden="true">'+c+'</span>'});
+  for(var b=0;b<lead;b++) h+='<span class="day e" aria-hidden="true"></span>';
+  DAYS.forEach(function(d,i){
+    h+='<button class="day" data-i="'+i+'" aria-label="The '+ord(i+1)+': '+d[2].replace(/"/g,'')+'"><b>'+(i+1)+'</b>'+
+      (d[0]==='s'?'':'<svg class="pl t" viewBox="0 0 40 40"><use href="#w-'+d[0]+'"/></svg>')+
+      (d[0]==='s'?'<svg class="pl p" viewBox="0 0 40 40"><use href="#w-s"/></svg>':'')+
+      (d[1]?'<svg class="pl p" viewBox="0 0 40 40"><use href="#w-m"/></svg>':'')+'</button>';
+  });
+  for(b=0;b<35-lead-DAYS.length;b++) h+='<span class="day e" aria-hidden="true"></span>';
+  cal.innerHTML=h;
+  var pinned=-1;
+  function show(i){ var d=DAYS[i]; note.innerHTML='<b>'+ord(i+1)+'</b>'; note.appendChild(document.createTextNode(d[2])) }
+  function pin(i){ var o=cal.querySelector('.day.on'); if(o) o.classList.remove('on'); pinned=i; cal.querySelector('[data-i="'+i+'"]').classList.add('on'); show(i) }
+  cal.addEventListener('pointerover',function(e){var b=e.target.closest('button.day'); if(b&&e.pointerType==='mouse') show(+b.getAttribute('data-i'))});
+  cal.addEventListener('pointerleave',function(){ if(pinned>=0) show(pinned) });
+  cal.addEventListener('focusin',function(e){var b=e.target.closest('button.day'); if(b) show(+b.getAttribute('data-i'))});
+  cal.addEventListener('click',function(e){var b=e.target.closest('button.day'); if(b) pin(+b.getAttribute('data-i'))});
+  var wet=0,dry=0,fog=0,finds=0; DAYS.forEach(function(d){ if('rRdw'.indexOf(d[0])>=0)wet++; else if(d[0]==='f')fog++; else dry++; finds+=d[1] });
+  $('#tot').textContent='totals: '+wet+' wet, '+fog+' fog, '+dry+' dry (one of them by accident). finds: '+finds+'. eaten: 0.';
+})();
+
+/* ---------- 6 · stamp it again ---------- */
+(function(){
+  var st=$('#stamp'), back=$('#back'), R=Math.random, ghosts=[];
+  $('#copyno').textContent=String(1+Math.floor(R()*200));
+  st.addEventListener('click',function(){
+    st.classList.remove('hit'); void st.offsetWidth; st.classList.add('hit');
+    var g=document.createElementNS('http://www.w3.org/2000/svg','svg'); g.setAttribute('viewBox','0 0 300 300'); g.setAttribute('class','ghost'); g.setAttribute('aria-hidden','true');
+    g.innerHTML='<use href="#stampP"/>';
+    g.style.left=(R()<.5?-14+R()*16:66+R()*14)+'%'; g.style.top=(6+R()*70)+'%'; g.style.rotate=(-40+R()*80)+'deg'; g.style.opacity=(.22+R()*.3).toFixed(2);
+    g.style.translate='var(--rx) var(--ry)';
+    back.appendChild(g); ghosts.push(g); if(ghosts.length>6) back.removeChild(ghosts.shift());
+  });
+})();
+
+/* nod on tap for touch */
+[].forEach.call(document.querySelectorAll('.nod'),function(n){
+  n.addEventListener('pointerdown',function(e){ if(e.pointerType==='mouse') return; n.classList.remove('go'); void n.offsetWidth; n.classList.add('go') });
+  n.addEventListener('animationend',function(){ n.classList.remove('go') });
+});
+
+var rz=0;
+function relayout(){ buildPoster(); folds(); sizeCanvas() }
+window.addEventListener('resize',function(){ clearTimeout(rz); rz=setTimeout(relayout,120) });
+relayout();
+window.addEventListener('load',function(){ folds(); kick() });
+})();
+</script>
+</body>
+</html>

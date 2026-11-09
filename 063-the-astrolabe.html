@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Astrolabe — Exhibit IV.12</title>
+<style>
+:root{
+  --vellum:#EADFC6; --brass-d:#8A6A2F; --brass:#C8A951; --brass-l:#E9D79A; --ink:#1F2A30; --red:#7B2D26;
+  --card:#F2E9D3;
+  --serif:Baskerville,"Baskerville Old Face","Hoefler Text",Palatino,"Palatino Linotype","Book Antiqua",Georgia,serif;
+  --num:Georgia,"Hoefler Text",Palatino,serif;
+  --e-out:cubic-bezier(.16,.84,.24,1); --e-io:cubic-bezier(.65,.02,.2,1);
+  --open:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 28 28'%3E%3Cpath d='M9 14V6.5a1.7 1.7 0 0 1 3.4 0V12V4.8a1.7 1.7 0 0 1 3.4 0V12V5.8a1.7 1.7 0 0 1 3.4 0V13V8.5a1.6 1.6 0 0 1 3.2 0V17c0 5-3 8-7.5 8c-3.5 0-5.3-1.6-7-4.4L5 15.5c-.8-1.4.9-2.8 2.2-1.6L9 15.6z' fill='%23EADFC6' stroke='%231F2A30' stroke-width='1.3' stroke-linejoin='round'/%3E%3C/svg%3E") 14 14, grab;
+  --closed:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 28 28'%3E%3Cpath d='M9 15.4V11.4a1.7 1.7 0 0 1 3.4 0V10.4a1.7 1.7 0 0 1 3.4 0V10.8a1.7 1.7 0 0 1 3.4 0V11.9a1.6 1.6 0 0 1 3.2 0V17c0 5-3 8-7.5 8c-3.5 0-5.3-1.6-7-4.4L6.4 17.6c-.7-1.7 1.3-2.6 2.6-1.6z' fill='%23E9D79A' stroke='%231F2A30' stroke-width='1.3' stroke-linejoin='round'/%3E%3C/svg%3E") 14 14, grabbing;
+}
+*{box-sizing:border-box}
+html{background:var(--vellum);-webkit-text-size-adjust:100%}
+body{margin:0;color:var(--ink);font-family:var(--serif);font-size:17px;line-height:1.55;overflow-x:clip;
+  background:
+   radial-gradient(120% 90% at 62% 30%,rgba(255,247,222,.9) 0,rgba(255,247,222,0) 55%),
+   radial-gradient(140% 120% at 50% 40%,rgba(138,106,47,0) 55%,rgba(138,106,47,.22) 100%),
+   var(--vellum);
+  background-attachment:fixed;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.035 .6' numOctaves='3' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 .54 0 0 0 0 .42 0 0 0 0 .18 .5 0 0 0 -.2'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23n)'/%3E%3C/svg%3E")}
+.hall{position:relative;z-index:1;display:grid;grid-template-columns:minmax(310px,366px) minmax(0,1fr);column-gap:clamp(24px,3vw,48px);
+  padding:0 clamp(20px,2.4vw,40px);max-width:1720px;margin:0 auto;overflow-x:clip}
+.head{grid-column:1;grid-row:1;padding-top:clamp(28px,6vh,60px)}
+.wall{grid-column:1;grid-row:2;padding-bottom:90px}
+.bench{grid-column:2;grid-row:1/3;position:sticky;top:0;height:100vh;min-height:620px;display:flex;align-items:center;justify-content:center;gap:clamp(16px,2vw,30px)}
+
+/* header */
+.exno{font-family:Didot,"Bodoni MT","Bodoni 72",var(--num);color:var(--red);font-size:clamp(64px,7.4vw,104px);line-height:.82;letter-spacing:-.01em;margin:0;font-variant-numeric:oldstyle-nums;display:flex;align-items:flex-end;gap:14px}
+.exno small{font-family:var(--serif);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink);line-height:1.5;padding-bottom:8px;opacity:.8}
+.head h1{margin:26px 0 0;font-weight:400;text-transform:uppercase;line-height:1}
+.head h1 span{display:block;font-size:13px;letter-spacing:.62em;margin-bottom:10px}
+.head h1 b{display:block;font-weight:400;font-size:clamp(34px,3.25vw,45px);letter-spacing:.15em;margin-right:-.15em;white-space:nowrap}
+.touch{font-style:italic;font-size:19px;margin:14px 0 0;display:flex;align-items:center;gap:12px}
+.touch::before{content:"";width:44px;height:1px;background:var(--red)}
+.rise{opacity:0;transform:translateY(14px);animation:rise 1.1s var(--e-out) forwards;animation-delay:calc(var(--i,0)*110ms + 250ms)}
+@keyframes rise{to{opacity:1;transform:none}}
+
+/* wall */
+.olabel{margin:38px 0 0;padding:18px 0 18px 18px;border-left:3px double var(--ink);font-size:15.5px;line-height:1.5}
+.olabel strong{display:block;font-weight:400;font-size:19px;line-height:1.25;margin-bottom:6px}
+.olabel em{display:block;margin-top:10px;font-size:14px;color:rgba(31,42,48,.82)}
+.wtext{margin-top:40px}
+.wtext h2,.try h2{font-weight:400;font-size:12px;letter-spacing:.34em;text-transform:uppercase;margin:0 0 14px;display:flex;align-items:center;gap:12px}
+.wtext h2::after,.try h2::after{content:"";flex:1;height:1px;background:rgba(31,42,48,.45)}
+.wtext p{margin:0 0 1.05em;hyphens:auto;text-wrap:pretty}
+.wtext p:first-of-type::first-letter{font-size:3.5em;float:left;line-height:.82;padding:.07em .1em 0 0;color:var(--red);font-family:Didot,"Bodoni MT",var(--serif)}
+.try{margin-top:44px}
+.card{display:grid;grid-template-columns:54px 1fr;gap:4px 12px;width:100%;text-align:left;font:inherit;color:inherit;background:var(--card);border:1px solid rgba(31,42,48,.5);
+  box-shadow:0 0 0 3px var(--card),0 0 0 4px rgba(31,42,48,.28),0 14px 22px -16px rgba(31,42,48,.55);padding:15px 16px 14px 12px;margin:0 0 20px;cursor:pointer;
+  transition:transform .5s var(--e-out),box-shadow .5s var(--e-out),background .4s}
+.card:hover{transform:translate(-2px,-3px) rotate(-.35deg);box-shadow:0 0 0 3px var(--card),0 0 0 4px rgba(31,42,48,.4),0 26px 26px -18px rgba(31,42,48,.6)}
+.card[aria-pressed=true]{background:#F7F0DD}
+.card i{grid-row:1/3;font-style:normal;font-family:Didot,"Bodoni MT",var(--num);font-size:46px;line-height:.9;color:var(--red);text-align:center;font-variant-numeric:oldstyle-nums}
+.card b{font-weight:400;font-size:19px;line-height:1.2}
+.card span{font-size:14.5px;line-height:1.42;color:rgba(31,42,48,.85)}
+.card u{grid-column:2;text-decoration:none;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--red);margin-top:6px;display:flex;align-items:center;gap:8px}
+.card u::after{content:"";width:22px;height:1px;background:currentColor;transition:width .5s var(--e-out)}
+.card:hover u::after{width:46px}
+.colophon{font-size:13px;font-style:italic;color:rgba(31,42,48,.75);margin-top:30px}
+
+/* scene */
+.scene{position:relative;flex:1 1 0;min-width:0;max-width:calc((100vh - 84px)/1.215);aspect-ratio:1000/1215;user-select:none;-webkit-user-select:none}
+.stage,.layer,.shw,.tsh{position:absolute;inset:0;transform-origin:50% 58.848%}
+.stage{transform-style:preserve-3d}
+.layer{transform-style:flat;pointer-events:none}
+.layer svg,.shw svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;display:block}
+.cast{position:absolute;inset:0;--glow:1;
+  filter:brightness(var(--glow)) drop-shadow(0 1.3px 0 #5d4820) drop-shadow(calc(2px + var(--lift,0)*12px) calc(3px + var(--lift,0)*19px) calc(2.5px + var(--lift,0)*9px) rgba(31,42,48,.44))}
+#Lmater .cast{filter:drop-shadow(0 2px 0 #5d4820) drop-shadow(1px 2px 1.5px rgba(31,42,48,.5))}
+.anc{position:absolute;left:50%;top:58.848%;width:0;height:0}
+.tsh{pointer-events:none}
+.tsh::before{content:"";position:absolute;left:1%;width:98%;top:calc(58.848% - 49%/1.215);aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(31,42,48,.62) 0,rgba(31,42,48,.5) 78%,rgba(31,42,48,0) 100%);filter:blur(14px)}
+.shw{pointer-events:none;display:none}
+.shd{position:absolute;inset:0}
+.shd.disc::before{content:"";position:absolute;left:10.3%;width:79.4%;top:calc(58.848% - 39.7%/1.215);aspect-ratio:1;border-radius:50%;background:var(--ink);filter:blur(7px)}
+svg.shd{filter:brightness(0) blur(4px)}
+.shd.bar{transform-origin:50% 58.848%}
+.shd.bar::before{content:"";position:absolute;left:48.6%;width:2.8%;top:calc(58.848% - 44.6%/1.215);height:calc(89.2%/1.215);background:var(--ink);filter:blur(4px)}
+.grab{position:absolute;left:5%;width:90%;top:calc(58.848% - 45%/1.215);aspect-ratio:1;border-radius:50%;touch-action:none;z-index:5}
+.scene.can .grab{cursor:var(--open)}
+.scene.dragging .grab{cursor:var(--closed)}
+.scene.ex .grab{pointer-events:none}
+.flick{position:absolute;left:42%;width:16%;top:0;height:11.5%;z-index:5;cursor:pointer;border-radius:50%}
+.kb{position:absolute;left:50%;top:58.848%;width:1px;height:1px;opacity:0;z-index:6}
+.kb:focus{outline:none}
+.hl{opacity:0;transition:opacity .35s var(--e-out)}
+.scene.h-rete #Lrete .hl,.scene.f-rete #Lrete .hl,.scene.h-rule #Lrule .hl,.scene.f-rule #Lrule .hl{opacity:1}
+.scene.h-rete #Lrete .cast,.scene.h-rule #Lrule .cast{--glow:1.085}
+.fr{opacity:0}
+.scene.f-rete #Lrete .fr,.scene.f-rule #Lrule .fr{opacity:1}
+.hint{position:absolute;left:-10px;right:-10px;bottom:-30px;margin:0;text-align:center;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:rgba(31,42,48,.78);transition:opacity .8s var(--e-out);pointer-events:none}
+.hint b{font-weight:400;color:var(--red)}
+.hint .k{display:none}
+.scene.f-rete .hint .d,.scene.f-rule .hint .d{display:none}
+.scene.f-rete .hint .k,.scene.f-rule .hint .k{display:inline}
+.scene.used:not(.f-rete):not(.f-rule) .hint,.scene.ex .hint{opacity:0}
+.eng{font-family:var(--serif);fill:var(--ink);text-transform:uppercase}
+.num{font-family:var(--num);fill:var(--ink)}
+.leaders{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;z-index:4}
+.leaders line{stroke:var(--red);stroke-width:1}
+.leaders circle{fill:var(--red);opacity:0}
+.leaders line{opacity:0}
+.lab{position:absolute;left:0;top:0;z-index:4;margin:0;opacity:0;pointer-events:none;font-size:13.5px;line-height:1.38;padding-left:10px;border-left:1px solid var(--red)}
+.lab b{display:block;font-weight:400;font-size:11.5px;letter-spacing:.26em;text-transform:uppercase;margin-bottom:3px}
+.lab b i{font-style:normal;color:var(--red);font-family:var(--num);letter-spacing:.05em;margin-right:7px}
+
+/* panel */
+.panel{flex:0 0 clamp(272px,22vw,316px);background:var(--card);border:1px solid rgba(31,42,48,.55);padding:18px 18px 14px;font-size:14.5px;line-height:1.42;
+  box-shadow:0 0 0 4px var(--card),0 0 0 5px rgba(31,42,48,.3),0 30px 40px -26px rgba(31,42,48,.6),0 2px 3px rgba(31,42,48,.2)}
+.kick{margin:0 0 12px;font-size:11px;letter-spacing:.32em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:baseline}
+.kick em{font-style:normal;color:var(--red);font-family:var(--num);letter-spacing:.06em;font-size:13px}
+.row{display:flex;align-items:center;gap:8px;border-top:1px solid rgba(31,42,48,.3);padding:8px 0}
+.row>span:first-child{flex:0 0 46px;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:rgba(31,42,48,.8)}
+.date{display:flex;align-items:center;flex:1;gap:2px}
+.date output{flex:1;text-align:center;font-size:18px;white-space:nowrap;font-variant-numeric:oldstyle-nums}
+.ib{width:26px;height:30px;padding:0;border:0;background:none;color:var(--ink);cursor:pointer;display:grid;place-items:center;border-radius:2px;transition:color .3s,transform .4s var(--e-out)}
+.ib svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.ib:hover{color:var(--red);transform:scale(1.18)}
+.plates{display:flex;flex:1;gap:6px}
+.plates button{flex:1;font:inherit;color:var(--ink);cursor:pointer;padding:5px 0 4px;line-height:1.1;border:1px solid rgba(31,42,48,.45);border-radius:2px;
+  background:linear-gradient(150deg,rgba(233,215,154,.5),rgba(200,169,81,.28));transition:background .4s,transform .45s var(--e-out),box-shadow .4s}
+.plates button b{display:block;font-weight:400;font-size:17px;font-family:var(--num)}
+.plates button small{display:block;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase}
+.plates button:hover{transform:translateY(-2px)}
+.plates button[aria-checked=true]{background:linear-gradient(150deg,#E9D79A,#C8A951 60%,#a98a3e);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 2px 0 var(--brass-d),0 6px 8px -5px rgba(31,42,48,.6)}
+.tabs{display:flex;gap:0;border-top:1px solid rgba(31,42,48,.3);border-bottom:1px solid rgba(31,42,48,.3)}
+.tabs button{flex:1 1 auto;font:inherit;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(31,42,48,.82);background:none;border:0;padding:8px 2px 7px;cursor:pointer;position:relative;white-space:nowrap}
+.tabs button::after{content:"";position:absolute;left:50%;right:50%;bottom:-1px;height:2px;background:var(--red);transition:left .5s var(--e-out),right .5s var(--e-out)}
+.tabs button[aria-selected=true]{color:var(--red)}
+.tabs button[aria-selected=true]::after{left:8%;right:8%}
+.steps{list-style:none;margin:10px 0 6px;padding:0;counter-reset:s;min-height:150px}
+.steps li{counter-increment:s;position:relative;padding:0 0 7px 30px;transition:color .4s}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:21px;height:21px;border-radius:50%;border:1px solid var(--ink);font-family:var(--num);font-size:12.5px;line-height:19px;text-align:center;
+  transition:background .5s var(--e-out),color .5s,border-color .5s,transform .6s cubic-bezier(.3,1.7,.5,1)}
+.steps li.ok::before{background:var(--red);border-color:var(--red);color:var(--card);transform:scale(1.08)}
+.steps li strong{font-weight:400;color:var(--red);font-variant-numeric:oldstyle-nums;white-space:nowrap}
+.parts{display:none;list-style:none;margin:10px 0 6px;padding:0}
+.parts li{padding:0 0 8px}
+.parts b{display:block;font-weight:400;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--red)}
+.btn{font:inherit;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink);cursor:pointer;padding:9px 10px 8px;border:1px solid var(--ink);background:transparent;
+  transition:background .4s,color .4s,transform .45s var(--e-out),box-shadow .4s;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
+.btn:hover{background:var(--ink);color:var(--card);transform:translateY(-1px)}
+.btn:active{transform:translateY(1px)}
+.btn.brass{border-color:#6d5425;background:linear-gradient(160deg,#E9D79A,#C8A951 55%,#a5863b);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 2px 0 var(--brass-d),0 9px 12px -8px rgba(31,42,48,.7)}
+.btn.brass:hover{color:var(--ink);background:linear-gradient(160deg,#f3e6b6,#d6b862 55%,#b3933f);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 3px 0 var(--brass-d),0 14px 14px -8px rgba(31,42,48,.7)}
+.btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.show{width:100%;margin-bottom:10px}
+.reads{margin:0;display:grid;grid-template-columns:auto 1fr;gap:0;border-top:1px solid rgba(31,42,48,.3)}
+.reads dt{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:rgba(31,42,48,.8);padding:6px 10px 4px 0;border-bottom:1px dotted rgba(31,42,48,.35);white-space:nowrap}
+.reads dd{margin:0;text-align:right;padding:4px 0 3px;border-bottom:1px dotted rgba(31,42,48,.35);font-size:15.5px;font-variant-numeric:oldstyle-nums;white-space:nowrap}
+.reads dd.r{color:var(--red)}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.acts .brass{grid-column:1/3;padding:11px 10px 10px}
+.fine{margin:10px 0 0;font-size:12px;line-height:1.4;font-style:italic;color:rgba(31,42,48,.8)}
+#snd .off{display:block}#snd[aria-pressed=true] .off{display:none}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+button::-moz-focus-inner{border:0}
+
+body.exploded .steps,body.exploded .show{opacity:.45}
+@media (max-width:1179px){
+  .hall{display:block;padding:0 16px;max-width:760px}
+  .head{padding-top:22px}
+  .exno{font-size:60px}
+  .head h1{margin-top:14px}
+  .head h1 span{display:inline;font-size:inherit;letter-spacing:inherit;margin:0}
+  .head h1 b{display:inline;font-size:inherit;letter-spacing:inherit}
+  .head h1{font-size:clamp(21px,6.4vw,34px);letter-spacing:.2em;white-space:nowrap}
+  .touch{font-size:16px;margin-top:6px}
+  .bench{position:static;height:auto;min-height:0;display:block;margin-top:4px}
+  .scene{max-width:min(100%,620px);margin:0 auto}
+  .panel{margin:58px auto 0;max-width:620px}
+  .steps{min-height:0}
+  .wall{padding-bottom:60px}
+  .lab span{display:none}
+  .lab{font-size:11px}
+  .lab b{font-size:10px;letter-spacing:.16em;margin:0}
+  body.exploded .parts{display:block}
+  body.exploded .steps,body.exploded .show,body.exploded .tabs{display:none}
+}
+@media (max-width:400px){ .thin{display:none} .hint{font-size:9.5px;letter-spacing:.16em} }
+@media (prefers-reduced-motion:reduce){
+  .rise{animation:none;opacity:1;transform:none}
+  *{transition-duration:.01s!important}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="gBrass" gradientUnits="userSpaceOnUse" x1="-380" y1="-560" x2="400" y2="500">
+      <stop offset="0" stop-color="#E9D79A"/><stop offset=".3" stop-color="#C8A951"/><stop offset=".66" stop-color="#B08D40"/><stop offset="1" stop-color="#8A6A2F"/>
+    </linearGradient>
+    <linearGradient id="gLimb" gradientUnits="userSpaceOnUse" x1="-420" y1="-420" x2="420" y2="420">
+      <stop offset="0" stop-color="#F1E3B2"/><stop offset=".35" stop-color="#D2B560"/><stop offset=".7" stop-color="#BB9A48"/><stop offset="1" stop-color="#9A7A36"/>
+    </linearGradient>
+    <radialGradient id="gRecess" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="400">
+      <stop offset=".8" stop-color="#7a5d29"/><stop offset="1" stop-color="#5a4520"/>
+    </radialGradient>
+    <radialGradient id="gPlate" gradientUnits="userSpaceOnUse" cx="-130" cy="-170" r="640">
+      <stop offset="0" stop-color="#F6EED0"/><stop offset=".45" stop-color="#E4D193"/><stop offset="1" stop-color="#C9AD60"/>
+    </radialGradient>
+    <linearGradient id="gRete" gradientUnits="userSpaceOnUse" x1="-330" y1="-360" x2="330" y2="380">
+      <stop offset="0" stop-color="#F0E0A6"/><stop offset=".3" stop-color="#D0B25A"/><stop offset=".62" stop-color="#C8A951"/><stop offset="1" stop-color="#9B7B37"/>
+    </linearGradient>
+    <linearGradient id="gRule" gradientUnits="userSpaceOnUse" x1="-30" y1="-440" x2="30" y2="440">
+      <stop offset="0" stop-color="#F3E6B4"/><stop offset=".5" stop-color="#D3B65F"/><stop offset="1" stop-color="#A88839"/>
+    </linearGradient>
+    <radialGradient id="gPin" cx=".36" cy=".3" r=".8">
+      <stop offset="0" stop-color="#FBF2CF"/><stop offset=".35" stop-color="#D5B861"/><stop offset="1" stop-color="#7c5e28"/>
+    </radialGradient>
+    <radialGradient id="gBead" cx=".35" cy=".3" r=".8">
+      <stop offset="0" stop-color="#c9685c"/><stop offset=".4" stop-color="#7B2D26"/><stop offset="1" stop-color="#4a1712"/>
+    </radialGradient>
+    <filter id="brush" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency=".012 1.3" numOctaves="3" seed="11"/>
+      <feColorMatrix values="0 0 0 0 .22  0 0 0 0 .16  0 0 0 0 .06  1.5 0 0 0 -.56"/>
+      <feComposite in2="SourceGraphic" operator="in"/>
+    </filter>
+    <filter id="brush2" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="1.1 .03" numOctaves="3" seed="3"/>
+      <feColorMatrix values="0 0 0 0 .3  0 0 0 0 .22  0 0 0 0 .08  1.3 0 0 0 -.52"/>
+      <feComposite in2="SourceGraphic" operator="in"/>
+    </filter>
+    <clipPath id="capClip"><circle r="380"/></clipPath>
+  </defs>
+</svg>
+
+<main class="hall">
+  <header class="head">
+    <p class="exno rise" style="--i:0">IV.12 <small>Gallery IV<br>Instruments<br>of the sky</small></p>
+    <h1 class="rise" style="--i:1"><span>The </span><b>Astrolabe</b></h1>
+    <p class="touch rise" style="--i:2">Please touch.</p>
+  </header>
+
+  <section class="bench" aria-label="The instrument">
+    <div class="scene" id="scene">
+      <div class="stage" id="stage">
+        <div class="tsh" id="tsh"></div>
+        <div class="layer" id="Lmater"><div class="cast"><svg id="svgMater" viewBox="-500 -715 1000 1215" role="img" aria-label="The mater, the body of the astrolabe, with its engraved limb and throne"></svg></div><i class="anc"></i></div>
+        <div class="shw" id="shPlate"><div class="shd disc"></div></div>
+        <div class="layer" id="Lplate"><div class="cast"><svg id="svgPlate" viewBox="-500 -715 1000 1215" aria-hidden="true"></svg></div><i class="anc"></i></div>
+        <div class="shw" id="shRete"><svg class="shd" viewBox="-500 -715 1000 1215" aria-hidden="true"><use href="#reteG"/></svg></div>
+        <div class="layer" id="Lrete"><div class="cast"><svg id="svgRete" viewBox="-500 -715 1000 1215" aria-hidden="true"></svg></div><i class="anc"></i></div>
+        <div class="shw" id="shRule"><div class="shd bar"></div></div>
+        <div class="layer" id="Lrule"><div class="cast"><svg id="svgRule" viewBox="-500 -715 1000 1215" aria-hidden="true"></svg></div><i class="anc"></i></div>
+        <div class="layer" id="Lpin"><div class="cast"><svg id="svgPin" viewBox="-500 -715 1000 1215" aria-hidden="true"></svg></div><i class="anc"></i></div>
+        <div class="layer" id="Lhorse"><div class="cast"><svg id="svgHorse" viewBox="-500 -715 1000 1215" aria-hidden="true"></svg></div></div>
+      </div>
+      <svg class="leaders" id="leaders" aria-hidden="true"></svg>
+      <p class="lab" data-l="pin"><b><i>5</i>Pin &amp; horse</b><span>A pin through the centre, locked by a wedge traditionally cut as a horse&rsquo;s head, holds every layer on one axis.</span></p>
+      <p class="lab" data-l="rule"><b><i>4</i>Rule</b><span>A straight-edge turning on the pin; its edge carries a point on the rete out to the scales on the limb.</span></p>
+      <p class="lab" data-l="rete"><b><i>3</i>Rete</b><span>The pierced map of the heavens: a ring for the Sun&rsquo;s yearly path and pointers for stars, cut away so the plate shows through.</span></p>
+      <p class="lab" data-l="plate"><b><i>2</i>Plate</b><span>The local sky for one latitude: horizon, circles of altitude and arcs of direction, fixed while the heavens turn above it.</span></p>
+      <p class="lab" data-l="mater"><b><i>1</i>Mater</b><span>The &lsquo;mother&rsquo;: a hollowed disc that holds the plates, its raised limb engraved with degrees and the twenty-four hours.</span></p>
+      <div class="grab" id="grab"></div>
+      <div class="flick" id="flick" aria-hidden="true"></div>
+      <div class="kb" id="kRete" tabindex="0" role="slider" aria-label="Rete: turn the heavens" aria-valuemin="0" aria-valuemax="359" aria-valuenow="0"></div>
+      <div class="kb" id="kRule" tabindex="0" role="slider" aria-label="Rule: turn the straight-edge" aria-valuemin="0" aria-valuemax="359" aria-valuenow="0"></div>
+      <p class="hint" id="hint"><span class="d">Drag the <b>rete</b> to turn the sky &middot; drag the <b>rule</b> to read it</span><span class="k"><b>&larr; &rarr;</b> turn one degree &middot; with <b>Shift</b>, fifteen</span></p>
+    </div>
+
+    <aside class="panel" aria-label="Reading the instrument">
+      <p class="kick">Reading the instrument <em>IV.12</em></p>
+      <div class="row"><span>Date</span>
+        <div class="date">
+          <button class="ib" data-d="-30" aria-label="One month earlier"><svg viewBox="0 0 14 14"><path d="M7.5 2.5 3 7l4.5 4.5M12 2.5 7.5 7l4.5 4.5"/></svg></button>
+          <button class="ib" data-d="-1" aria-label="One day earlier"><svg viewBox="0 0 14 14"><path d="M9 2.5 4.5 7 9 11.5"/></svg></button>
+          <output id="dateOut" aria-live="polite">9 November</output>
+          <button class="ib" data-d="1" aria-label="One day later"><svg viewBox="0 0 14 14"><path d="M5 2.5 9.5 7 5 11.5"/></svg></button>
+          <button class="ib" data-d="30" aria-label="One month later"><svg viewBox="0 0 14 14"><path d="M6.5 2.5 11 7l-4.5 4.5M2 2.5 6.5 7 2 11.5"/></svg></button>
+        </div>
+      </div>
+      <div class="row"><span>Plate</span>
+        <div class="plates" role="radiogroup" aria-label="Latitude plate">
+          <button role="radio" aria-checked="false" data-lat="30"><b>30&deg;</b><small>Cairo</small></button>
+          <button role="radio" aria-checked="true" data-lat="40"><b>40&deg;</b><small>Toledo</small></button>
+          <button role="radio" aria-checked="false" data-lat="52"><b>52&deg;</b><small>Oxford</small></button>
+        </div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Task">
+        <button role="tab" aria-selected="true" data-task="0">Sunrise</button>
+        <button role="tab" aria-selected="false" data-task="1">Day length</button>
+        <button role="tab" aria-selected="false" data-task="2">Culminating</button>
+      </div>
+      <ol class="steps" id="steps" aria-live="polite"></ol>
+      <ol class="parts">
+        <li><b>5 &middot; Pin &amp; horse</b>A pin locked by a horse-headed wedge holds every layer on one axis.</li>
+        <li><b>4 &middot; Rule</b>A straight-edge that carries a point on the rete out to the limb.</li>
+        <li><b>3 &middot; Rete</b>The pierced map of the heavens, cut away so the plate shows through.</li>
+        <li><b>2 &middot; Plate</b>The local sky for one latitude, fixed while the heavens turn.</li>
+        <li><b>1 &middot; Mater</b>The hollowed &lsquo;mother&rsquo; disc, its limb engraved with degrees and hours.</li>
+      </ol>
+      <button class="btn show" id="show"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.3"/><path d="M8 8V3.6M8 8l3 2"/></svg>Show me</button>
+      <dl class="reads">
+        <dt>Sun&rsquo;s place</dt><dd id="rSun" class="r"></dd>
+        <dt>Sun stands</dt><dd id="rAlt"></dd>
+        <dt>Rule reads</dt><dd id="rRule" class="r"></dd>
+        <dt>Rising</dt><dd id="rAsc"></dd>
+        <dt>Culminating</dt><dd id="rMc"></dd>
+      </dl>
+      <div class="acts">
+        <button class="btn brass" id="apart"><svg viewBox="0 0 16 16"><path d="M2 12.5 8 15l6-2.5M2 9.3 8 11.8l6-2.5M8 1.5 2 4.2l6 2.6 6-2.6z"/></svg><span>Take it apart</span></button>
+        <button class="btn" id="now">Set to now</button>
+        <button class="btn" id="snd" aria-pressed="false"><svg viewBox="0 0 16 16"><path d="M8 2.2c-2.4 0-3.7 1.9-3.7 4.3 0 2.7-1.2 3.6-1.8 4.4h11c-.6-.8-1.8-1.7-1.8-4.4 0-2.4-1.3-4.3-3.7-4.3zM6.6 12.9a1.5 1.5 0 0 0 2.8 0"/><path class="off" d="M2.5 2.5l11 11"/></svg><span>Sound off</span></button>
+      </div>
+      <p class="fine">An astrolabe keeps sun time, so it may differ from your clock by an hour or so. Star positions on this demonstration model are schematic.</p>
+    </aside>
+  </section>
+
+  <article class="wall">
+    <p class="olabel rise" style="--i:3"><strong>Planispheric astrolabe (demonstration model).</strong>Brass, engraved. After instruments made between the 10th and 16th centuries across the Islamic world and Europe.<em>The circles, scales and the Sun&rsquo;s place on this model are computed. Its twelve star pointers are schematic: their names are invented and their positions are illustrative only.</em></p>
+
+    <section class="wtext rise" style="--i:4">
+      <h2>The sky in the hand</h2>
+      <p>For some six hundred years the astrolabe was the most useful thing an astronomer could carry. With one its owner could tell the time by the Sun or by the stars, find the direction and the times for prayer, survey the height of a tower, cast a horoscope, and teach the motions of the heavens to a student. It did all this without a single moving part more complicated than a pin: the calculation is in the engraving.</p>
+      <p>Beneath the pierced star map lies a plate engraved with the sky as it appears from one latitude: the horizon, the circles of equal height above it, and the point directly overhead. Travel north or south and the horizon tilts against the stars, so the plate no longer fits the sky above you. Makers supplied a stack of plates, one for each latitude their client was likely to visit. This model has three.</p>
+      <p>The map looks strange because it is a round sky pressed flat. Imagine an eye at the south pole of the heavens, looking up through the sphere; every point is drawn where its line of sight crosses the plane of the equator. The north pole falls at the centre pin, the equator and the two tropics become concentric circles, and the Sun&rsquo;s yearly path becomes the off-centre ring on the rete. The projection stretches the southern sky, but it keeps one promise that matters to an engraver: every circle on the sphere is still a circle on the brass.</p>
+    </section>
+
+    <section class="try rise" style="--i:5">
+      <h2>Try it</h2>
+      <button class="card" data-task="0" aria-pressed="true"><i>1</i><b>Find sunrise</b><span>Bring today&rsquo;s place of the Sun to the eastern horizon, lay the rule through it, and read the hour on the limb.</span><u>Take up the instrument</u></button>
+      <button class="card" data-task="1" aria-pressed="false"><i>2</i><b>Find how long today is</b><span>Read sunrise, turn the heavens on to sunset in the west, and count the hours between the two.</span><u>Take up the instrument</u></button>
+      <button class="card" data-task="2" aria-pressed="false"><i>3</i><b>Find what is culminating now</b><span>Set the rete to this moment and see which degree of the ecliptic, and which pointer, stands on the meridian.</span><u>Take up the instrument</u></button>
+      <p class="colophon">Handle with ordinary care. The originals are behind glass in Gallery III.</p>
+    </section>
+  </article>
+</main>
+
+<script>
+(()=>{'use strict';
+const NS='http://www.w3.org/2000/svg',D=Math.PI/180,EPS=23.44;
+const sin=x=>Math.sin(x*D),cos=x=>Math.cos(x*D),tan=x=>Math.tan(x*D);
+const asin=x=>Math.asin(Math.max(-1,Math.min(1,x)))/D,acos=x=>Math.acos(Math.max(-1,Math.min(1,x)))/D,atan2=(y,x)=>Math.atan2(y,x)/D;
+const RCAP=380,REQ=RCAP/tan((90+EPS)/2),RCAN=REQ*tan((90-EPS)/2),ECX=REQ*tan(EPS),ECR=REQ/cos(EPS),ECI=ECR-30;
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const f=n=>+n.toFixed(2);
+const n360=x=>((x%360)+360)%360,n180=x=>n360(x+180)-180;
+const INK='#1F2A30',RED='#7B2D26',EDGE='#5d4820';
+function S(tag,at,par){const e=document.createElementNS(NS,tag);for(const k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e}
+let uid=0;
+function curveText(par,d,str,at,off){const id='tp'+(uid++);S('path',{id,d,fill:'none'},par);const t=S('text',Object.assign({class:'eng'},at),par);
+  const tp=S('textPath',{href:'#'+id,startOffset:off||'50%','text-anchor':'middle'},t);tp.textContent=str;return t}
+const circ=(cx,cy,r)=>`M${f(cx-r)},${f(cy)}a${r},${r} 0 1,0 ${2*r},0a${r},${r} 0 1,0 ${-2*r},0Z`;
+const pol=(r,a)=>[r*sin(a),-r*cos(a)];           // a clockwise from top
+const roman=n=>['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'][n];
+
+/* ---------- stereographic projection (from the south pole onto the equator's plane) ---------- */
+function proj(alt,az,lat){ // az from south, westward
+  const vP=-cos(alt)*cos(az)*cos(lat)+sin(alt)*sin(lat), vM=cos(alt)*cos(az)*sin(lat)+sin(alt)*cos(lat), vW=cos(alt)*sin(az);
+  const k=REQ/(1+vP);return [k*vW,-k*vM]}
+const rDec=d=>REQ*tan((90-d)/2);
+const eq=(dec,H)=>pol(rDec(dec),H);
+function ecl(lam){const ra=atan2(sin(lam)*cos(EPS),cos(lam)),dec=asin(sin(EPS)*sin(lam));return {ra,dec,p:pol(rDec(dec),-ra)}}
+
+/* ---------- MATER ---------- */
+function buildMater(){
+  const g=$('#svgMater');
+  const sh=S('g',{id:'shackle'},g);
+  const ring=S('g',{id:'sring'},sh);
+  S('circle',{cx:0,cy:-668,r:27,fill:'none',stroke:EDGE,'stroke-width':11.5},ring);
+  S('circle',{cx:0,cy:-668,r:27,fill:'none',stroke:'url(#gBrass)','stroke-width':8.5},ring);
+  S('circle',{cx:0,cy:-668,r:29.6,fill:'none',stroke:'#E9D79A','stroke-width':.9,opacity:.8},ring);
+  S('path',{d:'M-9,-584C-24,-600 -22,-640 0,-646C22,-640 24,-600 9,-584',fill:'none',stroke:EDGE,'stroke-width':12.5,'stroke-linecap':'round'},sh);
+  S('path',{d:'M-9,-584C-24,-600 -22,-640 0,-646C22,-640 24,-600 9,-584',fill:'none',stroke:'url(#gBrass)','stroke-width':9.5,'stroke-linecap':'round'},sh);
+  S('path',{d:'M-11,-590C-22,-606 -19,-636 0,-642',fill:'none',stroke:'#E9D79A','stroke-width':1,opacity:.8},sh);
+  const TH='M-200,-428C-176,-484 -130,-505 -94,-512C-70,-517 -62,-548 -40,-562C-26,-572 -15,-596 0,-596C15,-596 26,-572 40,-562C62,-548 70,-517 94,-512C130,-505 176,-484 200,-428L150,-415L-150,-415Z'
+    +circ(0,-548,13)+circ(-23,-516,12)+circ(23,-516,12)+circ(-64,-498,7.5)+circ(64,-498,7.5)+circ(-104,-484,5)+circ(104,-484,5)+circ(0,-581,4.5)
+    +'M-140,-470q14,-18 34,-20q-10,12 -12,24Z M140,-470q-14,-18 -34,-20q10,12 12,24Z';
+  S('path',{d:TH,fill:'url(#gBrass)',stroke:EDGE,'stroke-width':1.5,'fill-rule':'evenodd'},g);
+  S('path',{d:'M-186,-436C-164,-478 -128,-496 -92,-503C-62,-510 -56,-542 -35,-555C-22,-565 -12,-586 0,-587C12,-586 22,-565 35,-555C56,-542 62,-510 92,-503C128,-496 164,-478 186,-436',fill:'none',stroke:INK,'stroke-width':.8,opacity:.6},g);
+  S('circle',{cx:0,cy:-581,r:7,fill:'url(#gPin)',stroke:EDGE,'stroke-width':1},g);
+  S('circle',{r:480,fill:'url(#gLimb)',stroke:EDGE,'stroke-width':1.6},g);
+  S('circle',{r:479,fill:'#000',filter:'url(#brush)',opacity:.42},g);
+  S('circle',{r:478,fill:'none',stroke:'#F6EBC2','stroke-width':1.2,opacity:.7},g);
+  S('circle',{r:400,fill:'url(#gRecess)'},g);
+  S('circle',{r:398,fill:'none',stroke:INK,'stroke-width':5,opacity:.35},g);
+  {const rc=S('g',{fill:'none',stroke:'#E9D79A',opacity:.28},g);for(const r of [RCAP,REQ,RCAN,30])S('circle',{r:f(r),'stroke-width':1},rc);S('path',{d:'M0,-392V392M-392,0H392','stroke-width':.8},rc);S('path',{d:'M-14,400a14,10 0 0,1 28,0Z',fill:'#C8A951',stroke:'none',opacity:2},rc)}
+  const e=S('g',{fill:'none',stroke:INK,opacity:.86},g);
+  for(const [r,w] of [[475,1.1],[472.6,.5],[441,.5],[438.6,1],[404.4,1.1]])S('circle',{r,'stroke-width':w},e);
+  let d1='',d5='',dh='',dq='';
+  for(let i=0;i<360;i++){const L=i%10==0?13:i%5==0?9:5,a=pol(472.6,i),b=pol(472.6-L,i);(i%5?d1:d5,i%5==0?d5+=`M${f(a[0])},${f(a[1])}L${f(b[0])},${f(b[1])}`:d1+=`M${f(a[0])},${f(a[1])}L${f(b[0])},${f(b[1])}`)}
+  for(let i=0;i<360;i+=5){const h=i%15==0,a=pol(404.4,i),b=pol(404.4+(h?5.5:3),i);dq+=`M${f(a[0])},${f(a[1])}L${f(b[0])},${f(b[1])}`;
+    if(h){const c=pol(438.6,i),e2=pol(433,i);dh+=`M${f(c[0])},${f(c[1])}L${f(e2[0])},${f(e2[1])}`}}
+  S('path',{d:d1,'stroke-width':.55,class:'thin'},e);S('path',{d:d5,'stroke-width':.95},e);S('path',{d:dq,'stroke-width':.8},e);S('path',{d:dh,'stroke-width':1.1},e);
+  const t=S('g',{opacity:.9},g);
+  for(let i=0;i<360;i+=10){const x=S('text',{class:'num thin',transform:`rotate(${i}) translate(0,-449)`,'text-anchor':'middle',dy:'.35em','font-size':10.5},t);x.textContent=i}
+  for(let h=0;h<24;h++){const n=h%12||12,red=n==12;const x=S('text',{class:'eng',transform:`rotate(${h*15}) translate(0,-420.5)`,'text-anchor':'middle',dy:'.36em','font-size':n==12?23:20,'letter-spacing':n>6&&n<9?-.6:0},t);
+    x.textContent=roman(n);if(red)x.style.fill=RED}
+  for(let h=0;h<24;h++){const p=pol(421,h*15+7.5);S('path',{d:`M${f(p[0])},${f(p[1]-2.6)}l2.6,2.6l-2.6,2.6l-2.6,-2.6Z`,fill:INK,opacity:.7,class:'thin'},t)}
+}
+
+/* ---------- PLATE ---------- */
+function buildPlate(lat){
+  const svg=$('#svgPlate');svg.textContent='';
+  const g=S('g',{},svg);
+  S('circle',{r:397,fill:'url(#gPlate)',stroke:EDGE,'stroke-width':1.2},g);
+  S('circle',{r:396,fill:'#000',filter:'url(#brush2)',opacity:.2},g);
+  const e=S('g',{fill:'none',stroke:INK,'clip-path':'url(#capClip)',opacity:.84},g);
+  // tropics, equator, cross
+  S('circle',{r:REQ,'stroke-width':1.3},e);S('circle',{r:REQ-2.6,'stroke-width':.45},e);
+  S('circle',{r:RCAN,'stroke-width':1},e);
+  S('path',{d:'M0,-380V380M-380,0H380','stroke-width':.9},e);
+  // almucantars every 5 degrees, horizon to zenith
+  for(let a=0;a<90;a+=5){const den=sin(lat)+sin(a),cy=-REQ*cos(lat)/den,r=REQ*cos(a)/den;
+    S('circle',{cx:0,cy:f(cy),r:f(r),'stroke-width':a==0?2.3:a%10==0?.95:.5,class:a%10?'thin':''},e)}
+  // twilight (18 degrees below), dashed
+  {const den=sin(lat)+sin(-18);S('circle',{cx:0,cy:f(-REQ*cos(lat)/den),r:f(REQ*cos(18)/den),'stroke-width':.9,'stroke-dasharray':'5 4'},e)}
+  // azimuth arcs every 15 degrees
+  for(let A=15;A<360;A+=15){if(A==180)continue;let d='';for(let a=0;a<=89;a+=1.5){const p=proj(a,A,lat);d+=(a?'L':'M')+f(p[0])+','+f(p[1])}
+    const z=proj(90,0,lat);d+='L'+f(z[0])+','+f(z[1]);S('path',{d,'stroke-width':A%90==0?1.1:.5},e)}
+  // unequal hours below the horizon
+  const nums=S('g',{opacity:.85},g);
+  for(let i=1;i<12;i++){const P=[EPS,0,-EPS].map(dc=>{const H0=acos(-tan(lat)*tan(dc));return eq(dc,H0+i*(360-2*H0)/12)});
+    const [a,b,c]=P,det=2*(a[0]*(b[1]-c[1])+b[0]*(c[1]-a[1])+c[0]*(a[1]-b[1]));
+    if(Math.abs(det)<40){S('path',{d:`M${f(a[0])},${f(a[1])}L${f(c[0])},${f(c[1])}`,'stroke-width':.7},e);continue}
+    const sq=p=>p[0]*p[0]+p[1]*p[1],ux=(sq(a)*(b[1]-c[1])+sq(b)*(c[1]-a[1])+sq(c)*(a[1]-b[1]))/det,uy=(sq(a)*(c[0]-b[0])+sq(b)*(a[0]-c[0])+sq(c)*(b[0]-a[0]))/det;
+    const R=Math.hypot(a[0]-ux,a[1]-uy),cr=(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);
+    S('path',{d:`M${f(a[0])},${f(a[1])}A${f(R)},${f(R)} 0 0,${cr>0?1:0} ${f(c[0])},${f(c[1])}`,'stroke-width':.7},e)}
+  for(let i=1;i<=12;i++){const dc=-13,H0=acos(-tan(lat)*tan(dc)),p=eq(dc,H0+(i-.5)*(360-2*H0)/12);
+    const x=S('text',{class:'num thin',x:f(p[0]),y:f(p[1]+3.5),'text-anchor':'middle','font-size':10},nums);x.textContent=i}
+  // altitude numerals on the meridian
+  for(let a=10;a<90;a+=10){const den=sin(lat)+sin(a),cy=REQ*cos(lat)/den,r=REQ*cos(a)/den;
+    for(const y of [-(cy-r),-(cy+r)]){if(Math.abs(y)>368)continue;const x=S('text',{class:'num thin',x:3.5,y:f(y-2.5),'font-size':8.5},nums);x.textContent=a}}
+  // names on horizon and twilight
+  const line=(alt,A0,A1)=>{let d='';for(let A=A0;A>=A1;A-=3){const p=proj(alt,A,lat);d+=(d?'L':'M')+f(p[0])+','+f(p[1])}return d};
+  curveText(g,line(0,262,196),'Horizon · Oriens',{'font-size':9.5,'letter-spacing':2.4,dy:11.5,class:'eng thin'});
+  curveText(g,line(0,164,98),'Occidens · Horizon',{'font-size':9.5,'letter-spacing':2.4,dy:11.5,class:'eng thin'});
+  curveText(g,line(-18,222,138),'Crepvscvlvm',{'font-size':8.5,'letter-spacing':3,dy:10.5,class:'eng thin'});
+  // rim inscriptions
+  const rim='M0,385.2A385.2,385.2 0 1,1 0,-385.2A385.2,385.2 0 1,1 0,385.2';
+  const R={30:'XXX',40:'XL',52:'LII'}[lat],N={30:'I',40:'II',52:'III'}[lat];
+  curveText(g,rim,'Meridies',{'font-size':9.5,'letter-spacing':4},'50%');
+  curveText(g,rim,'Oriens',{'font-size':9.5,'letter-spacing':4},'25%');
+  curveText(g,rim,'Occidens',{'font-size':9.5,'letter-spacing':4},'75%');
+  curveText(g,rim,'Ad latitvdinem gradvvm '+R,{'font-size':9.5,'letter-spacing':2.6},'11.5%').style.fill=RED;
+  curveText(g,rim,'Tabvla '+N+' · Septentrio',{'font-size':9.5,'letter-spacing':2.6},'89.5%');
+  S('circle',{r:RCAP,fill:'none',stroke:INK,'stroke-width':1.1,opacity:.85},g);
+  S('circle',{r:9,fill:'#3d3018'},g);
+}
+
+/* ---------- RETE ---------- */
+const SIGN_L=['Aries','Tavrvs','Gemini','Cancer','Leo','Virgo','Libra','Scorpivs','Sagittarivs','Capricornvs','Aqvarivs','Pisces'];
+const SIGN=['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];
+const STARS=[ // base x,y, direction, length, curl, name  (schematic; not real stars)
+  [-281,-158,-24,86,1,'Azelma'],[-293,134,18,88,-1,'Meribel'],[-238,-5,-64,80,-1,'Ostrael'],[-212,5,114,80,1,'Venmira'],
+  [-161,-305,3,96,1,'Calthor'],[-161,305,-3,96,-1,'Svhane'],[58,-268,-48,74,1,'Dabiron'],[150,-141,-150,80,-1,'Elqvis'],
+  [234,-86,170,74,1,'Ormvnd'],[150,141,156,82,1,'Thessar'],[228,102,72,64,-1,'Qvillon'],[188,2,102,72,1,'Ismere']];
+const starTips=[];
+let sunBead;
+function buildRete(){
+  const svg=$('#svgRete'),G=S('g',{id:'reteG'},svg);
+  const gE=S('g',{fill:'none',stroke:EDGE,'stroke-linecap':'round','stroke-linejoin':'round'},G),gF=S('g',{'stroke-linecap':'round','stroke-linejoin':'round'},G),gD=S('g',{},G);
+  const ringD=(cx,cy,ro,ri)=>circ(cx,cy,ro)+circ(cx,cy,ri);
+  const shape=d=>{S('path',{d,'stroke-width':3,fill:EDGE,'fill-rule':'evenodd'},gE);S('path',{d,fill:'url(#gRete)','fill-rule':'evenodd'},gF)};
+  const strap=(d,w)=>{S('path',{d,'stroke-width':w+3},gE);S('path',{d,stroke:'url(#gRete)','stroke-width':w,fill:'none'},gF);
+    S('path',{d,stroke:'#F6EBC2','stroke-width':.9,fill:'none',opacity:.6,transform:'translate(-.9,-1.2)'},gD);S('path',{d,stroke:INK,'stroke-width':.5,fill:'none',opacity:.45},gD)};
+  const p1=pol(322,-52),p2=pol(322,-128),q1=pol(REQ,15),q2=pol(REQ,165);
+  strap('M-372,0H352',13);
+  strap(`M${f(p2[0])},${f(p2[1])}A322,322 0 0,1 ${f(p1[0])},${f(p1[1])}`,12);
+  strap(`M${f(p1[0])},${f(p1[1])}Q-178,-306 -112,-349`,11);strap(`M${f(p2[0])},${f(p2[1])}Q-178,306 -112,349`,11);
+  strap('M176,-262L191,-316',11);strap('M176,262L191,316',11);
+  strap('M4,-27C24,-118 150,-64 150,-141C150,-186 198,-190 212,-224',11);strap('M4,27C24,118 150,64 150,141C150,186 198,190 212,224',11);
+  strap(`M${f(q1[0])},${f(q1[1])}A${f(REQ)},${f(REQ)} 0 0,1 ${f(q2[0])},${f(q2[1])}`,11);
+  shape(ringD(0,0,382,366));shape(ringD(ECX,0,ECR,ECI));shape(ringD(0,0,31,12));shape(ringD(118,0,40,29));
+  shape('M118,-24q7,17 24,24q-17,7 -24,24q-7,-17 -24,-24q17,-7 24,-24Z');
+  // flame pointers
+  STARS.forEach(([bx,by,ang,L,c,name])=>{const w=27;
+    const d=`M-4,${-w/2}C${f(L*.3)},${f(-w*.78)} ${f(L*.56)},${f(-w*.12)} ${L},${f(c*w*.46)}C${f(L*.64)},${f(w*.2+c*3)} ${f(L*.3)},${f(w*.92)} -4,${w/2}Z`;
+    const tr=`translate(${bx},${by}) rotate(${ang})`;
+    S('path',{d,transform:tr,'stroke-width':3,fill:EDGE},gE);S('path',{d,transform:tr,fill:'url(#gRete)'},gF);
+    const gg=S('g',{transform:tr},gD);
+    S('path',{d:`M2,${-w*.34}C${f(L*.3)},${f(-w*.52)} ${f(L*.56)},${f(-w*.02)} ${f(L*.93)},${f(c*w*.4)}`,fill:'none',stroke:INK,'stroke-width':.5,opacity:.5},gg);
+    S('circle',{cx:f(L*.955),cy:f(c*w*.43),r:1.2,fill:INK,opacity:.7},gg);
+    const flip=cos(ang)<0,a=`${f(L*.07)},${f(w*.2)}`,m=`${f(L*.42)},${f(w*.16+c*1)}`,b=`${f(L*.8)},${f(c*w*.3+w*.12)}`;
+    curveText(gg,flip?`M${b}Q${m} ${a}`:`M${a}Q${m} ${b}`,name,{'font-size':8.6,'letter-spacing':.9,class:'eng thin',dy:flip?6:0},flip?'54%':'46%');
+    const tx=L,ty=c*w*.46;starTips.push({name:name.replace(/v/g,'u'),ang:atan2(bx+tx*cos(ang)-ty*sin(ang),-(by+tx*sin(ang)+ty*cos(ang)))})});
+  // ecliptic engraving
+  const e=S('g',{fill:'none',stroke:INK,opacity:.88},gD);
+  S('circle',{cx:f(ECX),r:f(ECR-1.6),'stroke-width':.7},e);S('circle',{cx:f(ECX),r:f(ECR-12.5),'stroke-width':.5},e);S('circle',{cx:f(ECX),r:f(ECI+1.6),'stroke-width':.7},e);
+  let d1='',d5='',dS='';const bnd=[];
+  for(let l=0;l<360;l++){const P=ecl(l).p,m=Math.hypot(P[0],P[1]),u=[-P[0]/m,-P[1]/m];
+    if(l%30==0){const dx=P[0]-ECX,dy=P[1],bq=dx*u[0]+dy*u[1],cq=dx*dx+dy*dy-(ECI+1.6)**2,t=-bq-Math.sqrt(Math.max(0,bq*bq-cq));
+      dS+=`M${f(P[0])},${f(P[1])}L${f(P[0]+u[0]*t)},${f(P[1]+u[1]*t)}`;bnd.push(atan2(P[1],P[0]-ECX))}
+    else{const L=l%10==0?11.5:l%5==0?8.5:5,s=`M${f(P[0]+u[0]*1.6)},${f(P[1]+u[1]*1.6)}L${f(P[0]+u[0]*L)},${f(P[1]+u[1]*L)}`;if(l%5)d1+=s;else d5+=s}}
+  S('path',{d:d1,'stroke-width':.45,class:'thin'},e);S('path',{d:d5,'stroke-width':.8},e);S('path',{d:dS,'stroke-width':1.2},e);
+  const rt=ECI+5.6;
+  for(let k=0;k<12;k++){const a0=bnd[(k+1)%12],a1=bnd[k],span=n360(a1-a0),len=span*D*rt,nm=SIGN_L[k];
+    const d=`M${f(ECX+rt*Math.cos(a0*D))},${f(rt*Math.sin(a0*D))}A${f(rt)},${f(rt)} 0 0,1 ${f(ECX+rt*Math.cos(a1*D))},${f(rt*Math.sin(a1*D))}`;
+    const fs=Math.min(11.5,len/(nm.length*.98));
+    curveText(gD,d,nm,{'font-size':f(fs),'letter-spacing':f(Math.min(3.2,(len*.82-nm.length*fs*.7)/nm.length))})}
+  // hub engraving
+  S('circle',{r:26,fill:'none',stroke:INK,'stroke-width':.6,opacity:.6},gD);
+  for(const r of [379,369])S('circle',{r,fill:'none',stroke:INK,'stroke-width':.55,opacity:.6},gD);
+  for(let i=0;i<72;i++){const p=pol(374,i*5);S('circle',{cx:f(p[0]),cy:f(p[1]),r:i%6?0.9:1.9,fill:INK,opacity:.6,class:i%6?'thin':''},gD)}
+  // hover / focus outlines
+  const hl=S('g',{class:'hl',fill:'none',stroke:RED,'stroke-width':1.5},G);
+  S('circle',{r:383.6},hl);S('circle',{r:364.4},hl);S('circle',{cx:f(ECX),r:f(ECR+1.6)},hl);S('circle',{cx:f(ECX),r:f(ECI-1.6)},hl);
+  S('circle',{class:'fr',r:391,fill:'none',stroke:RED,'stroke-width':2.4,'stroke-dasharray':'2 7','stroke-linecap':'round'},G);
+  // the Sun
+  sunBead=S('g',{},G);
+  S('circle',{r:11,fill:'none',stroke:RED,'stroke-width':.9,opacity:.8},sunBead);
+  S('circle',{r:7,fill:'url(#gBead)',stroke:'#3d120e','stroke-width':.8},sunBead);
+  S('circle',{cx:-2.2,cy:-2.4,r:1.7,fill:'#f3d9c9',opacity:.85},sunBead);
+}
+
+/* ---------- RULE, PIN, HORSE ---------- */
+function buildRule(){
+  const svg=$('#svgRule'),G=S('g',{id:'ruleG'},svg),gE=S('g',{stroke:EDGE,'stroke-width':3,fill:EDGE,'stroke-linejoin':'round'},G),gF=S('g',{fill:'url(#gRule)'},G),gD=S('g',{},G);
+  const arm='M0,-449L9,-438L23,-410L23,-58Q23,-36 6,-22L0,-20Z';
+  for(const r of [0,180]){S('path',{d:arm,transform:`rotate(${r})`},gE);S('path',{d:arm,transform:`rotate(${r})`},gF)}
+  S('circle',{r:35},gE);S('circle',{r:35},gF);
+  for(const r of [0,180]){const g=S('g',{transform:`rotate(${r})`},gD);
+    S('path',{d:'M19.4,-408V-60',stroke:INK,'stroke-width':.5,fill:'none',opacity:.6},g);
+    let d='';for(let dc=-23;dc<=66;dc++){const y=-rDec(dc),L=dc%10==0?12.5:dc%5==0?9:5;d+=`M0,${f(y)}h${L}`;
+      if(dc%10==0){const t=S('text',{class:'num thin',x:15.5,y:f(y+7.6),'text-anchor':'middle','font-size':7.6},g);t.textContent=Math.abs(dc)}}
+    S('path',{d,stroke:INK,'stroke-width':.6,fill:'none',opacity:.85},g);
+    S('path',{d:'M11,-432l4,7l-4,7l-4,-7Z',fill:INK,opacity:.6},g)}
+  S('circle',{r:30,fill:'none',stroke:INK,'stroke-width':.6,opacity:.6},gD);
+  S('path',{d:'M0,-449V449',stroke:RED,'stroke-width':1.7},gD);
+  const hl=S('g',{class:'hl',fill:'none',stroke:RED,'stroke-width':1.5,'stroke-linejoin':'round'},G);
+  for(const r of [0,180])S('path',{d:'M-2,-452L10.5,-440L25,-411L25,-34',transform:`rotate(${r})`},hl);
+  S('circle',{class:'fr',r:46,fill:'none',stroke:RED,'stroke-width':2.4,'stroke-dasharray':'2 6','stroke-linecap':'round'},G);
+  const p=$('#svgPin');
+  S('circle',{r:17.5,fill:'url(#gPin)',stroke:EDGE,'stroke-width':1.4},p);S('circle',{r:12.5,fill:'none',stroke:INK,'stroke-width':.5,opacity:.5},p);
+  const h=S('g',{transform:'rotate(-17)'},$('#svgHorse'));
+  S('path',{d:'M-34,-6.5L46,-2.2Q50,0 46,2.2L-34,6.5 C-44,9 -50,5 -54,9 C-60,15 -70,14 -72,7 C-73,2 -68,-2 -66,-6 C-64,-14 -56,-19 -46,-17 L-45,-23 L-40,-16 C-37,-13 -35,-10 -34,-6.5Z',fill:'url(#gRule)',stroke:EDGE,'stroke-width':1.4,'stroke-linejoin':'round'},h);
+  S('circle',{cx:-56,cy:-7,r:1.6,fill:INK},h);
+  S('path',{d:'M-46,-15C-42,-9 -42,-2 -45,5M-70,8l5,-1M-30,-4L44,-.4',fill:'none',stroke:INK,'stroke-width':.6,opacity:.65},h);
+  S('circle',{r:6.5,fill:'url(#gPin)',stroke:EDGE,'stroke-width':1},h);
+}
+
+/* ---------- state ---------- */
+const scene=$('#scene'),stageEl=$('#stage');
+const part=(k,c,fr)=>({a:0,v:0,tg:0,drag:false,auto:false,k,c,fr});
+const rete=part(170,23,2.1),rule=part(520,40,8),shk={a:0,v:0};
+const ST={s:1,rx:0,rz:0,tx:0,ty:0,low:0,fade:1};
+const mk=()=>({x:0,y:0,z:0,ry:0,sc:1,o:1,lift:0});
+const L={mater:mk(),plate:mk(),rete:mk(),rule:mk(),pin:mk(),horse:mk()};
+const EL={};for(const k in L)EL[k]=$('#L'+k);
+const LABS=$$('.lab').map((el,i)=>({el,key:el.dataset.l,o:0,line:null,dot:null}));
+let W=600,lat=40,date=new Date(),sun={lam:0,ra:0,dec:0},exploded=false,busy=false,task=0,memo={rise:null,set:null},soundOn=false,actx=null;
+LABS.forEach(l=>{l.line=S('line',{},$('#leaders'));l.dot=S('circle',{r:2.4},$('#leaders'))});
+
+/* ---------- easing + tweens ---------- */
+function bez(x1,y1,x2,y2){return t=>{let u=t;for(let i=0;i<6;i++){const x=3*(1-u)*(1-u)*u*x1+3*(1-u)*u*u*x2+u*u*u-t,dx=3*(1-u)*(1-u)*x1+6*(1-u)*u*(x2-x1)+3*u*u*(1-x2);if(Math.abs(dx)<1e-6)break;u-=x/dx}
+  return 3*(1-u)*(1-u)*u*y1+3*(1-u)*u*u*y2+u*u*u}}
+const E={out:bez(.16,.84,.24,1),io:bez(.65,.02,.2,1),lift:bez(.3,.0,.15,1),slow:bez(.12,.7,.1,1),
+  settle:t=>t<.8?bez(.5,0,.9,.6)(t/.8):1-.02*Math.sin((t-.8)/.2*Math.PI)};
+const tweens=[];
+function tw(o,to,dur,ease,delay){return new Promise(res=>{tweens.push({o,to,from:null,dur:RM&&!to.fade&&to.o===undefined?0:dur,ease:ease||E.io,t:-(RM?0:(delay||0)),res});kick()})}
+const wait=ms=>new Promise(r=>setTimeout(r,RM?0:ms));
+
+/* ---------- astronomy ---------- */
+function setSun(){const n=Date.UTC(date.getFullYear(),date.getMonth(),date.getDate(),12)/864e5+2440587.5-2451545;
+  const Lm=280.460+.9856474*n,g=357.528+.9856003*n,lam=n360(Lm+1.915*sin(g)+.020*sin(2*g));const e=ecl(lam);
+  sun={lam,ra:n360(e.ra),dec:e.dec,H0:acos(-tan(lat)*tan(e.dec))};sunBead.setAttribute('transform',`translate(${f(e.p[0])},${f(e.p[1])})`)}
+const altOf=(lam,th)=>{const e=ecl(lam),H=th-e.ra;return [asin(sin(lat)*sin(e.dec)+cos(lat)*cos(e.dec)*cos(H)),sin(H)]};
+function rising(th){let pa=altOf(0,th)[0];for(let l=1;l<=360;l++){const [a,sh]=altOf(l,th);if(pa>=0&&a<0&&sh<0)return n360(l-1+pa/(pa-a));pa=a}return 0}
+const place=l=>`${Math.floor(n360(l)%30)}° ${SIGN[Math.floor(n360(l)/30)]}`;
+function clock(H,approx){let h=n360(H+180)/15;let m=Math.round(h*60/(approx?5:1))*(approx?5:1);m=((m%1440)+1440)%1440;const hh=Math.floor(m/60),mm=m%60;
+  const w=hh<4?'at night':hh<12?'in the morning':hh<17?'in the afternoon':hh<21?'in the evening':'at night';
+  return {t:`${(hh+11)%12+1}:${String(mm).padStart(2,'0')}`,w,mins:m}}
+const nowAngle=()=>{const d=new Date();return (d.getHours()+d.getMinutes()/60+d.getSeconds()/3600-12)*15+sun.ra};
+
+/* ---------- panel ---------- */
+let lastKey='';
+function readPanel(force){
+  const th=rete.a,H=n180(th-sun.ra),alt=asin(sin(lat)*sin(sun.dec)+cos(lat)*cos(sun.dec)*cos(H));
+  const dRule=Math.min(Math.abs(n180(rule.a-H)),Math.abs(n180(rule.a+180-H)));
+  const key=[th.toFixed(1),rule.a.toFixed(1),sun.lam.toFixed(2),lat,task,exploded].join();
+  if(key===lastKey&&!force)return;lastKey=key;
+  const onE=Math.abs(alt)<.9&&H<0,onW=Math.abs(alt)<.9&&H>0,laid=dRule<1.3;
+  $('#rSun').textContent=place(sun.lam);
+  $('#rAlt').textContent=Math.abs(alt)<.9?'on the horizon':`${Math.round(Math.abs(alt))}° ${alt>0?'above':'below'} the horizon`;
+  const rc=clock(rule.a);$('#rRule').textContent=`${rc.t} ${rc.w}`;
+  $('#rAsc').textContent=place(rising(th));
+  $('#rMc').textContent=place(atan2(sin(th),cos(th)*cos(EPS)));
+  $('#kRete').setAttribute('aria-valuenow',Math.round(n360(th)));$('#kRete').setAttribute('aria-valuetext',`Sun ${$('#rAlt').textContent}`);
+  $('#kRule').setAttribute('aria-valuenow',Math.round(n360(rule.a)));$('#kRule').setAttribute('aria-valuetext',`Rule reads ${rc.t} ${rc.w}`);
+  if(onE&&laid)memo.rise=clock(-sun.H0,1);if(onW&&laid)memo.set=clock(sun.H0,1);
+  let st=[];const sp=`<strong>${place(sun.lam)}</strong>`;
+  if(task==0){const done=onE&&laid;st=[[`Find today on the ecliptic: ${sp}. A red bead marks it.`,1],
+    ['Turn the rete until that point touches the horizon in the east.',onE],['Lay the rule through it.',done],
+    [done?`Read the limb: about <strong>${clock(-sun.H0,1).t}</strong>.`:'Read the limb where the rule crosses the hours.',done]]}
+  else if(task==1){const r=memo.rise,s=memo.set,both=r&&s;let len='';if(both){const m=s.mins-r.mins;len=`${Math.floor(m/60)} h ${String(m%60).padStart(2,'0')} min`}
+    st=[[r?`Sunrise, read as before: about <strong>${r.t}</strong>.`:'Read sunrise: Sun’s bead on the eastern horizon, rule laid through it.',!!r],
+    [s?`Sunset in the west: about <strong>${s.t}</strong>.`:'Turn the rete on until the bead meets the horizon in the west; lay the rule through it again.',!!s],
+    [both?`Count the hours between them: today is <strong>${len}</strong> long.`:'Count the hours on the limb between the two readings.',!!both]]}
+  else{const atNow=Math.abs(n180(th-nowAngle()))<2.5,up=Math.abs(n180(rule.a))<1.3||Math.abs(n180(rule.a-180))<1.3,both=atNow&&up;
+    let best=starTips[0],bd=999;for(const s of starTips){const d=Math.abs(n180(s.ang+th));if(d<bd){bd=d;best=s}}
+    st=[['Turn the rete to the present hour, or press <strong>Set to now</strong>.',atNow],['Lay the rule straight up the meridian, to the XII at the top.',both],
+    [both?`Read what lies under it: <strong>${place(atan2(sin(th),cos(th)*cos(EPS)))}</strong> on the ecliptic; the nearest pointer is <strong>${best.name}</strong>.`:'Read which degree of the ecliptic, and which pointer, lies under the rule.',both]]}
+  const html=st.map(([t,ok])=>`<li class="${ok?'ok':''}">${t}</li>`).join('');const el=$('#steps');
+  if(el.dataset.h!==html){const old=[...el.children];if(old.length===st.length&&el.dataset.t==String(task)){st.forEach(([t,ok],i)=>{if(old[i].innerHTML!==t)old[i].innerHTML=t;old[i].classList.toggle('ok',!!ok)})}else el.innerHTML=html;el.dataset.h=html;el.dataset.t=task}
+}
+function setTask(t){task=t;$$('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.task==t));$$('.card').forEach(b=>b.setAttribute('aria-pressed',b.dataset.task==t));readPanel(true)}
+function setDate(d){date=d;memo={rise:null,set:null};setSun();$('#dateOut').textContent=`${d.getDate()} ${['January','February','March','April','May','June','July','August','September','October','November','December'][d.getMonth()]}`;readPanel(true);draw()}
+
+/* ---------- sound ---------- */
+function audio(){if(!actx){const C=window.AudioContext||window.webkitAudioContext;if(C)actx=new C()}return actx}
+let lastTick=0;
+function tick(){if(!soundOn||!actx)return;const t=actx.currentTime;if(t-lastTick<.03)return;lastTick=t;
+  const o=actx.createOscillator(),g=actx.createGain(),b=actx.createBiquadFilter();o.type='square';o.frequency.setValueAtTime(2300+Math.random()*500,t);o.frequency.exponentialRampToValueAtTime(900,t+.012);
+  b.type='bandpass';b.frequency.value=3000;b.Q.value=2;g.gain.setValueAtTime(.035,t);g.gain.exponentialRampToValueAtTime(.0001,t+.022);o.connect(b).connect(g).connect(actx.destination);o.start(t);o.stop(t+.03)}
+function clink(v){if(!soundOn||!actx)return;const t=actx.currentTime;for(const [fq,gn,dc] of [[1870,.05,.5],[2975,.03,.32],[4410,.016,.2]]){
+  const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=fq*(1+(Math.random()-.5)*.02);g.gain.setValueAtTime(gn*(v||1),t);g.gain.exponentialRampToValueAtTime(.0001,t+dc);o.connect(g).connect(actx.destination);o.start(t);o.stop(t+dc+.02)}}
+
+/* ---------- render ---------- */
+const reteG=()=>$('#reteG'),ruleG=()=>$('#ruleG');
+function draw(){
+  reteG().setAttribute('transform',`rotate(${f(rete.a)})`);ruleG().setAttribute('transform',`rotate(${f(rule.a)})`);
+  $('#shackle').setAttribute('transform',`rotate(${f(shk.a)} 0 -584)`);$('#sring').setAttribute('transform',`rotate(${f(shk.a*.8)} 0 -644)`);
+  stageEl.style.transform=`translate(${ST.tx*W}px,${ST.ty*W}px) scale(${ST.s}) rotateX(${ST.rx}deg) rotateZ(${ST.rz}deg)`;
+  $('#tsh').style.transform=`translate(${(8+ST.low*46)}px,${(13+ST.low*70)}px) scale(${1+ST.low*.07})`;$('#tsh').style.opacity=(.62-ST.low*.3)*ST.fade;
+  for(const k in L){const o=L[k],el=EL[k];el.style.transform=`translate3d(${o.x*W}px,${o.y*W}px,${o.z*W}px) rotateY(${o.ry}deg) scale(${o.sc})`;el.firstElementChild.style.opacity=o.o*ST.fade;el.style.setProperty('--lift',o.lift)}
+  shadow($('#shPlate'),L.plate,L.mater,.4,0);shadow($('#shRete'),L.rete,L.plate,.397,0);shadow($('#shRule'),L.rule,L.rete,.382,1);
+  if(LABS[0].o>0||LABS[4].o>0||exploded)drawLabels();
+  readPanel();
+}
+function shadow(el,up,lo,rad,isRule){const gap=up.z-lo.z,op=Math.min(1,gap/.3)*.3*ST.fade;
+  if(op<.004){if(el.style.display!=='none')el.style.display='none';return}
+  el.style.display='block';el.style.opacity=op;el.style.clipPath=`circle(${rad*W}px at 50% 58.848%)`;
+  el.style.transform=`translate3d(${lo.x*W}px,${lo.y*W}px,${lo.z*W+1}px)`;
+  el.firstElementChild.style.transform=`translate(${(up.x-lo.x+gap*.1)*W}px,${(up.y-lo.y+gap*.15)*W}px)`+(isRule?` rotate(${rule.a}deg)`:'')}
+const RAD={pin:.035,rule:0,rete:.382,plate:.397,mater:.48};
+function drawLabels(){const sr=scene.getBoundingClientRect(),lx=W*.615,lw=W-lx;
+  for(const l of LABS){const r=EL[l.key].querySelector('.anc').getBoundingClientRect(),cx=r.left-sr.left,cy=r.top-sr.top;
+    let rr=RAD[l.key];if(l.key=='rule')rr=Math.max(.05,Math.abs(sin(rule.a+ST.rz))*.44);
+    const x0=cx+rr*ST.s*W+5;l.el.style.width=lw+'px';l.el.style.transform=`translate(${lx}px,${cy-9+(1-l.o)*10}px)`;l.el.style.opacity=l.o;
+    const x1=x0+(lx-6-x0)*l.o;l.line.setAttribute('x1',x0);l.line.setAttribute('y1',cy);l.line.setAttribute('x2',Math.max(x0,x1));l.line.setAttribute('y2',cy);l.line.style.opacity=l.o>0?1:0;
+    l.dot.setAttribute('cx',x0);l.dot.setAttribute('cy',cy);l.dot.style.opacity=Math.min(1,l.o*3)}}
+
+/* ---------- loop ---------- */
+let raf=0,last=0,lastDeg=0;
+function kick(){if(!raf&&!document.hidden){last=performance.now();raf=requestAnimationFrame(frame)}}
+function phys(p,dt){if(p.auto)return false;
+  if(p.drag){if(RM){p.a=p.tg;p.v=0;return true}p.v+=(p.k*(p.tg-p.a)-p.c*p.v)*dt;p.a+=p.v*dt;return true}
+  if(Math.abs(p.v)>1.5){p.v*=Math.exp(-p.fr*dt);p.a+=p.v*dt;return true}
+  if(p.v!==0){p.v=0;snap(p)}return false}
+function snap(p){const T=p===rete?[sun.ra-sun.H0,sun.ra+sun.H0]:[n180(rete.a-sun.ra),n180(rete.a-sun.ra)+180,0,180];
+  for(const t of T){const d=n180(t-p.a);if(Math.abs(d)<(p===rete?1.6:2.4)&&Math.abs(d)>.02){p.auto=true;tw(p,{a:p.a+d},260,E.out).then(()=>{p.auto=false});return}}}
+function frame(t){raf=0;const real=Math.min(.3,(t-last)/1000),dt=Math.min(.034,real);last=t;let live=false;
+  for(let i=tweens.length-1;i>=0;i--){const q=tweens[i];q.t+=real*1000;if(q.t<0){live=true;continue}
+    if(!q.from){q.from={};for(const k in q.to)q.from[k]=q.o[k]}
+    const p=q.dur?Math.min(1,q.t/q.dur):1,e=q.ease(p);for(const k in q.to)q.o[k]=q.from[k]+(q.to[k]-q.from[k])*(p===1?1:e);
+    if(p===1){tweens.splice(i,1);q.res()}else live=true}
+  if(phys(rete,dt))live=true;if(phys(rule,dt))live=true;
+  const dg=Math.floor(rete.a);if(dg!==lastDeg){lastDeg=dg;tick()}
+  if(Math.abs(shk.a)>.03||Math.abs(shk.v)>.2){shk.v+=(-46*shk.a-1.7*shk.v)*dt;shk.a+=shk.v*dt;live=true}else{shk.a=0;shk.v=0}
+  draw();if(live||tweens.length)kick()}
+document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);raf=0}else kick()});
+
+/* ---------- pointer ---------- */
+const grab=$('#grab');let act=null,pAng=0,moved=0;
+function geo(ev){const r=scene.getBoundingClientRect(),dx=ev.clientX-(r.left+r.width/2),dy=ev.clientY-(r.top+r.height*.58848),k=1000/r.width;return {r:Math.hypot(dx,dy)*k,a:atan2(dx,-dy)}}
+function pick(ev){const g=geo(ev),near=Math.abs(g.r*sin(g.a-rule.a)),th=ev.pointerType==='touch'?44:25;
+  if(g.r<452&&g.r>20&&near<th)return rule;if(g.r<405&&g.r>20)return rete;return null}
+function hover(p){scene.classList.toggle('h-rete',p===rete);scene.classList.toggle('h-rule',p===rule);scene.classList.toggle('can',!!p)}
+grab.addEventListener('pointermove',ev=>{if(act){const a=geo(ev).a,d=n180(a-pAng);pAng=a;act.tg+=d;moved+=Math.abs(d);kick();return}if(!busy&&ev.pointerType!=='touch')hover(pick(ev))});
+grab.addEventListener('pointerleave',()=>{if(!act)hover(null)});
+grab.addEventListener('pointerdown',ev=>{if(busy||exploded)return;const p=pick(ev);if(!p)return;ev.preventDefault();grab.setPointerCapture(ev.pointerId);audio();
+  act=p;p.auto=false;p.drag=true;p.tg=p.a;p.v=0;pAng=geo(ev).a;moved=0;hover(p);scene.classList.add('dragging','used');kick()});
+const up=ev=>{if(!act)return;const p=act;act=null;p.drag=false;scene.classList.remove('dragging');if(RM){p.v=.01}else{shk.v+=Math.max(-40,Math.min(40,rete.v*.06))}
+  if(Math.abs(p.v)<1.5)p.v=.01;if(ev.pointerType==='touch')hover(null);kick()};
+grab.addEventListener('pointerup',up);grab.addEventListener('pointercancel',up);
+$('#flick').addEventListener('pointerdown',()=>{shk.v+=(Math.random()<.5?-1:1)*(RM?20:85);clink(.5);kick()});
+for(const [id,p,c] of [['#kRete',rete,'f-rete'],['#kRule',rule,'f-rule']]){const el=$(id);
+  el.addEventListener('focus',()=>{if(el.matches(':focus-visible'))scene.classList.add(c)});el.addEventListener('blur',()=>scene.classList.remove(c));
+  el.addEventListener('keydown',ev=>{const s=ev.key==='ArrowRight'||ev.key==='ArrowUp'?1:ev.key==='ArrowLeft'||ev.key==='ArrowDown'?-1:0;if(!s||busy||exploded)return;ev.preventDefault();
+    scene.classList.add(c,'used');p.auto=false;p.v=0;p.a=Math.round(p.a)+s*(ev.shiftKey?15:1);if(p===rete)audio();kick()})}
+
+/* ---------- actions ---------- */
+async function turnTo(p,target,dur,dir){let d=n180(target-p.a);if(dir>0&&d<0)d+=360;p.auto=true;p.v=0;await tw(p,{a:p.a+d},dur||Math.max(700,Math.min(2600,Math.abs(d)*14)),E.slow);p.auto=false}
+async function showMe(){if(busy||exploded)return;busy=true;scene.classList.add('used');
+  if(task==0){await turnTo(rete,sun.ra-sun.H0);await turnTo(rule,-sun.H0)}
+  else if(task==1){memo={rise:null,set:null};await turnTo(rete,sun.ra-sun.H0);await turnTo(rule,-sun.H0);readPanel(true);await wait(900);await turnTo(rete,sun.ra+sun.H0,2600,1);await turnTo(rule,sun.H0)}
+  else{setDate(new Date());await turnTo(rete,nowAngle());await turnTo(rule,0)}
+  busy=false;readPanel(true)}
+async function setNow(){if(busy)return;busy=true;setDate(new Date());await turnTo(rete,nowAngle());busy=false;readPanel(true)}
+async function swapPlate(n){if(busy||n===lat)return;busy=true;$$('.plates button').forEach(b=>b.setAttribute('aria-checked',b.dataset.lat==n));
+  const fin=()=>{lat=n;memo={rise:null,set:null};buildPlate(lat);setSun()};
+  if(exploded||RM){await tw(L.plate,{o:0},280,E.io);fin();await tw(L.plate,{o:1},380,E.io)}
+  else{const up=['rete','rule','pin','horse'];
+    up.forEach((k,i)=>tw(L[k],{sc:1.045+i*.006,lift:1,y:-.012},620,E.lift,i*40));shk.v+=30;
+    await wait(420);await tw(L.plate,{x:.5,o:0},640,bez(.6,0,.85,.4));fin();L.plate.x=-.5;clink(.4);
+    await tw(L.plate,{x:0,o:1},760,E.out);clink(.7);
+    await Promise.all(up.map((k,i)=>tw(L[k],{sc:1,lift:0,y:0},620,E.settle,i*90)));clink(1);shk.v-=22}
+  busy=false;readPanel(true);draw()}
+const EX={horse:{z:1.66,x:.17},pin:{z:1.8},rule:{z:1.42},rete:{z:1.03,ry:-9},plate:{z:.58,x:.07,y:.02}};
+const EXS={s:.56,rx:60,rz:-24,tx:-.2,ty:.275};
+async function takeApart(){if(busy)return;busy=true;hover(null);const btn=$('#apart span');
+  rete.v=rule.v=0;rete.drag=rule.drag=false;const lab=k=>LABS.find(l=>l.key==k);
+  if(!exploded){exploded=true;scene.classList.add('ex','used');document.body.classList.add('exploded');btn.textContent='Put it back together';
+    if(RM){await tw(ST,{fade:0},300);Object.assign(ST,EXS);for(const k in EX)Object.assign(L[k],EX[k]);LABS.forEach(l=>l.o=1);await tw(ST,{fade:1},400)}
+    else{tw(ST,Object.assign({},EXS),1700,E.io);shk.v+=40;
+      tw(L.horse,{x:EX.horse.x},620,E.lift,500);tw(L.horse,{z:EX.horse.z},1250,E.lift,1050);tw(L.pin,{z:EX.pin.z},1300,E.lift,950).then(()=>tw(lab('pin'),{o:1},600,E.out));
+      tw(L.rule,{z:EX.rule.z},1250,E.lift,1350).then(()=>tw(lab('rule'),{o:1},600,E.out));
+      tw(L.rete,{z:EX.rete.z},1300,E.lift,1750).then(()=>tw(lab('rete'),{o:1},600,E.out));tw(L.rete,{ry:-9},1100,E.io,2100);
+      tw(L.plate,{z:EX.plate.z},1150,E.lift,2150);await tw(L.plate,{x:EX.plate.x,y:EX.plate.y},800,E.io,3000);tw(lab('plate'),{o:1},600,E.out);await tw(lab('mater'),{o:1},600,E.out,160)}
+  }else{btn.textContent='Take it apart';
+    if(RM){await tw(ST,{fade:0},300);Object.assign(ST,{s:1,rx:0,rz:0,tx:0,ty:0});for(const k in EX)Object.assign(L[k],{x:0,y:0,z:0,ry:0});LABS.forEach(l=>l.o=0);drawLabels();await tw(ST,{fade:1},400)}
+    else{LABS.forEach((l,i)=>tw(l,{o:0},380,E.io,(4-i)*60));
+      await tw(L.plate,{x:0,y:0},600,E.io,200);tw(L.plate,{z:0},800,E.settle).then(()=>clink(.6));
+      tw(L.rete,{ry:0},700,E.io,250);tw(L.rete,{z:0},1050,E.settle,450).then(()=>clink(.8));
+      tw(L.rule,{z:0},1150,E.settle,900).then(()=>clink(.7));
+      tw(ST,{s:1,rx:0,rz:0,tx:0,ty:0},1900,E.io,900);
+      tw(L.pin,{z:0},1250,E.settle,1350).then(()=>clink(1));tw(L.horse,{z:0},1250,E.settle,1400);await tw(L.horse,{x:0},560,E.out,2750);clink(.5);shk.v+=34;drawLabels()}
+    exploded=false;scene.classList.remove('ex');document.body.classList.remove('exploded')}
+  busy=false;readPanel(true);kick()}
+
+$('#apart').addEventListener('click',()=>{audio();takeApart()});
+$('#now').addEventListener('click',()=>{audio();setNow()});
+$('#show').addEventListener('click',()=>{audio();showMe()});
+$('#snd').addEventListener('click',e=>{soundOn=!soundOn;const b=e.currentTarget;b.setAttribute('aria-pressed',soundOn);b.querySelector('span').textContent=soundOn?'Sound on':'Sound off';if(soundOn){audio();if(actx&&actx.state==='suspended')actx.resume();clink(.8)}});
+$$('.ib').forEach(b=>b.addEventListener('click',()=>{const n=+b.dataset.d,d=new Date(date);if(Math.abs(n)==30)d.setMonth(d.getMonth()+Math.sign(n));else d.setDate(d.getDate()+n);setDate(d)}));
+$$('.plates button').forEach(b=>{b.addEventListener('click',()=>{audio();swapPlate(+b.dataset.lat)});
+  b.addEventListener('keydown',ev=>{const i=['ArrowLeft','ArrowRight'].indexOf(ev.key);if(i<0)return;const s=b[i?'nextElementSibling':'previousElementSibling'];if(s){s.focus();s.click()}})});
+$$('.tabs button').forEach(b=>b.addEventListener('click',()=>setTask(+b.dataset.task)));
+$$('.card').forEach(b=>b.addEventListener('click',()=>{setTask(+b.dataset.task);
+  if(innerWidth<1180)scene.scrollIntoView({behavior:RM?'auto':'smooth',block:'start'});
+  const s=$('#show');s.animate([{boxShadow:'0 0 0 0 rgba(123,45,38,.7)'},{boxShadow:'0 0 0 14px rgba(123,45,38,0)'}],{duration:900,easing:'cubic-bezier(.16,.84,.24,1)'})}));
+
+/* ---------- start ---------- */
+function size(){W=scene.clientWidth;draw()}
+buildMater();buildPlate(lat);buildRete();buildRule();
+setDate(new Date());
+addEventListener('resize',size);if(window.ResizeObserver)new ResizeObserver(size).observe(scene);
+W=scene.clientWidth;
+const th0=nowAngle(),H0=n180(th0-sun.ra);
+if(RM){rete.a=th0;rule.a=H0;draw()}
+else{rete.a=th0-360;rule.a=H0-70;rete.auto=rule.auto=true;ST.s=1.13;ST.low=1;ST.fade=0;draw();
+  tw(ST,{fade:1},500,E.out,80);tw(ST,{s:1,low:0},1350,E.settle,120).then(()=>{shk.v+=95;kick()});
+  tw(rete,{a:th0},3300,bez(.3,.05,.12,1),650).then(()=>{rete.auto=false});
+  tw(rule,{a:H0},2600,bez(.3,.05,.12,1),1500).then(()=>{rule.auto=false;readPanel(true)})}
+})();
+</script>
+</body>
+</html>

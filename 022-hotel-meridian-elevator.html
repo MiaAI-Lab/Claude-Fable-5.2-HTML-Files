@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Hotel Meridian — Going Up</title>
+<style>
+:root{
+  --k:#0B0B0C; --g:#C8A04A; --h:#E7CC84; --b:#7A1F2B; --i:#F0E6D2; --v:#1F3B3A;
+  --deco:Futura,"Futura PT","Century Gothic","URW Gothic","Avant Garde","Gill Sans","Gill Sans MT","Trebuchet MS",sans-serif;
+  --serif:Georgia,Palatino,"Palatino Linotype","Book Antiqua","Times New Roman",serif;
+  --gap:6px; --o:0;
+  --dwy:min(50vw,680px);
+  --ih:clamp(150px,29vh,280px);
+  --fh:clamp(26px,5vh,46px);
+  --spring:cubic-bezier(.3,1.5,.5,1);
+  --glide:cubic-bezier(.2,.7,.1,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--k);scroll-behavior:auto;overscroll-behavior:none}
+body{background:var(--k);color:var(--i);font-family:var(--serif);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+#track{width:1px;height:1700vh;pointer-events:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+:focus-visible{outline:2px solid var(--i);outline-offset:4px}
+
+/* ───────── the car ───────── */
+.car{position:fixed;inset:0;height:100vh;height:100dvh;display:grid;
+  grid-template-columns:minmax(0,1fr) var(--dwy) minmax(0,1fr);
+  grid-template-rows:var(--ih) minmax(0,1fr) var(--fh);
+  grid-template-areas:"lw ind rw" "lw door rw" "fl fl fl";
+  background:
+    radial-gradient(120% 70% at 50% -8%, rgba(200,160,74,.22), rgba(200,160,74,0) 60%),
+    radial-gradient(60% 50% at 50% 62%, rgba(200,160,74,calc(var(--o)*.16)), rgba(200,160,74,0) 70%),
+    var(--k);
+  will-change:transform}
+.grain{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;opacity:.11;mix-blend-mode:overlay;z-index:9}
+
+/* walls */
+.lw,.rw{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(14px,3vh,30px);padding:28px 18px}
+.lw{grid-area:lw}.rw{grid-area:rw}
+.lw::before,.rw::before{content:"";position:absolute;inset:22px 26px 14px;pointer-events:none;
+  background:
+    repeating-linear-gradient(90deg,rgba(231,204,132,.035) 0 1px,transparent 1px 9px),
+    linear-gradient(180deg,rgba(31,59,58,.95),rgba(31,59,58,.35) 55%,rgba(11,11,12,.2));
+  box-shadow:inset 0 0 0 1px rgba(200,160,74,.75),inset 0 0 0 6px var(--k),inset 0 0 0 7px rgba(200,160,74,.35);
+  clip-path:polygon(18px 0,calc(100% - 18px) 0,calc(100% - 18px) 10px,100% 10px,100% calc(100% - 10px),calc(100% - 18px) calc(100% - 10px),calc(100% - 18px) 100%,18px 100%,18px calc(100% - 10px),0 calc(100% - 10px),0 10px,18px 10px)}
+.lw>*,.rw>*{position:relative}
+
+/* wall ornaments */
+.orn{width:clamp(90px,10vw,150px);fill:none;stroke:var(--g);stroke-width:1;opacity:.8}
+.cert{font-family:var(--deco);font-size:9.5px;letter-spacing:.34em;text-indent:.34em;line-height:2;text-transform:uppercase;text-align:center;color:var(--k);padding:10px 16px 9px;
+  background:linear-gradient(135deg,var(--h),var(--g) 55%,#8a6c2c);box-shadow:0 0 0 1px var(--k),0 0 0 2px rgba(231,204,132,.6),0 6px 14px rgba(0,0,0,.6);max-width:250px}
+.cert b{display:block;font-weight:600;letter-spacing:.6em;text-indent:.6em;border-bottom:1px solid rgba(11,11,12,.5);margin-bottom:4px}
+.cert i{display:block;font-family:var(--serif);font-size:10.5px;letter-spacing:.04em;text-indent:0;text-transform:none;margin-top:4px;border-top:1px solid rgba(11,11,12,.5);padding-top:3px}
+@media (max-width:1180px),(max-height:760px){.cert{display:none}}
+@media (max-height:640px){.orn{display:none}}
+/* readout */
+.readout{text-align:center;display:flex;flex-direction:column;align-items:center}
+.readout .cap{font-family:var(--deco);font-size:10px;letter-spacing:.5em;text-indent:.5em;color:var(--g);text-transform:uppercase}
+.win{margin:12px 0 14px;min-width:clamp(120px,13vw,190px);padding:6px 20px 2px;background:var(--k);
+  box-shadow:0 0 0 1px var(--g),0 0 0 5px var(--k),0 0 0 6px rgba(200,160,74,.5),inset 0 10px 24px rgba(0,0,0,.9),inset 0 0 30px rgba(200,160,74,.12)}
+#num{display:block;font-family:var(--deco);font-weight:300;font-size:clamp(54px,8.6vh,92px);line-height:1;letter-spacing:.04em;color:var(--h);
+  transform:scaleY(1.55);transform-origin:50% 50%;padding:.28em 0;text-shadow:0 0 18px rgba(231,204,132,.45);font-variant-numeric:lining-nums}
+#num.flip{animation:flip .34s var(--spring)}
+@keyframes flip{0%{opacity:.2;transform:scaleY(1.2) translateY(14%)}100%{opacity:1;transform:scaleY(1.55)}}
+#status{font-family:var(--deco);font-size:11px;letter-spacing:.35em;text-indent:.35em;text-transform:uppercase;color:var(--i);opacity:.85;max-width:17em;line-height:1.7;min-height:3.4em}
+
+/* sound toggle */
+.snd{display:flex;align-items:center;gap:12px;font-family:var(--deco);font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:var(--g)}
+.snd .knob{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle at 35% 28%,var(--h),var(--g) 45%,#7d6226 100%);
+  box-shadow:0 0 0 1px var(--k),0 0 0 2px rgba(231,204,132,.6),0 5px 10px rgba(0,0,0,.7),inset 0 -3px 5px rgba(0,0,0,.35);
+  transition:transform .35s var(--spring)}
+.snd:hover .knob{transform:rotate(-18deg)}
+.snd[aria-pressed="true"] .knob{transform:rotate(38deg)}
+.snd svg{width:22px;height:22px;stroke:var(--k);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.snd .wv{opacity:0;transition:opacity .3s}
+.snd[aria-pressed="true"] .wv{opacity:1}
+.snd[aria-pressed="true"] .sl{opacity:0}
+.snd[aria-pressed="true"] .knob{transform:none}
+.snd .txt b{font-weight:400;color:var(--i)}
+
+/* call buttons */
+.panel{display:flex;flex-direction:column-reverse;gap:clamp(5px,1.15vh,11px);padding:16px 18px 14px;background:linear-gradient(180deg,#121213,var(--k));
+  box-shadow:0 0 0 1px var(--g),0 0 0 5px var(--k),0 0 0 6px rgba(200,160,74,.45),0 18px 40px rgba(0,0,0,.6)}
+.row{display:flex;align-items:center;gap:14px}
+.cb{flex:none;width:clamp(28px,4.6vh,42px);height:clamp(28px,4.6vh,42px);border-radius:50%;position:relative;
+  font-family:var(--deco);font-size:clamp(10px,1.6vh,13px);letter-spacing:.06em;color:var(--k);font-weight:600;
+  background:radial-gradient(circle at 36% 28%,var(--h) 0,var(--g) 46%,#7d6226 100%);
+  box-shadow:0 0 0 2px var(--k),0 0 0 3px rgba(231,204,132,.55),0 4px 7px rgba(0,0,0,.7),inset 0 -3px 4px rgba(0,0,0,.35),inset 0 2px 2px rgba(255,255,255,.35);
+  transition:transform .28s var(--spring),box-shadow .5s,background .5s}
+.cb:hover{transform:scale(1.09)}
+.cb:active{transform:scale(.93)}
+.cb.lit{background:radial-gradient(circle at 40% 32%,#fff 0,var(--i) 50%,var(--h) 100%);
+  box-shadow:0 0 0 2px var(--k),0 0 0 3px var(--i),0 0 22px 4px rgba(240,230,210,.6),inset 0 -2px 4px rgba(200,160,74,.5)}
+.cb.blank{background:radial-gradient(circle at 36% 28%,#a98a40,#6d5622 60%,#4c3b16)}
+.cb.blank::before,.cb.blank::after{content:"";position:absolute;left:22%;right:22%;top:calc(50% - 1px);height:2px;background:rgba(11,11,12,.75);transform:rotate(-28deg);box-shadow:0 1px 0 rgba(231,204,132,.4)}
+.cb.blank::after{display:none}
+.cb.blank.lit{background:radial-gradient(circle at 40% 32%,#c9465a,var(--b) 60%,#3d0f15);box-shadow:0 0 0 2px var(--k),0 0 0 3px var(--b),0 0 20px 3px rgba(122,31,43,.8)}
+.lbl{font-family:var(--deco);font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--g);white-space:nowrap;transition:color .4s,transform .4s var(--glide)}
+.row:hover .lbl,.cb.lit+.lbl{color:var(--i);transform:translateX(4px)}
+.ptitle{order:99;font-family:var(--deco);font-size:9px;letter-spacing:.5em;text-indent:.5em;color:var(--g);text-align:center;padding-bottom:8px;margin-bottom:2px;border-bottom:1px solid rgba(200,160,74,.4)}
+
+/* indicator */
+.ind{grid-area:ind;display:flex;justify-content:center;align-items:flex-end;padding-top:12px;min-width:0;position:relative;z-index:2}
+.ind svg{height:100%;max-width:100%;display:block;overflow:visible;filter:drop-shadow(0 10px 18px rgba(0,0,0,.7))}
+.ind .num{font-family:var(--deco);font-size:17px;font-weight:600;fill:var(--k);text-anchor:middle;dominant-baseline:central;paint-order:stroke;stroke:rgba(231,204,132,.55);stroke-width:.6px}
+.ind .maker{font-family:var(--deco);font-size:10.5px;letter-spacing:.42em;fill:rgba(11,11,12,.62);text-anchor:middle}
+.lamp{fill:#3a2d12;stroke:rgba(11,11,12,.6);stroke-width:.8;transition:fill .5s}
+.lamp.on{fill:#fffaf0;transition:fill .05s}
+#glow{fill:var(--i);opacity:.75}
+#hand{filter:drop-shadow(0 3px 2px rgba(0,0,0,.45))}
+
+/* doorway */
+.frame{grid-area:door;position:relative;padding:9px 9px 0;min-height:0;
+  background:linear-gradient(90deg,#6f5723,var(--g) 12%,var(--h) 50%,var(--g) 88%,#6f5723);
+  box-shadow:0 0 0 3px var(--k),0 0 0 4px rgba(200,160,74,.6),0 0 0 9px var(--k),0 0 0 10px rgba(200,160,74,.3),0 -20px 60px rgba(200,160,74,.08)}
+.frame::before{content:"";position:absolute;inset:3px 3px 0;border:1px solid rgba(11,11,12,.55);border-bottom:0;pointer-events:none}
+.doorway{position:relative;height:100%;overflow:hidden;background:var(--k);box-shadow:inset 0 0 0 1px var(--k)}
+#shaft{position:absolute;top:0;left:calc(50% - var(--gap)/2);width:var(--gap);height:100%;display:block}
+.scenes{position:absolute;inset:0}
+.shut .scenes{visibility:hidden}
+.scene{position:absolute;inset:0;display:none;flex-direction:column}
+.scene.on{display:flex}
+.vgw{flex:1 1 0;min-height:42%;overflow:hidden;position:relative}
+.vg{position:absolute;inset:0;width:100%;height:100%;display:block;transform:scale(calc(1.09 - var(--o)*.09));transform-origin:50% 60%}
+.vgw::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 60px 10px rgba(11,11,12,.55);background:rgba(11,11,12,calc(.55 - var(--o)*.55))}
+figcaption{flex:none;background:linear-gradient(180deg,#131314,var(--k));border-top:1px solid var(--g);box-shadow:0 -4px 0 var(--k),0 -5px 0 rgba(200,160,74,.5);
+  padding:clamp(12px,2.2vh,22px) clamp(16px,3vw,44px) clamp(14px,2.6vh,26px);text-align:center;position:relative;z-index:1}
+figcaption>*{opacity:clamp(0,calc((var(--o) - .4)*2.4),1);transform:translateY(calc((1 - var(--o))*12px))}
+figcaption h2{font-family:var(--deco);font-weight:400;font-size:clamp(11px,1.5vh + .3vw,16px);letter-spacing:.35em;text-indent:.35em;text-transform:uppercase;color:var(--g);
+  display:flex;align-items:center;justify-content:center;gap:.9em;flex-wrap:wrap;line-height:1.5}
+figcaption h2 .no{font-size:1.9em;letter-spacing:.06em;text-indent:0;color:var(--h);font-weight:300;transform:scaleY(1.3);display:inline-block;line-height:1}
+figcaption h2 .no::after{content:"";display:inline-block;width:1px;height:.8em;background:var(--g);margin-left:.5em;vertical-align:-.05em;opacity:.7}
+figcaption p{font-style:italic;font-size:clamp(13.5px,1.25vh + .45vw,18.5px);line-height:1.55;color:var(--i);max-width:36em;margin:.55em auto 0;text-wrap:pretty}
+figcaption .by{display:block;font-family:var(--deco);font-style:normal;font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:var(--g);opacity:.8;margin-top:.9em}
+
+/* doors */
+.door{z-index:2;position:absolute;top:0;bottom:0;width:calc(50% - var(--gap)/2);pointer-events:none;will-change:transform;overflow:hidden;
+  background:
+    linear-gradient(180deg,rgba(11,11,12,.05),rgba(11,11,12,.28) 55%,rgba(11,11,12,.62)),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.085) 0 1px,rgba(255,255,255,0) 1px 3px,rgba(0,0,0,.11) 3px 4px,rgba(0,0,0,0) 4px 6px,rgba(255,255,255,.04) 6px 7px,rgba(0,0,0,0) 7px 11px),
+    linear-gradient(90deg,#7b5f25 0,#a8853b 14%,var(--g) 38%,var(--h) 62%,var(--g) 84%,#8d6f2f 100%)}
+.door.l{left:0;transform:translate3d(calc(var(--o)*-101%),0,0);box-shadow:inset -2px 0 0 rgba(11,11,12,.5),inset -3px 0 0 rgba(231,204,132,.5)}
+.door.r{right:0;transform:translate3d(calc(var(--o)*101%),0,0);box-shadow:inset 2px 0 0 rgba(11,11,12,.5),inset 3px 0 0 rgba(231,204,132,.5);
+  background:
+    linear-gradient(180deg,rgba(11,11,12,.05),rgba(11,11,12,.28) 55%,rgba(11,11,12,.62)),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.085) 0 1px,rgba(255,255,255,0) 1px 3px,rgba(0,0,0,.11) 3px 4px,rgba(0,0,0,0) 4px 6px,rgba(255,255,255,.04) 6px 7px,rgba(0,0,0,0) 7px 11px),
+    linear-gradient(270deg,#7b5f25 0,#a8853b 14%,var(--g) 38%,var(--h) 62%,var(--g) 84%,#8d6f2f 100%)}
+.door svg{position:absolute;inset:0;width:100%;height:100%}
+.door.r svg{transform:scaleX(-1)}
+.door .hi{fill:none;stroke:var(--h);stroke-width:1.3}
+.door .lo{fill:none;stroke:rgba(11,11,12,.55);stroke-width:1.3}
+.eng{position:absolute;top:32.5%;height:9%;display:flex;flex-direction:column;justify-content:center;font-family:var(--deco);text-transform:uppercase;white-space:nowrap;
+  color:rgba(16,12,5,.92);text-shadow:0 1px 0 rgba(231,204,132,.9),0 -1px 0 rgba(11,11,12,.25);font-size:calc(var(--dwy)*.046);letter-spacing:.35em;line-height:1.15}
+.eng small{font-size:.36em;letter-spacing:.6em;margin-top:.5em;opacity:.85}
+.door.l .eng{right:.1em;text-align:right}
+.door.r .eng{left:.45em;text-align:left}
+
+/* title plate */
+.plate{position:absolute;left:50%;bottom:5.5%;transform:translateX(-50%);z-index:3;pointer-events:none;
+  padding:11px 26px 9px;background:linear-gradient(180deg,#151516,var(--k));text-align:center;white-space:nowrap;
+  box-shadow:0 0 0 1px var(--h),0 0 0 4px var(--k),0 0 0 5px rgba(231,204,132,.6),0 10px 22px rgba(0,0,0,.6)}
+.plate span{display:block;font-family:var(--deco);font-size:clamp(9px,1.2vh + .15vw,12px);letter-spacing:.5em;text-indent:.5em;text-transform:uppercase;color:var(--h)}
+.plate svg{display:block;margin:7px auto 0;width:20px;height:12px;stroke:var(--h);fill:none;stroke-width:1.6;animation:bob 1.7s cubic-bezier(.45,0,.4,1) infinite alternate}
+.plate::before,.plate::after{content:"";position:absolute;top:50%;width:5px;height:5px;margin-top:-2.5px;border-radius:50%;background:var(--g);box-shadow:inset 0 -1px 0 rgba(0,0,0,.6)}
+.plate::before{left:8px}.plate::after{right:8px}
+@keyframes bob{from{transform:translateY(-2px)}to{transform:translateY(4px)}}
+
+/* lever */
+.lever{display:inline-flex;align-items:center;gap:16px;margin-top:14px;font-family:var(--deco);font-size:10.5px;letter-spacing:.35em;text-transform:uppercase;color:var(--h);padding:4px 6px}
+.lever .slot{position:relative;width:78px;height:16px;border-radius:8px;background:var(--k);box-shadow:inset 0 2px 5px #000,0 0 0 1px var(--g),0 0 0 4px #171718,0 0 0 5px rgba(200,160,74,.45)}
+.lever .slot i{position:absolute;top:-8px;left:-6px;width:32px;height:32px;border-radius:50%;
+  background:radial-gradient(circle at 36% 28%,var(--h),var(--g) 48%,#7d6226);box-shadow:0 4px 8px rgba(0,0,0,.8),inset 0 -3px 4px rgba(0,0,0,.35);transition:transform .7s var(--spring)}
+.lever:hover .slot i{transform:translateX(9px)}
+.lever.pulled .slot i{transform:translateX(58px)}
+.lever .slot::before{content:"";position:absolute;left:10px;right:10px;top:7px;height:2px;background:repeating-linear-gradient(90deg,rgba(200,160,74,.5) 0 2px,transparent 2px 8px)}
+
+/* marble floor */
+.floor{grid-area:fl;position:relative;background:#111112;border-top:2px solid var(--g);box-shadow:0 -5px 0 var(--k),0 -6px 0 rgba(200,160,74,.4);overflow:hidden;z-index:2}
+.floor svg{position:absolute;inset:0;width:100%;height:100%}
+.floor::after{content:"";position:absolute;left:0;right:0;top:5px;height:5px;
+  background:repeating-linear-gradient(90deg,var(--g) 0 10px,transparent 10px 20px);opacity:.5}
+.floor::before{content:"";position:absolute;inset:0;z-index:1;background:radial-gradient(60% 160% at 50% 0,rgba(231,204,132,calc(.1 + var(--o)*.3)),transparent 70%)}
+
+/* ───────── vignette palette + motion ───────── */
+.fk{fill:var(--k)}.fg{fill:var(--g)}.fh{fill:var(--h)}.fb{fill:var(--b)}.fi{fill:var(--i)}.fv{fill:var(--v)}
+.sk,.sg,.sh,.sb,.si,.sv{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.sk{stroke:var(--k)}.sg{stroke:var(--g)}.sh{stroke:var(--h)}.sb{stroke:var(--b)}.si{stroke:var(--i)}.sv{stroke:var(--v)}
+.vg text{font-family:var(--deco)}
+.wing{transform-origin:240px 180px;animation:wing 3.2s cubic-bezier(.37,0,.63,1) infinite alternate}
+.wing.w2{animation-delay:-1.6s}
+@keyframes wing{from{transform:scaleX(1)}to{transform:scaleX(-1)}}
+.bell{cursor:pointer;transform-origin:372px 214px}
+.bell.ring{animation:ring .7s cubic-bezier(.3,.8,.3,1)}
+@keyframes ring{0%,100%{transform:rotate(0)}15%{transform:rotate(-13deg)}35%{transform:rotate(10deg)}55%{transform:rotate(-6deg)}75%{transform:rotate(3deg)}}
+.rings path{animation:rings 2.6s ease-out infinite}
+.rings path+path{animation-delay:.25s}
+@keyframes rings{0%,55%{opacity:0}65%{opacity:1}100%{opacity:0}}
+.spin{animation:spin 15s linear infinite}
+@keyframes spin{to{transform:translateX(-240px)}}
+.pin{animation:pin 3s ease-in-out infinite alternate}
+@keyframes pin{from{opacity:.25}to{opacity:1}}
+.dots{transform-origin:240px 62px;animation:rot 38s linear infinite}
+.dots.d2{animation-duration:54s;animation-direction:reverse}
+@keyframes rot{to{transform:rotate(360deg)}}
+.cpl{transform-box:fill-box;transform-origin:50% 100%;animation:waltz 3.6s cubic-bezier(.45,0,.55,1) infinite alternate}
+@keyframes waltz{0%{transform:translateX(-12px) scaleX(1)}100%{transform:translateX(12px) scaleX(-1)}}
+.bulb{transform-origin:240px -10px;animation:swing 2.9s cubic-bezier(.45,0,.55,1) infinite alternate}
+@keyframes swing{from{transform:rotate(-13deg)}to{transform:rotate(13deg)}}
+.g13{animation:g13 5.8s steps(1) infinite}
+@keyframes g13{0%,100%{opacity:.16}47%{opacity:.3}50%{opacity:.1}53%{opacity:.26}}
+.perch{animation:perch 4.2s cubic-bezier(.45,0,.55,1) infinite alternate}
+@keyframes perch{from{transform:rotate(-4deg)}to{transform:rotate(4deg)}}
+.feather{animation:feather 9s linear infinite}
+@keyframes feather{0%{transform:translate(0,-40px) rotate(-30deg);opacity:0}8%{opacity:1}25%{transform:translate(26px,60px) rotate(25deg)}50%{transform:translate(-14px,150px) rotate(-28deg)}75%{transform:translate(20px,240px) rotate(22deg)}92%{opacity:1}100%{transform:translate(0,330px) rotate(-10deg);opacity:0}}
+.sw{transform-origin:5px -7px;animation:sw 3.4s cubic-bezier(.45,0,.55,1) infinite alternate;animation-delay:var(--d,0s)}
+@keyframes sw{from{transform:rotate(-2.6deg)}to{transform:rotate(2.6deg)}}
+.drip{animation:drip 2.8s cubic-bezier(.6,0,.9,.4) infinite}
+@keyframes drip{0%{transform:translateY(0);opacity:0}12%{opacity:1}70%{transform:translateY(30px);opacity:1}71%,100%{transform:translateY(30px);opacity:0}}
+.puddle{transform-box:fill-box;transform-origin:center;animation:puddle 2.8s ease-out infinite}
+@keyframes puddle{0%,68%{transform:scale(.4);opacity:0}72%{opacity:.9}100%{transform:scale(1.5);opacity:0}}
+.steam path{animation:steam 3.6s cubic-bezier(.3,0,.5,1) infinite}
+.steam path:nth-child(2){animation-delay:-1.2s}.steam path:nth-child(3){animation-delay:-2.4s}
+@keyframes steam{0%{transform:translateY(14px);opacity:0}30%{opacity:.75}100%{transform:translateY(-34px);opacity:0}}
+.ice{stroke-dasharray:100;stroke-dashoffset:100;animation:10s linear infinite}
+.ice.a{animation-name:iceA}.ice.b{animation-name:iceB}.ice.c{animation-name:iceC}
+@keyframes iceA{0%{stroke-dashoffset:100}22%,94%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:0}}
+@keyframes iceB{0%,24%{stroke-dashoffset:100}50%,94%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:0}}
+@keyframes iceC{0%,52%{stroke-dashoffset:100}86%,94%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:0}}
+.bag{animation:bag 10s linear infinite}
+@keyframes bag{0%{transform:translate(0,0)}22%{transform:translate(34px,0)}24%{transform:translate(-13px,22px)}50%{transform:translate(47px,22px)}52%{transform:translate(-28px,48px)}86%{transform:translate(62px,48px)}94%{transform:translate(70px,20px)}100%{transform:translate(0,0)}}
+.rip{animation:rip 7s linear infinite}
+.rip.r2{animation-duration:11s;animation-direction:reverse}
+@keyframes rip{to{transform:translateX(80px)}}
+.shim{animation:shim 2.4s ease-in-out infinite alternate}
+@keyframes shim{from{transform:translateX(-3px);opacity:.55}to{transform:translateX(3px);opacity:.95}}
+.swim{animation:swim 30s linear infinite}
+@keyframes swim{from{transform:translateX(-10px)}to{transform:translateX(560px)}}
+.arm{transform-origin:6px 262px;animation:arm 1.5s linear infinite}
+@keyframes arm{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.tram{animation:tram 21s linear infinite}
+@keyframes tram{from{transform:translateX(-40px)}to{transform:translateX(410px)}}
+.scope{transform-origin:128px 236px;animation:scope 9s cubic-bezier(.45,0,.55,1) infinite alternate}
+@keyframes scope{from{transform:rotate(-17deg)}to{transform:rotate(-9deg)}}
+.tw{animation:tw 2.6s ease-in-out infinite alternate}
+.tw:nth-child(2n){animation-delay:-1.1s}.tw:nth-child(3n){animation-delay:-1.9s}
+@keyframes tw{from{opacity:.15}to{opacity:1}}
+.beam{animation:beam 8s cubic-bezier(.45,0,.55,1) infinite alternate}
+.beam.b1{transform-origin:118px 304px}
+.beam.b2{transform-origin:372px 300px;animation-duration:11s;animation-direction:alternate-reverse}
+@keyframes beam{from{transform:rotate(-26deg)}to{transform:rotate(24deg)}}
+.dawn{animation:dawn 9s ease-in-out infinite alternate}
+@keyframes dawn{from{opacity:.25;transform:translateY(16px)}to{opacity:.95;transform:translateY(0)}}
+.neon{animation:neon 6.5s steps(1) infinite}
+@keyframes neon{0%,100%{opacity:1}61%{opacity:.35}62.5%{opacity:1}64%{opacity:.5}66%{opacity:1}}
+
+/* boot: the car lights come on */
+.boot .ind{animation:lightup 1.5s var(--glide) both}
+.boot .frame{animation:lightup 1.7s .2s var(--glide) both}
+.boot .lw,.boot .rw,.boot .panelwrap{animation:lightup 1.6s .55s var(--glide) both}
+.boot .floor{animation:lightup 1.6s .4s var(--glide) both}
+.boot .plate{animation:platein 1s 1.5s var(--spring) both}
+@keyframes lightup{0%{opacity:0;filter:brightness(.2)}35%{opacity:1;filter:brightness(.45)}42%{filter:brightness(1.25)}50%{filter:brightness(.6)}100%{opacity:1;filter:brightness(1)}}
+@keyframes platein{from{opacity:0;transform:translateX(-50%) translateY(14px)}to{opacity:1;transform:translateX(-50%)}}
+
+/* ───────── phone / narrow ───────── */
+@media (max-width:899px){
+  :root{--dwy:calc(100vw - 42px);--ih:clamp(118px,22vh,190px);--gap:5px;--fh:clamp(16px,3vh,30px)}
+  .car{grid-template-columns:minmax(0,1fr);grid-template-rows:var(--ih) minmax(0,1fr) auto var(--fh);grid-template-areas:"ind" "door" "rw" "fl"}
+  .lw{position:absolute;top:0;left:0;right:0;z-index:4;flex-direction:row;justify-content:space-between;align-items:flex-start;padding:10px 12px 0;pointer-events:none}
+  .lw::before,.rw::before{display:none}
+  .lw>*{pointer-events:auto}
+  .readout{align-items:flex-start;text-align:left}
+  .readout .cap{font-size:8px}
+  .win{min-width:0;margin:5px 0 0;padding:0 9px;box-shadow:0 0 0 1px rgba(200,160,74,.7),inset 0 0 14px rgba(200,160,74,.12)}
+  #num{font-size:30px;padding:.34em 0;transform:scaleY(1.4)}
+  @keyframes flip{0%{opacity:.2;transform:scaleY(1.1) translateY(14%)}100%{opacity:1;transform:scaleY(1.4)}}
+  #status,.orn,.cert{display:none}
+  .snd .txt{display:none}
+  .snd .knob{width:40px;height:40px}
+  .frame{margin:0 12px;padding:7px 7px 0}
+  .rw{padding:9px 6px 8px}
+  .panel{flex-direction:row;gap:0;justify-content:space-between;width:100%;max-width:520px;padding:7px 8px;box-shadow:0 0 0 1px rgba(200,160,74,.7)}
+  .row{gap:0}
+  .lbl,.ptitle{display:none}
+  .cb{width:clamp(27px,7.6vw,40px);height:clamp(27px,7.6vw,40px);font-size:10.5px}
+  .ind .num{font-size:25px}
+  .ind .maker{display:none}
+  figcaption{padding:11px 14px 13px;flex:1 1 auto;display:flex;flex-direction:column;justify-content:center}
+  .vgw{flex:0 1 auto;aspect-ratio:11/10;min-height:0;max-height:68%}
+  figcaption p{font-size:clamp(13.5px,1.1vh + 1.7vw,19px)}
+  figcaption p{line-height:1.48}
+  figcaption h2{flex-direction:column;gap:.35em}
+  figcaption h2 .no::after{display:none}
+  .lever{margin-top:9px}
+  .plate{padding:9px 22px 7px}
+}
+@media (max-width:899px) and (max-height:620px){figcaption p{font-size:12.5px}.vgw{max-height:48%}}
+@media (max-width:1180px){.lbl{display:none}.panel{padding:14px 14px 12px}}
+@media (max-height:520px){
+  :root{--ih:104px}
+  .scene{flex-direction:row}
+  .vgw{flex:1 1 52%;aspect-ratio:auto;max-height:none;min-height:0}
+  figcaption{flex:1 1 48%;border-top:0;border-left:1px solid var(--g);box-shadow:-4px 0 0 var(--k),-5px 0 0 rgba(200,160,74,.5);display:flex;flex-direction:column;justify-content:center;padding:8px 16px}
+  figcaption p{font-size:12px;line-height:1.4}
+  figcaption h2{font-size:10px;flex-direction:row;gap:.9em}
+  .lever{margin-top:6px}
+  .plate{bottom:4%;padding:6px 20px 5px}
+}
+
+/* ───────── reduced motion ───────── */
+@media (prefers-reduced-motion:reduce){
+  .door.l,.door.r{transform:none;opacity:calc(1 - var(--o))}
+  .vg{transform:none}
+  figcaption>*{transform:none}
+  .vg *,.plate svg,#num.flip{animation:none!important}
+  .ice{stroke-dashoffset:0}
+  .boot .ind,.boot .frame,.boot .lw,.boot .rw,.boot .floor,.boot .plate{animation:none}
+  .cb,.snd .knob,.lever .slot i{transition:none}
+}
+</style>
+</head>
+<body class="boot">
+<div id="track"></div>
+
+<main class="car" id="car">
+
+  <div class="lw">
+    <svg class="orn" viewBox="0 0 160 60" aria-hidden="true"><path d="M80 58V8M80 58L56 14M80 58l24-44M80 58L34 26M80 58l46-32M80 58L16 44M80 58l64-14M4 58h152M60 58a20 20 0 0 1 40 0M48 58a32 32 0 0 1 64 0"/></svg>
+    <div class="readout" aria-live="off">
+      <span class="cap">Floor</span>
+      <div class="win"><span id="num">L</span></div>
+      <span id="status">At your service</span>
+    </div>
+    <button class="snd" id="snd" type="button" aria-pressed="false" aria-label="Sound">
+      <span class="knob"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z"/><path class="wv" d="M15 9.5a3.6 3.6 0 0 1 0 5M17.6 7a7.2 7.2 0 0 1 0 10"/><path class="sl" d="M15.5 9.5l5 5m0-5l-5 5"/></svg></span>
+      <span class="txt">Sound <b id="sndtxt">off</b></span>
+    </button>
+    <p class="cert"><b>Capacity</b>nine persons<br>or one grand piano<i>Insp. No. 0331 &middot; H. Abernathy, Attendant</i></p>
+  </div>
+
+  <div class="ind">
+    <svg viewBox="0 0 600 338" role="img" aria-label="Floor indicator">
+      <defs>
+        <linearGradient id="brass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E7CC84"/><stop offset=".45" stop-color="#C8A04A"/><stop offset="1" stop-color="#8a6c2c"/></linearGradient>
+        <linearGradient id="brass2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E7CC84"/><stop offset="1" stop-color="#9a7a34"/></linearGradient>
+        <radialGradient id="face" cx=".5" cy="1" r="1"><stop offset="0" stop-color="#F0E6D2"/><stop offset=".7" stop-color="#e2d5b8"/><stop offset="1" stop-color="#b9a67c"/></radialGradient>
+        <filter id="blur" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="5"/></filter>
+      </defs>
+      <path d="M6 302A294 294 0 0 1 594 302V336H6z" fill="#0B0B0C"/>
+      <path d="M12 300A288 288 0 0 1 588 300z" fill="url(#brass)"/>
+      <path d="M18 300A282 282 0 0 1 582 300" fill="none" stroke="#0B0B0C" stroke-opacity=".5" stroke-width="1"/>
+      <path d="M21 300A279 279 0 0 1 579 300" fill="none" stroke="#E7CC84" stroke-width="1"/>
+      <path d="M104 300A196 196 0 0 1 496 300z" fill="url(#face)" stroke="#0B0B0C" stroke-width="2.5"/>
+      <g id="rays" stroke="#7A1F2B" stroke-opacity=".3" stroke-width="1"></g>
+      <path d="M190 300A110 110 0 0 1 410 300" fill="none" stroke="#7A1F2B" stroke-opacity=".4" stroke-width="1"/>
+      <text class="maker" x="300" y="208">THE HOTEL MERIDIAN</text>
+      <text class="maker" x="300" y="226" style="font-size:7.5px;letter-spacing:.3em">HALLORAN &amp; PIKE · VERTICAL TRANSIT · 1931</text>
+      <g id="ticks" stroke="#0B0B0C" stroke-linecap="butt"></g>
+      <circle id="glow" r="11" cx="-50" cy="-50" filter="url(#blur)"/>
+      <g id="lamps"></g>
+      <g id="nums"></g>
+      <rect x="6" y="300" width="588" height="32" fill="url(#brass2)"/>
+      <path d="M6 306H594M6 326H594" stroke="#0B0B0C" stroke-opacity=".55"/>
+      <path d="M40 316h190M370 316h190" stroke="#0B0B0C" stroke-opacity=".5" stroke-dasharray="2 6"/>
+      <g id="hand">
+        <path d="M338 300a10 10 0 1 1-20 0a10 10 0 0 1 20 0zM300 293.500L150 296.800V289L104 300L150 311V303.200L300 306.500z" fill="#0B0B0C"/>
+        <path d="M300 300H150" stroke="#E7CC84" stroke-opacity=".35" stroke-width=".8"/>
+      </g>
+      <circle cx="300" cy="300" r="24" fill="url(#brass)" stroke="#0B0B0C" stroke-width="2"/>
+      <circle cx="300" cy="300" r="15" fill="none" stroke="#0B0B0C" stroke-opacity=".5"/>
+      <circle cx="300" cy="300" r="6" fill="#0B0B0C"/>
+    </svg>
+  </div>
+
+  <div class="frame">
+    <div class="doorway" id="doorway">
+      <canvas id="shaft" aria-hidden="true"></canvas>
+
+      <div class="scenes">
+
+        <!-- L · LOBBY -->
+        <figure class="scene" data-i="0">
+          <div class="vgw"><svg class="vg" viewBox="0 0 480 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="The lobby: a revolving door turning beside the reception desk">
+            <defs>
+              <pattern id="chq" width="44" height="30" patternUnits="userSpaceOnUse"><path d="M22 0 44 15 22 30 0 15z" class="fi"/></pattern>
+              <pattern id="keys" width="15" height="20" patternUnits="userSpaceOnUse"><circle cx="7.500" cy="5" r="2.200" class="sg" stroke-width="1.200"/><path d="M7.500 7.500v8m0-3h3" class="sg" stroke-width="1.200"/></pattern>
+            </defs>
+            <rect width="480" height="360" class="fv"/>
+            <path d="M20 0v264M36 0v264M444 0v264M460 0v264" class="sg" stroke-width="1" opacity=".3"/>
+            <rect y="264" width="480" height="96" class="fk"/><rect y="268" width="480" height="92" fill="url(#chq)" opacity=".92"/>
+            <path d="M0 264h480" class="sg" stroke-width="2.500"/>
+            <path d="M146 264V100a94 94 0 0 1 188 0v164z" class="fk"/>
+            <path d="M162 100a78 78 0 0 1 156 0z" class="fv"/>
+            <g class="sg" stroke-width="1.500"><path d="M240 100V22M240 100l-39-67.500M240 100l39-67.500M240 100l-67.500-39M240 100l67.500-39M162 100h156"/><path d="M214 100a26 26 0 0 1 52 0"/></g>
+            <rect x="162" y="104" width="156" height="160" class="fv" opacity=".5"/>
+            <g class="fh" opacity=".8"><circle cx="186" cy="150" r="1.500"/><circle cx="204" cy="172" r="1"/><circle cx="286" cy="140" r="1.500"/><circle cx="300" cy="186" r="1"/><circle cx="270" cy="204" r="1.200"/><circle cx="196" cy="214" r="1.200"/></g>
+            <g class="wing"><rect x="166" y="108" width="148" height="154" fill="#F0E6D2" fill-opacity=".13" stroke="#C8A04A" stroke-width="2"/><path d="M166 196h148M196 190v12M284 190v12" class="sh" stroke-width="2"/></g>
+            <g class="wing w2"><rect x="166" y="108" width="148" height="154" fill="#F0E6D2" fill-opacity=".1" stroke="#C8A04A" stroke-width="2"/><path d="M166 196h148" class="sh" stroke-width="2"/></g>
+            <path d="M240 104v160" class="sh" stroke-width="3"/>
+            <path d="M146 264V100a94 94 0 0 1 188 0v164" class="sg" stroke-width="3.500"/>
+            <path d="M138 264V100a102 102 0 0 1 204 0v164" class="sg" stroke-width="1" opacity=".6"/>
+            <circle cx="92" cy="78" r="24" class="fi"/><circle cx="92" cy="78" r="24" class="sg" stroke-width="3"/>
+            <path d="M92 78V60M92 78l-9-7" class="sk" stroke-width="2.200"/><circle cx="92" cy="78" r="2" class="fb"/>
+            <g class="fg"><path d="M82 236q-30-62-64-40q38-2 64 40z"/><path d="M82 236q-2-88 26-96q-14 42-26 96z"/><path d="M82 236q36-46 62-18q-36-6-62 18z"/></g><g class="fh"><path d="M82 236q-12-80-52-74q36 14 52 74z"/><path d="M82 236q22-68 60-54q-38 8-60 54z"/></g><g class="sk" stroke-width=".8" opacity=".45"><path d="M82 236q-22-40-58-40M82 236q-10-58-46-72M82 236q2-60 22-92M82 236q22-44 56-52M82 236q30-26 58-18"/></g>
+            <path d="M60 264l5-32h34l5 32z" class="fg"/><path d="M62 244h40" class="sk" stroke-width="1.500" opacity=".6"/>
+            <rect x="352" y="96" width="90" height="66" class="fk"/><rect x="352" y="96" width="90" height="66" class="sg" stroke-width="1.500"/><rect x="358" y="101" width="75" height="60" fill="url(#keys)"/>
+            <path d="M336 264v-46h144v46z" class="fb"/><path d="M330 218h150" class="sh" stroke-width="4"/>
+            <path d="M350 232l12 12 12-12m10 0l12 12 12-12m10 0l12 12 12-12" class="sg" stroke-width="1.500"/>
+            <g class="bell" id="bell"><rect x="346" y="180" width="52" height="38" fill="transparent"/><path d="M358 214a14 13 0 0 1 28 0z" class="fg"/><rect x="354" y="213" width="36" height="3.500" class="fh"/><circle cx="372" cy="199.500" r="2.800" class="fh"/>
+              <g class="rings sh" stroke-width="1.400"><path d="M351 197a26 26 0 0 1 6-10M393 197a26 26 0 0 0-6-10"/><path d="M343 193a36 36 0 0 1 9-15M401 193a36 36 0 0 0-9-15"/></g></g>
+            <path d="M414 218v-22h18v22" class="si" stroke-width="1.500"/><path d="M418 202h10M418 208h10" class="si" stroke-width="1"/>
+          </svg></div>
+          <figcaption><h2><span class="no">L</span><span>The Lobby</span></h2>
+            <p>Mind the revolving door; it has been turning since the opening gala and nobody has had the heart to stop it. The night porter&rsquo;s bell is for emergencies, and for Mrs. Voss in 904. Going up.</p></figcaption>
+        </figure>
+
+        <!-- 7 · CARTOGRAPHERS -->
+        <figure class="scene" data-i="1">
+          <div class="vgw"><svg class="vg" viewBox="0 0 480 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="A club room hung with maps, a globe spinning at its centre">
+            <defs><clipPath id="gc"><circle cx="240" cy="196" r="60"/></clipPath>
+              <radialGradient id="gsh" cx=".36" cy=".3" r=".8"><stop offset=".45" stop-color="#0B0B0C" stop-opacity="0"/><stop offset="1" stop-color="#0B0B0C" stop-opacity=".75"/></radialGradient>
+              <g id="land"><path d="M186 158q22-14 38 0t-4 30q-6 22-24 12t-22-18q-4-14 12-24z"/><path d="M262 172q18-8 30 6t-2 34q-10 18-24 4t-14-24q0-14 10-20z"/><path d="M330 150q20-4 26 12t-10 22q-18 4-24-10t8-24z"/><path d="M344 214q14-6 22 6t-6 22q-14 4-20-8t4-20z"/><path d="M214 226q12-4 18 6t-8 16q-12 0-14-10t4-12z"/></g></defs>
+            <rect width="480" height="360" class="fb"/>
+            <path d="M0 20h480" class="sg" stroke-width="1" opacity=".5"/>
+            <g class="fi"><rect x="50" y="44" width="96" height="70"/><rect x="50" y="128" width="96" height="92"/><rect x="336" y="40" width="98" height="96"/><rect x="336" y="150" width="98" height="70"/><rect x="170" y="34" width="140" height="64"/></g>
+            <g class="sg" stroke-width="3"><rect x="50" y="44" width="96" height="70"/><rect x="50" y="128" width="96" height="92"/><rect x="336" y="40" width="98" height="96"/><rect x="336" y="150" width="98" height="70"/><rect x="170" y="34" width="140" height="64"/></g>
+            <g class="sk" stroke-width=".6" opacity=".3"><path d="M74 46v66M98 46v66M122 46v66M52 68h92M52 90h92M360 42v92M384 42v92M408 42v92M338 72h94M338 104h94M205 36v60M240 36v60M275 36v60M172 66h136"/></g>
+            <path d="M58 60q14 10 26 4t20 12q16 4 12 18t22 12" class="sv" stroke-width="2.200"/><path d="M60 100q20-10 34 2" class="sv" stroke-width="2.200"/>
+            <path d="M62 150q30 4 24 26t22 22q18 8 30-4" class="sv" stroke-width="2.200"/><path d="M70 204q8-12 22-6" class="sb" stroke-width="1.600" stroke-dasharray="2 4"/>
+            <path d="M346 120q10-30 28-28t16-24q20-10 34-6" class="sv" stroke-width="2.200"/><path d="M352 66q20 6 30 30t40 24" class="sb" stroke-width="1.600" stroke-dasharray="2 4"/>
+            <path d="M346 170q16 22 36 10t40 18" class="sv" stroke-width="2.200"/><circle cx="398" cy="198" r="3" class="fb pin"/><circle cx="372" cy="92" r="3" class="fb pin"/><circle cx="110" cy="176" r="3" class="fb pin"/>
+            <path d="M180 78q20-28 44-16t30 6q20-18 44-2" class="sv" stroke-width="2.200"/><path d="M186 50l8 8m0-8l-8 8" class="sb" stroke-width="1.600"/>
+            <path d="M421 122l5-12 5 12-5-3z" class="fk"/>
+            <rect y="270" width="480" height="90" class="fk"/><path d="M0 270h480M0 278h480" class="sg" stroke-width="1.500"/>
+            <path d="M200 270h80l-8-10h-64z" class="fg"/><path d="M234 252h12v10h-12z" class="fh"/>
+            <g transform="rotate(-16 240 196)">
+              <circle cx="240" cy="196" r="60" class="fv"/>
+              <g clip-path="url(#gc)"><g class="spin fg"><use href="#land"/><use href="#land" x="240"/></g>
+                <g class="si" stroke-width=".8" opacity=".4"><ellipse cx="240" cy="196" rx="22" ry="60"/><ellipse cx="240" cy="196" rx="44" ry="60"/><path d="M180 196h120M186 168h108M186 224h108M240 136v120"/></g></g>
+              <circle cx="240" cy="196" r="60" fill="url(#gsh)"/>
+              <path d="M240 124a72 72 0 0 1 0 144" class="sh" stroke-width="4"/><path d="M240 118v14M240 260v12" class="sh" stroke-width="3"/>
+            </g>
+            <path d="M356 334l5-46h56l5 46z" class="fg"/><path d="M360 300h58" class="sk" opacity=".5"/>
+            <rect x="368" y="236" width="11" height="56" transform="rotate(-9 373 264)" class="fi"/><rect x="386" y="228" width="11" height="62" class="fi"/><rect x="402" y="240" width="11" height="52" transform="rotate(10 407 266)" class="fi"/>
+            <path d="M54 334v-40q0-18 18-18h44q18 0 18 18v40z" class="fb"/><path d="M54 334v-40q0-18 18-18h44q18 0 18 18v40M46 334v-26q0-8 8-8M142 334v-26q0-8-8-8" class="sg" stroke-width="1.500"/>
+            <path d="M0 334h480" class="sg" stroke-width="1" opacity=".5"/>
+          </svg></div>
+          <figcaption><h2><span class="no">7</span><span>The Cartographers&rsquo; Club</span></h2>
+            <p>Members only, though membership consists chiefly of knowing where the door is. They have mapped every floor of this hotel save one, and they are gentlemen enough not to say which.</p></figcaption>
+        </figure>
+
+        <!-- 12 · BALLROOM -->
+        <figure class="scene" data-i="2">
+          <div class="vgw"><svg class="vg" viewBox="0 0 480 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="A ballroom: silhouetted couples turning under a mirrored ball">
+            <defs><linearGradient id="bfl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E7CC84"/><stop offset=".5" stop-color="#C8A04A"/><stop offset="1" stop-color="#7A1F2B"/></linearGradient>
+              <pattern id="fac" width="7" height="7" patternUnits="userSpaceOnUse"><path d="M7 0H0V7" class="sk" stroke-width="1"/></pattern>
+              <g id="couple"><circle cx="-9" cy="-80" r="7"/><path d="M-17 -70h14l3 32-2 38h-6l-2-32-2 32h-6z"/><circle cx="10" cy="-75" r="6.500"/><path d="M4 -66h11l4 22 15 44H-2l9-44z"/><path d="M-15 -66L-28 -88 5 -62M-3 -60l14 4" fill="none" stroke="#0B0B0C" stroke-width="3.500" stroke-linecap="round" stroke-linejoin="round"/></g></defs>
+            <rect width="480" height="360" class="fk"/>
+            <g class="fv"><path d="M70 262V104a36 36 0 0 1 72 0v158z"/><path d="M204 262V104a36 36 0 0 1 72 0v158z"/><path d="M338 262V104a36 36 0 0 1 72 0v158z"/></g>
+            <g class="sg" stroke-width="1.500"><path d="M70 262V104a36 36 0 0 1 72 0v158M204 262V104a36 36 0 0 1 72 0v158M338 262V104a36 36 0 0 1 72 0v158"/><path d="M106 68v194M240 96v166M374 68v194M70 150h72M204 150h72M338 150h72M70 206h72M204 206h72M338 206h72" opacity=".5" stroke-width="1"/></g>
+            <rect y="262" width="480" height="98" fill="url(#bfl)"/>
+            <g class="sk" opacity=".22"><path d="M240 262L80 360M240 262l-80 98M240 262v98M240 262l80 98M240 262l160 98M240 262L0 330M240 262l240 68M0 290h480M0 322h480"/></g>
+            <g class="dots" fill="none" stroke="#F0E6D2" stroke-linecap="round"><circle cx="240" cy="62" r="74" stroke-width="4" stroke-dasharray=".1 38" opacity=".9"/><circle cx="240" cy="62" r="118" stroke-width="5" stroke-dasharray=".1 53" opacity=".8"/><circle cx="240" cy="62" r="206" stroke-width="6" stroke-dasharray=".1 71" opacity=".65"/><circle cx="240" cy="62" r="290" stroke-width="7" stroke-dasharray=".1 97" opacity=".55"/></g>
+            <g class="dots d2" fill="none" stroke="#E7CC84" stroke-linecap="round"><circle cx="240" cy="62" r="96" stroke-width="4" stroke-dasharray=".1 61" opacity=".8"/><circle cx="240" cy="62" r="160" stroke-width="5" stroke-dasharray=".1 83" opacity=".7"/><circle cx="240" cy="62" r="250" stroke-width="6" stroke-dasharray=".1 113" opacity=".55"/></g>
+            <path d="M240 0v38" class="sg" stroke-width="1.500"/><circle cx="240" cy="62" r="24" class="fi"/><circle cx="240" cy="62" r="24" fill="url(#fac)"/><circle cx="240" cy="62" r="24" class="sg" stroke-width="1.500"/><path d="M225 52a18 18 0 0 1 12-9" class="si" stroke-width="3"/>
+            <path d="M0 0h70q-4 120-26 196t-44 90zM480 0h-70q4 120 26 196t44 90z" class="fb"/><path d="M70 0q-4 120-26 196T0 286M410 0q4 120 26 196t44 90M44 0q-2 100-20 170M436 0q2 100 20 170" class="sg" stroke-width="1.200" opacity=".7"/>
+            <g class="fk"><g transform="translate(128 318)"><use href="#couple" class="cpl"/></g><g transform="translate(246 300) scale(.84)"><use href="#couple" class="cpl" style="animation-delay:-1.4s;animation-duration:4.2s"/></g><g transform="translate(352 322) scale(1.06)"><use href="#couple" class="cpl" style="animation-delay:-2.6s;animation-duration:3.1s"/></g></g>
+          </svg></div>
+          <figcaption><h2><span class="no">12</span><span>The Ballroom</span></h2>
+            <p>It has been 1934 in here since 1934. The orchestra has never asked to be paid, and the management has never thought it wise to offer. I would not accept a second waltz.</p></figcaption>
+        </figure>
+
+        <!-- 13 -->
+        <figure class="scene" data-i="3">
+          <div class="vgw"><svg class="vg" viewBox="0 0 480 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Bare brick and a single swinging bulb">
+            <defs><pattern id="brk" width="52" height="26" patternUnits="userSpaceOnUse"><rect x="1" y="1" width="50" height="11" class="fb"/><rect x="-25" y="14" width="50" height="11" class="fb" opacity=".8"/><rect x="27" y="14" width="50" height="11" class="fb" opacity=".65"/></pattern>
+              <radialGradient id="bg1"><stop offset="0" stop-color="#F0E6D2" stop-opacity=".85"/><stop offset=".25" stop-color="#E7CC84" stop-opacity=".3"/><stop offset="1" stop-color="#E7CC84" stop-opacity="0"/></radialGradient>
+              <radialGradient id="dk" cx=".5" cy=".45" r=".7"><stop offset=".1" stop-color="#0B0B0C" stop-opacity=".1"/><stop offset="1" stop-color="#0B0B0C" stop-opacity=".95"/></radialGradient></defs>
+            <rect width="480" height="360" class="fk"/><rect width="480" height="360" fill="url(#brk)" opacity=".8"/>
+            <text class="g13" x="240" y="262" text-anchor="middle" font-size="150" font-weight="700" fill="#F0E6D2" opacity=".16" letter-spacing="6">13</text>
+            <path d="M150 232l180-74M150 158l180 74" stroke="#7A1F2B" stroke-width="13" opacity=".8" stroke-linecap="round"/>
+            <rect width="480" height="360" fill="url(#dk)"/>
+            <g class="bulb"><circle cx="240" cy="176" r="150" fill="url(#bg1)"/><path d="M240 -10V150" class="sk" stroke-width="2"/><path d="M240 -10V150" class="sg" stroke-width=".8" opacity=".6"/><rect x="233" y="148" width="14" height="14" class="fg"/><circle cx="240" cy="174" r="12" class="fi"/><path d="M236 172q4-8 8 0" class="sg" stroke-width="1.200"/></g>
+          </svg></div>
+          <figcaption><h2><span class="no">&mdash;</span><span>No Such Floor</span></h2>
+            <p>There is no thirteenth floor, sir. The car merely pauses here to collect itself.</p></figcaption>
+        </figure>
+
+        <!-- 19 · AVIARY -->
+        <figure class="scene" data-i="4">
+          <div class="vgw"><svg class="vg" viewBox="0 0 480 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Parrots on swinging brass perches inside a great gilded cage">
+            <defs><g id="pa"><path d="M-5 -8l-8 44 8-4 6-40z" style="fill:var(--w)"/><ellipse cx="0" cy="-20" rx="10.500" ry="18" transform="rotate(-8 0 -20)" fill="currentColor"/><path d="M-8 -32q15 4 11 28q-13-4-11-28z" style="fill:var(--w)"/><circle cx="4" cy="-41" r="9" fill="currentColor"/><path d="M10 -46q10 1 7 12q-4-5-9-5z" class="fk"/><circle cx="6.500" cy="-43" r="2.600" class="fi"/><circle cx="7" cy="-43" r="1.300" class="fk"/><path d="M-3 0v-4M3 0v-4" class="sh" stroke-width="1.500"/></g></defs>
+            <rect width="480" height="360" class="fv"/>
+            <circle cx="322" cy="96" r="34" class="fi" opacity=".92"/><circle cx="336" cy="88" r="30" class="fv" opacity=".35"/>
+            <g class="fi"><circle class="tw" cx="130" cy="96" r="1.300"/><circle class="tw" cx="186" cy="60" r="1"/><circle class="tw" cx="268" cy="44" r="1.300"/><circle class="tw" cx="212" cy="124" r="1"/><circle class="tw" cx="372" cy="150" r="1.200"/><circle class="tw" cx="110" cy="170" r="1"/></g>
+            <g class="sg"><path d="M120 360V70M150 360V40M180 360V22.500M210 360V13M240 360V10M270 360V13M300 360V22.500M330 360V40M360 360V70" stroke-width="1" opacity=".5"/><path d="M90 360V160a150 150 0 0 1 300 0v200" stroke-width="3"/><path d="M90 160h300M90 168h300" stroke-width="1.500"/><path d="M80 360V160a160 160 0 0 1 320 0v200" stroke-width="1" opacity=".5"/></g>
+            <g class="perch" style="transform-origin:165px 60px"><path d="M165 60v104" class="sg" stroke-width="1.500"/><circle cx="165" cy="191" r="27" class="sh" stroke-width="3"/><use href="#pa" x="165" y="216" style="color:var(--b);--w:var(--g)"/></g>
+            <g class="perch" style="transform-origin:246px 10px;animation-delay:-1.6s;animation-duration:5s"><path d="M246 10v104" class="sg" stroke-width="1.500"/><circle cx="246" cy="141" r="27" class="sh" stroke-width="3"/><g transform="translate(246 166) scale(-1 1)"><use href="#pa" style="color:var(--g);--w:var(--b)"/></g></g>
+            <g class="perch" style="transform-origin:330px 40px;animation-delay:-2.9s;animation-duration:3.7s"><path d="M330 40v148" class="sg" stroke-width="1.500"/><circle cx="330" cy="215" r="27" class="sh" stroke-width="3"/><use href="#pa" x="330" y="240" style="color:var(--i);--w:var(--h)"/><path d="M332 190q4-12 14-10q-8 4-8 12z" class="fh"/></g>
+            <g style="transform:translate(214px,40px)"><path class="feather fb" d="M0 0q8 10 0 24q-8-14 0-24z"/></g>
+            <g class="fk"><path d="M30 360q6-104 92-134q-30 64-36 134z"/><path d="M0 360V250q56 20 70 110z"/><path d="M450 360q-6-104-92-134q30 64 36 134z"/><path d="M480 360V250q-56 20-70 110z"/></g>
+            <g class="sg" stroke-width="1" opacity=".7"><path d="M44 360q10-80 74-130M8 356q20-50-6-100M436 360q-10-80-74-130M472 356q-20-50 6-100"/></g>
+          </svg></div>
+          <figcaption><h2><span class="no">19</span><span>The Aviary Suite</span></h2>
+            <p>Let to a contralto in 1932 and never properly vacated. The parrots know four arias and the combination to the hotel safe; we tip them accordingly.</p></figcaption>
+        </figure>
+
+        <!-- 27 · HOUSEKEEPING -->
+        <figure class="scene" data-i="5">
+          <div class="vgw"><svg class="vg" viewBox="0 0 480 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Rails of lost umbrellas, each with a paper tag, swaying slightly">
+            <defs><g id="um"><path d="M0 12V-2a5 5 0 0 1 10 0v3" fill="none" stroke="#C8A04A" stroke-width="2.400" stroke-linecap="round"/><path d="M-6.500 16h13l-4.500 80h-4z" fill="currentColor"/><path d="M0 16v80M-3.200 18l2 76M3.200 18l-2 76" stroke="#0B0B0C" stroke-opacity=".3" stroke-width=".8" fill="none"/><path d="M-5 40h10" stroke="#E7CC84" stroke-width="1.500"/><path d="M0 96v9" stroke="#C8A04A" stroke-width="1.600"/><path d="M4 30l9 7" stroke="#F0E6D2" stroke-width=".6"/><path d="M11 35l9 3-3 13-9-3z" fill="#F0E6D2"/><circle cx="13.500" cy="38.500" r="1" fill="#0B0B0C"/></g></defs>
+            <rect width="480" height="360" class="fv"/>
+            <g class="sk" opacity=".35"><path d="M0 120h480M0 254h480M60 0v338M180 0v338M300 0v338M420 0v338"/></g>
+            <rect y="338" width="480" height="22" class="fk"/><path d="M0 338h480" class="sg" stroke-width="2"/>
+            <g class="sh" stroke-width="3.500"><path d="M30 55h420M30 189h420"/></g>
+            <g class="sg" stroke-width="2"><path d="M40 55V30M240 55V30M440 55V30M40 189v-22M240 189v-22M440 189v-22"/></g>
+            <g>
+              <g transform="translate(55 62)"><use href="#um" class="sw" style="color:var(--b);--d:-.2s"/></g>
+              <g transform="translate(95 62)"><use href="#um" class="sw" style="color:var(--k);--d:-.9s"/></g>
+              <g transform="translate(135 62)"><use href="#um" class="sw" style="color:var(--g);--d:-1.7s"/></g>
+              <g transform="translate(175 62)"><use href="#um" class="sw" style="color:var(--i);--d:-2.4s"/></g>
+              <g transform="translate(215 62)"><use href="#um" class="sw" style="color:var(--k);--d:-3.1s"/></g>
+              <g transform="translate(255 62)"><use href="#um" class="sw" style="color:var(--b);--d:-.5s"/></g>
+              <g transform="translate(295 62)"><use href="#um" class="sw" style="color:var(--h);--d:-1.3s"/></g>
+              <g transform="translate(335 62)"><use href="#um" class="sw" style="color:var(--k);--d:-2s"/></g>
+              <g transform="translate(375 62)"><use href="#um" class="sw" style="color:var(--i);--d:-2.8s"/></g>
+              <g transform="translate(415 62)"><use href="#um" class="sw" style="color:var(--b);--d:-3.3s"/></g>
+              <g transform="translate(75 196)"><use href="#um" class="sw" style="color:var(--k);--d:-1.1s"/></g>
+              <g transform="translate(115 196)"><use href="#um" class="sw" style="color:var(--i);--d:-.3s"/></g>
+              <g transform="translate(155 196)"><use href="#um" class="sw" style="color:var(--b);--d:-2.2s"/></g>
+              <g transform="translate(195 196)"><use href="#um" class="sw" style="color:var(--g);--d:-1.5s"/></g>
+              <g transform="translate(275 196)"><use href="#um" class="sw" style="color:var(--k);--d:-2.9s"/></g>
+              <g transform="translate(315 196)"><use href="#um" class="sw" style="color:var(--b);--d:-.7s"/></g>
+              <g transform="translate(355 196)"><use href="#um" class="sw" style="color:var(--h);--d:-1.9s"/></g>
+              <g transform="translate(395 196)"><use href="#um" class="sw" style="color:var(--i);--d:-3s"/></g>
+            </g>
+            <g class="sw" style="transform-origin:240px 189px;--d:-1s"><path d="M240 189v26" class="si" stroke-width=".8"/><path d="M229 215h22v30h-22z" class="fi"/><circle cx="240" cy="220" r="1.600" class="fk"/><path d="M233 227h14M233 232h14M233 237h9" class="sb" stroke-width="1"/></g>
+            <circle class="drip fi" cx="155" cy="303" r="1.800"/><ellipse class="puddle si" cx="155" cy="338" rx="12" ry="2.500" stroke-width="1"/>
+          </svg></div>
+          <figcaption><h2><span class="no">27</span><span>Housekeeping</span></h2>
+            <p>Where lost umbrellas go. Each is tagged with the date and the weather, and kept until called for. Nine thousand and eleven at last count; the empty hook, I am told, is yours.</p></figcaption>
+        </figure>
+
+        <!-- 33 · NIGHT KITCHEN -->
+        <figure class="scene" data-i="6">
+          <div class="vgw"><svg class="vg" viewBox="0 0 480 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="A kitchen at three in the morning: copper pans, steam, a cake being iced">
+            <defs><pattern id="tile" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" class="sk" stroke-width="1.200" opacity=".5"/></pattern></defs>
+            <rect width="480" height="360" class="fv"/><rect width="480" height="360" fill="url(#tile)"/>
+            <rect y="338" width="480" height="22" class="fk"/><path d="M0 338h480" class="sg" stroke-width="2"/>
+            <path d="M50 50h300" class="sh" stroke-width="3.500"/><path d="M60 50V28M340 50V28" class="sg" stroke-width="2"/>
+            <g class="sg" stroke-width="3.500"><path d="M92 52v22M152 52v18M208 52v20M264 52v16M316 52v20"/></g>
+            <g class="fg"><circle cx="92" cy="98" r="25"/><circle cx="152" cy="87" r="18"/><circle cx="208" cy="94" r="22"/><circle cx="264" cy="83" r="15"/><circle cx="316" cy="92" r="20"/></g>
+            <g class="sh" stroke-width="1.500"><circle cx="92" cy="98" r="19"/><circle cx="152" cy="87" r="13"/><circle cx="208" cy="94" r="16.500"/><circle cx="264" cy="83" r="10.500"/><circle cx="316" cy="92" r="15"/></g>
+            <g class="si" stroke-width="2.500" opacity=".8"><path d="M80 90a15 15 0 0 1 10-8M144 82a10 10 0 0 1 6-5M198 87a13 13 0 0 1 8-7M308 86a12 12 0 0 1 7-6"/></g>
+            <circle cx="398" cy="96" r="25" class="fi"/><circle cx="398" cy="96" r="25" class="sg" stroke-width="3"/><path d="M398 96V78M398 96h12" class="sk" stroke-width="2.400"/><circle cx="398" cy="96" r="2" class="fb"/>
+            <g class="sk" stroke-width="1.200"><path d="M398 74v4M398 114v4M376 96h4M416 96h4"/></g>
+            <rect x="44" y="228" width="150" height="110" class="fk"/><rect x="44" y="228" width="150" height="110" class="sg" stroke-width="1.500"/><rect x="58" y="262" width="122" height="62" class="sg" stroke-width="1.500"/><path d="M76 274h86" class="sh" stroke-width="3"/><path d="M38 228h162" class="sh" stroke-width="4"/>
+            <g class="fg"><circle cx="64" cy="246" r="4"/><circle cx="84" cy="246" r="4"/><circle cx="104" cy="246" r="4"/><circle cx="174" cy="246" r="4"/></g>
+            <rect x="92" y="196" width="54" height="30" class="fg"/><path d="M88 196h62M84 206h8M146 206h8" class="sh" stroke-width="3"/><circle cx="119" cy="192" r="3" class="fh"/>
+            <g class="steam si" stroke-width="2.200"><path d="M106 184q-8-10 0-20t0-20"/><path d="M120 180q-8-10 0-20t0-20"/><path d="M134 184q-8-10 0-20t0-20"/></g>
+            <path d="M224 276h216v8H224z" class="fi"/><path d="M238 284v54M426 284v54M238 312h188" class="si" stroke-width="3"/>
+            <path d="M304 276l10-12h32l10 12z" class="fg"/><rect x="278" y="260" width="104" height="5" class="fh"/>
+            <g class="fi"><rect x="285" y="230" width="90" height="30"/><rect x="300" y="204" width="60" height="26"/><rect x="313" y="182" width="34" height="22"/></g>
+            <g class="sk" opacity=".18"><path d="M285 250h90M300 222h60"/></g>
+            <g class="sb" stroke-width="3.500"><path class="ice a" pathLength="100" d="M313 183q5.670 10 11.330 0t11.330 0t11.330 0"/><path class="ice b" pathLength="100" d="M300 205q7.500 12 15 0t15 0t15 0t15 0"/><path class="ice c" pathLength="100" d="M285 231q7.500 13 15 0t15 0t15 0t15 0t15 0t15 0"/></g>
+            <g class="bag"><path d="M313 180l-9-30q9-7 18 0z" class="fi"/><path d="M313 180l-3-9h6z" class="fg"/><path d="M304 150q9-7 18 0l3-12q-12-8-24 0z" class="fh"/></g>
+            <path d="M330 182v-14" class="sg" stroke-width="2"/><path d="M330 166q-4-6 0-11q4 5 0 11z" class="fh"/>
+          </svg></div>
+          <figcaption><h2><span class="no">33</span><span>The Night Kitchen</span></h2>
+            <p>Chef Marguerite ices a cake at three every morning, for a birthday no guest has yet admitted to. The copper is polished hourly. Steam, in this hotel, is a form of punctuality.</p></figcaption>
+        </figure>
+
+        <!-- 41 · POOL -->
+        <figure class="scene" data-i="7">
+          <div class="vgw"><svg class="vg" viewBox="0 0 480 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="A moonlit swimming pool high above the city, one swimmer drawing a line across it">
+            <defs><linearGradient id="deep" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B0B0C" stop-opacity="0"/><stop offset="1" stop-color="#0B0B0C" stop-opacity=".7"/></linearGradient></defs>
+            <rect width="480" height="360" class="fk"/>
+            <rect x="40" y="26" width="400" height="150" class="fv"/>
+            <circle cx="318" cy="84" r="27" class="fi"/><circle cx="318" cy="84" r="40" class="si" stroke-width="1" opacity=".25"/>
+            <g class="fi"><circle class="tw" cx="80" cy="60" r="1.200"/><circle class="tw" cx="150" cy="44" r="1"/><circle class="tw" cx="224" cy="72" r="1.300"/><circle class="tw" cx="386" cy="50" r="1"/><circle class="tw" cx="168" cy="110" r="1"/><circle class="tw" cx="408" cy="118" r="1.200"/><circle class="tw" cx="96" cy="126" r="1"/></g>
+            <path d="M40 176v-14h18v-8h14v12h22v-18h10v18h30v-8h20v8h26v-14h12v14h34v-6h24v6h18v-20h12v20h30v-10h22v10h28v-16h14v16h34v14z" class="fk"/>
+            <g class="fh"><rect x="97" y="154" width="2" height="2"/><rect x="186" y="160" width="2" height="2"/><rect x="291" y="152" width="2" height="2"/><rect x="394" y="158" width="2" height="2"/><rect x="62" y="164" width="2" height="2"/><rect x="330" y="166" width="2" height="2"/></g>
+            <g class="fk"><rect x="112" y="26" width="10" height="150"/><rect x="198" y="26" width="10" height="150"/><rect x="284" y="26" width="10" height="150"/><rect x="370" y="26" width="10" height="150"/></g>
+            <g class="sg" stroke-width="1"><path d="M117 26v150M203 26v150M289 26v150M375 26v150"/><rect x="40" y="26" width="400" height="150" stroke-width="2"/></g>
+            <rect y="176" width="480" height="16" class="fi"/><path d="M0 192h480" class="sg" stroke-width="2"/>
+            <text x="240" y="187.500" text-anchor="middle" font-size="7.500" letter-spacing="4" class="fk">DEEP END · 9 FT</text>
+            <rect y="193" width="480" height="167" class="fv"/><rect y="193" width="480" height="167" fill="url(#deep)"/>
+            <g class="shim fi"><rect x="296" y="204" width="44" height="2.500"/><rect x="302" y="214" width="34" height="2.500"/><rect x="292" y="226" width="50" height="2.500"/><rect x="306" y="240" width="26" height="2"/><rect x="300" y="254" width="38" height="2"/><rect x="310" y="282" width="18" height="2"/><rect x="304" y="300" width="28" height="1.500"/></g>
+            <g class="sh" stroke-width="1.200" opacity=".4">
+              <path class="rip" d="M-80 214q20-5 40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0"/>
+              <path class="rip r2" d="M-80 240q20-6 40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0"/>
+              <path class="rip" d="M-80 290q20-7 40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0" style="animation-duration:9s"/>
+              <path class="rip r2" d="M-80 326q20-8 40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0t40 0" style="animation-duration:13s"/>
+            </g>
+            <g class="swim"><path d="M-70 262H-700" class="si" stroke-width="1" opacity=".55"/><path d="M-6 262l-62-11M-6 262l-62 11" class="si" stroke-width="1" opacity=".5"/><circle cx="0" cy="261" r="5" class="fi"/><path class="arm si" d="M6 262l12-8" stroke-width="2.600"/></g>
+            <g class="sh" stroke-width="2.600"><path d="M396 214v-34a7 7 0 0 1 14 0M420 214v-34a7 7 0 0 1 14 0" /><path d="M396 198h24M396 208h24" stroke-width="1.600"/></g>
+            <rect x="40" y="168" width="64" height="5" class="fi"/><path d="M52 173v8" class="sg" stroke-width="3"/>
+          </svg></div>
+          <figcaption><h2><span class="no">41</span><span>The Swimming Pool in the Sky</span></h2>
+            <p>Forty-one storeys of plumbing for one length of moonlight. There is a single swimmer most nights. We have stopped counting her laps, as she has.</p></figcaption>
+        </figure>
+
+        <!-- 52 · OBSERVATORY BAR -->
+        <figure class="scene" data-i="8">
+          <div class="vgw"><svg class="vg" viewBox="0 0 480 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="A bar with a brass telescope trained on the city, where a small tram crosses">
+            <defs><clipPath id="wc"><rect x="44" y="30" width="392" height="172"/></clipPath></defs>
+            <rect width="480" height="360" class="fk"/>
+            <rect x="44" y="30" width="392" height="172" class="fv"/>
+            <g class="fi"><circle class="tw" cx="70" cy="52" r="1.200"/><circle class="tw" cx="112" cy="84" r="1"/><circle class="tw" cx="170" cy="48" r="1.400"/><circle class="tw" cx="214" cy="96" r="1"/><circle class="tw" cx="262" cy="58" r="1.200"/><circle class="tw" cx="318" cy="92" r="1"/><circle class="tw" cx="356" cy="46" r="1.300"/><circle class="tw" cx="410" cy="78" r="1"/><circle class="tw" cx="140" cy="118" r="1"/><circle class="tw" cx="392" cy="122" r="1.100"/></g>
+            <path d="M44 190v-26h22v-14h18v22h26v-34h16v34h30v-18h24v18h20v-44h14v44h36v-24h28v24h22v-36h18v36h30v-16h26v16h20v-28h22v46z" class="fk"/>
+            <g class="fh"><rect x="72" y="156" width="2" height="3"/><rect x="78" y="162" width="2" height="3"/><rect x="116" y="138" width="2" height="3"/><rect x="116" y="150" width="2" height="3"/><rect x="204" y="128" width="2" height="3"/><rect x="208" y="144" width="2" height="3"/><rect x="254" y="150" width="2" height="3"/><rect x="300" y="136" width="2" height="3"/><rect x="304" y="152" width="2" height="3"/><rect x="352" y="156" width="2" height="3"/><rect x="398" y="146" width="2" height="3"/></g>
+            <rect x="44" y="190" width="392" height="12" class="fk"/><path d="M44 196.500h392" class="sg" stroke-width="1" stroke-dasharray="1 5" opacity=".8"/>
+            <g clip-path="url(#wc)"><g class="tram"><path d="M52 186.500v-5l6-3" class="sg" stroke-width=".8"/><rect x="44" y="186.500" width="30" height="8.500" rx="1.500" class="fg"/><g class="fi"><rect x="47" y="188.500" width="4" height="3.500"/><rect x="53" y="188.500" width="4" height="3.500"/><rect x="59" y="188.500" width="4" height="3.500"/><rect x="65" y="188.500" width="4" height="3.500"/></g></g></g>
+            <g class="sg"><rect x="44" y="30" width="392" height="172" stroke-width="2.500"/><path d="M142 30v172M240 30v172M338 30v172" stroke-width="1.200"/></g>
+            <path d="M0 332h480" class="sg" stroke-width="1" opacity=".5"/>
+            <path d="M128 236L98 332M128 236v96M128 236l32 96" class="sg" stroke-width="3"/>
+            <g class="scope" transform="rotate(-13 128 236)"><rect x="60" y="231" width="20" height="10" class="fg"/><rect x="78" y="227" width="110" height="18" class="fg"/><rect x="184" y="222" width="34" height="28" class="fh"/><path d="M100 227v18M150 227v18M184 222v28" class="sk" stroke-width="1.500"/><path d="M82 231h100" class="si" stroke-width="1" opacity=".6"/></g>
+            <circle cx="128" cy="236" r="6" class="fh"/><circle cx="128" cy="236" r="2" class="fk"/>
+            <path d="M306 0v58M392 0v46" class="sg" stroke-width="1"/><path d="M294 74l12-18 12 18z" class="fg"/><path d="M380 62l12-18 12 18z" class="fg"/><path d="M290 74h32M376 62h32" class="sh" stroke-width="2"/>
+            <rect x="250" y="246" width="230" height="114" class="fb"/><rect x="240" y="238" width="240" height="9" class="fi"/>
+            <g class="sg" stroke-width="1.300"><path d="M266 262h54v82h-54zM336 262h54v82h-54zM406 262h54v82h-54z"/><path d="M266 290l27 20 27-20M336 290l27 20 27-20M406 290l27 20 27-20M266 308l27 20 27-20M336 308l27 20 27-20M406 308l27 20 27-20"/></g>
+            <path d="M291 198h38q0 19-19 19t-19-19z" class="fb"/><path d="M289 197h42M310 217v19M300 237h20" class="si" stroke-width="1.800"/><path d="M291 198q0 19 19 19t19-19" class="si" stroke-width="1.200"/><path d="M318 198q10-9 3-18q-6-6 2-11" class="sh" stroke-width="2.200"/>
+            <path d="M340 238l6-30h62l6 30z" class="fi"/><text x="377" y="221" text-anchor="middle" font-size="5.400" textLength="50" lengthAdjust="spacingAndGlyphs" class="fk">THE LAST TRAM</text><path d="M360 226h34" class="sb" stroke-width=".8"/><text x="377" y="233" text-anchor="middle" font-size="3.400" textLength="48" lengthAdjust="spacingAndGlyphs" class="fb">RYE · BURGUNDY · LEMON</text>
+            <path d="M424 238v-26h13v26zM427 212v-8h7v8z" class="fg"/><path d="M424 220h13" class="sk" stroke-width="1"/>
+          </svg></div>
+          <figcaption><h2><span class="no">52</span><span>The Observatory Bar</span></h2>
+            <p>The telescope is trained on the tram depot, not the stars; the barman is sentimental. Ask for The Last Tram: rye, burgundy, a twist of lemon, served at the exact minute you have missed it.</p></figcaption>
+        </figure>
+
+        <!-- 60 · ROOF -->
+        <figure class="scene" data-i="9">
+          <div class="vgw"><svg class="vg" viewBox="0 0 480 360" preserveAspectRatio="xMidYMid slice" role="img" aria-label="The roof: the hotel's neon sign seen from behind, searchlights over the city, dawn beginning">
+            <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B0B0C"/><stop offset=".42" stop-color="#1F3B3A"/><stop offset=".72" stop-color="#7A1F2B"/><stop offset=".9" stop-color="#C8A04A"/></linearGradient>
+              <linearGradient id="bm" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#F0E6D2" stop-opacity=".42"/><stop offset="1" stop-color="#F0E6D2" stop-opacity="0"/></linearGradient>
+              <radialGradient id="sun" cx=".5" cy="1" r=".9"><stop offset="0" stop-color="#E7CC84" stop-opacity=".95"/><stop offset="1" stop-color="#C8A04A" stop-opacity="0"/></radialGradient>
+              <filter id="nb" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="3.200"/></filter></defs>
+            <rect width="480" height="360" fill="url(#sky)"/>
+            <ellipse class="dawn" cx="240" cy="316" rx="300" ry="110" fill="url(#sun)"/>
+            <g class="fi"><circle class="tw" cx="66" cy="44" r="1.200"/><circle class="tw" cx="150" cy="70" r="1"/><circle class="tw" cx="226" cy="40" r="1.200"/><circle class="tw" cx="330" cy="62" r="1"/><circle class="tw" cx="412" cy="42" r="1.300"/><circle class="tw" cx="96" cy="102" r=".9"/><circle class="tw" cx="388" cy="100" r=".9"/></g>
+            <path class="beam b1" d="M118 304L84 0h64z" fill="url(#bm)"/><path class="beam b2" d="M372 300L344 0h60z" fill="url(#bm)"/>
+            <g transform="translate(0 -14)"><path d="M0 330v-34h16v-10h14v16h22v-24h10v24h24v-12h18v12h20v-30h8v-8h6v8h8v30h26v-14h20v14h14v-22h16v22h28v-10h18v10h22v-28h12v28h24v-16h20v16h16v-36h10v36h26v-12h22v12h18v-20h10v32z" class="fk"/>
+            <g class="fh"><rect x="34" y="296" width="2" height="2"/><rect x="56" y="286" width="2" height="2"/><rect x="56" y="296" width="2" height="2"/><rect x="128" y="284" width="2" height="2"/><rect x="132" y="296" width="2" height="2"/><rect x="186" y="300" width="2" height="2"/><rect x="216" y="294" width="2" height="2"/><rect x="290" y="286" width="2" height="2"/><rect x="290" y="298" width="2" height="2"/><rect x="344" y="296" width="2" height="2"/><rect x="368" y="280" width="2" height="2"/><rect x="368" y="292" width="2" height="2"/><rect x="424" y="302" width="2" height="2"/></g></g>
+            <g class="neon">
+              <g transform="translate(240 196) scale(-1 1)"><text text-anchor="middle" font-size="58" font-weight="700" textLength="316" lengthAdjust="spacingAndGlyphs" fill="none" stroke="#7A1F2B" stroke-width="9" filter="url(#nb)">MERIDIAN</text></g>
+              <g transform="translate(240 128) scale(-1 1)"><text text-anchor="middle" font-size="22" font-weight="700" textLength="150" lengthAdjust="spacingAndGlyphs" fill="none" stroke="#C8A04A" stroke-width="5" filter="url(#nb)" opacity=".8">THE HOTEL</text></g>
+            </g>
+            <g transform="translate(240 196) scale(-1 1)"><text text-anchor="middle" font-size="58" font-weight="700" textLength="316" lengthAdjust="spacingAndGlyphs" fill="#0B0B0C" stroke="#F0E6D2" stroke-width="1.300">MERIDIAN</text></g>
+            <g transform="translate(240 128) scale(-1 1)"><text text-anchor="middle" font-size="22" font-weight="700" textLength="150" lengthAdjust="spacingAndGlyphs" fill="#0B0B0C" stroke="#E7CC84" stroke-width=".9">THE HOTEL</text></g>
+            <g class="sk" stroke-width="2.200"><path d="M70 202h340M70 148h340M150 134h180M150 104h180"/><path d="M82 140v190M161 96v234M240 96v234M319 96v234M398 140v190"/><path d="M82 202l79 128M161 202L82 330M161 202l79 128M240 202l-79 128M240 202l79 128M319 202l-79 128M319 202l79 128M398 202l-79 128" stroke-width="1.300"/></g>
+            <g class="sg" stroke-width=".7" opacity=".55"><path d="M70 200h340M70 146h340"/></g>
+            <rect y="318" width="480" height="42" class="fk"/><path d="M0 318h480" class="sg" stroke-width="2.500"/><path d="M0 325h480" class="sg" stroke-width="1" opacity=".5"/>
+          </svg></div>
+          <figcaption><h2><span class="no">60</span><span>The Roof</span></h2>
+            <p>Top of the house. From behind, our sign spells nothing at all, which I have always found restful. The searchlights are looking for the dawn; there, they have found it.</p>
+            <div><button class="lever" id="lever" type="button"><span class="slot"><i></i></span><span>Return to lobby</span></button></div></figcaption>
+        </figure>
+      </div>
+
+      <div class="door l" id="doorL"><svg aria-hidden="true"></svg><div class="eng"><span>The Hotel</span><small>Anno</small></div></div>
+      <div class="door r" id="doorR"><svg aria-hidden="true"></svg><div class="eng"><span>Meridian</span><small>1931</small></div></div>
+
+      <div class="plate" id="plate"><span>Scroll to ascend</span><svg viewBox="0 0 20 12" aria-hidden="true"><path d="M2 2l8 8 8-8"/></svg></div>
+    </div>
+  </div>
+
+  <nav class="rw" aria-label="Floors"><div class="panelwrap"><div class="panel" id="panel"><span class="ptitle">Floors</span></div></div></nav>
+
+  <div class="floor" aria-hidden="true">
+    <svg preserveAspectRatio="none">
+      <filter id="vein" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".0035 .022" numOctaves="5" seed="11"/><feColorMatrix values="0 0 0 0 .94  0 0 0 0 .9  0 0 0 0 .82  1 0 0 0 0"/><feComponentTransfer><feFuncA type="table" tableValues="0 0 0 0 0 0 .05 .5 .05 0 0 0 0 0 0"/></feComponentTransfer></filter>
+      <filter id="vein2" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".006 .04" numOctaves="4" seed="4"/><feColorMatrix values="0 0 0 0 .78  0 0 0 0 .63  0 0 0 0 .29  1 0 0 0 0"/><feComponentTransfer><feFuncA type="table" tableValues="0 0 0 0 0 0 0 .45 0 0 0 0 0 0 0"/></feComponentTransfer></filter>
+      <rect width="100%" height="100%" filter="url(#vein)"/><rect width="100%" height="100%" filter="url(#vein2)"/>
+    </svg>
+  </div>
+</main>
+
+<svg class="grain" aria-hidden="true"><filter id="gr"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="3"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(#gr)"/></svg>
+
+<script>
+(function(){
+'use strict';
+var FL=[
+  {n:1, lab:'L', name:'The Lobby', short:'Lobby', len:1.15, anc:.5},
+  {n:7, lab:'7', name:'The Cartographers’ Club', short:'Cartographers’ Club', len:1.15, anc:.5},
+  {n:12,lab:'12',name:'The Ballroom', short:'Ballroom', len:1.15, anc:.5},
+  {n:13,lab:'', name:'No such floor', short:'', len:.8, anc:.4},
+  {n:19,lab:'19',name:'The Aviary Suite', short:'Aviary Suite', len:1.15, anc:.5},
+  {n:27,lab:'27',name:'Housekeeping', short:'Housekeeping', len:1.15, anc:.5},
+  {n:33,lab:'33',name:'The Night Kitchen', short:'Night Kitchen', len:1.15, anc:.5},
+  {n:41,lab:'41',name:'The Swimming Pool in the Sky', short:'Pool in the Sky', len:1.15, anc:.5},
+  {n:52,lab:'52',name:'The Observatory Bar', short:'Observatory Bar', len:1.15, anc:.5},
+  {n:60,lab:'60',name:'The Roof', short:'Roof', len:1.0, anc:.72}
+];
+var $=function(id){return document.getElementById(id)};
+var car=$('car'), track=$('track'), hand=$('hand'), numEl=$('num'), statusEl=$('status'), plate=$('plate'),
+    doorL=$('doorL'), doorR=$('doorR'), shaft=$('shaft'), sctx=shaft.getContext('2d'), panel=$('panel'),
+    lever=$('lever'), snd=$('snd'), glow=$('glow');
+var scenes=[].slice.call(document.querySelectorAll('.scene'));
+var mq=window.matchMedia('(prefers-reduced-motion: reduce)'), RM=mq.matches;
+if(mq.addEventListener) mq.addEventListener('change',function(e){RM=e.matches; if(RM){car.style.transform='';sctx.clearRect(0,0,shaft.width,shaft.height)}});
+
+/* ── easing ── */
+function clamp(v,a,b){return v<a?a:v>b?b:v}
+function eio(t){t=clamp(t,0,1);return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2}
+function sine(t){return .5-.5*Math.cos(Math.PI*clamp(t,0,1))}
+var XT=.86, XA=1/(Math.pow(XT,2.6)+1.3*Math.pow(XT,1.6)*(1-XT)), XB=1.3*XA*Math.pow(XT,1.6)/(1-XT);
+function express(t){return t<=XT?XA*Math.pow(t,2.6):1-XB*(1-t)*(1-t)}
+
+/* ── indicator dial ── */
+var SW=166, S0=(180-SW)/2;
+function ang(n){return Math.PI*(180-S0-(n-1)/59*SW)/180}
+function pt(n,r){var a=ang(n);return [(300+r*Math.cos(a)).toFixed(2),(300-r*Math.sin(a)).toFixed(2)]}
+var notable={}; FL.forEach(function(f){notable[f.n]=f});
+var lamps={};
+(function(){
+  var t='',l='',nm='',r='',n,a,b;
+  for(n=1;n<=60;n++){
+    var big=notable[n]&&n!==13;
+    a=pt(n,big?221:(n%5===0?226:230)); b=pt(n,241);
+    t+='<path d="M'+a[0]+' '+a[1]+'L'+b[0]+' '+b[1]+'" stroke-width="'+(big?2.4:1)+'" stroke-opacity="'+(big?.95:.6)+'"/>';
+    if(n!==13){a=pt(n,209);l+='<circle class="lamp" data-n="'+n+'" cx="'+a[0]+'" cy="'+a[1]+'" r="3.3"/>'}
+    if(big){a=pt(n,262);nm+='<text class="num" x="'+a[0]+'" y="'+a[1]+'">'+notable[n].lab+'</text>'}
+  }
+  for(n=0;n<=24;n++){var th=Math.PI*n/24, c=Math.cos(th), s=Math.sin(th), r0=n%2?128:110, r1=n%2?170:190;
+    r+='<path d="M'+(300+r0*c).toFixed(1)+' '+(300-r0*s).toFixed(1)+'L'+(300+r1*c).toFixed(1)+' '+(300-r1*s).toFixed(1)+'"/>'}
+  $('ticks').innerHTML=t; $('lamps').innerHTML=l; $('nums').innerHTML=nm; $('rays').innerHTML=r;
+  [].forEach.call(document.querySelectorAll('.lamp'),function(e){lamps[e.getAttribute('data-n')]=e});
+})();
+var lampOn=null;
+function setLamp(n){
+  if(lampOn) lampOn.classList.remove('on');
+  lampOn=lamps[n]||null;
+  if(lampOn){lampOn.classList.add('on');glow.setAttribute('cx',lampOn.getAttribute('cx'));glow.setAttribute('cy',lampOn.getAttribute('cy'));glow.style.display=''}
+  else glow.style.display='none';
+}
+
+/* ── call buttons ── */
+var btns=[];
+FL.forEach(function(f,i){
+  var row=document.createElement('div'); row.className='row';
+  var b=document.createElement('button'); b.type='button'; b.className='cb'+(f.n===13?' blank':'');
+  b.textContent=f.lab; b.setAttribute('aria-label',f.n===13?'An unmarked button':(f.lab==='L'?'Lobby':'Floor '+f.lab+', '+f.name));
+  b.addEventListener('click',function(){goTo(i,false)});
+  var s=document.createElement('span'); s.className='lbl'; s.textContent=f.short;
+  row.appendChild(b); row.appendChild(s); panel.appendChild(row); btns.push(b);
+});
+
+/* ── engraved doors, drawn to the exact size of the panel ── */
+function drawDoors(){
+  var w=doorL.clientWidth, h=doorL.clientHeight; if(!w||!h) return;
+  var m=Math.max(6,w*.04), m2=m*1.9, d='', k, y, f=function(v){return v.toFixed(1)};
+  d+='M'+f(w)+' '+f(m)+'H'+f(m)+'V'+f(h-m)+'H'+f(w);
+  d+='M'+f(w)+' '+f(m2)+'H'+f(m2)+'V'+f(h-m2)+'H'+f(w);
+  var dep=Math.min(w*.42,h*.13);
+  for(k=0;k<6;k++){y=h*.045+m+k*h*.024; d+='M'+f(m2)+' '+f(y)+'L'+f(w)+' '+f(y+dep)}
+  var y1=h*.315,y2=h*.425;
+  d+='M'+f(m2)+' '+f(y1)+'H'+f(w)+'M'+f(m2)+' '+f(y1+4)+'H'+f(w)+'M'+f(m2)+' '+f(y2)+'H'+f(w)+'M'+f(m2)+' '+f(y2-4)+'H'+f(w);
+  var hz=h*.77, R=Math.min(w*.82,h*.31), cs=[.16,.22,.3];
+  for(k=0;k<3;k++){var rr=R*cs[k]; d+='M'+f(w-rr)+' '+f(hz)+'A'+f(rr)+' '+f(rr)+' 0 0 1 '+f(w)+' '+f(hz-rr)}
+  for(k=0;k<=12;k++){var a=k*7.5*Math.PI/180, c=Math.cos(a), s=Math.sin(a), r0=R*.36, r1=R*(k%2?.72:1);
+    d+='M'+f(w-r0*c)+' '+f(hz-r0*s)+'L'+f(w-r1*c)+' '+f(hz-r1*s)}
+  d+='M'+f(m2)+' '+f(hz)+'H'+f(w)+'M'+f(m2)+' '+f(hz+4)+'H'+f(w);
+  for(k=0;k<4;k++){y=hz+h*.05+k*h*.024; d+='M'+f(m2)+' '+f(y+h*.062)+'L'+f(w)+' '+f(y)}
+  /* stepped ziggurat at the outer edge */
+  var zx=m2, zy=(y2+hz)/2, st=Math.max(5,w*.035);
+  for(k=0;k<3;k++){d+='M'+f(zx)+' '+f(zy-st*(3-k)*1.6)+'H'+f(zx+st*(k+1))+'V'+f(zy+st*(3-k)*1.6)+'H'+f(zx)}
+  var html='<path class="lo" transform="translate(0 1.4)" d="'+d+'"/><path class="hi" d="'+d+'"/>';
+  [doorL,doorR].forEach(function(el){var s=el.querySelector('svg'); s.setAttribute('viewBox','0 0 '+w+' '+h); s.innerHTML=html});
+}
+
+/* ── the scroll timeline: title, stops, travel ── */
+var H=1,total=1,segs=[];
+function layout(){
+  var frac=total>1?window.scrollY/total:0;
+  H=window.innerHeight; var y=0; segs=[];
+  segs.push({t:'title',a:0,b:(y+=.35*H)});
+  FL.forEach(function(f,i){
+    var len=f.len*H; f.anchor=y+len*f.anc; segs.push({t:'stop',i:i,a:y,b:(y+=len)});
+    if(i<FL.length-1) segs.push({t:'travel',i:i,a:y,b:(y+=(.4+.03*(FL[i+1].n-f.n))*H)});
+  });
+  total=y; track.style.height=Math.ceil(total+H)+'px';
+  if(frac>0) window.scrollTo(0,frac*total);
+  var dpr=Math.min(2,window.devicePixelRatio||1);
+  shaft.width=Math.max(1,Math.round(shaft.clientWidth*dpr)); shaft.height=Math.max(1,Math.round(shaft.clientHeight*dpr));
+  drawDoors();
+}
+function profile(i,u){
+  if(i===FL.length-1) return eio(u/.3);
+  if(FL[i].n===13) return u<.28?eio(u/.28):u<.5?1:u<.6?1-Math.pow((u-.5)/.1,2):0;
+  return u<.22?eio(u/.22):u<.78?1:1-eio((u-.78)/.22);
+}
+function state(y){
+  y=clamp(y,0,total);
+  for(var k=0;k<segs.length;k++){var s=segs[k];
+    if(y<=s.b||k===segs.length-1){var u=clamp((y-s.a)/(s.b-s.a),0,1);
+      if(s.t==='title') return {t:'title',i:-1,f:1,o:0};
+      if(s.t==='stop') return {t:'stop',i:s.i,f:FL[s.i].n,o:profile(s.i,u)};
+      var a=FL[s.i].n,b=FL[s.i+1].n; return {t:'travel',i:-1,f:a+(b-a)*sine(u),o:0};
+    }}
+}
+
+/* ── automatic travel (call buttons, lever) ── */
+var auto=null;
+function goTo(i,exp){
+  var y1=FL[i].anchor, y0=window.scrollY;
+  if(Math.abs(y1-y0)<3) return;
+  if(RM){window.scrollTo(0,y1);return}
+  var dist=Math.abs(y1-y0)/H;
+  auto={y0:y0,y1:y1,f0:fPrev,f1:FL[i].n,t:0,target:i,dur:exp?9:clamp(1.7+dist*.42,2.3,6.5),ease:exp?express:eio};
+}
+function cancelAuto(){ if(auto){auto=null} }
+window.addEventListener('wheel',cancelAuto,{passive:true});
+window.addEventListener('touchstart',function(e){ if(!(e.target.closest&&e.target.closest('button'))) cancelAuto()},{passive:true});
+window.addEventListener('keydown',function(e){ if(['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' '].indexOf(e.key)>=0 && !(e.key===' '&&e.target.tagName==='BUTTON')) cancelAuto()});
+lever.addEventListener('click',function(){ lever.classList.add('pulled'); goTo(0,true); if(RM) setTimeout(function(){lever.classList.remove('pulled')},600)});
+
+/* ── sound (off until asked for) ── */
+var A={on:false,ctx:null};
+function audioInit(){
+  var C=window.AudioContext||window.webkitAudioContext; if(!C) return false;
+  var c=A.ctx=new C();
+  A.master=c.createGain(); A.master.gain.value=0; A.master.connect(c.destination);
+  var lp=c.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=150; lp.Q.value=.6;
+  A.humG=c.createGain(); A.humG.gain.value=0; lp.connect(A.humG); A.humG.connect(A.master);
+  A.oscs=[[55,'sawtooth'],[82.7,'sine'],[110.5,'triangle']].map(function(p){var o=c.createOscillator();o.type=p[1];o.frequency.value=p[0];o.connect(lp);o.start();return o});
+  var len=c.sampleRate*2, buf=c.createBuffer(1,len,c.sampleRate), d=buf.getChannelData(0), b=0;
+  for(var k=0;k<len;k++){b=(b+.02*(Math.random()*2-1))/1.02; d[k]=b*3.5}
+  var src=c.createBufferSource(); src.buffer=buf; src.loop=true;
+  var lp2=c.createBiquadFilter(); lp2.type='lowpass'; lp2.frequency.value=240;
+  A.rumG=c.createGain(); A.rumG.gain.value=0; src.connect(lp2); lp2.connect(A.rumG); A.rumG.connect(A.master); src.start();
+  return true;
+}
+var lastTick=0;
+function tick(){
+  if(!A.on) return; var c=A.ctx, t=c.currentTime; if(t-lastTick<.03) return; lastTick=t;
+  var o=c.createOscillator(), g=c.createGain(), f=c.createBiquadFilter();
+  o.type='square'; o.frequency.setValueAtTime(1900,t); o.frequency.exponentialRampToValueAtTime(700,t+.025);
+  f.type='bandpass'; f.frequency.value=1500; f.Q.value=1.2;
+  g.gain.setValueAtTime(.07,t); g.gain.exponentialRampToValueAtTime(.0005,t+.045);
+  o.connect(f); f.connect(g); g.connect(A.master); o.start(t); o.stop(t+.06);
+}
+function ding(){
+  if(!A.on) return; var c=A.ctx, t=c.currentTime;
+  [[1244.5,.2,2.1],[2502,.08,1.3],[3760,.03,.7]].forEach(function(p){
+    var o=c.createOscillator(), g=c.createGain(); o.type='sine'; o.frequency.value=p[0];
+    g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(p[1],t+.006); g.gain.exponentialRampToValueAtTime(.0001,t+p[2]);
+    o.connect(g); g.connect(A.master); o.start(t); o.stop(t+p[2]+.05);
+  });
+}
+snd.addEventListener('click',function(){
+  if(!A.ctx && !audioInit()) return;
+  A.on=!A.on; snd.setAttribute('aria-pressed',A.on?'true':'false'); $('sndtxt').textContent=A.on?'on':'off';
+  if(A.on){A.ctx.resume(); A.master.gain.setTargetAtTime(.9,A.ctx.currentTime,.05); setTimeout(ding,120)}
+  else A.master.gain.setTargetAtTime(0,A.ctx.currentTime,.05);
+});
+var bell=$('bell');
+bell.addEventListener('click',function(){bell.classList.remove('ring'); void bell.getBoundingClientRect(); bell.classList.add('ring'); ding()});
+
+/* ── streaks in the gap: the shaft seen between the doors ── */
+var PITCH=170, OFFS=[.19,.37,.58,.81];
+function drawShaft(world,v){
+  var w=shaft.width,h=shaft.height,dpr=w/Math.max(1,shaft.clientWidth);
+  sctx.clearRect(0,0,w,h);
+  if(RM) return;
+  var sp=Math.abs(v), blur=1.2*dpr+sp*.016*dpr, al=clamp(.22+sp/420,0,1);
+  var top=world+h/dpr, k0=Math.floor(world/PITCH)-1, k1=Math.ceil(top/PITCH)+1, k,j,y;
+  for(k=k0;k<=k1;k++){
+    y=(top-k*PITCH)*dpr;
+    sctx.fillStyle='rgba(231,204,132,'+al+')'; sctx.fillRect(0,y-blur/2,w,Math.max(2*dpr,blur));
+    for(j=0;j<4;j++){ y=(top-(k+OFFS[j])*PITCH)*dpr;
+      sctx.fillStyle=(j===1?'rgba(122,31,43,':'rgba(240,230,210,')+(al*(j%2?.9:.55))+')'; sctx.fillRect(0,y-blur/2,w,Math.max(dpr,blur*.8)); }
+  }
+}
+
+/* ── main loop ── */
+var K=95,C=13;
+var sy=window.scrollY, fPrev=1, pos=1, vel=0, oS=0, oApplied=-1, curLamp=-1, curNum=null, atPrev=-2, litPrev=-2,
+    sceneI=-1, swayT=9, speed=0, dir=1, statusTxt='', plateO=-1, shutNow=null, raf=0, last=0, booted=false;
+function showScene(i){ if(i===sceneI) return; scenes.forEach(function(s,k){s.classList.toggle('on',k===i)}); sceneI=i }
+function setStatus(t){ if(t!==statusTxt){statusTxt=t; statusEl.textContent=t} }
+function frame(now){
+  raf=requestAnimationFrame(frame);
+  var dt=Math.min(.05,(now-last)/1000); last=now; if(dt<=0) return;
+  var sc=window.scrollY, st, fT, oT;
+  if(auto){
+    auto.t+=dt/auto.dur; var p=Math.min(1,auto.t), e=auto.ease(p), y=auto.y0+(auto.y1-auto.y0)*e;
+    window.scrollTo(0,y); sy=y; fT=auto.f0+(auto.f1-auto.f0)*e; oT=0; st={t:'travel',i:-1};
+    if(p>=1){ fT=auto.f1; auto=null }
+  }else{
+    if(RM) sy=sc; else{ sy+=(sc-sy)*(1-Math.exp(-dt*10)); if(Math.abs(sc-sy)<.3) sy=sc }
+    st=state(sy); fT=st.f; oT=st.o;
+  }
+  var fv=(fT-fPrev)/dt; fPrev=fT;
+  speed+=(Math.abs(fv)-speed)*(1-Math.exp(-dt*8));
+  if(Math.abs(fv)>.05) dir=fv>0?1:-1;
+
+  /* the hand: a damped spring chasing the floor */
+  if(RM){pos=fT;vel=0}
+  else{ var n=Math.ceil(dt/.008), hs=dt/n; while(n--){ vel+=((fT-pos)*K-vel*C)*hs; pos+=vel*hs } }
+  hand.setAttribute('transform','rotate('+(S0+(pos-1)/59*SW).toFixed(3)+' 300 300)');
+  var cl=clamp(Math.round(pos),1,60);
+  if(cl!==curLamp){ if(curLamp!==-1) tick(); curLamp=cl; setLamp(cl) }
+  var cn=clamp(Math.round(fT),1,60), lab=cn===1?'L':cn===13?'—':String(cn);
+  if(lab!==curNum){ curNum=lab; numEl.textContent=lab; if(!RM){numEl.classList.remove('flip'); void numEl.offsetWidth; numEl.classList.add('flip')} }
+
+  /* doors */
+  var oPrev=oS; oS+=(oT-oS)*(1-Math.exp(-dt*(RM?5:11))); if(Math.abs(oT-oS)<.0006) oS=oT;
+  var dSpeed=Math.abs(oS-oPrev)/dt;
+  if(st.t==='stop') showScene(st.i);
+  if(oS!==oApplied){ oApplied=oS; car.style.setProperty('--o',oS.toFixed(4)) }
+  var sh=oS<.002; if(sh!==shutNow){ shutNow=sh; car.classList.toggle('shut',sh) }
+
+  /* arrival */
+  var at=st.t==='stop'?st.i:-1;
+  if(at!==atPrev){
+    if(at>=0 && atPrev!==-2){ if(!RM) swayT=0; if(FL[at].n!==13) ding() }
+    if(at===0) lever.classList.remove('pulled');
+    atPrev=at;
+  }
+  var lit=auto?auto.target:at;
+  if(lit!==litPrev){ btns.forEach(function(b,k){b.classList.toggle('lit',k===lit)}); litPrev=lit }
+  setStatus(st.t==='stop'?FL[st.i].name:st.t==='title'?'At your service':(dir>0?'Ascending':'Descending'));
+  if(!auto && lever.classList.contains('pulled') && at!==9 && at!==-1) lever.classList.remove('pulled');
+
+  /* sway */
+  if(swayT<2.6){ swayT+=dt; var am=Math.exp(-3.4*swayT);
+    car.style.transform='translate3d('+(.7*am*Math.sin(swayT*9)).toFixed(2)+'px,'+(2.2*am*Math.sin(swayT*13)).toFixed(2)+'px,0)';
+    if(swayT>=2.6) car.style.transform='';
+  }
+  drawShaft(fT*PITCH, fv*PITCH);
+
+  var po=clamp(1-sy/(H*.2),0,1); if(po!==plateO){ plateO=po; plate.style.opacity=po.toFixed(3); plate.style.visibility=po>0?'visible':'hidden' }
+
+  if(A.on){ var t=A.ctx.currentTime;
+    A.humG.gain.setTargetAtTime(Math.min(.55,.025+speed*.07),t,.09);
+    A.oscs[0].detune.setTargetAtTime(Math.min(500,speed*30),t,.2);
+    A.rumG.gain.setTargetAtTime(Math.min(.7,dSpeed*.45),t,.05);
+  }
+}
+function start(){ if(!raf){ last=performance.now(); raf=requestAnimationFrame(frame) } }
+document.addEventListener('visibilitychange',function(){
+  if(document.hidden){ cancelAnimationFrame(raf); raf=0; if(A.ctx&&A.on) A.ctx.suspend() }
+  else{ start(); if(A.ctx&&A.on) A.ctx.resume() }
+});
+var rt=0;
+window.addEventListener('resize',function(){ cancelAuto(); clearTimeout(rt); rt=setTimeout(layout,60) });
+
+layout();
+sy=window.scrollY; var s0=state(sy); fPrev=s0.f; pos=RM?s0.f:s0.f+(sy<4?11:0); if(s0.t==='stop') showScene(s0.i);
+setTimeout(function(){document.body.classList.remove('boot')},3200);
+start();
+})();
+</script>
+</body>
+</html>

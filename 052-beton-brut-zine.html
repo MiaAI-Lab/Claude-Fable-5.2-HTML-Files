@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BÉTON BRUT No. 6 — The Northmere Issue</title>
+<style>
+:root{
+  --grey:#BDB9B1; --ink:#1A1A1A; --or:#FF5A00; --pale:#E9E6DF;
+  --slab:Impact,Haettenschweiler,"Arial Narrow","Helvetica Neue Condensed Black","Franklin Gothic Condensed","Liberation Sans Narrow","Nimbus Sans Narrow","Arial Black",sans-serif;
+  --mono:"Courier New",Courier,"Nimbus Mono PS","Liberation Mono",monospace;
+  --caps:"Helvetica Neue",Helvetica,Arial,"Liberation Sans",sans-serif;
+  --pour:cubic-bezier(.7,0,.2,1);
+  --sx:1;
+  --grit:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.05' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 9 0 0 0 -2.35'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)'/%3E%3C/svg%3E");
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .1 0 0 0 0 .1 0 0 0 0 .1 1.1 0 0 0 -.42'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background-color:var(--grey);color:var(--ink);font:13px/1.5 var(--mono);overflow-x:hidden;
+  background-image:
+    var(--grain),
+    radial-gradient(circle,rgba(26,26,26,.5) 0 2.6px,rgba(233,230,223,.45) 2.8px 4.2px,transparent 4.8px),
+    radial-gradient(ellipse 30px 8px at 22% 31%,transparent 30%,rgba(26,26,26,.2) 42%,transparent 62%),
+    radial-gradient(ellipse 18px 6px at 71% 64%,rgba(26,26,26,.2),transparent 70%),
+    radial-gradient(ellipse 40px 9px at 55% 12%,transparent 34%,rgba(26,26,26,.14) 46%,transparent 66%),
+    repeating-linear-gradient(90deg,rgba(26,26,26,.09) 0 1px,transparent 1px 684px),
+    repeating-linear-gradient(0deg,rgba(26,26,26,.2) 0 1px,rgba(233,230,223,.16) 1px 2px,transparent 2px 38px),
+    repeating-linear-gradient(0deg,rgba(26,26,26,.035) 0 1px,transparent 1px 5px);
+  background-size:220px 220px,228px 152px,760px 456px,760px 456px,760px 456px,auto,auto,auto;
+}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--or);outline-offset:3px}
+.sl{font-family:var(--slab);font-weight:400;text-transform:uppercase;letter-spacing:-.005em}
+.noimp .sl{font-weight:900}
+.sq{display:block;width:max-content;transform:scaleX(var(--sx));transform-origin:0 50%}
+.tc{font:700 10px/1.35 var(--caps);letter-spacing:.14em;text-transform:uppercase}
+.ov{color:var(--or);mix-blend-mode:multiply}
+
+/* ---------- spreads ---------- */
+.spread{position:relative;min-height:100vh;min-height:100svh;overflow:hidden;box-shadow:inset 0 3px 0 var(--ink),inset 0 5px 0 rgba(233,230,223,.4)}
+.spread::before{content:"";position:absolute;inset:0;pointer-events:none;filter:blur(5px);opacity:.9;
+  background:
+    linear-gradient(rgba(26,26,26,.3),rgba(26,26,26,0)) var(--s1,13%) 0/22px 46% no-repeat,
+    linear-gradient(rgba(26,26,26,.2),rgba(26,26,26,0)) calc(var(--s1,13%) + 4%) 0/9px 62% no-repeat,
+    linear-gradient(rgba(26,26,26,.24),rgba(26,26,26,0)) var(--s2,61%) 0/34px 30% no-repeat,
+    linear-gradient(rgba(26,26,26,.16),rgba(26,26,26,0)) var(--s3,88%) 0/14px 74% no-repeat,
+    radial-gradient(ellipse at 0 100%,rgba(88,102,52,.5),transparent 68%) var(--mx,0) 100%/300px 120px no-repeat,
+    radial-gradient(ellipse at 50% 100%,rgba(88,102,52,.34),transparent 70%) var(--s2,61%) 100%/190px 46px no-repeat}
+.spread::after{content:"";position:absolute;inset:14px;pointer-events:none;z-index:6;
+  background:
+    linear-gradient(var(--ink),var(--ink)) 0 12px/22px 1px,linear-gradient(var(--ink),var(--ink)) 12px 0/1px 22px,
+    linear-gradient(var(--ink),var(--ink)) 100% 12px/22px 1px,linear-gradient(var(--ink),var(--ink)) calc(100% - 12px) 0/1px 22px,
+    linear-gradient(var(--ink),var(--ink)) 0 calc(100% - 12px)/22px 1px,linear-gradient(var(--ink),var(--ink)) 12px 100%/1px 22px,
+    linear-gradient(var(--ink),var(--ink)) 100% calc(100% - 12px)/22px 1px,linear-gradient(var(--ink),var(--ink)) calc(100% - 12px) 100%/1px 22px;
+  background-repeat:no-repeat}
+.spread:nth-of-type(2n){--s1:72%;--s2:24%;--s3:6%;--mx:100%}
+.spread:nth-of-type(3n){--s1:41%;--s2:83%;--s3:17%}
+
+.giant{position:absolute;z-index:0;pointer-events:none;user-select:none;color:var(--ink);line-height:.79;white-space:nowrap;
+  -webkit-mask-image:var(--grit);mask-image:var(--grit);-webkit-mask-size:260px;mask-size:260px}
+.gi{display:block;transform-origin:30% 50%}
+.js .gi{opacity:0}
+.js .in .gi{animation:slam .44s cubic-bezier(.2,1.25,.3,1) .55s both}
+.js .in.spread{animation:shake .38s cubic-bezier(.36,.07,.19,.97) .8s}
+@keyframes slam{0%{opacity:0;transform:scale(1.55)}55%{opacity:1}100%{opacity:1;transform:scale(1)}}
+@keyframes shake{0%,100%{transform:none}15%{transform:translate(-7px,5px)}32%{transform:translate(6px,-4px)}50%{transform:translate(-4px,3px)}70%{transform:translate(2px,-2px)}}
+
+.foot{position:absolute;left:4vw;right:max(9vw,64px);bottom:22px;z-index:1;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;pointer-events:none}
+.flip .foot,.rev .foot{flex-direction:row-reverse}
+.pg{font-size:min(26vh,34vw);line-height:.72;color:var(--pale);margin-bottom:-5.5vh;-webkit-mask-image:var(--grit);mask-image:var(--grit)}
+.run{padding-bottom:6px;white-space:nowrap}
+.run b{color:var(--ink);background:var(--or);padding:1px 5px}
+
+/* ---------- building spread ---------- */
+.b{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,420px);gap:3vw;align-items:center;padding:7vh max(9vw,84px) 17vh 5vw}
+.b.flip{grid-template-columns:minmax(300px,420px) minmax(0,1.5fr);padding-left:6vw}
+.b.flip .stage{order:2}
+.stage{position:relative;z-index:2;height:min(76vh,780px);touch-action:pan-y;cursor:grab;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.stage.grab{cursor:grabbing}
+.stage:focus-visible{outline-offset:-6px}
+.cap{position:absolute;z-index:3;max-width:230px;margin:0;pointer-events:none;background:var(--pale);padding:6px 8px 5px;box-shadow:3px 3px 0 var(--ink)}
+.ar{display:inline-block;position:relative;width:1.7em;height:.72em;margin:0 .3em;font-style:normal;background:none!important;padding:0!important}
+.ar::before{content:"";position:absolute;left:0;right:1px;top:50%;height:1.6px;margin-top:-.8px;background:currentColor}
+.ar::after{content:"";position:absolute;right:1px;top:50%;width:.46em;height:.46em;margin-top:-.23em;border:solid currentColor;border-width:1.6px 1.6px 0 0;transform:rotate(45deg);box-sizing:border-box}
+.ar.l{rotate:180deg}.ar.d{rotate:90deg}.ar.u{rotate:-90deg}.ar.dr{rotate:45deg}.ar.ur{rotate:-45deg}.ar.dl{rotate:135deg}
+.cap.c1{top:0;left:42px}
+.flip .cap.c1{left:auto;right:42px;text-align:right}
+.cap i:not(.ar){font-style:normal;color:var(--ink);background:var(--or);padding:0 4px;margin-right:4px}
+
+.slip{position:relative;z-index:3;background:var(--pale) var(--grain);padding:24px 22px 20px 58px;box-shadow:6px 6px 0 var(--ink);transform:rotate(-.6deg);max-width:440px}
+.flip .slip{transform:rotate(.5deg);justify-self:end}
+.slip::before{content:"";position:absolute;top:-11px;left:38%;width:92px;height:24px;background:rgba(189,185,177,.78);transform:rotate(-3deg);box-shadow:0 1px 0 rgba(26,26,26,.25)}
+.kick{display:flex;align-items:center;gap:10px;margin:0 0 10px -36px}
+.kick b{display:inline-grid;place-items:center;width:28px;height:28px;background:var(--or);font:400 22px/1 var(--slab)}
+.noimp .kick b{font-weight:900}
+.slip h2{margin:0 0 8px;font-size:clamp(2.5rem,3.7vw,3.5rem);line-height:.84}
+.slip h2 .sq{max-width:none}
+.meta{margin:0 0 14px;padding:6px 0;border-top:2px solid var(--ink);border-bottom:1px solid var(--ink)}
+.essay{counter-reset:p}
+.essay p{position:relative;margin:0 0 9px;counter-increment:p;hyphens:auto;letter-spacing:-.02em}
+.essay p::before{content:var(--n) "." counter(p);position:absolute;left:-36px;top:1px;width:28px;text-align:center;background:var(--or);font:700 10px/16px var(--caps);letter-spacing:.02em}
+.essay q{quotes:"‘" "’";background:linear-gradient(transparent 55%,rgba(255,90,0,.45) 0)}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0 0;padding-top:10px;border-top:2px solid var(--ink)}
+.facts div{min-width:0}
+.facts dt{font-size:2.35rem;line-height:.9}
+.facts dd{margin:4px 0 0;font:700 9px/1.3 var(--caps);letter-spacing:.1em;text-transform:uppercase}
+
+.stamp{position:absolute;z-index:4;top:11vh;left:44%;padding:6px 14px 3px;border:5px solid var(--or);outline:2px solid var(--or);outline-offset:3px;color:var(--or);font-size:clamp(2rem,4.6vw,4.2rem);line-height:.9;text-align:center;transform:rotate(-13deg);mix-blend-mode:multiply;pointer-events:none;
+  -webkit-mask-image:var(--grit);mask-image:var(--grit);-webkit-mask-size:170px;mask-size:170px}
+#b5 .stamp{left:34%;top:7vh;font-size:clamp(2rem,4vw,3.7rem)}
+.stamp small{display:block;font:700 10px/1.6 var(--caps);letter-spacing:.2em}
+.flip .stamp{left:auto;right:47%;transform:rotate(9deg)}
+.js .stamp{opacity:0}
+.js .in .stamp{animation:stamp .2s cubic-bezier(.2,.8,.3,1.3) 2.1s both}
+@keyframes stamp{0%{opacity:0;scale:2.8}100%{opacity:1;scale:1}}
+
+/* giant placements */
+#b1 .giant{font-size:min(33vw,62vh);top:-1vh;left:-1.2vw}
+#b2 .giant{font-size:min(36vw,58vh);bottom:6vh;right:3vw;text-align:right}
+#b2 .giant .sq{margin-left:auto;transform-origin:100% 50%}
+#b2 .g2,#b6 .g2{position:absolute;z-index:0;top:50%;left:42vw;font-size:min(13vw,19vh);line-height:.8;white-space:nowrap;transform:translate(-50%,-50%) rotate(-90deg);pointer-events:none}
+#b3 .giant{font-size:34vh;left:3.5vh;bottom:-1vh;transform-origin:0 100%;transform:rotate(-90deg) translateY(100%)}
+#b3 .g2{position:absolute;z-index:0;right:4vw;bottom:9vh;font-size:min(27vw,44vh);line-height:.8;pointer-events:none}
+#b4 .giant{font-size:min(31vw,56vh);top:1vh;right:5vw}
+#b4 .giant .sq{margin-left:auto;transform-origin:100% 50%}
+#b5 .giant{font-size:min(33vw,58vh);bottom:3vh;left:-1vw;color:transparent;-webkit-text-stroke:3px var(--ink)}
+#b5 .giant .sq:first-child{color:var(--ink);-webkit-text-stroke:0}
+#b6 .giant{font-size:min(32vw,60vh);top:0;left:22vw}
+#b6 .g2{left:auto;right:1vw;transform:translate(50%,-50%) rotate(90deg);right:max(13vw,110px)}
+
+/* ---------- model ---------- */
+.rig{position:absolute;left:50%;top:60%;width:0;height:0;transform-style:preserve-3d;--ex:0;display:none}
+.live .rig{display:block}
+.vol,.bb{position:absolute;left:0;top:0;width:0;height:0;translate:var(--x) calc(var(--y) - var(--ex)*var(--lv)*1px) var(--z)}
+.vol{transform-style:preserve-3d;scale:1 .001 1;transition:scale var(--du) var(--pour) var(--dl),translate .7s var(--pour)}
+.poured .vol,.vol.fix{scale:1 1 1}
+.nopour .vol{transition:none}
+.bb{width:auto;height:auto;transition:translate .7s var(--pour)}
+.f{position:absolute;left:0;top:0;backface-visibility:hidden;background-color:#96928a;
+  background-image:radial-gradient(circle,rgba(26,26,26,.42) 0 .9px,transparent 1.5px),repeating-linear-gradient(0deg,rgba(26,26,26,.15) 0 1px,transparent 1px 7px);
+  background-size:26px 21px,auto;box-shadow:inset 0 0 0 .6px rgba(26,26,26,.5);transition:background-color .35s linear}
+.f.t{background-image:radial-gradient(circle,rgba(26,26,26,.16) 0 .8px,transparent 1.4px);background-size:17px 17px}
+.f.win{background-image:conic-gradient(from 90deg at var(--ox) var(--oy),rgba(26,26,26,.84) 25%,transparent 0),repeating-linear-gradient(0deg,rgba(26,26,26,.13) 0 1px,transparent 1px 7px);background-size:var(--tw) var(--th),auto;background-position:0 var(--sh),0 0}
+.f.rnd{border-radius:50%}
+.f.tri{clip-path:polygon(50% 0,100% 100%,0 100%)}
+.f.pleat{background-image:repeating-linear-gradient(90deg,rgba(26,26,26,.2) 0 9px,rgba(233,230,223,.1) 9px 18px),repeating-linear-gradient(0deg,rgba(26,26,26,.13) 0 1px,transparent 1px 7px);background-size:auto}
+.f.pt{background-color:#a9a59d;background-image:radial-gradient(circle,rgba(26,26,26,.5) 0 1.4px,transparent 2px);background-size:44px 44px;background-position:22px 22px;box-shadow:inset 0 0 0 2px var(--ink)}
+.f.ps{background:var(--ink);box-shadow:none}
+.f.slot{background:repeating-linear-gradient(180deg,#FF5A00 0 13px,#E9E6DF 13px 17px,#FF5A00 17px 31px,#1A1A1A 31px 34px);box-shadow:0 0 0 1px var(--ink),0 0 18px 3px rgba(255,90,0,.75)}
+.poured:not(.set) .f:not(.ps):not(.pt){animation:set calc(var(--du) + 340ms) linear var(--dl) backwards}
+@keyframes set{0%,52%{box-shadow:inset 0 0 0 2.5px #FF5A00}60%{box-shadow:inset 0 0 0 2.5px #FF5A00;background-color:#FF5A00}}
+.gnd{position:absolute;left:0;top:0;transform:translate3d(0,-.6px,0) rotateX(90deg);pointer-events:none}
+.gnd svg{display:block;overflow:visible}
+.shd{fill:#1A1A1A;opacity:.4}
+.fig{width:5px;height:10px;background:var(--ink);border-radius:2px 2px 0 0}
+.fig::before{content:"";position:absolute;left:.5px;top:-5px;width:4px;height:4px;border-radius:50%;background:var(--ink)}
+.fig::after{content:"";position:absolute;left:0;top:10px;width:5px;height:1px;background:var(--or)}
+.lab{display:flex;align-items:center;width:max-content;opacity:0;transition:opacity .2s;pointer-events:none;font:700 10px/1 var(--caps);letter-spacing:.12em;text-transform:uppercase}
+.lab i{display:block;width:3.4em;border-top:1px solid var(--ink)}
+.lab b{background:var(--or);padding:.38em .55em .3em}
+.rig.ex .lab{opacity:1;transition-delay:calc(var(--lv)*70ms + 260ms)}
+.mk{display:grid;place-items:center;width:2em;height:2em;background:var(--or);color:var(--ink);text-decoration:none;font:400 1.5em/1 var(--slab);box-shadow:.14em .14em 0 var(--ink)}
+.mk::after{content:"";position:absolute;left:50%;top:100%;width:1px;height:.8em;background:var(--ink)}
+.mk:hover{background:var(--ink);color:var(--or)}
+
+/* controls */
+.sun{position:absolute;z-index:4;left:0;top:7%;height:60%;width:34px;display:flex;flex-direction:column;align-items:center;gap:7px;touch-action:none;cursor:ns-resize}
+.flip .sun{left:auto;right:0}
+.sun .s-l{font:700 9px/1 var(--caps);letter-spacing:.1em}
+.s-tr{position:relative;flex:1;width:34px;background:repeating-linear-gradient(180deg,var(--ink) 0 5px,transparent 5px 10px) 50% 0/2px 100% no-repeat}
+.s-th{position:absolute;left:50%;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:var(--or);box-shadow:0 0 0 2px var(--ink),3px 3px 0 var(--ink);transition:scale .25s cubic-bezier(.3,1.6,.4,1)}
+.sun:hover .s-th,.sun:focus-visible .s-th{scale:1.18}
+.s-th::before{content:"";position:absolute;inset:-9px;border-radius:50%;background:repeating-conic-gradient(var(--ink) 0 4deg,transparent 4deg 30deg);-webkit-mask:radial-gradient(circle,transparent 17px,#000 17.5px);mask:radial-gradient(circle,transparent 17px,#000 17.5px)}
+.s-th b{position:absolute;left:36px;top:6px;background:var(--ink);color:var(--pale);padding:3px 5px;font:700 9px/1 var(--caps);letter-spacing:.1em;white-space:nowrap}
+.flip .s-th b{left:auto;right:36px}
+.ctl{position:absolute;z-index:4;left:0;right:0;bottom:0;display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;cursor:default}
+.flip .ctl{justify-content:flex-end}
+.ctl button,.snip{appearance:none;border:2px solid var(--ink);background:var(--pale);color:var(--ink);font:700 10px/1 var(--caps);letter-spacing:.14em;text-transform:uppercase;padding:9px 11px 8px;cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:translate .12s var(--pour),box-shadow .12s var(--pour),background-color .15s}
+.ctl button:hover,.snip:hover{background:var(--or)}
+.ctl button:active,.snip:active,.ctl button[aria-pressed="true"]{translate:3px 3px;box-shadow:0 0 0 var(--ink)}
+.ctl button[aria-pressed="true"]{background:var(--ink);color:var(--or)}
+.hint{flex:0 1 auto;min-width:0;background:var(--grey);padding:5px 7px 4px;box-shadow:0 0 0 1px var(--ink)}
+.flip .hint{order:-1;text-align:right}
+
+/* ---------- cover ---------- */
+.cover{height:100vh;height:100svh;min-height:560px}
+.mast{position:absolute;z-index:3;top:26px;left:4vw;right:max(9vw,64px);display:flex;justify-content:space-between;gap:20px;padding-bottom:6px;border-bottom:4px solid var(--ink)}
+.mast span:last-child{text-align:right}
+.title{position:absolute;z-index:1;margin:0;top:44px;padding-top:.26em;left:-.6vw;font-size:min(47vw,34.5vh);line-height:.8;white-space:nowrap;-webkit-mask-image:var(--grit);mask-image:var(--grit);-webkit-mask-size:260px;mask-size:260px}
+.title .sq{animation:drop .5s cubic-bezier(.2,1.2,.3,1) both}
+.title .sq:nth-child(2){animation-delay:.12s}.title .sq:nth-child(3){animation-delay:.24s}
+@keyframes drop{0%{opacity:0;translate:0 -18vh}60%{opacity:1}100%{opacity:1;translate:0 0}}
+.sunc{position:absolute;z-index:1;top:9vh;right:11vw;width:min(42vw,66vh);aspect-ratio:1;border-radius:50%;background:var(--or);mix-blend-mode:multiply;animation:rise 1.3s cubic-bezier(.2,.8,.2,1) .2s both}
+@keyframes rise{0%{translate:0 60vh}100%{translate:0 0}}
+.cover .stage{position:absolute;right:5vw;top:5vh;width:48vw;height:86vh}
+.cover .slip{position:absolute;left:38vw;bottom:15vh;width:min(330px,78vw);padding:18px 20px;font:700 17px/1.3 var(--mono);transform:rotate(-2.2deg)}
+.cover .slip small{display:block;margin-top:10px;font:700 9px/1.4 var(--caps);letter-spacing:.14em;text-transform:uppercase}
+.cover .cap.c1{top:auto;bottom:10vh;left:auto;right:max(9vw,64px);text-align:right}
+.price{position:absolute;z-index:4;left:4vw;bottom:13vh;width:104px;height:104px;border-radius:50%;background:var(--ink);color:var(--pale);display:grid;place-items:center;font-size:50px;transform:rotate(-14deg);box-shadow:0 0 0 3px var(--grey),0 0 0 5px var(--ink)}
+.price i{font-style:normal;font-size:.5em;color:var(--or)}
+
+/* ---------- manifesto ---------- */
+.mani{background:var(--ink) var(--grain);color:var(--pale);display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,400px);gap:4vw;align-items:start;padding:8vh max(9vw,84px) 17vh 6vw}
+.mani::before{display:none}
+.mani::after{filter:invert(1)}
+.mani .giant{color:#33322f;font-size:min(34vw,58vh);left:-1vw;bottom:2vh}
+.mani .pg{color:#33322f}
+.mani .run{color:var(--pale)}
+.mani h2{position:relative;margin:0 0 3vh;font-size:clamp(3rem,6.4vw,6rem);line-height:.82}
+.mani h2 em{font-style:normal;color:var(--or)}
+.slog{position:relative;z-index:2;list-style:none;margin:0;padding:0;counter-reset:s;columns:2;column-gap:3vw}
+.slog li{counter-increment:s;break-inside:avoid;position:relative;padding:10px 0 12px 1.9em;border-top:1px solid rgba(233,230,223,.3);font-size:clamp(1.25rem,1.85vw,1.9rem);line-height:.98;letter-spacing:.005em;transition:padding-left .28s var(--pour),color .2s}
+.slog li::before{content:counter(s) ".";position:absolute;left:0;top:10px;color:var(--or)}
+.slog li:hover{padding-left:2.3em;color:#fff}
+.slog small{display:block;margin-top:5px;font:400 11px/1.4 var(--mono);text-transform:none;letter-spacing:0;color:var(--grey)}
+.mani .stamp{mix-blend-mode:normal;top:auto;left:auto;right:max(11vw,96px);bottom:21vh;transform:rotate(-8deg)}
+.mani .slip{color:var(--ink);transform:rotate(1.3deg);padding-left:24px;margin-top:2vh}
+.mani .slip p{margin:0 0 9px;letter-spacing:-.02em}
+.sig{display:block;width:150px;height:54px;margin:2px 0 0 -4px}
+.sig path{fill:none;stroke:var(--or);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:640;stroke-dashoffset:0}
+.js .sig path{stroke-dashoffset:640}
+.js .in .sig path{transition:stroke-dashoffset 1.5s cubic-bezier(.5,0,.3,1) .7s;stroke-dashoffset:0}
+
+/* ---------- back cover ---------- */
+.back{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(290px,400px);gap:3.5vw;align-items:center;padding:9vh max(9vw,84px) 18vh 5vw}
+.back .giant{font-size:min(25vw,44vh);top:-2vh;left:-1vw}
+.sheet{position:relative;z-index:2;background:var(--pale) var(--grain);padding:16px 18px 14px;box-shadow:7px 7px 0 var(--ink);transform:rotate(-.8deg)}
+.sheet::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:5;
+  background:linear-gradient(90deg,transparent 33%,rgba(26,26,26,.2) 33.2%,rgba(26,26,26,.05) 34.5%,transparent 38%,transparent 66.3%,rgba(255,255,255,.55) 66.5%,rgba(26,26,26,.16) 66.9%,transparent 70%),linear-gradient(0deg,transparent 49.6%,rgba(26,26,26,.16) 50%,transparent 53%)}
+.sheet .hd{display:flex;justify-content:space-between;gap:12px;padding-bottom:6px;border-bottom:3px solid var(--ink)}
+.sheet .stage{height:min(54vh,520px)}
+.leg{list-style:none;margin:0;padding:8px 0 0;border-top:1px solid var(--ink);display:grid;grid-template-columns:repeat(3,1fr);gap:5px 12px}
+.leg a{display:flex;align-items:center;gap:7px;text-decoration:none;font:700 9.5px/1.2 var(--caps);letter-spacing:.1em;text-transform:uppercase}
+.leg b{flex:none;display:grid;place-items:center;width:20px;height:20px;background:var(--or);font:400 15px/1 var(--slab)}
+.leg a:hover{background:var(--ink);color:var(--pale)}
+.side{position:relative;z-index:3}
+.coupon{position:relative;background:var(--pale) var(--grain);border:2px dashed var(--ink);padding:20px 18px 16px;transition:transform .5s cubic-bezier(.3,1.5,.4,1),box-shadow .3s}
+.coupon.cut{transform:rotate(3deg) translate(12px,20px);box-shadow:9px 11px 0 rgba(26,26,26,.45);border-style:solid;border-width:1px}
+.scis{position:absolute;top:-13px;left:14px;width:30px;height:24px;background:var(--grey);padding:0 3px;transition:translate .9s var(--pour)}
+.cut .scis{translate:240px 0;opacity:0;transition:translate .9s var(--pour),opacity .2s .8s}
+.coupon h3{margin:0 0 4px;font-size:2.5rem;line-height:.86}
+.coupon p{margin:0 0 10px;letter-spacing:-.02em}
+.coupon label{display:block;margin:0 0 9px}
+.coupon label.tick{display:flex;gap:9px;align-items:flex-start;cursor:pointer}
+.coupon input[type=text]{display:block;width:100%;appearance:none;border:0;border-bottom:2px dotted var(--ink);border-radius:0;background:transparent;font:700 14px/1.2 var(--mono);color:var(--ink);padding:5px 0 3px}
+.coupon input[type=text]:focus-visible{outline:0;border-bottom:2px solid var(--or);background:rgba(255,90,0,.12)}
+.coupon input[type=checkbox]{appearance:none;flex:none;width:17px;height:17px;margin:0;border:2px solid var(--ink);background:var(--pale);cursor:pointer;position:relative}
+.coupon input[type=checkbox]:checked::after{content:"";position:absolute;left:1px;top:-7px;width:8px;height:16px;border:solid var(--or);border-width:0 4px 4px 0;transform:rotate(40deg)}
+.snip{margin-top:4px}
+.post{min-height:2.9em;margin:10px 0 0!important}
+.colo{margin:16px 0 0;max-width:380px}
+
+/* ---------- index ---------- */
+.idx{position:fixed;z-index:20;right:0;top:50%;translate:0 -50%;display:flex;flex-direction:column;gap:4px}
+.idx a{position:relative;display:grid;place-items:center;width:42px;height:42px;background:var(--or);color:var(--ink);text-decoration:none;font:400 25px/1 var(--slab);box-shadow:-3px 3px 0 var(--ink);transition:translate .22s var(--pour),background-color .15s,color .15s}
+.noimp .idx a,.noimp .mk,.noimp .leg b{font-weight:900}
+.idx a span{position:absolute;right:100%;top:0;height:100%;display:flex;align-items:center;padding:0 10px;background:var(--ink);color:var(--pale);font:700 9.5px/1 var(--caps);letter-spacing:.14em;white-space:nowrap;clip-path:inset(0 0 0 100%);transition:clip-path .25s var(--pour)}
+.idx a:hover,.idx a:focus-visible{translate:-6px 0}
+.idx a:hover span,.idx a:focus-visible span{clip-path:inset(0)}
+.idx a.on{background:var(--ink);color:var(--or);translate:-10px 0}
+.idx a:focus-visible{outline-color:var(--ink)}
+
+/* ---------- small screens ---------- */
+@media (max-width:900px){
+  .b,.b.flip,.mani,.back{grid-template-columns:minmax(0,1fr);padding:9vh 52px 30vh 18px;gap:26px}
+  .b.flip .stage{order:0}
+  .stage{height:max(96vw,340px);max-height:620px}
+  .slip,.flip .slip{justify-self:start;max-width:420px}
+  .stamp,.flip .stamp,#b5 .stamp{top:calc(9vh + 56vw);left:auto;right:44px;font-size:1.9rem;border-width:4px}
+  .cap.c1,.flip .cap.c1{top:-34px;left:38px;right:auto;text-align:left;max-width:250px}
+  .pg{font-size:36vw;margin-bottom:-18px}
+  .run{white-space:normal;max-width:46vw;text-align:right}
+  .flip .run,.rev .run{text-align:left}
+  #b1 .giant{font-size:45vw;top:5vh}
+  #b2 .giant{font-size:47vw;bottom:auto;top:20vh;right:2vw}
+  #b2 .g2{left:10vw;top:62vw;font-size:24vw}
+  #b3 .giant{font-size:45vw;bottom:auto;top:5vh;left:-2vw;transform:none}
+  #b3 .g2{bottom:auto;top:92vw;right:4vw;font-size:40vw}
+  #b4 .giant{font-size:44vw;top:6vh}
+  #b5 .giant{font-size:46vw;bottom:auto;top:24vw;-webkit-text-stroke-width:2px}
+  #b6 .giant{font-size:46vw;left:-2vw;top:6vh}
+  #b6 .g2{top:70vw;right:66px;font-size:20vw}
+  .idx a{width:32px;height:32px;font-size:19px}
+  .mast{top:20px;left:18px;right:44px;font-size:8.5px}
+  .mast span:last-child{display:none}
+  .title{top:44px}
+  .sunc{top:auto;bottom:27vh;right:-16vw;width:88vw}
+  .cover .stage{right:-4vw;top:auto;bottom:20vh;width:84vw;height:min(64vh,128vw);max-height:none}
+  .cover .slip{left:18px;top:auto;bottom:calc(11vh + 20px);left:112px;width:min(210px,56vw);font-size:14px;padding:13px 14px}
+  .price{left:18px;bottom:11vh;width:78px;height:78px;font-size:38px}
+  .cover .cap.c1{display:none}
+  .slog{columns:1}
+  .mani .stamp{right:50px;bottom:12vh;top:auto}
+  .mani{padding-top:10vh}
+  .mani .giant{font-size:50vw;bottom:auto;top:30vh}
+  .back .giant{font-size:42vw;top:4vh}
+  .leg{grid-template-columns:repeat(2,1fr)}
+  .sheet .stage{height:max(78vw,290px)}
+  .hint{flex-basis:100%}
+  .facts dt{font-size:2rem}
+}
+@media (max-width:420px){.facts{gap:8px}.facts dt{font-size:1.75rem}.slip{padding-left:50px}}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .js .gi,.js .stamp{opacity:1}
+  .js .in .gi,.js .in.spread,.js .in .stamp,.title .sq,.sunc{animation:none}
+  .vol{transition:translate .01s}
+  .poured:not(.set) .f:not(.ps):not(.pt){animation:none}
+  .js .sig path{stroke-dashoffset:0;transition:none}
+  .coupon,.scis,.slog li{transition:none}
+}
+</style>
+</head>
+<body>
+
+<nav class="idx" aria-label="The six buildings">
+  <a href="#b1" aria-label="1. Northmere Civic Centre">1<span>Civic Centre</span></a>
+  <a href="#b2" aria-label="2. Trinity Road car park">2<span>Trinity Road car park</span></a>
+  <a href="#b3" aria-label="3. Hallam Point">3<span>Hallam Point</span></a>
+  <a href="#b4" aria-label="4. St Jude’s Church">4<span>St Jude’s Church</span></a>
+  <a href="#b5" aria-label="5. Water Board pumping station">5<span>Pumping station</span></a>
+  <a href="#b6" aria-label="6. Queensway bus station">6<span>Queensway bus station</span></a>
+</nav>
+
+<main>
+
+<!-- ================= COVER ================= -->
+<header class="spread cover" id="cover">
+  <div class="mast tc"><span>BÉTON BRUT · No. 6 · THE NORTHMERE ISSUE · 50p</span><span>A zine about concrete · photocopied after hours</span></div>
+  <div class="sunc" aria-hidden="true"></div>
+  <h1 class="title sl" aria-label="Béton Brut, number 6"><span class="sq">BÉTON</span><span class="sq">BRUT</span><span class="sq ov">No.6</span></h1>
+  <div class="stage" data-model="cover" tabindex="0" role="group" aria-label="Model of a concrete service tower. Left and right arrow keys turn it; Space lifts the floors apart."></div>
+  <p class="cap c1 tc"><i>FIG. 0</i>Drag it round <i class="ar l"></i> <i class="ar"></i> hold it down.<br>It is only a model. The real ones are heavier.</p>
+  <p class="slip">Six buildings nobody asked for and everyone now defends.<small><i class="ar d"></i> Northmere new town, 1962–71. Poured in place. Argued over since.</small></p>
+  <div class="price sl" aria-label="Price: 50 pence"><span>50<i>p</i></span></div>
+  <div class="foot"><span class="pg sl" aria-hidden="true">01</span><span class="run tc">Turn the page <i class="ar d"></i></span></div>
+</header>
+
+<!-- ================= 1 CIVIC CENTRE ================= -->
+<section class="spread b" id="b1" style="--n:'1'" aria-labelledby="h1">
+  <div class="giant sl" aria-hidden="true"><span class="gi"><span class="sq">CIVIC</span><span class="sq">CENTRE</span></span></div>
+  <div class="stage" data-model="civic" tabindex="0" role="group" aria-label="Isometric model of Northmere Civic Centre. Left and right arrow keys turn it; Space lifts the floors apart.">
+    <p class="cap c1 tc"><i>FIG. 1</i>Each floor oversails the last by 3.6 m <i class="ar dr"></i> the ramp is the orange bit</p>
+  </div>
+  <article class="slip">
+    <p class="kick tc"><b>1</b>Building one of six · listed Grade II</p>
+    <h2 class="sl" id="h1"><span class="sq">Northmere</span><span class="sq">Civic Centre</span></h2>
+    <p class="meta tc">1967 <i class="ar"></i> Northmere Development Corporation, Architect’s Department <i class="ar"></i> job architect E. M. Varley</p>
+    <div class="essay">
+      <p>They built it upside down on purpose. Each floor is wider than the one beneath, so Planning shades Rates and the council chamber shades everybody.</p>
+      <p>Varley said a town hall should <q>hover over its citizens like a good question</q>. The citizens said it looked like a filing cabinet falling over. Both are right.</p>
+      <p>Stand under it on a wet Tuesday and the whole 9,400-tonne thing floats above you on sixteen columns no thicker than a phone box. The ceremonial ramp is too steep for ceremony and perfect for skateboards. It leaks in the north-east corner. I would chain myself to it.</p>
+    </div>
+    <dl class="facts">
+      <div><dt class="sl">9,400</dt><dd><i class="ar l"></i> tonnes of concrete, in 61 pours</dd></div>
+      <div><dt class="sl">16</dt><dd><i class="ar l"></i> pilotis holding all of it up</dd></div>
+      <div><dt class="sl">212</dt><dd><i class="ar l"></i> steps to the public gallery</dd></div>
+    </dl>
+  </article>
+  <div class="stamp sl" aria-hidden="true">Listed<small>GRADE II · 2011</small></div>
+  <div class="foot"><span class="pg sl" aria-hidden="true">02</span><span class="run tc">BÉTON BRUT · No. 6 · THE NORTHMERE ISSUE · 50p <i class="ar"></i> <b>p. 2</b></span></div>
+</section>
+
+<!-- ================= 2 CAR PARK ================= -->
+<section class="spread b flip" id="b2" style="--n:'2'" aria-labelledby="h2">
+  <div class="giant sl" aria-hidden="true"><span class="gi"><span class="sq">CAR</span><span class="sq">PARK</span></span></div>
+  <div class="g2 sl ov" aria-hidden="true">TRINITY RD</div>
+  <div class="stage" data-model="carpark" tabindex="0" role="group" aria-label="Isometric model of the Trinity Road car park. Left and right arrow keys turn it; Space lifts the floors apart.">
+    <p class="cap c1 tc"><i>FIG. 2</i>Up the spring in second gear <i class="ar ur"></i> five turns, 1 in 10</p>
+  </div>
+  <article class="slip">
+    <p class="kick tc"><b>2</b>Building two of six · not listed, not safe</p>
+    <h2 class="sl" id="h2"><span class="sq">The Trinity Road</span><span class="sq">Car Park</span></h2>
+    <p class="meta tc">1971 <i class="ar"></i> Borough Engineer &amp; Surveyor’s Office <i class="ar"></i> H. Pask, engineer, no architect involved</p>
+    <div class="essay">
+      <p>Six decks and a ramp wound like a clock spring. Pask was an engineer, not an architect, which is why it is so good: nothing here is trying to be liked.</p>
+      <p>You drive up the helix with the town unrolling beside you, and at the top <q>the best room in town has no walls</q>. From deck six you can see the gasholder, the moor and, on clear days, your own house looking small.</p>
+      <p>Teenagers have always known this. The council calls it “underused”. It is used every evening by people watching the sun go down over the ring road, for free, which is the real complaint.</p>
+    </div>
+    <dl class="facts">
+      <div><dt class="sl">6,100</dt><dd><i class="ar l"></i> tonnes, most of it ramp</dd></div>
+      <div><dt class="sl">388</dt><dd><i class="ar l"></i> spaces. Eleven cars on a good day</dd></div>
+      <div><dt class="sl">5</dt><dd><i class="ar l"></i> full turns to reach the sky</dd></div>
+    </dl>
+  </article>
+  <div class="stamp sl" aria-hidden="true">At risk<small>REGISTER ENTRY 0417</small></div>
+  <div class="foot"><span class="pg sl" aria-hidden="true">03</span><span class="run tc">BÉTON BRUT · No. 6 · THE NORTHMERE ISSUE · 50p <i class="ar"></i> <b>p. 3</b></span></div>
+</section>
+
+<!-- ================= 3 HALLAM POINT ================= -->
+<section class="spread b" id="b3" style="--n:'3'" aria-labelledby="h3">
+  <div class="giant sl" aria-hidden="true"><span class="gi"><span class="sq">HALLAM</span></span></div>
+  <div class="g2 sl ov" aria-hidden="true">POINT</div>
+  <div class="stage" data-model="hallam" tabindex="0" role="group" aria-label="Isometric model of Hallam Point. Left and right arrow keys turn it; Space lifts the floors apart.">
+    <p class="cap c1 tc"><i>FIG. 3</i>Seven bridges <i class="ar"></i> “streets with weather”</p>
+  </div>
+  <article class="slip">
+    <p class="kick tc"><b>3</b>Building three of six · I live here</p>
+    <h2 class="sl" id="h3"><span class="sq">Hallam</span><span class="sq">Point</span></h2>
+    <p class="meta tc">1969 <i class="ar"></i> Northmere Development Corporation, Housing Group <i class="ar"></i> job architect Joan Tedder</p>
+    <div class="essay">
+      <p>Twenty-two storeys of flats in one slab and beside it, standing apart like a chaperone, the lift tower. Bridges join the two every third floor: you ride up, cross the open air, then walk a flight up or down to your door.</p>
+      <p>Tedder called the bridges <q>streets with weather</q>. Residents call them “the windy bit”.</p>
+      <p>The separation is the genius. Lift noise, bins and pipes live in the tower; the slab is nothing but homes, each with windows on both sides. Yes, the wind. Yes, the lifts in 1983. But ask on the fourteenth floor who wants to move. I did. Nobody.</p>
+    </div>
+    <dl class="facts">
+      <div><dt class="sl">22</dt><dd><i class="ar l"></i> storeys, 176 flats, two aspects each</dd></div>
+      <div><dt class="sl">7</dt><dd><i class="ar l"></i> bridges, one every third floor</dd></div>
+      <div><dt class="sl">396</dt><dd><i class="ar l"></i> steps when the lift is “awaiting a part”</dd></div>
+    </dl>
+  </article>
+  <div class="stamp sl" aria-hidden="true">Listed<small>GRADE II* · 1998</small></div>
+  <div class="foot"><span class="pg sl" aria-hidden="true">04</span><span class="run tc">BÉTON BRUT · No. 6 · THE NORTHMERE ISSUE · 50p <i class="ar"></i> <b>p. 4</b></span></div>
+</section>
+
+<!-- ================= 4 ST JUDE'S ================= -->
+<section class="spread b flip" id="b4" style="--n:'4'" aria-labelledby="h4">
+  <div class="giant sl" aria-hidden="true"><span class="gi"><span class="sq">SAINT</span><span class="sq">JUDE’S</span></span></div>
+  <div class="stage" data-model="church" tabindex="0" role="group" aria-label="Isometric model of St Jude’s Church. Left and right arrow keys turn it; Space lifts the folds apart.">
+    <p class="cap c1 tc"><i>FIG. 4</i>The slot faces east <i class="ar dl"></i> turn the model to find it</p>
+  </div>
+  <article class="slip">
+    <p class="kick tc"><b>4</b>Building four of six · patron saint of lost causes</p>
+    <h2 class="sl" id="h4"><span class="sq">St Jude’s</span><span class="sq">Church</span></h2>
+    <p class="meta tc">1964 <i class="ar"></i> Northmere Development Corporation, Churches &amp; Halls Group <i class="ar"></i> L. Achterberg</p>
+    <div class="essay">
+      <p>A tent, folded out of concrete four inches thick, as if someone had creased the sky and propped it up. No columns. No windows a glazier would recognise.</p>
+      <p>Only the slot: one cut down the east fold, filled with slabs of coloured glass set in resin. At nine on a clear morning it lays a stripe of orange across the font, then the aisle, then the back pew, like a slow finger.</p>
+      <p>Achterberg was an atheist and said so at the consecration. The roof has never leaked, which the congregation regards as evidence. Go in. Sit down. Even the echo is board-marked.</p>
+    </div>
+    <dl class="facts">
+      <div><dt class="sl">100</dt><dd><i class="ar l"></i> millimetres of shell, and nothing else</dd></div>
+      <div><dt class="sl">0</dt><dd><i class="ar l"></i> columns. Also zero leaks since 1964</dd></div>
+      <div><dt class="sl">19</dt><dd><i class="ar l"></i> metres of slot, floor to ridge</dd></div>
+    </dl>
+  </article>
+  <div class="stamp sl" aria-hidden="true">Listed<small>GRADE I · 1987</small></div>
+  <div class="foot"><span class="pg sl" aria-hidden="true">05</span><span class="run tc">BÉTON BRUT · No. 6 · THE NORTHMERE ISSUE · 50p <i class="ar"></i> <b>p. 5</b></span></div>
+</section>
+
+<!-- ================= 5 PUMPING STATION ================= -->
+<section class="spread b" id="b5" style="--n:'5'" aria-labelledby="h5">
+  <div class="giant sl" aria-hidden="true"><span class="gi"><span class="sq">WATER</span><span class="sq">BOARD</span></span></div>
+  <div class="stage" data-model="pump" tabindex="0" role="group" aria-label="Isometric model of the Water Board pumping station. Left and right arrow keys turn it; Space lifts the rings apart.">
+    <p class="cap c1 tc"><i>FIG. 5</i>Reconstructed from Stott’s drawings <i class="ar d"></i> and one photograph of a dog</p>
+  </div>
+  <article class="slip">
+    <p class="kick tc"><b>5</b>Building five of six · the one we lost</p>
+    <h2 class="sl" id="h5"><span class="sq">Water Board</span><span class="sq">Pumping Station</span></h2>
+    <p class="meta tc">1962–1998 <i class="ar"></i> Northmere &amp; District Water Board, Engineer’s Drawing Office <i class="ar"></i> W. Stott</p>
+    <div class="essay">
+      <p>A drum with no windows, because water does not need a view. Twelve fins ran up the outside doing nothing structural whatsoever; Stott admitted he added them <q>so it would look as serious as it was</q>.</p>
+      <p>Inside, three pumps the size of delivery vans moved the town’s water uphill for thirty-six years and nobody thought about it once, which is the highest praise an engineer can get.</p>
+      <p>They knocked it down in a fortnight for a retail shed that has since also closed. I keep a piece of fin on my windowsill. It is the heaviest thing I own and I am not sorry.</p>
+    </div>
+    <dl class="facts">
+      <div><dt class="sl">0</dt><dd><i class="ar l"></i> windows. One door, painted orange</dd></div>
+      <div><dt class="sl">3,300</dt><dd><i class="ar l"></i> tonnes, now hardcore under a car park</dd></div>
+      <div><dt class="sl">14</dt><dd><i class="ar l"></i> days it took to knock down</dd></div>
+    </dl>
+  </article>
+  <div class="stamp sl" aria-hidden="true">Demolished<small>1998 · NOBODY WAS ASKED</small></div>
+  <div class="foot"><span class="pg sl" aria-hidden="true">06</span><span class="run tc">BÉTON BRUT · No. 6 · THE NORTHMERE ISSUE · 50p <i class="ar"></i> <b>p. 6</b></span></div>
+</section>
+
+<!-- ================= 6 BUS STATION ================= -->
+<section class="spread b flip" id="b6" style="--n:'6'" aria-labelledby="h6">
+  <div class="giant sl" aria-hidden="true"><span class="gi"><span class="sq">QUEENS</span><span class="sq">WAY</span></span></div>
+  <div class="g2 sl ov" aria-hidden="true">BUS STN</div>
+  <div class="stage" data-model="bus" tabindex="0" role="group" aria-label="Isometric model of Queensway bus station. Left and right arrow keys turn it; Space lifts the canopy off its columns.">
+    <p class="cap c1 tc"><i>FIG. 6</i>Ten mushrooms, one roof <i class="ar l"></i> the 14 to Hallam Point is the orange one</p>
+  </div>
+  <article class="slip">
+    <p class="kick tc"><b>6</b>Building six of six · write to the council</p>
+    <h2 class="sl" id="h6"><span class="sq">Queensway</span><span class="sq">Bus Station</span></h2>
+    <p class="meta tc">1966 <i class="ar"></i> Borough Architect’s Department, Transport Group <i class="ar"></i> A. Krol · demolition scheduled</p>
+    <div class="essay">
+      <p>Ten mushrooms holding up one long roof. That is the whole building, and it is enough. Each column flares at the head so the canopy seems to rest on open hands.</p>
+      <p>The rain runs down inside the stems and you can hear it if you put your ear to the concrete, which I recommend. Five stands, a clock that is right twice a day, a kiosk that sells one kind of crisp.</p>
+      <p>The council wants it gone to “unlock the gateway site”. A gateway is a thing you pass through on the way to somewhere. This is somewhere. <q>Write to the council.</q> Use a stamp. Mention the mushrooms.</p>
+    </div>
+    <dl class="facts">
+      <div><dt class="sl">10</dt><dd><i class="ar l"></i> mushroom columns, drained through the stem</dd></div>
+      <div><dt class="sl">118</dt><dd><i class="ar l"></i> metres of canopy, one expansion joint per bay</dd></div>
+      <div><dt class="sl">0</dt><dd><i class="ar l"></i> steps. All of it level. In 1966</dd></div>
+    </dl>
+  </article>
+  <div class="stamp sl" aria-hidden="true">At risk<small>DEMOLITION NOTICE SERVED</small></div>
+  <div class="foot"><span class="pg sl" aria-hidden="true">07</span><span class="run tc">BÉTON BRUT · No. 6 · THE NORTHMERE ISSUE · 50p <i class="ar"></i> <b>p. 7</b></span></div>
+</section>
+
+<!-- ================= MANIFESTO ================= -->
+<section class="spread mani rev" id="manifesto" aria-labelledby="hm">
+  <div class="giant sl" aria-hidden="true"><span class="gi"><span class="sq">MANI</span><span class="sq">FESTO</span></span></div>
+  <div style="position:relative;z-index:2">
+    <h2 class="sl" id="hm"><span class="sq">Ten things</span><span class="sq">concrete <em>knows</em></span></h2>
+    <ol class="slog sl">
+      <li>Concrete is not grey. Look again: forty greys, and one of them is green.</li>
+      <li>Show the plank that held the pour.<small>If the formwork was honest, leave its fingerprints.</small></li>
+      <li>If it needs a sign saying ENTRANCE, move the entrance.</li>
+      <li>A ramp is a staircase with manners.</li>
+      <li>Never clad. Cladding is a building apologising.</li>
+      <li>Rain is part of the elevation.<small>Draw the stain before the stain draws itself.</small></li>
+      <li>A room does not need walls. See Trinity Road, deck six, about 8 p.m.</li>
+      <li>Listing is love with paperwork.</li>
+      <li>Demolition is an opinion you cannot take back.</li>
+      <li>Write to the council. Then write again.</li>
+    </ol>
+  </div>
+  <aside class="slip" aria-label="Editor’s note">
+    <p class="tc" style="margin-bottom:10px">Editor’s note <i class="ar"></i></p>
+    <p>I make this at the Central Library copier, 5p a sheet, after the reference desk has gone home. If a page is crooked, the lid was hot.</p>
+    <p>Northmere was finished in 1971 and has been explaining itself ever since. Nobody asked for these six buildings. They were drawn by people on council salaries with slide rules and far too much confidence, and we have been living inside their confidence for fifty years.</p>
+    <p>This issue is not neutral. I grew up under the Civic Centre and I intend to grow old on the fourteenth floor of Hallam Point. Send corrections. Send photographs. Do not send render.</p>
+    <svg class="sig" viewBox="0 0 150 54" role="img" aria-label="Signed: Dot"><path d="M10 12c0 12-1 22-1 32 14 1 26-8 25-20-1-11-12-15-26-13m38 22c-5-1-9 3-8 8s8 5 10 0-1-8-4-8m12-20c-1 9-1 20 0 29m-7-19c6-1 11-2 16-3m8 22c20-3 44-4 58-4"/></svg>
+    <p class="tc">Dot Ferreira · Flat 58, Hallam Point</p>
+  </aside>
+  <div class="stamp sl" aria-hidden="true">Not neutral<small>NEVER WAS · NEVER WILL BE</small></div>
+  <div class="foot"><span class="pg sl" aria-hidden="true">08</span><span class="run tc">BÉTON BRUT · No. 6 · THE NORTHMERE ISSUE · 50p <i class="ar"></i> p. 8</span></div>
+</section>
+
+<!-- ================= BACK COVER ================= -->
+<footer class="spread back" id="back">
+  <div class="giant sl" aria-hidden="true"><span class="gi"><span class="sq">NORTHMERE</span></span></div>
+  <div class="sheet">
+    <div class="hd tc"><span>Fold-out <i class="ar"></i> Northmere, as built, 1971</span><span>Not to scale. Nothing here ever was.</span></div>
+    <div class="stage" data-model="plan" tabindex="0" role="group" aria-label="Isometric site plan of Northmere with the six buildings numbered. Left and right arrow keys turn it."></div>
+    <ol class="leg">
+      <li><a href="#b1"><b>1</b>Civic Centre</a></li>
+      <li><a href="#b2"><b>2</b>Trinity Rd car park</a></li>
+      <li><a href="#b3"><b>3</b>Hallam Point</a></li>
+      <li><a href="#b4"><b>4</b>St Jude’s Church</a></li>
+      <li><a href="#b5"><b>5</b>Pumping station †</a></li>
+      <li><a href="#b6"><b>6</b>Queensway bus stn</a></li>
+    </ol>
+  </div>
+  <div class="side">
+    <div class="coupon" id="coupon">
+      <svg class="scis" viewBox="0 0 30 24" aria-hidden="true"><g fill="none" stroke="#1A1A1A" stroke-width="2"><circle cx="6" cy="6" r="4"/><circle cx="6" cy="18" r="4"/><path d="M9.5 8.2 28 19M9.5 15.8 28 5"/></g></svg>
+      <h3 class="sl"><span class="sq">Yes, Dot.</span><span class="sq">Send concrete.</span></h3>
+      <p>Six issues, £3.00 including the stamp. No. 7 is about bollards.</p>
+      <label><span class="tc">Name</span><input type="text" name="n" autocomplete="off"></label>
+      <label><span class="tc">Address (a real one, with a door)</span><input type="text" name="a" autocomplete="off"></label>
+      <label class="tick"><input type="checkbox" checked><span>I enclose a postal order, or coins taped to card</span></label>
+      <label class="tick"><input type="checkbox"><span>I have written to the council about the bus station</span></label>
+      <button type="button" class="snip" id="snip" aria-pressed="false">Cut along the dotted line</button>
+      <p class="post tc" id="post" aria-live="polite">Post to <i class="ar"></i> Dot Ferreira, Flat 58, Hallam Point, Northmere NM1 4BB</p>
+    </div>
+    <p class="colo tc">† Demolished 1998. Marked anyway. · All six buildings, their architects and the town of Northmere are invented; the argument is real. · Copy this zine freely. Leave it on a bus.</p>
+  </div>
+  <div class="foot"><span class="pg sl" aria-hidden="true">09</span><span class="run tc">BÉTON BRUT · No. 6 · THE NORTHMERE ISSUE · 50p <i class="ar"></i> ends</span></div>
+</footer>
+
+</main>
+
+<script>
+(()=>{
+'use strict';
+const root=document.documentElement; root.classList.add('js');
+const RM=matchMedia('(prefers-reduced-motion: reduce)');
+const TILT=35.264, D=Math.PI/180;
+
+/* --- make the fallback grotesque as narrow and heavy as the real thing --- */
+(function fitType(){
+  const c=document.createElement('canvas').getContext('2d'), W=f=>{c.font=f;return c.measureText('NORTHMERE BRUT').width};
+  const has=n=>W(`100px "${n}",monospace`)!==W('100px monospace');
+  if(has('Impact')||has('Haettenschweiler')) return;
+  root.classList.add('noimp');
+  const w=W('900 100px '+getComputedStyle(root).getPropertyValue('--slab'));
+  root.style.setProperty('--sx',Math.max(.56,Math.min(1,700/w)).toFixed(3));
+})();
+
+const mk=(t,c,p)=>{const e=document.createElement(t);e.className=c;p.appendChild(e);return e};
+const PALE=[233,230,223],MID=[150,146,138],DARK=[50,49,46],OR=[255,90,0],ODK=[112,36,0];
+const mix=(a,b,t)=>`rgb(${a.map((v,i)=>Math.round(v+(b[i]-v)*t)).join(',')})`;
+const tone=s=>s<.5?mix(DARK,MID,s/.5):mix(MID,PALE,(s-.5)/.5);
+function hull(P){
+  P.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+  const c=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]),lo=[],up=[];
+  for(const p of P){while(lo.length>1&&c(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p)}
+  for(let i=P.length-1;i>=0;i--){const p=P[i];while(up.length>1&&c(up[up.length-2],up[up.length-1],p)<=0)up.pop();up.push(p)}
+  lo.pop();up.pop();return lo.concat(up);
+}
+
+/* --- one animation loop for whichever models are moving --- */
+const moving=new Set();let raf=0,last=0;
+function wake(m){moving.add(m);if(!raf&&!document.hidden)raf=requestAnimationFrame(loop)}
+function loop(ts){
+  raf=0;const f=last?Math.min(3,(ts-last)/16.7):1;last=ts;
+  for(const m of moving)if(!m.tick(f))moving.delete(m);
+  if(moving.size&&!document.hidden)raf=requestAnimationFrame(loop);else last=0;
+}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&moving.size&&!raf){last=0;raf=requestAnimationFrame(loop)}});
+
+class Model{
+  constructor(stage,def){
+    this.stage=stage;this.def=def;this.faces=[];this.cast=[];this.bills=[];this.labs=[];this.maxLv=0;this.H=0;
+    this.rig=mk('div','rig',stage);
+    this.ry=this.tg=this.base=def.ry??-45;this.v=0;this.hx=.5;this.t=def.sun??.24;this.k=1;this.ex=false;this.drag=false;
+    def.build(this);
+    if(!def.bare)this.controls();
+    this.setSun(this.t);
+    if(RM.matches)this.rig.classList.add('poured','set');
+    this.bind();
+    new ResizeObserver(()=>this.fit()).observe(stage);
+    this.fit();
+  }
+  /* ---- primitives ---- */
+  vol(x,y,z,o){
+    const v=mk('div','vol'+(o.fix?' fix':''),this.rig),lv=o.lv||0,s=v.style;this.maxLv=Math.max(this.maxLv,lv);
+    s.setProperty('--x',x+'px');s.setProperty('--y',-y+'px');s.setProperty('--z',z+'px');s.setProperty('--lv',lv);
+    s.setProperty('--dl',(lv*150+(o.dl||0))+'ms');s.setProperty('--du',(250+(Math.abs(lv*3+Math.round(x/9)+Math.round(z/7))%4)*50)+'ms');
+    let tf='';if(o.ry)tf+=`rotateY(${o.ry}deg)`;if(o.rz)tf+=` rotateZ(${o.rz}deg)`;if(tf)s.transform=tf;
+    return v;
+  }
+  face(v,w,h,tf,n,cls,or,dim){
+    const f=mk('div','f '+(cls||''),v);
+    f.style.cssText=`width:${w}px;height:${h}px;margin:${-h/2}px 0 0 ${-w/2}px;transform:${tf}`;
+    if(n)this.faces.push({e:f,n,or,dim});return f;
+  }
+  win(f,w){f.classList.add('win');const s=f.style;s.setProperty('--tw',w[0]+'px');s.setProperty('--th',w[1]+'px');s.setProperty('--ox',w[2]+'px');s.setProperty('--oy',w[3]+'px');s.setProperty('--sh',(w[4]||0)+'px')}
+  box(x,y,z,w,h,d,o={}){
+    const v=this.vol(x,y,z,o),a=(o.ry||0)*D,c=Math.cos(a),s=Math.sin(a),O=o.o,cl=o.cls||'',dm=o.dim;
+    const oc=k=>O===1||O===k;
+    const F=this.face(v,w,h,`translate3d(0,${-h/2}px,${d/2}px)`,[s,0,c],cl,oc('f'),dm);
+    const B=this.face(v,w,h,`translate3d(0,${-h/2}px,${-d/2}px) rotateY(180deg)`,[-s,0,-c],cl,oc('b'),dm);
+    const R=this.face(v,d,h,`translate3d(${w/2}px,${-h/2}px,0) rotateY(90deg)`,[c,0,-s],cl,oc('r'),dm);
+    const L=this.face(v,d,h,`translate3d(${-w/2}px,${-h/2}px,0) rotateY(-90deg)`,[-c,0,s],cl,oc('l'),dm);
+    this.face(v,w,d,`translate3d(0,${-h}px,0) rotateX(90deg)`,[0,1,0],'t',oc('t'),dm);
+    if(o.win)[F,B].forEach(f=>this.win(f,o.win));
+    if(o.winAll)[F,B,R,L].forEach(f=>this.win(f,o.winAll));
+    this.H=Math.max(this.H,y+h);
+    if(!o.ns){const P=[];for(const sx of[-w/2,w/2])for(const sz of[-d/2,d/2]){const wx=x+sx*c+sz*s,wz=z-sx*s+sz*c;P.push([wx,y,wz],[wx,y+h,wz])}this.cast.push(P)}
+    return v;
+  }
+  cyl(x,y,z,r,h,o={}){
+    const v=this.vol(x,y,z,o),n=o.n||16,pw=2*r*Math.tan(Math.PI/n)+.7,P=[];
+    for(let i=0;i<n;i++){const a=i*360/n,ar=a*D;
+      this.face(v,pw,h,`rotateY(${a}deg) translate3d(0,${-h/2}px,${r}px)`,[Math.sin(ar),0,Math.cos(ar)],'',o.o===1,o.dim);
+      if(i%2===0){const R=r/Math.cos(Math.PI/n);P.push([x+R*Math.sin(ar),y,z+R*Math.cos(ar)],[x+R*Math.sin(ar),y+h,z+R*Math.cos(ar)])}}
+    const dd=2*r/Math.cos(Math.PI/n);
+    this.face(v,dd,dd,`translate3d(0,${-h}px,0) rotateX(90deg)`,[0,1,0],'t rnd',o.o===1,o.dim);
+    this.H=Math.max(this.H,y+h);if(!o.ns)this.cast.push(P);return v;
+  }
+  tent(x,y,z,w,h,d,o={}){
+    const v=this.vol(x,y,z,o),s=Math.hypot(w/2,h),b=Math.atan2(w/2,h)/D;
+    this.face(v,d,s,`translate3d(${w/4}px,${-h/2}px,0) rotateZ(${-b}deg) rotateY(90deg)`,[h/s,w/2/s,0],'pleat');
+    this.face(v,d,s,`translate3d(${-w/4}px,${-h/2}px,0) rotateZ(${b}deg) rotateY(-90deg)`,[-h/s,w/2/s,0],'pleat');
+    this.face(v,w,h,`translate3d(0,${-h/2}px,${d/2}px)`,[0,0,1],'tri');
+    this.face(v,w,h,`translate3d(0,${-h/2}px,${-d/2}px) rotateY(180deg)`,[0,0,-1],'tri');
+    this.H=Math.max(this.H,y+h);
+    this.cast.push([[x-w/2,y,z-d/2],[x+w/2,y,z-d/2],[x-w/2,y,z+d/2],[x+w/2,y,z+d/2],[x,y+h,z-d/2],[x,y+h,z+d/2]]);
+    return v;
+  }
+  plate(pw,pd,ground){
+    this.pw=pw;this.pd=pd;const n=this.faces.length;
+    const v=this.box(0,-9,0,pw,9,pd,{fix:1,ns:1});this.faces.length=n;this.H=0;
+    v.querySelectorAll('.f').forEach(f=>f.classList.add(f.classList.contains('t')?'pt':'ps'));
+    const g=mk('div','gnd',this.rig);g.style.cssText=`width:${pw}px;height:${pd}px;margin:${-pd/2}px 0 0 ${-pw/2}px`;
+    const ax=pw/2-34,az=pd/2-22;
+    g.innerHTML=`<svg viewBox="${-pw/2} ${-pd/2} ${pw} ${pd}" width="${pw}" height="${pd}" aria-hidden="true">${ground||''}<path class="shd"/>`+
+      `<g stroke="#FF5A00" stroke-width="2.5" fill="none"><path d="M${ax} ${az-62}V${az-8}" stroke-dasharray="6 5"/><path d="M${ax-7} ${az-12}l7 12 7-12" /></g>`+
+      `<text x="${ax-24}" y="${az-2}" fill="#FF5A00" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="17">N</text></svg>`;
+    this.shd=g.querySelector('.shd');
+  }
+  bill(cls,x,y,z,lv,suf,tag){
+    const e=mk(tag||'div','bb '+cls,this.rig),s=e.style;
+    s.setProperty('--x',x+'px');s.setProperty('--y',-y+'px');s.setProperty('--z',z+'px');s.setProperty('--lv',lv||0);
+    const b={e,suf};this.bills.push(b);return b;
+  }
+  fig(x,z){this.bill('fig',x,0,z,0,'translate3d(-50%,-100%,0)')}
+  label(lv,y,text){const b=this.bill('lab',0,y,0,lv,'');b.e.innerHTML='<i></i><b></b>';b.e.lastChild.textContent=text;this.labs.push(b)}
+  marker(x,y,z,n,href,name){const b=this.bill('mk',x,y,z,0,'translate3d(-50%,-135%,300px)','a');b.e.href=href;b.e.textContent=n;b.e.setAttribute('aria-label',n+'. '+name);this.marks=(this.marks||[]);this.marks.push(b)}
+  /* ---- light and shadow ---- */
+  light(){
+    const t=this.t,th=Math.PI*t,e=(15+47*Math.sin(Math.PI*t))*D;
+    const L=[Math.cos(e)*Math.cos(th),Math.sin(e),-Math.cos(e)*Math.sin(th)];
+    for(const f of this.faces){
+      let s=.3+.7*Math.max(0,f.n[0]*L[0]+f.n[1]*L[1]+f.n[2]*L[2]);
+      if(f.n[1]>.9)s=Math.min(1,s+.24);if(f.dim)s*=f.dim;
+      f.e.style.backgroundColor=f.or?mix(ODK,OR,Math.min(1,.4+.7*s)):tone(s);
+    }
+    const kx=L[0]/L[1],kz=L[2]/L[1];let d='';
+    for(const pts of this.cast){const h=hull(pts.map(p=>[p[0]-kx*p[1],p[2]-kz*p[1]]));d+='M'+h.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join('L')+'Z'}
+    this.shd.setAttribute('d',d);this.dirty=false;
+  }
+  setSun(t){
+    this.t=Math.max(0,Math.min(1,t));this.dirty=true;
+    if(this.th){const m=Math.round((6+12*this.t)*4)*15,hh=String(Math.floor(m/60)).padStart(2,'0'),mm=String(m%60).padStart(2,'0');
+      this.th.style.top=(1-this.t)*100+'%';this.th.lastChild.textContent=hh+':'+mm;
+      this.sun.setAttribute('aria-valuenow',(6+12*this.t).toFixed(1));this.sun.setAttribute('aria-valuetext',hh+':'+mm)}
+    if(this.built)wake(this);else{this.light();this.built=true}
+  }
+  /* ---- controls ---- */
+  controls(){
+    const sun=this.sun=mk('div','sun',this.stage);
+    sun.setAttribute('role','slider');sun.tabIndex=0;sun.setAttribute('aria-orientation','vertical');sun.setAttribute('aria-label','Sun: time of day');
+    sun.setAttribute('aria-valuemin','6');sun.setAttribute('aria-valuemax','18');
+    sun.innerHTML='<span class="s-l">18h</span><span class="s-tr"><span class="s-th"><b></b></span></span><span class="s-l">06h</span>';
+    this.th=sun.querySelector('.s-th');const tr=sun.querySelector('.s-tr');
+    const at=e=>{const r=tr.getBoundingClientRect();this.setSun(1-(e.clientY-r.top)/r.height)};
+    sun.addEventListener('pointerdown',e=>{e.preventDefault();sun.focus();sun.setPointerCapture(e.pointerId);this.sd=true;at(e)});
+    sun.addEventListener('pointermove',e=>{if(this.sd)at(e)});
+    const end=()=>{this.sd=false};sun.addEventListener('pointerup',end);sun.addEventListener('pointercancel',end);
+    sun.addEventListener('keydown',e=>{const k=e.key;let t=this.t;
+      if(k==='ArrowUp'||k==='ArrowRight')t+=1/24;else if(k==='ArrowDown'||k==='ArrowLeft')t-=1/24;else if(k==='Home')t=0;else if(k==='End')t=1;else return;
+      e.preventDefault();e.stopPropagation();this.setSun(t)});
+    const ctl=mk('div','ctl',this.stage);
+    ctl.innerHTML='<button type="button" aria-pressed="false">Cut section</button><button type="button">Pour again</button><span class="hint tc">Drag <i class="ar l"></i> <i class="ar"></i> to turn · hold to lift the floors · slide the sun</span>';
+    const[bs,bp]=ctl.querySelectorAll('button');this.bs=bs;
+    bs.addEventListener('click',()=>this.setEx(!this.ex));
+    bp.addEventListener('click',()=>{this.setEx(false);this.pour()});
+    ctl.addEventListener('keydown',e=>e.stopPropagation());
+  }
+  setEx(on){this.ex=on;this.rig.style.setProperty('--ex',on?this.def.gap||24:0);this.rig.classList.toggle('ex',on);if(this.bs)this.bs.setAttribute('aria-pressed',on)}
+  pour(){
+    if(RM.matches)return;const r=this.rig;
+    r.classList.add('nopour');r.classList.remove('poured','set');void r.offsetWidth;r.classList.remove('nopour');r.classList.add('poured');
+    clearTimeout(this.st);this.st=setTimeout(()=>r.classList.add('set'),this.maxLv*150+1500);
+  }
+  /* ---- turntable ---- */
+  bind(){
+    const st=this.stage;
+    st.addEventListener('pointerdown',e=>{
+      if(e.button||e.target.closest('.ctl,.sun,a'))return;
+      this.pid=e.pointerId;try{st.setPointerCapture(e.pointerId)}catch(_){}
+      this.drag=true;this.moved=0;this.lx=e.clientX;this.v=0;this.held=false;st.classList.add('grab');
+      clearTimeout(this.ht);this.ht=setTimeout(()=>{if(this.drag&&this.moved<9&&!this.ex){this.held=true;this.setEx(true)}},340);
+      wake(this);
+    });
+    st.addEventListener('pointermove',e=>{
+      if(this.drag&&e.pointerId===this.pid){const dx=e.clientX-this.lx;this.lx=e.clientX;this.moved+=Math.abs(dx);this.ry+=dx*.42;this.v=dx*.42;wake(this)}
+      else if(e.pointerType==='mouse'&&!RM.matches&&!this.sd){const r=st.getBoundingClientRect();this.hx=(e.clientX-r.left)/r.width;
+        if(Math.abs(this.v)<.05){this.tg=this.base+(this.hx-.5)*54;wake(this)}}
+    });
+    const up=e=>{if(!this.drag||e.pointerId!==this.pid)return;this.drag=false;clearTimeout(this.ht);st.classList.remove('grab');
+      if(this.held){this.held=false;this.setEx(false)}
+      if(RM.matches)this.v=0;this.base=this.ry-(this.hx-.5)*54;this.tg=this.ry;wake(this)};
+    st.addEventListener('pointerup',up);st.addEventListener('pointercancel',up);
+    st.addEventListener('contextmenu',e=>{if(!e.target.closest('a,.ctl'))e.preventDefault()});
+    st.addEventListener('keydown',e=>{
+      if(e.target!==st)return;
+      if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();this.base+=e.key==='ArrowLeft'?-15:15;this.tg=this.base+(this.hx-.5)*54;this.v=0;if(RM.matches)this.ry=this.tg;wake(this)}
+      else if((e.key===' '||e.key==='Enter')&&this.labs.length){e.preventDefault();this.setEx(!this.ex)}
+    });
+  }
+  tick(f){
+    if(this.dirty)this.light();
+    if(this.drag){this.v*=Math.pow(.7,f)}
+    else if(Math.abs(this.v)>.05){this.ry+=this.v*f;this.v*=Math.pow(.94,f);this.tg=this.ry;this.base=this.ry-(this.hx-.5)*54}
+    else{this.v=0;this.ry+=(this.tg-this.ry)*(1-Math.pow(.9,f))}
+    this.apply();
+    return this.drag||Math.abs(this.v)>.05||Math.abs(this.tg-this.ry)>.04;
+  }
+  apply(){
+    this.rig.style.transform=`scale(${this.k}) rotateX(${-TILT}deg) rotateY(${this.ry.toFixed(2)}deg)`;
+    const pre=`rotateY(${(-this.ry).toFixed(2)}deg) rotateX(${TILT}deg) `;
+    for(const b of this.bills)b.e.style.transform=pre+b.suf;
+  }
+  fit(){
+    const st=this.stage,w=st.clientWidth,h=st.clientHeight-(this.def.bare?0:58);if(!w)return;
+    const R=Math.hypot(this.pw,this.pd)/2,up=this.H*.8165+R*.5774,tot=up+R*.5774+8;
+    const k=this.k=Math.min(w/(2*R*.9),h/tot,this.def.kmax||1.5);
+    this.rig.style.left=w/2+'px';this.rig.style.top=((h-tot*k)/2+up*k)+'px';
+    const fs=10.5/k,xr=Math.min(w/(2*k)-2/k,R*.56+200/k);
+    for(const b of this.labs){b.e.style.fontSize=fs+'px';b.suf=`translate3d(${xr.toFixed(1)}px,-50%,420px) translateX(-100%)`}
+    for(const b of(this.marks||[]))b.e.style.fontSize=Math.max(9,12.5/k)+'px';
+    this.apply();
+  }
+}
+
+/* ===================== the six buildings ===================== */
+const DEFS={
+  cover:{bare:1,sun:.2,gap:22,ry:-38,build(m){
+    m.plate(300,300);
+    m.box(0,0,10,200,14,160,{lv:0});
+    for(let i=0;i<5;i++)m.box(-22,14+i*52,-8,58,52,58,{lv:i+1,win:[58,26,25,6,0]});
+    m.box(28,196,-8,170,50,92,{lv:5,winAll:[13,50,3,16,-12]});
+    m.box(-22,274,-8,74,16,74,{lv:6,o:1});
+    m.box(-22,290,-8,5,58,5,{lv:7,ns:1});
+    m.box(-22,330,-8,26,10,4,{lv:7,o:1,ns:1});
+    m.box(62,7,96,150,5,26,{lv:1,o:1,rz:-5.4});
+    m.box(104,14,30,44,30,44,{lv:1,cls:''});
+    m.fig(-70,120);m.fig(118,112);
+  }},
+  civic:{sun:.22,gap:26,build(m){
+    m.plate(430,430);
+    for(let i=0;i<4;i++)for(let j=0;j<4;j++)m.box(-69+i*46,0,-69+j*46,11,62,11,{lv:0,dl:(i+j)*30});
+    m.box(0,0,0,48,62,48,{lv:0,dim:.8});
+    [176,232,288,344].forEach((s,i)=>m.box(0,62+i*42,0,s,42,s,{lv:i+1,winAll:[14.5,42,3.5,16,-10]}));
+    m.cyl(46,230,-40,58,30,{lv:5,n:16});
+    m.box(-96,230,84,70,20,48,{lv:5,o:1});
+    m.box(-150,230,-150,4,70,4,{lv:5,ns:1});m.box(-141,286,-150,18,12,3,{lv:5,o:1,ns:1});
+    m.box(-56,28,186,200,5,30,{lv:1,o:1,rz:-18,ns:1});
+    m.box(52,57,137,34,5,128,{lv:1,o:1});
+    m.label(0,30,'Pilotis, 16 no.');m.label(1,83,'Rates & rents');m.label(2,125,'Planning');m.label(3,167,'Committee rooms');m.label(4,209,'Members’ floor');m.label(5,246,'Council chamber');
+    m.fig(130,170);m.fig(-150,120);
+  }},
+  carpark:{sun:.3,gap:22,build(m){
+    m.plate(450,380);
+    const cx=-72;
+    for(let i=0;i<6;i++){
+      m.box(cx,i*36,0,232,12,170,{lv:i});
+      if(i<5)for(const x of[-104,0,104])for(const z of[-74,74])m.box(cx+x,i*36+12,z,9,24,9,{lv:i,ns:1,dl:60});
+    }
+    m.box(cx-100,192,-50,26,9,13,{lv:5,o:1});m.box(cx+20,192,40,13,9,26,{lv:5,dim:.5});m.box(cx-40,192,-50,26,9,13,{lv:5,dim:.5});
+    const hx=120,hz=18;
+    m.cyl(hx,0,hz,19,214,{lv:0,n:10});
+    for(let k=0;k<50;k++){const a=k*36,y=4+k*3.6,r=47;
+      m.box(hx+Math.cos(a*D)*r,y,hz+Math.sin(a*D)*r,50,5,43,{ry:-a,lv:Math.min(5,Math.floor((y+10)/36)),dl:(k%10)*28,o:'r',ns:1})}
+    m.cast.push((()=>{const P=[];for(let i=0;i<10;i++){const a=i*36*D;P.push([hx+72*Math.cos(a),0,hz+72*Math.sin(a)],[hx+72*Math.cos(a),188,hz+72*Math.sin(a)])}return P})());
+    m.box(cx-128,0,98,24,222,24,{lv:0});m.box(cx-128,222,98,30,8,30,{lv:5,o:1});
+    m.label(0,8,'Deck 1, pay here');m.label(1,44,'Deck 2');m.label(2,80,'Deck 3');m.label(3,116,'Deck 4');m.label(4,152,'Deck 5');m.label(5,190,'Deck 6: the room');
+    m.fig(40,150);
+  }},
+  hallam:{sun:.26,gap:18,build(m){
+    m.plate(400,300);
+    m.box(-10,0,6,330,14,130,{lv:0,win:[22,14,6,4,0]});
+    for(let i=0;i<7;i++){const y=14+i*45;
+      m.box(-45,y,0,200,45,46,{lv:i+1,win:[10,15,3,5,0]});
+      m.box(120,y,0,34,45,34,{lv:i+1,win:[34,45,14,8,-22],dl:70});
+      m.box(79,y+31,0,48,10,13,{lv:i+1,o:1,dl:140,ns:1});
+    }
+    m.box(-45,329,0,200,15,46,{lv:8,win:[10,15,3,5,0]});
+    m.box(-45,344,0,204,5,50,{lv:8});
+    m.box(120,329,0,34,36,34,{lv:8});
+    m.box(120,365,0,46,22,46,{lv:8,o:1});
+    m.label(0,7,'Shops, launderette');for(let i=0;i<7;i++)m.label(i+1,36+i*45,'Floors '+(i*3+1)+'–'+(i*3+3)+' + bridge');m.label(8,340,'22nd floor, tank room');
+    m.fig(70,100);m.fig(-150,110);
+  }},
+  church:{sun:.2,gap:30,ry:-52,build(m){
+    m.plate(400,400);
+    m.box(0,0,-4,206,4,272,{lv:0});
+    const hs=[236,184,138,98],ws=[176,152,130,110];
+    for(let i=3;i>=0;i--)m.tent(0,4,92-i*58,ws[i],hs[i],58,{lv:4-i});
+    const sl=m.vol(0,4,92,{lv:4});m.face(sl,13,196,'translate3d(0,-104px,29.8px)',null,'slot');
+    m.box(-122,0,70,58,30,96,{lv:1});m.box(-122,30,70,22,10,22,{lv:1,o:1});
+    m.box(142,0,-128,8,250,36,{lv:1});m.box(166,0,-128,8,250,36,{lv:2});
+    m.box(154,186,-128,16,18,18,{lv:3,o:1});m.box(154,250,-128,34,7,40,{lv:4});
+    m.label(1,40,'Vestry fold');m.label(2,70,'Nave, 2nd fold');m.label(3,100,'Nave, 3rd fold');m.label(4,150,'East fold & the slot');
+    m.fig(40,160);m.fig(120,-40);
+  }},
+  pump:{sun:.28,gap:30,build(m){
+    m.plate(400,400);
+    for(let i=0;i<3;i++)m.cyl(0,i*50,0,104,50,{lv:i+1,n:24});
+    for(let i=0;i<12;i++){const a=i*30+15;m.box(Math.cos(a*D)*120,0,Math.sin(a*D)*120,34,170,8,{ry:-a,lv:0,dl:i*45})}
+    m.cyl(0,150,0,66,12,{lv:4,n:16});m.cyl(26,162,-14,10,28,{lv:4,n:8,o:1});
+    m.box(Math.cos(60*D)*107,0,Math.sin(60*D)*107,5,150,12,{ry:-60,lv:0,o:1,ns:1});
+    m.box(150,0,150,54,32,48,{lv:1});m.box(112,9,112,70,10,10,{ry:-45,lv:1,o:1,ns:1});
+    m.box(Math.cos(120*D)*105,0,Math.sin(120*D)*105,4,34,20,{ry:-120,lv:0,o:1,ns:1});
+    m.label(0,60,'Twelve fins, decorative');m.label(1,25,'Wet well');m.label(2,75,'Pump hall');m.label(3,125,'Gantry crane');m.label(4,158,'Lid & vent');
+    m.fig(-150,150);
+  }},
+  bus:{sun:.3,gap:34,ry:-36,build(m){
+    m.plate(540,250);
+    for(let i=0;i<5;i++)for(const z of[-36,36]){const x=-180+i*90;
+      m.box(x,0,z,10,58,10,{lv:0,dl:i*60,ns:1});
+      m.box(x,58,z,22,8,22,{lv:1,dl:i*60,ns:1});m.box(x,66,z,36,8,36,{lv:1,dl:i*60+50,ns:1});m.box(x,74,z,50,8,50,{lv:1,dl:i*60+100,ns:1});
+    }
+    for(let i=0;i<5;i++){const x=-180+i*90;m.box(x,82,0,88,9,122,{lv:2,dl:i*90});m.cyl(x,91,0,13,6,{lv:3,n:8,dl:i*90,o:i===2?1:0,ns:1})}
+    m.box(-95,0,96,74,24,20,{lv:0,o:1,win:[12,24,3,5,-9]});
+    m.box(60,0,-96,74,24,20,{lv:0,dim:.55,win:[12,24,3,5,-9]});
+    m.box(135,0,0,30,26,44,{lv:0});
+    m.box(-248,0,-96,9,104,9,{lv:0});m.box(-248,104,-96,24,24,10,{lv:1,o:1});
+    m.label(0,26,'Stands A–E');m.label(1,70,'Mushroom heads');m.label(2,86,'Canopy, 118 m');m.label(3,95,'Rooflights');
+    m.fig(-30,70);m.fig(100,76);m.fig(-200,104);
+  }},
+  plan:{bare:1,sun:.27,gap:18,ry:-40,kmax:1.3,build(m){
+    const hatch=(x,y,w,h)=>{let s='';for(let i=0;i<w;i+=16)for(let j=0;j<h;j+=14)s+=`<rect x="${x+i}" y="${y+j}" width="10" height="7"/>`;return s};
+    m.plate(660,450,
+      '<g fill="none" stroke="#1A1A1A"><ellipse cx="0" cy="0" rx="304" ry="200" stroke-width="7" stroke-dasharray="2 9"/>'+
+      '<path d="M-330 116H330M-330 128H330M-46-225V225M-34-225V225" stroke-width="1.6"/>'+
+      '<path d="M200-205c36-16 92-8 104 24s-22 60-64 58-80-20-84-46 14-30 44-36z" stroke-width="2" fill="rgba(26,26,26,.16)"/></g>'+
+      '<g fill="rgba(26,26,26,.2)">'+hatch(-300,-196,150,70)+hatch(-10,-190,130,84)+hatch(-290,150,200,56)+hatch(200,-20,100,110)+hatch(-10,150,60,56)+'</g>'+
+      '<g font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="11" fill="#1A1A1A" letter-spacing="2"><text x="-320" y="108">QUEENSWAY</text><text x="204" y="-150">THE MERE</text><text x="-28" y="-150" transform="rotate(90 -28 -150)">TRINITY RD</text></g>');
+    [40,56,72].forEach((s,i)=>m.box(-170,10+i*13,-60,s,13,s,{lv:i+1}));m.box(-170,0,-60,20,10,20,{lv:0,ns:1});
+    m.box(40,0,26,70,44,54,{lv:1,win:[70,9,0,3,0]});m.cyl(88,0,36,15,48,{lv:2,n:10,o:1});
+    m.box(180,0,60,74,104,18,{lv:3,win:[6,8,2,3,0]});m.box(228,0,60,12,116,12,{lv:4});m.box(219,60,60,8,4,5,{lv:4,o:1,ns:1});
+    m.tent(-210,0,60,48,62,70,{lv:2});
+    m.cyl(140,0,-110,28,36,{lv:1,n:12,dim:.62});
+    m.box(60,18,166,150,5,34,{lv:2});for(let i=0;i<4;i++)m.box(4+i*37,0,166,5,18,5,{lv:1,ns:1});
+    m.marker(-170,54,-60,1,'#b1','Civic Centre');m.marker(50,52,26,2,'#b2','Trinity Road car park');m.marker(190,120,60,3,'#b3','Hallam Point');
+    m.marker(-210,66,60,4,'#b4','St Jude’s Church');m.marker(140,40,-110,5,'#b5','Pumping station');m.marker(60,26,166,6,'#b6','Queensway bus station');
+  }}
+};
+
+const models=new Map();
+document.querySelectorAll('.stage').forEach(st=>models.set(st,new Model(st,DEFS[st.dataset.model])));
+
+/* --- only keep nearby models in the render tree; pour each one as it arrives --- */
+const near=new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle('live',e.isIntersecting)),{rootMargin:'70% 0px'});
+const arrive=new IntersectionObserver(es=>es.forEach(e=>{
+  if(!e.isIntersecting)return;arrive.unobserve(e.target);
+  const sp=e.target.closest('.spread');sp.classList.add('in');
+  const m=models.get(e.target);if(m){e.target.classList.add('live');m.pour()}
+}),{threshold:.42});
+models.forEach((m,st)=>{near.observe(st);arrive.observe(st)});
+const mani=document.getElementById('manifesto');
+new IntersectionObserver((es,o)=>es.forEach(e=>{if(e.isIntersecting){mani.classList.add('in');o.disconnect()}}),{threshold:.18}).observe(mani);
+
+/* --- index: mark the building in view --- */
+const links=[...document.querySelectorAll('.idx a')];
+const cur=new IntersectionObserver(es=>es.forEach(e=>{
+  const a=links.find(l=>l.getAttribute('href')==='#'+e.target.id);if(!a)return;
+  a.classList.toggle('on',e.isIntersecting);if(e.isIntersecting)a.setAttribute('aria-current','true');else a.removeAttribute('aria-current');
+}),{rootMargin:'-50% 0px -50% 0px'});
+document.querySelectorAll('.spread.b').forEach(s=>cur.observe(s));
+
+/* --- coupon --- */
+const snip=document.getElementById('snip'),coupon=document.getElementById('coupon'),post=document.getElementById('post');
+snip.addEventListener('click',()=>{
+  const on=coupon.classList.toggle('cut');snip.setAttribute('aria-pressed',on);
+  snip.textContent=on?'Stick it back':'Cut along the dotted line';
+  post.innerHTML=on?'Now post it. A real stamp. Dot does not have email, Dot has a letterbox.':'Post to <i class="ar"></i> Dot Ferreira, Flat 58, Hallam Point, Northmere NM1 4BB';
+});
+})();
+</script>
+</body>
+</html>

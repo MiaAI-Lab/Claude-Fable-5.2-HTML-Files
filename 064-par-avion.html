@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Par Avion — The Journey of One Letter</title>
+<style>
+:root{
+  --kraft:#D9C4A0; --blue:#2A3D66; --red:#C8102E; --cream:#F7F1E3; --ink:#3B3B3B;
+  --gill:"Gill Sans","Gill Sans MT","Trebuchet MS",Calibri,sans-serif;
+  --type:"American Typewriter","Courier New",Courier,monospace;
+  --script:"Snell Roundhand","Segoe Script","Bradley Hand","Brush Script MT","Z003","URW Chancery L","Apple Chancery",cursive;
+  --ew:68vw; --eh:42vw; --cy:50vh; --pad:16vw; --rib:84px;
+  --stripe:repeating-linear-gradient(115deg,var(--red) 0 12px,var(--cream) 12px 20px,var(--blue) 20px 32px,var(--cream) 32px 40px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--kraft)}
+body{background:var(--kraft);color:var(--ink);font-family:var(--type);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;touch-action:manipulation}
+:focus-visible{outline:2.5px solid var(--red);outline-offset:3px}
+#track{width:1px;height:1900vh}
+
+/* ---------- stage ---------- */
+#stage{position:fixed;inset:0;overflow:hidden;background:var(--kraft)}
+.scene{position:absolute;inset:0;width:100%;height:100%;display:block;will-change:transform}
+#grain{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.5;mix-blend-mode:multiply;z-index:2}
+.fb{fill:var(--blue)}.fr{fill:var(--red)}.fc{fill:var(--cream)}.fg{fill:var(--ink)}.fk{fill:#C2A97C}.fl{fill:#E8D9BA}.fd{fill:#1B2947}.frd{fill:#9C0C24}
+.sb{stroke:var(--blue);fill:none}.sc{stroke:var(--cream);fill:none}.sg{stroke:var(--ink);fill:none}.sr{stroke:var(--red);fill:none}
+.scene text{font-family:var(--gill);font-weight:700;letter-spacing:.14em}
+.spin{animation:spin 1.6s linear infinite;transform-box:fill-box;transform-origin:center}
+.spin.slow{animation-duration:5s}
+.prop{animation:prop .13s linear infinite alternate;transform-box:fill-box;transform-origin:center}
+.bob{animation:bob 3.6s cubic-bezier(.45,0,.55,1) infinite alternate}
+.rainA{animation:rain .55s linear infinite}
+.poles{animation:poles 1.1s linear infinite}
+.rock{animation:rock .46s cubic-bezier(.4,0,.6,1) infinite alternate}
+.wave{stroke-dasharray:70 46;animation:wave 3.4s linear infinite}
+.puff{animation:puff 3.2s cubic-bezier(.2,.6,.4,1) infinite;transform-box:fill-box;transform-origin:center}
+.sock{animation:sock 1.3s cubic-bezier(.45,0,.55,1) infinite alternate;transform-box:fill-box;transform-origin:left center}
+.glide{animation:glide 7s cubic-bezier(.45,0,.55,1) infinite alternate}
+.feed{animation:feed 1.2s linear infinite}
+.shim{animation:shim 2.6s cubic-bezier(.45,0,.55,1) infinite alternate}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes prop{from{transform:scaleY(1)}to{transform:scaleY(.12)}}
+@keyframes bob{from{transform:translateY(-7px) rotate(-.8deg)}to{transform:translateY(8px) rotate(.8deg)}}
+@keyframes rain{to{transform:translate(-80px,240px)}}
+@keyframes poles{to{transform:translateX(-300px)}}
+@keyframes rock{from{transform:translateY(-1.5px)}to{transform:translateY(1.5px)}}
+@keyframes wave{to{stroke-dashoffset:-116}}
+@keyframes puff{0%{transform:translate(0,0) scale(.4);opacity:0}20%{opacity:.9}100%{transform:translate(-70px,-90px) scale(1.7);opacity:0}}
+@keyframes sock{from{transform:skewY(-7deg) scaleX(1)}to{transform:skewY(6deg) scaleX(.93)}}
+@keyframes glide{from{transform:translate(-30px,14px) rotate(-4deg)}to{transform:translate(40px,-22px) rotate(5deg)}}
+@keyframes feed{to{transform:translateX(44px)}}
+@keyframes shim{from{opacity:.15;transform:translateX(-8px)}to{opacity:.6;transform:translateX(8px)}}
+
+/* ---------- title ---------- */
+#sc0{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:calc(var(--rib) + 10px) 20px 30px;gap:clamp(10px,2.2vh,22px)}
+#sc0 .pre{font-family:var(--gill);font-weight:700;font-size:clamp(10px,1.05vw,14px);letter-spacing:.34em;text-transform:uppercase;color:var(--blue);opacity:0;animation:fadeUp .9s .1s cubic-bezier(.2,.8,.2,1) forwards}
+#sc0 h1{font-family:var(--gill);font-weight:700;font-size:clamp(44px,14vw,236px);line-height:.86;letter-spacing:.07em;color:var(--blue);margin-right:-.07em;white-space:nowrap}
+#sc0 h1 span{display:inline-block;opacity:0;animation:struck .5s calc(.35s + var(--i)*.075s) cubic-bezier(.55,0,.2,1.5) forwards;text-shadow:.012em .012em 0 rgba(42,61,102,.28)}
+#sc0 h1 .sp{width:.28em}
+.lozrow{width:min(86vw,1280px);height:clamp(10px,1.5vw,20px);background:repeating-linear-gradient(115deg,var(--red) 0 2.2vw,transparent 2.2vw 3.3vw,var(--blue) 3.3vw 5.5vw,transparent 5.5vw 6.6vw);clip-path:inset(0 100% 0 0);animation:wipe 1.1s .25s cubic-bezier(.7,0,.2,1) forwards}
+.lozrow.b{animation-delay:.45s;animation-name:wipeR;clip-path:inset(0 0 0 100%)}
+#sc0 .sub{font-family:var(--type);font-size:clamp(16px,2.1vw,30px);letter-spacing:.12em;color:var(--ink);opacity:0;animation:fadeUp .9s 1.15s cubic-bezier(.2,.8,.2,1) forwards}
+#sc0 .yr{font-family:var(--type);font-size:clamp(10.5px,.95vw,13px);letter-spacing:.06em;color:var(--blue);opacity:0;animation:fadeUp .9s 1.35s cubic-bezier(.2,.8,.2,1) forwards;max-width:34em}
+#cue{position:relative;width:70px;height:90px;margin-top:clamp(4px,2vh,22px);background:var(--cream);
+  -webkit-mask:radial-gradient(circle at 5px 5px,transparent 3.1px,#000 3.7px) -5px -5px/10px 10px,linear-gradient(#000 0 0) center/calc(100% - 10px) calc(100% - 10px) no-repeat;
+  mask:radial-gradient(circle at 5px 5px,transparent 3.1px,#000 3.7px) -5px -5px/10px 10px,linear-gradient(#000 0 0) center/calc(100% - 10px) calc(100% - 10px) no-repeat;
+  opacity:0;animation:fadeUp .9s 1.6s cubic-bezier(.2,.8,.2,1) forwards;transition:transform .35s cubic-bezier(.3,1.6,.5,1);filter:drop-shadow(0 3px 3px rgba(59,45,20,.4))}
+#cue:hover{transform:rotate(-4deg) translateY(-3px)}
+#cue i{position:absolute;inset:9px;border:1.5px solid var(--blue);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:5px 0 4px;font-style:normal;font-family:var(--gill);font-weight:700;font-size:8px;letter-spacing:.2em;color:var(--blue)}
+#cue svg{width:22px;height:30px;animation:nudge 1.5s cubic-bezier(.5,0,.3,1) infinite}
+#cue b{color:var(--red);font-size:11px;letter-spacing:.05em}
+@keyframes struck{0%{opacity:0;transform:scale(1.9) rotate(-6deg)}60%{opacity:1}100%{opacity:1;transform:none}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes wipe{to{clip-path:inset(0 0 0 0)}}
+@keyframes wipeR{to{clip-path:inset(0 0 0 0)}}
+@keyframes nudge{0%,100%{transform:translateY(-3px)}55%{transform:translateY(4px)}}
+
+/* ---------- envelope ---------- */
+#env{position:absolute;left:50%;top:var(--cy);width:var(--ew);height:var(--eh);margin:calc(var(--eh)/-2) 0 0 calc(var(--ew)/-2);z-index:4;will-change:transform;touch-action:pan-y;cursor:grab;-webkit-tap-highlight-color:transparent}
+#kick{position:absolute;inset:0;perspective:1900px}
+.shadow{position:absolute;inset:1.2%;border-radius:4px;box-shadow:0 22px 44px rgba(59,45,20,.34),0 4px 8px rgba(59,45,20,.3)}
+#flip{position:absolute;inset:0;transform-style:preserve-3d}
+.face{position:absolute;inset:0;width:100%;height:100%;overflow:visible;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+#back{transform:rotateY(180deg)}
+.hand{font-family:var(--script)}
+.pm{font-family:var(--gill);font-weight:700;letter-spacing:.1em;text-anchor:middle;stroke:none}
+.ty{font-family:var(--type);stroke:none}
+#inside{opacity:0;transition:opacity .5s cubic-bezier(.3,0,.2,1)}
+#env.lit #inside{opacity:1}
+.mark{opacity:0;transition:opacity .28s cubic-bezier(.4,0,.2,1);transform-box:fill-box;transform-origin:center}
+.mark.on{opacity:.9}
+.mark.stamp.on{animation:dry 1.15s cubic-bezier(.3,.1,.3,1) both}
+.mark.label.on{opacity:1;animation:slap .42s cubic-bezier(.3,1.5,.5,1) both}
+.mark.blot.on{opacity:1;animation:spread 1.5s cubic-bezier(.15,.7,.3,1) both}
+.mark.print.on{opacity:1;animation:press .6s cubic-bezier(.2,.8,.2,1) both}
+.mark.crease.on{opacity:1}
+.mark.crease path.ln{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .7s cubic-bezier(.6,0,.2,1)}
+.mark.crease.on path.ln{stroke-dashoffset:0}
+.mark.pencil.on{opacity:1;animation:write 1.3s cubic-bezier(.4,0,.3,1) both}
+@keyframes dry{0%{opacity:1;filter:brightness(.5) saturate(1.6)}100%{opacity:.9;filter:brightness(1) saturate(1)}}
+@keyframes slap{0%{opacity:0;transform:scale(1.35) rotate(7deg)}100%{opacity:1;transform:none}}
+@keyframes spread{0%{opacity:0;transform:scale(.25)}100%{opacity:1;transform:none}}
+@keyframes press{0%{opacity:0;transform:scale(1.25)}100%{opacity:1;transform:none}}
+@keyframes write{0%{clip-path:inset(0 100% 0 0)}100%{clip-path:inset(-10% -2% -10% -2%)}}
+
+.stamper{position:absolute;width:15%;aspect-ratio:1;pointer-events:none;z-index:5;filter:drop-shadow(0 14px 10px rgba(40,30,10,.38))}
+.stamper::before{content:"";position:absolute;inset:0;border-radius:50%;background:linear-gradient(135deg,#3a4f7d,#1B2947 70%);box-shadow:inset 0 0 0 3px rgba(247,241,227,.16)}
+.stamper::after{content:"";position:absolute;left:50%;top:50%;width:54%;aspect-ratio:1;margin:-27% 0 0 -27%;border-radius:50%;background:radial-gradient(circle at 34% 30%,#8a8a8a 0,#4a4a4a 22%,#262626 62%,#111 100%);box-shadow:0 0 0 4px var(--red),0 0 0 6px #1b1b1b,0 6px 10px rgba(0,0,0,.5)}
+.stamper.oval{width:21%;aspect-ratio:2/1.05}
+.stamper.box{width:30%;aspect-ratio:3.6/1}
+.stamper.box::before{border-radius:4px}
+.stamper.sbox{width:18%;aspect-ratio:2.6/1}
+.stamper.sbox::before{border-radius:4px}
+.stamper.hex::before{border-radius:0;clip-path:polygon(100% 50%,75% 93%,25% 93%,0 50%,25% 7%,75% 7%)}
+.stamper.oval::after,.stamper.box::after,.stamper.sbox::after{width:auto;height:74%;margin:0;transform:translate(-50%,-50%)}
+
+/* ---------- letter ---------- */
+#letter{position:absolute;left:50%;top:0;z-index:3;opacity:0;perspective:1700px;will-change:transform}
+.sheet{position:relative;transform-style:preserve-3d}
+#lsh{position:absolute;left:0;width:100%;box-shadow:0 16px 30px rgba(59,45,20,.32),0 2px 5px rgba(59,45,20,.25);transform:translateZ(-2px)}
+.pan{position:absolute;left:0;width:100%;overflow:hidden;background:#EDE4CE;backface-visibility:visible}
+.p1{transform-origin:50% 100%}.p3{transform-origin:50% 0}
+.p2{box-shadow:inset 0 9px 9px -9px rgba(59,45,20,.3),inset 0 -9px 9px -9px rgba(59,45,20,.3)}
+.inkw{position:absolute;left:0;width:100%;padding:clamp(26px,5vw,54px) clamp(22px,5.4vw,64px) clamp(28px,5vw,50px);
+  background:repeating-linear-gradient(transparent 0 calc(1.62em - 1px),rgba(42,61,102,.13) calc(1.62em - 1px) 1.62em) 0 .35em,var(--cream);
+  font-family:var(--script);font-size:clamp(18px,1.75vw,24px);line-height:1.62;color:#1F2B4D}
+.inkw .from{text-align:right;font-size:.86em;line-height:1.35;margin-bottom:1.62em;opacity:.9}
+.inkw p{margin-bottom:1.62em;text-indent:1.6em}
+.inkw p.dear,.inkw p.sign{text-indent:0}
+.inkw p.dear{font-size:1.18em;margin-bottom:.9em}
+.inkw p.sign{text-align:right;margin-bottom:.4em;padding-right:1em}
+.inkw p.ps{text-indent:0;font-size:.9em;margin:0}
+#reply{position:absolute;left:0;right:0;top:100%;margin-top:40px;text-align:center;font-family:var(--type);font-size:clamp(14px,1.3vw,18px);letter-spacing:.04em;color:var(--blue);opacity:0}
+#reply button{display:block;margin:22px auto 0;padding:9px 16px 8px;font-family:var(--gill);font-weight:700;font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--cream);background:var(--red);border-radius:2px;transition:transform .3s cubic-bezier(.3,1.6,.5,1),background .2s}
+#reply button:hover{transform:translateY(-2px) rotate(-1.2deg);background:var(--blue)}
+
+/* ---------- foot: caption + tally ---------- */
+#foot{position:absolute;left:var(--pad);right:var(--pad);bottom:20px;z-index:6;display:flex;justify-content:space-between;align-items:flex-end;gap:22px;pointer-events:none}
+#cap{flex:0 1 600px;background:var(--cream);padding:6px;background-image:var(--stripe);box-shadow:0 10px 22px rgba(59,45,20,.26),0 2px 3px rgba(59,45,20,.25);opacity:0;will-change:transform,opacity}
+#cap>div{background:var(--cream);padding:12px 16px 13px}
+#cap h2{font-family:var(--gill);font-weight:700;font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--blue);margin-bottom:6px;display:flex;gap:10px;align-items:baseline}
+#cap h2 em{font-style:normal;color:var(--red);white-space:nowrap}
+#cap p{font-size:14.5px;line-height:1.48;color:var(--ink)}
+#tally{flex:0 0 auto;display:flex;background:var(--blue);color:var(--cream);box-shadow:0 10px 22px rgba(59,45,20,.26);font-family:var(--gill);transition:opacity .4s}
+#tally span{padding:10px 16px 9px;font-size:9.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;border-left:1px dashed rgba(247,241,227,.35);white-space:nowrap}
+#tally span:first-child{border-left:0}
+#tally b{display:block;font-size:28px;letter-spacing:.02em;line-height:1.05;font-variant-numeric:tabular-nums;min-width:1.2em}
+#tally span:nth-child(2) b{min-width:3.4em}
+
+/* ---------- ribbon ---------- */
+#rib{position:fixed;left:0;right:0;top:0;height:var(--rib);z-index:10;background:var(--cream);display:flex;align-items:stretch;box-shadow:0 6px 16px rgba(59,45,20,.22)}
+#rib::after{content:"";position:absolute;left:0;right:0;bottom:0;height:6px;background:var(--stripe)}
+.wm{flex:0 0 auto;padding:15px 20px 0 22px;border-right:1px solid rgba(42,61,102,.25)}
+.wm b{display:block;font-family:var(--gill);font-size:19px;letter-spacing:.24em;color:var(--blue)}
+.wm i{display:block;font-style:normal;font-size:10px;letter-spacing:.04em;color:var(--red);margin-top:3px}
+#map{position:relative;flex:1 1 auto;min-width:0;margin-bottom:6px}
+#map>svg{position:absolute;inset:0;width:100%;height:100%}
+.dot{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%}
+.dot::before{content:"";position:absolute;inset:8px;border-radius:50%;background:var(--cream);border:2px solid var(--blue);transition:background .4s,transform .4s cubic-bezier(.3,1.8,.5,1),border-color .4s}
+.dot.lit::before{background:var(--red);border-color:var(--red);transform:scale(1.15)}
+.dot:hover::before{transform:scale(1.6)}
+.dot span{position:absolute;left:50%;top:22px;transform:translateX(-50%);font-family:var(--gill);font-weight:700;font-size:8.5px;letter-spacing:.16em;color:var(--blue);white-space:nowrap;opacity:0;transition:opacity .3s;pointer-events:none;background:var(--cream);padding:1px 4px}
+.dot:hover span,.dot:focus-visible span,.dot.now span{opacity:1}
+.dot.e span{left:auto;right:0;transform:none}
+#glyph{position:absolute;width:34px;height:22px;margin:-25px 0 0 -17px;pointer-events:none;color:var(--blue)}
+#glyph svg{position:absolute;inset:0;width:100%;height:100%;opacity:0;transform:scale(.5);transition:opacity .3s,transform .4s cubic-bezier(.3,1.7,.5,1)}
+#glyph svg.on{opacity:1;transform:none}
+#tick{flex:0 0 auto;display:grid;grid-template-columns:auto auto;gap:1px 12px;align-content:center;padding:0 16px 6px 18px;border-left:1px solid rgba(42,61,102,.25);font-size:12.5px;color:var(--ink);min-width:232px}
+#tick #tT{font-size:21px;grid-row:1/3;grid-column:2;align-self:center;color:var(--blue);font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.04em}
+#tick #tP{font-family:var(--gill);font-weight:700;font-size:9.5px;letter-spacing:.2em;color:var(--red)}
+#snd{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:74px;margin-bottom:6px;border-left:1px solid rgba(42,61,102,.25);font-family:var(--gill);font-weight:700;font-size:8.5px;letter-spacing:.18em;color:var(--blue);transition:background .25s}
+#snd:hover{background:rgba(42,61,102,.08)}
+#snd svg{width:36px;height:26px;overflow:visible}
+#snd .off{transition:opacity .2s}
+#snd .wv{opacity:0;transition:opacity .25s}
+#snd[aria-pressed=true] .off{opacity:0}
+#snd[aria-pressed=true] .wv{opacity:1}
+#snd[aria-pressed=true]{color:var(--red)}
+
+/* ---------- portrait ---------- */
+body.port{--rib:74px}
+body.port .wm{display:none}
+body.port #rib{flex-wrap:wrap}
+body.port #map{flex:1 0 100%;height:40px;margin:0}
+body.port #tick{flex:1 1 0;align-items:center;display:flex;gap:10px;align-items:baseline;min-width:0;height:28px;padding:5px 0 0 12px;border:0;font-size:11px;white-space:nowrap;overflow:hidden}
+body.port #tick span{line-height:1}
+body.port #tick #tT{font-size:13px;order:2;flex:none}body.port #tick #tD{flex:none}
+body.port #tick #tP{order:3;font-size:8.5px;overflow:hidden;text-overflow:ellipsis}
+body.port #snd{flex-direction:row;width:auto;height:28px;padding:0 12px 6px;margin:0;gap:6px;border:0}
+body.port #snd svg{width:24px;height:18px}
+body.port .dot span{display:none}
+body.port #foot{left:0;right:0;bottom:0;flex-direction:column;align-items:stretch;gap:8px}
+body.port #cap{flex:0 0 auto;margin:0 12px;padding:5px}
+body.port #cap>div{padding:9px 12px 10px}
+body.port #cap p{font-size:12.6px;line-height:1.42}
+body.port #cap h2{font-size:10px;letter-spacing:.18em;margin-bottom:4px}
+body.port #tally{justify-content:center}
+body.port #tally span{padding:6px 10px 5px;font-size:8px;letter-spacing:.12em;display:flex;align-items:baseline;gap:5px}
+body.port #tally b{font-size:14px;min-width:0!important}
+@media (min-width:700px){body.port #cap{align-self:center;width:min(600px,92vw)}body.port #cap p{font-size:14.5px}}
+
+@media (prefers-reduced-motion:reduce){
+  .scene *,#cue svg{animation:none!important}
+  #sc0 *{animation-duration:.01s!important;animation-delay:0s!important}
+  .mark.on{animation:none!important}
+  .scene{transition:opacity .2s}
+}
+</style>
+</head>
+<body>
+<header id="rib">
+  <div class="wm"><b>PAR AVION</b><i>Nordhavn Post Office · 1961</i></div>
+  <nav id="map" aria-label="The route, stage by stage">
+    <svg viewBox="0 0 1000 60" preserveAspectRatio="none" aria-hidden="true">
+      <g fill="#D9C4A0"><path d="M0,16 Q34,4 78,12 Q116,22 124,40 Q92,58 44,52 Q12,50 0,44Z"/><path d="M138,18 q14,-8 24,2 q-4,12 -18,10z"/><path d="M360,60 Q384,30 462,25 Q560,20 628,38 Q650,50 660,60Z"/><path d="M250,60 q20,-16 52,-12 q22,6 26,12z"/><path d="M790,60 Q824,38 884,43 Q912,50 908,60Z"/><ellipse cx="948" cy="40" rx="16" ry="6"/><ellipse cx="978" cy="50" rx="14" ry="5"/><ellipse cx="712" cy="34" rx="12" ry="4"/></g>
+      <g stroke="#2A3D66" stroke-opacity=".16" stroke-dasharray="1 5" vector-effect="non-scaling-stroke"><path d="M200,0V60M400,0V60M600,0V60M800,0V60M0,30H1000" vector-effect="non-scaling-stroke" fill="none"/></g>
+      <path d="M20,46 Q500,-22 980,46" fill="none" stroke="#2A3D66" stroke-width="1.6" stroke-dasharray="1.5 5" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+      <path id="done" d="M20,46 Q500,-22 980,46" pathLength="1" fill="none" stroke="#C8102E" stroke-width="2.2" stroke-dasharray="0 1" vector-effect="non-scaling-stroke"/>
+    </svg>
+    <div id="glyph" aria-hidden="true">
+      <svg data-g="env" viewBox="0 0 34 22"><rect x="6" y="4" width="22" height="15" fill="#F7F1E3" stroke="currentColor" stroke-width="1.6"/><path d="M6,4 17,13 28,4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      <svg data-g="train" viewBox="0 0 34 22"><path fill="currentColor" d="M2,6h12v-4h8v4h6l4,5v6H2z"/><rect x="16" y="4" width="4" height="4" fill="#F7F1E3"/><circle cx="8" cy="18" r="3" fill="#C8102E"/><circle cx="17" cy="18" r="3" fill="#C8102E"/><circle cx="26" cy="18" r="3" fill="#C8102E"/></svg>
+      <svg data-g="plane" viewBox="0 0 34 22"><path fill="currentColor" d="M1,11 5,9.6h8L10,1h3l8,8.6h8c3,0 4,.7 4,1.4s-1,1.4-4,1.4h-8L13,21h-3l3-8.6H5z"/><path fill="currentColor" d="M2,7h3l2,3H3z M2,15h3l2-3H3z"/></svg>
+      <svg data-g="boat" viewBox="0 0 34 22"><path fill="#C8102E" d="M1,13h32l-5,7H5z"/><path fill="currentColor" d="M9,8h14v5H9z M14,2h4v6h-4z"/><path d="M19,1q4,-1 6,1" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+      <svg data-g="bike" viewBox="0 0 34 22"><g fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="15" r="5.5"/><circle cx="27" cy="15" r="5.5"/><path d="M7,15 13,6h9l5,9M13,6l4,9h-10M22,6l-5,9M11,5h5M21,4h4"/></g><rect x="13" y="1" width="6" height="4" fill="#C8102E"/></svg>
+    </div>
+  </nav>
+  <div id="tick" aria-live="off"><span id="tD">14 MAR 1961</span><span id="tT">17:38</span><span id="tP">SKERRIGATE</span></div>
+  <button id="snd" aria-pressed="false" aria-label="Sound">
+    <svg viewBox="0 0 36 26" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="13" cy="15" r="7"/><path d="M13,8 H22 L31,3 V15 L22,10.5"/><path d="M6,15 H1"/><path class="wv" d="M33,5 q3,4 0,8" stroke="#C8102E"/><path class="off" d="M3,24 33,2" stroke="#C8102E"/></g></svg>
+    <span id="sndL">SOUND OFF</span>
+  </button>
+</header>
+
+<main id="stage">
+  <!-- 0 · title -->
+  <section class="scene" id="sc0">
+    <p class="pre">The Nordhavn Post Office Film Unit presents</p>
+    <div class="lozrow"></div>
+    <h1 aria-label="Par Avion"><span style="--i:0">P</span><span style="--i:1">A</span><span style="--i:2">R</span><span class="sp"></span><span style="--i:4">A</span><span style="--i:5">V</span><span style="--i:6">I</span><span style="--i:7">O</span><span style="--i:8">N</span></h1>
+    <div class="lozrow b"></div>
+    <p class="sub">the journey of one letter</p>
+    <p class="yr">Skerrigate to Kestrel Bay, March 1961. Postage paid: one-and-ninepence.</p>
+    <button id="cue" aria-label="Begin: post the letter"><i>SCROLL<svg viewBox="0 0 22 30" aria-hidden="true"><path d="M11,2V26M3,18l8,9 8,-9" fill="none" stroke="#C8102E" stroke-width="2.4"/></svg><b>1/9</b></i></button>
+  </section>
+
+  <!-- 1 · pillar box -->
+  <svg class="scene" id="sc1" viewBox="0 0 1600 900" preserveAspectRatio="xMinYMin slice" aria-hidden="true">
+    <defs><pattern id="rn" width="80" height="240" patternUnits="userSpaceOnUse"><path d="M60,10l-14,42M22,120l-14,42M70,172l-10,30" stroke="#2A3D66" stroke-width="2.2" stroke-opacity=".5" stroke-linecap="round"/></pattern></defs>
+    <rect x="-200" width="3400" height="900" fill="#CFBB96"/>
+    <path class="fb" opacity=".17" d="M-200,640 l90,-60 90,60 v-110 h110 v80 l80,-70 80,70 v-40 h70 v-90 h40 v90 h80 l100,-80 100,80 v-60 h120 v60 l70,-50 70,50 h90 v-100 h60 v100 l110,-70 110,70 h200 l90,-70 90,70 v-50 h160 v50 l100,-60 100,60 h400 V900 H-200z"/>
+    <rect x="-200" y="770" width="3400" height="130" class="fb" opacity=".3"/>
+    <g class="sc" stroke-opacity=".5" stroke-width="2"><ellipse cx="330" cy="822" rx="30" ry="6"/><ellipse cx="330" cy="822" rx="52" ry="11" stroke-opacity=".25"/><ellipse cx="820" cy="850" rx="36" ry="7"/><ellipse cx="1250" cy="812" rx="26" ry="5"/></g>
+    <g class="L" transform="translate(34,150)">
+      <path class="frd" d="M0,70 Q105,-36 210,70 V84 H0Z"/><path class="fr" d="M14,62 Q105,-22 196,62Z"/>
+      <rect class="fr" x="14" y="84" width="182" height="580"/><rect class="frd" x="150" y="84" width="46" height="580" opacity=".55"/><rect class="fc" x="30" y="84" width="10" height="580" opacity=".2"/>
+      <rect class="frd" x="6" y="76" width="198" height="14" rx="3"/>
+      <rect class="frd" x="38" y="116" width="134" height="10" rx="2"/><rect class="fg" x="46" y="126" width="118" height="20" rx="3"/>
+      <rect class="fc" x="56" y="176" width="98" height="116" rx="3"/><rect x="62" y="182" width="86" height="104" fill="none" stroke="#2A3D66" stroke-width="1.5"/>
+      <text x="105" y="204" text-anchor="middle" font-size="10" class="fb">NEXT</text><text x="105" y="219" text-anchor="middle" font-size="10" class="fb">COLLECTION</text><text x="105" y="254" text-anchor="middle" font-size="27" class="fr" letter-spacing="0">5.45</text><text x="105" y="275" text-anchor="middle" font-size="10" class="fb">P.M.</text>
+      <circle cx="105" cy="356" r="30" fill="none" stroke="#F7F1E3" stroke-opacity=".55" stroke-width="3"/><text x="107" y="366" text-anchor="middle" font-size="26" class="fc" opacity=".7" letter-spacing="0">N·P</text>
+      <rect class="fg" x="2" y="664" width="206" height="70"/>
+      <path class="fc" d="M214,470 l150,-26 4,96 -150,26z" opacity=".9" transform="rotate(8 280 500)"/>
+    </g>
+    <g class="R">
+      <circle class="fc" cx="1486" cy="246" r="96" opacity=".28"/><circle class="fc" cx="1486" cy="246" r="54" opacity=".4"/>
+      <path class="fb" d="M1478,290h16v500h-16z M1462,790h48v20h-48z M1466,210h40l8,62h-56z M1474,196h24l-12,-22z"/><path class="fc" d="M1472,220h28l5,44h-38z"/>
+      <path class="sb" stroke-width="5" d="M1370,770V420M1340,470h60M1350,520h40M1410,770V500M1390,540h40" opacity=".5"/>
+      <path class="fb" d="M1320,740h130l-14,34h-104z" opacity=".5"/>
+    </g>
+    <rect class="rainA" x="-300" y="-260" width="3600" height="1200" fill="url(#rn)"/>
+  </svg>
+
+  <!-- 2 · sorting office -->
+  <svg class="scene" id="sc2" viewBox="0 0 1600 900" preserveAspectRatio="xMinYMin slice" aria-hidden="true">
+    <rect x="-200" width="3400" height="900" class="fl"/>
+    <rect x="-200" y="610" width="3400" height="290" class="fk"/><rect x="-200" y="602" width="3400" height="10" class="fb" opacity=".6"/>
+    <g class="L">
+      <path class="fc" opacity=".5" d="M150,214 H274 L470,620 H-40Z"/>
+      <path class="sg" stroke-width="3" d="M212,0V150"/><path class="fb" d="M140,216 L176,150 H248 L284,216Z"/><ellipse class="fc" cx="212" cy="216" rx="60" ry="8"/>
+      <g class="feed"><g class="fc" stroke="#2A3D66" stroke-width="1.5"><rect x="120" y="262" width="34" height="22"/><rect x="164" y="262" width="34" height="22"/><rect x="208" y="262" width="34" height="22"/><rect x="252" y="262" width="34" height="22"/><rect x="296" y="262" width="34" height="22"/><rect x="340" y="262" width="34" height="22"/></g></g>
+      <rect class="fb" x="30" y="284" width="390" height="14"/>
+      <rect class="fb" x="40" y="298" width="250" height="124" rx="8"/><rect class="fd" x="40" y="388" width="250" height="34"/>
+      <rect class="fc" x="60" y="318" width="96" height="30" rx="2"/><text x="108" y="338" font-size="11" text-anchor="middle" class="fb">CANCEL No.3</text>
+      <circle class="fr" cx="226" cy="352" r="18"/><circle class="fc" cx="184" cy="402" r="6"/><circle class="fc" cx="206" cy="402" r="6"/>
+      <g class="spin"><circle cx="100" cy="258" r="44" class="fr"/><circle cx="100" cy="258" r="30" fill="none" stroke="#F7F1E3" stroke-width="3" stroke-dasharray="10 6"/><path d="M100,220V296M62,258H138" stroke="#F7F1E3" stroke-width="3"/><circle cx="100" cy="258" r="8" class="fg"/></g>
+      <path class="fd" d="M60,422h16v100h-16z M254,422h16v100h-16z"/>
+      <rect class="fg" x="-20" y="520" width="470" height="16"/>
+      <path class="fb" d="M40,880 q-26,-150 20,-220 q-8,-20 12,-30 h66 q20,10 12,30 q46,70 20,220z"/><rect class="fc" x="84" y="720" width="62" height="50"/><text x="115" y="752" font-size="18" text-anchor="middle" class="fb">N.P.</text>
+      <path class="fd" d="M196,880 q-20,-110 14,-170 q-6,-16 10,-24 h44 q16,8 10,24 q34,60 14,170z"/>
+    </g>
+    <g class="R">
+      <circle cx="1480" cy="250" r="76" class="fb"/><circle cx="1480" cy="250" r="64" class="fc"/>
+      <g class="sg" stroke-width="3"><path d="M1480,192v10M1480,298v10M1422,250h10M1528,250h10"/></g>
+      <path d="M1480,250 L1476,288" stroke="#3B3B3B" stroke-width="6" stroke-linecap="round"/><path d="M1480,250 H1526" stroke="#3B3B3B" stroke-width="4" stroke-linecap="round"/><circle cx="1480" cy="250" r="5" class="fr"/>
+      <rect class="fb" x="1370" y="380" width="210" height="216"/>
+      <g class="fl"><rect x="1380" y="390" width="42" height="42"/><rect x="1430" y="390" width="42" height="42"/><rect x="1480" y="390" width="42" height="42"/><rect x="1530" y="390" width="42" height="42"/><rect x="1380" y="440" width="42" height="42"/><rect x="1430" y="440" width="42" height="42"/><rect x="1480" y="440" width="42" height="42"/><rect x="1530" y="440" width="42" height="42"/><rect x="1380" y="490" width="42" height="42"/><rect x="1430" y="490" width="42" height="42"/><rect x="1480" y="490" width="42" height="42"/><rect x="1530" y="490" width="42" height="42"/><rect x="1380" y="540" width="42" height="42"/><rect x="1430" y="540" width="42" height="42"/><rect x="1480" y="540" width="42" height="42"/><rect x="1530" y="540" width="42" height="42"/></g>
+      <g class="fc" stroke="#2A3D66"><path d="M1386,432v-22l28,-6v28z M1486,432v-26l30,4v22z M1436,482v-20l30,-4v24z M1536,532v-24l28,2v22z M1386,582v-20l30,-6v26z M1486,582v-18l28,-4v22z"/></g>
+      <rect class="fc" x="1392" y="640" width="170" height="90"/><text x="1477" y="676" font-size="15" text-anchor="middle" class="fr">FACE · STAMP</text><text x="1477" y="704" font-size="15" text-anchor="middle" class="fb">SORT · TIE</text>
+    </g>
+  </svg>
+
+  <!-- 3 · night mail -->
+  <svg class="scene" id="sc3" viewBox="0 0 1600 900" preserveAspectRatio="xMinYMin slice" aria-hidden="true">
+    <defs>
+      <pattern id="pg" width="112" height="92" patternUnits="userSpaceOnUse"><rect width="112" height="92" fill="none" stroke="#F7F1E3" stroke-opacity=".3" stroke-width="5"/><path d="M14,86V52l34,-7v41z" fill="#F7F1E3" fill-opacity=".5"/><path d="M52,86V60l30,5v21z" fill="#D9C4A0" fill-opacity=".55"/><rect x="34" y="4" width="44" height="12" fill="#F7F1E3" fill-opacity=".75"/></pattern>
+      <clipPath id="w3a"><rect x="50" y="130" width="330" height="236" rx="26"/></clipPath><clipPath id="w3b"><rect x="1360" y="150" width="210" height="220" rx="24"/></clipPath>
+    </defs>
+    <rect x="-200" width="3400" height="900" class="fb"/>
+    <g class="rock">
+      <rect x="-200" y="100" width="3400" height="690" fill="url(#pg)"/>
+      <rect x="-200" y="790" width="3400" height="110" class="fd"/><rect x="-200" y="786" width="3400" height="8" class="fc" opacity=".5"/>
+      <g class="L">
+        <rect x="38" y="118" width="354" height="260" rx="34" class="fc"/><rect x="50" y="130" width="330" height="236" rx="26" class="fd"/>
+        <g clip-path="url(#w3a)"><circle cx="300" cy="196" r="30" class="fc"/><circle cx="288" cy="188" r="26" class="fd"/>
+          <g class="fc"><circle cx="90" cy="170" r="2"/><circle cx="170" cy="210" r="1.6"/><circle cx="220" cy="156" r="2"/><circle cx="130" cy="246" r="1.6"/><circle cx="340" cy="270" r="2"/></g>
+          <path d="M40,330 q80,-50 170,-20 q80,-36 190,10 V380 H40z" fill="#2A3D66"/>
+          <g class="poles"><g stroke="#F7F1E3" stroke-opacity=".8" stroke-width="5" fill="none"><path d="M100,366V230M82,246h36M400,366V230M382,246h36M700,366V230M682,246h36"/><path stroke-width="1.6" d="M-200,246 q150,44 300,0 q150,44 300,0 q150,44 300,0"/></g></g>
+        </g>
+        <path class="sc" stroke-width="3" d="M216,378v0"/>
+        <circle cx="216" cy="470" r="80" class="fc" opacity=".12"/><path class="fc" d="M186,470 l12,-34 h36 l12,34z"/><path class="sc" stroke-width="3" d="M216,378v58"/><ellipse cx="216" cy="472" rx="30" ry="6" fill="#D9C4A0"/>
+        <rect x="60" y="560" width="300" height="34" class="fc"/><text x="210" y="584" font-size="17" text-anchor="middle" class="fb">UP SPECIAL T.P.O.</text>
+      </g>
+      <g class="R">
+        <rect x="1348" y="138" width="234" height="244" rx="32" class="fc"/><rect x="1360" y="150" width="210" height="220" rx="24" class="fd"/>
+        <g clip-path="url(#w3b)"><g class="poles"><g class="fc"><circle cx="1380" cy="330" r="4"/><circle cx="1470" cy="318" r="3"/><circle cx="1560" cy="336" r="4"/><circle cx="1680" cy="330" r="4"/><circle cx="1770" cy="318" r="3"/><circle cx="1860" cy="336" r="4"/></g></g><path d="M1340,350 q120,-30 240,0 v30 h-240z" fill="#2A3D66"/></g>
+        <rect x="1380" y="560" width="180" height="34" class="fr"/><text x="1470" y="584" font-size="16" text-anchor="middle" class="fc">LATE FEE BOX</text>
+      </g>
+    </g>
+  </svg>
+
+  <!-- 4 · airport -->
+  <svg class="scene" id="sc4" viewBox="0 0 1600 900" preserveAspectRatio="xMinYMin slice" aria-hidden="true">
+    <rect x="-200" width="3400" height="900" class="fl"/>
+    <rect x="-200" y="450" width="3400" height="450" class="fk"/><path d="M-200,620 H3200" stroke="#F7F1E3" stroke-width="8" stroke-dasharray="90 60" opacity=".7"/>
+    <path class="fb" opacity=".18" d="M560,450 q160,-120 320,0z M900,450 h260 v-50 h-260z"/>
+    <g class="L">
+      <g class="fit" data-t="translate(0,96) scale(.64)"><path class="fb" d="M-60,330 h250 l40,22 h-290z" opacity=".9"/>
+      <path class="fc" d="M-60,214 H250 Q360,214 412,268 Q424,284 404,300 Q360,326 250,326 H-60Z"/>
+      <path class="fb" d="M-60,262 H398 q10,6 12,14 H-60z"/><path class="fr" d="M-60,284 h466 q-4,6 -10,8 H-60z"/>
+      <path class="fd" d="M318,232 q40,6 62,30 h-74z"/><g class="fc"><circle cx="40" cy="244" r="9"/><circle cx="90" cy="244" r="9"/><circle cx="140" cy="244" r="9"/><circle cx="190" cy="244" r="9"/><circle cx="240" cy="244" r="9"/></g>
+      <text x="20" y="318" font-size="15" class="fb">NORDHAVN AIR MAIL</text>
+      <path class="fb" d="M70,326 h110 q30,10 30,26 q0,16 -30,24 h-110z"/><circle class="fc" cx="214" cy="352" r="12"/>
+      <ellipse cx="222" cy="352" rx="9" ry="78" class="fc" opacity=".45"/><path class="prop" d="M222,276V428" stroke="#3B3B3B" stroke-width="7" stroke-linecap="round"/>
+      <path class="sg" stroke-width="7" d="M330,322V398"/><circle cx="330" cy="408" r="24" class="fg"/><circle cx="330" cy="408" r="8" class="fc"/></g>
+      <g transform="translate(40,540)"><path class="fg" d="M0,150h330v14H0z"/><circle cx="60" cy="176" r="20" class="fg"/><circle cx="270" cy="176" r="20" class="fg"/><circle cx="60" cy="176" r="6" class="fc"/><circle cx="270" cy="176" r="6" class="fc"/><path class="sg" stroke-width="6" d="M330,156 l60,-50"/>
+        <path class="fb" d="M10,150 q-20,-90 10,-120 q-4,-14 10,-18 h50 q14,4 10,18 q30,30 10,120z"/><path class="fd" d="M120,150 q-18,-70 8,-100 q-4,-12 8,-16 h46 q12,4 8,16 q26,30 8,100z"/><path class="fb" d="M218,150 q-16,-80 10,-108 q-4,-12 8,-16 h44 q12,4 8,16 q26,28 10,108z"/>
+        <text x="60" y="96" font-size="24" text-anchor="middle" class="fc">AIR</text><text x="258" y="100" font-size="20" text-anchor="middle" class="fc">AIR</text></g>
+    </g>
+    <g class="R">
+      <circle cx="1500" cy="190" r="62" class="fc"/>
+      <path class="fb" d="M1452,360h56v430h-56z"/><path class="fd" d="M1416,280h128l-18,84h-92z"/><path class="fc" d="M1428,292h104l-10,44h-84z"/><path class="sb" stroke-width="4" d="M1452,292l6,44M1480,292v44M1508,292l-6,44M1480,280v-70"/><circle cx="1480" cy="206" r="7" class="fr"/>
+      <path class="sg" stroke-width="5" d="M1368,790V420"/><g class="sock"><path class="fr" d="M1368,420h30l0,34h-30z M1428,426h28v22h-28z"/><path class="fc" d="M1398,423h30v28h-30z M1456,429h22v16h-22z"/></g>
+    </g>
+  </svg>
+
+  <!-- 5 · desert stopover -->
+  <svg class="scene" id="sc5" viewBox="0 0 1600 900" preserveAspectRatio="xMinYMin slice" aria-hidden="true">
+    <rect x="-200" width="3400" height="900" fill="#EBDDBD"/>
+    <circle cx="300" cy="238" r="118" class="fr"/><circle cx="300" cy="238" r="150" fill="none" stroke="#C8102E" stroke-opacity=".3" stroke-width="3" stroke-dasharray="3 9"/>
+    <path class="fl" d="M-200,440 Q200,380 600,430 T1400,410 T2200,430 T3200,400 V900 H-200Z"/>
+    <path class="fk" d="M-200,520 Q160,430 520,500 T1300,480 T2100,520 T3200,470 V900 H-200Z"/>
+    <path fill="#B59A69" d="M-200,700 Q300,600 760,690 T1700,660 T3200,700 V900 H-200Z"/>
+    <g class="shim sc" stroke-width="3" stroke-opacity=".8"><path d="M-100,470 q30,-8 60,0 t60,0 t60,0 M500,456 q30,-8 60,0 t60,0 t60,0 M1280,452 q30,-8 60,0 t60,0 t60,0"/></g>
+    <g class="L">
+      <path class="sb" stroke-width="13" stroke-linecap="round" d="M96,520 Q80,400 112,258"/>
+      <g class="sb" stroke-width="9" stroke-linecap="round"><path d="M112,258 q-60,-40 -104,8"/><path d="M112,258 q-30,-70 -86,-58"/><path d="M112,258 q10,-74 70,-80"/><path d="M112,258 q60,-44 108,-4"/><path d="M112,258 q52,-6 82,44"/><path d="M112,258 q-46,2 -66,56"/></g>
+      <g class="fit" data-t="translate(20,193) scale(.6)"><rect class="fc" x="176" y="372" width="230" height="110"/><rect class="fb" x="166" y="358" width="250" height="18"/><rect class="fd" x="206" y="412" width="42" height="70"/><rect class="fb" x="284" y="408" width="84" height="38"/><path class="sc" stroke-width="3" d="M326,408v38M284,427h84"/>
+      <rect class="fb" x="196" y="320" width="190" height="30"/><text x="291" y="341" font-size="15" text-anchor="middle" class="fc">RAS EL-TAYYIB</text><path class="sb" stroke-width="4" d="M216,350v8M366,350v8"/></g>
+      <g transform="translate(40,600)"><g class="fr"><rect x="0" y="60" width="70" height="100" rx="6"/><rect x="80" y="60" width="70" height="100" rx="6"/><rect x="40" y="-44" width="70" height="100" rx="6"/></g><g class="fc" opacity=".8"><rect x="0" y="88" width="70" height="7"/><rect x="0" y="124" width="70" height="7"/><rect x="80" y="88" width="70" height="7"/><rect x="80" y="124" width="70" height="7"/><rect x="40" y="-16" width="70" height="7"/><rect x="40" y="20" width="70" height="7"/></g>
+        <rect class="fc" x="186" y="70" width="170" height="90"/><path class="sb" stroke-width="3" d="M186,70l170,90M356,70l-170,90"/><rect class="fb" x="216" y="98" width="110" height="32"/><text x="271" y="120" font-size="14" text-anchor="middle" class="fc">TRANSIT</text></g>
+    </g>
+    <g class="R">
+      <path class="fb" d="M1340,470 q120,-34 260,-30 v34 q-150,18 -260,6z"/><path class="fb" d="M1500,446 l52,-150 h36 l-16,152z"/><path class="fr" d="M1546,320 h40 l-3,22 h-44z"/><path class="fb" d="M1380,468 l-40,60 h30 l70,-56z" opacity=".8"/>
+      <path class="sg" stroke-width="5" d="M1400,640V470"/><path class="fr" d="M1400,470h26v30h-26z"/><path class="fc" d="M1426,472h20l-2,40h-18z"/><path class="fr" d="M1444,476h14l-4,52h-12z"/>
+    </g>
+  </svg>
+
+  <!-- 6 · flying boat -->
+  <svg class="scene" id="sc6" viewBox="0 0 1600 900" preserveAspectRatio="xMinYMin slice" aria-hidden="true">
+    <rect x="-200" width="3400" height="900" class="fl"/>
+    <g class="fc" opacity=".85"><ellipse cx="700" cy="250" rx="130" ry="26"/><ellipse cx="780" cy="230" rx="80" ry="24"/><ellipse cx="1180" cy="330" rx="110" ry="20"/><ellipse cx="2000" cy="240" rx="140" ry="26"/></g>
+    <rect x="-200" y="470" width="3400" height="430" class="fb"/><rect x="-200" y="470" width="3400" height="40" fill="#3A5080"/>
+    <g class="sc" stroke-width="4" stroke-linecap="round" stroke-opacity=".7"><path class="wave" d="M-200,560 H3200"/><path class="wave" d="M-140,640 H3200" stroke-opacity=".5" style="animation-duration:4.6s"/><path class="wave" d="M-200,730 H3200" stroke-opacity=".4" style="animation-duration:2.8s"/><path class="wave" d="M-160,820 H3200" stroke-opacity=".3" style="animation-duration:5.4s"/></g>
+    <g class="L"><g class="fit" data-t="translate(30,70) scale(.6)"><g class="bob">
+      <path class="fb" d="M40,186 h360 q16,0 16,10 q0,10 -16,10 H40 q-16,0 -16,-10 q0,-10 16,-10z"/>
+      <path class="sg" stroke-width="5" d="M150,206v44M290,206v44M70,206v96M370,206v96"/>
+      <path class="fd" d="M120,196h56v26h-56z M262,196h56v26h-56z"/><ellipse cx="184" cy="208" rx="6" ry="46" class="fc" opacity=".5"/><ellipse cx="326" cy="208" rx="6" ry="46" class="fc" opacity=".5"/><path class="prop" d="M184,164v88" stroke="#3B3B3B" stroke-width="5"/><path class="prop" d="M326,164v88" stroke="#3B3B3B" stroke-width="5"/>
+      <path class="fc" d="M-30,262 Q-20,244 30,244 H330 Q400,246 432,276 Q400,300 330,308 H250 L236,322 H60 Q-10,318 -30,262Z"/>
+      <path class="fb" d="M-24,286 Q0,316 60,322 H236 L250,308 H330 Q380,304 414,288 Q300,296 -24,286Z"/>
+      <path class="fr" d="M-30,262 l-22,-80 h44 l40,64z"/><path class="fc" d="M-44,206h40l8,14h-44z"/>
+      <g class="fd"><circle cx="90" cy="266" r="8"/><circle cx="130" cy="266" r="8"/><circle cx="170" cy="266" r="8"/><circle cx="210" cy="266" r="8"/><circle cx="250" cy="266" r="8"/><path d="M340,254 q40,4 60,20 h-60z"/></g>
+      <path class="fc" d="M46,300h50l-8,16h-34z M346,300h50l-8,16h-34z" stroke="#2A3D66" stroke-width="2"/>
+    </g></g>
+      <g transform="translate(120,640)" class="bob" style="animation-duration:2.4s"><path class="fr" d="M0,0h60l-10,60h-40z"/><path class="fc" d="M4,22h52l-3,16h-46z"/><path class="sg" stroke-width="4" d="M30,0v-50"/><path class="fr" d="M30,-50l26,10-26,10z"/></g>
+    </g>
+    <g class="R">
+      <circle cx="1500" cy="200" r="54" class="fr" opacity=".9"/>
+      <path class="fk" d="M1330,470 q40,-90 110,-100 q60,-60 160,-70 V470z"/><path fill="#B59A69" d="M1440,370 q60,-60 160,-70 V470 h-90z"/>
+      <path class="fc" d="M1532,300 l6,-70 h20 l6,70z"/><path class="fr" d="M1535,268h26l1,14h-28z"/><path class="fb" d="M1536,230h24v-16h-24z M1532,214h32l-16,-16z"/>
+    </g>
+  </svg>
+
+  <!-- 7 · Port Halcyon G.P.O. -->
+  <svg class="scene" id="sc7" viewBox="0 0 1600 900" preserveAspectRatio="xMinYMin slice" aria-hidden="true">
+    <defs><pattern id="tl" width="120" height="60" patternUnits="userSpaceOnUse"><path d="M0,30 60,0 120,30 60,60z" fill="#2A3D66" fill-opacity=".5"/></pattern></defs>
+    <rect x="-200" width="3400" height="900" fill="#E2D0AC"/>
+    <rect x="-200" y="700" width="3400" height="200" class="fc"/><rect x="-200" y="700" width="3400" height="200" fill="url(#tl)"/><rect x="-200" y="690" width="3400" height="12" class="fb"/>
+    <g class="L">
+      <g class="fit" data-t="translate(6,235) scale(.66)"><path class="fb" d="M20,560 V250 Q20,120 210,120 Q400,120 400,250 V560Z"/><path class="fd" d="M46,560 V256 Q46,146 210,146 Q374,146 374,256 V560Z"/>
+      <circle cx="214" cy="330" r="46" class="fk"/><path class="fk" d="M120,560 q0,-150 94,-150 q94,0 94,150z"/><path class="fb" d="M164,308 q50,-40 100,0 l10,-6 q-60,-64 -120,0z"/>
+      <g fill="none" stroke="#F7F1E3" stroke-width="4"><circle cx="196" cy="334" r="14"/><circle cx="234" cy="334" r="14"/><path d="M210,334h10"/></g>
+      <g stroke="#D9C4A0" stroke-width="7" stroke-linecap="round"><path d="M80,560V192M124,560V160M168,560V150M212,560V146M256,560V150M300,560V162M344,560V194"/></g>
+      <rect class="fc" x="110" y="196" width="204" height="40"/><text x="212" y="224" font-size="20" text-anchor="middle" class="fb">ENQUIRIES</text>
+      <rect class="fg" x="-20" y="556" width="470" height="22"/><rect class="fb" x="0" y="578" width="430" height="114"/><g fill="none" stroke="#F7F1E3" stroke-opacity=".4" stroke-width="3"><rect x="20" y="596" width="120" height="78"/><rect x="156" y="596" width="120" height="78"/><rect x="292" y="596" width="120" height="78"/></g>
+      <rect class="fr" x="326" y="530" width="64" height="26" rx="3"/><rect class="fg" x="344" y="496" width="28" height="36" rx="6"/></g>
+    </g>
+    <g class="R">
+      <g transform="translate(1470,150)"><path class="sg" stroke-width="6" d="M0,-150V0"/><g transform="scale(1,.26)"><g class="spin"><path class="fb" d="M-10,-10h20l8,-120h-36z M-10,10h20l8,120h-36z M-10,-10v20l-120,8v-36z M10,-10v20l120,8v-36z"/></g></g><circle r="14" class="fg"/></g>
+      <rect class="fb" x="1368" y="300" width="212" height="200"/><g class="fl"><rect x="1378" y="342" width="58" height="44"/><rect x="1445" y="342" width="58" height="44"/><rect x="1512" y="342" width="58" height="44"/><rect x="1378" y="394" width="58" height="44"/><rect x="1445" y="394" width="58" height="44"/><rect x="1512" y="394" width="58" height="44"/><rect x="1378" y="446" width="58" height="44"/><rect x="1445" y="446" width="58" height="44"/><rect x="1512" y="446" width="58" height="44"/></g>
+      <text x="1474" y="329" font-size="15" text-anchor="middle" class="fc">POSTE RESTANTE</text><path class="fc" stroke="#2A3D66" d="M1384,386v-26l30,-4v30z M1518,438v-22l28,4v18z M1452,490v-24l32,-4v28z"/>
+      <rect class="fc" x="1410" y="540" width="120" height="130"/><rect class="fr" x="1410" y="540" width="120" height="34"/><text x="1470" y="563" font-size="15" text-anchor="middle" class="fc">MARCH</text><text x="1470" y="640" font-size="54" text-anchor="middle" class="fb" letter-spacing="0">26</text>
+    </g>
+  </svg>
+
+  <!-- 8 · mail boat and bicycle -->
+  <svg class="scene" id="sc8" viewBox="0 0 1600 900" preserveAspectRatio="xMinYMin slice" aria-hidden="true">
+    <rect x="-200" width="3400" height="900" class="fl"/>
+    <circle cx="640" cy="220" r="70" class="fc"/>
+    <rect x="-200" y="380" width="3400" height="520" class="fb"/><rect x="-200" y="380" width="3400" height="30" fill="#3A5080"/>
+    <g class="sc" stroke-width="4" stroke-linecap="round"><path class="wave" d="M-200,470 H3200" stroke-opacity=".6"/><path class="wave" d="M-150,570 H3200" stroke-opacity=".45" style="animation-duration:4.4s"/><path class="wave" d="M-200,690 H3200" stroke-opacity=".35" style="animation-duration:2.9s"/><path class="wave" d="M-170,800 H3200" stroke-opacity=".3" style="animation-duration:5s"/></g>
+    <g class="L">
+      <g class="glide sg" stroke-width="5" stroke-linecap="round"><path d="M250,150 q16,-18 30,0 q14,-18 30,0"/><path d="M330,196 q10,-12 20,0 q10,-12 20,0"/></g>
+      <g class="fit" data-t="translate(4,130) scale(.64)"><g class="bob">
+        <g class="fc"><circle class="puff" cx="196" cy="196" r="20"/><circle class="puff" cx="196" cy="196" r="20" style="animation-delay:1.1s"/><circle class="puff" cx="196" cy="196" r="20" style="animation-delay:2.2s"/></g>
+        <path class="fb" d="M180,210h38v72h-38z"/><path class="fr" d="M180,226h38v16h-38z"/>
+        <path class="fc" d="M110,282h170v52h-170z M130,254h60v28h-60z"/><g class="fd"><rect x="126" y="296" width="22" height="18"/><rect x="160" y="296" width="22" height="18"/><rect x="194" y="296" width="22" height="18"/><rect x="228" y="296" width="22" height="18"/></g>
+        <path class="sg" stroke-width="5" d="M320,334V214M84,334V250"/><path class="fr" d="M320,214l44,12-44,14z"/>
+        <path class="fr" d="M20,334 H400 L360,404 H60Z"/><path class="fd" d="M40,372h340l-16,32H60z"/><text x="110" y="364" font-size="18" class="fc">M.V. PETREL</text>
+        <path class="sc" stroke-width="5" stroke-linecap="round" d="M0,410 q30,-14 60,0 M360,410 q40,-16 80,0"/>
+      </g></g>
+      <path class="fd" d="M40,900 q20,-160 110,-170 q70,-10 100,60 q60,-20 90,110z"/><path class="fk" d="M100,762 q30,-26 60,-8 l-10,12 h-40z"/>
+    </g>
+    <g class="R">
+      <path class="fk" d="M1290,900 Q1320,560 1400,470 Q1470,400 1620,380 V900Z"/><path fill="#B59A69" d="M1290,900 Q1320,560 1400,470 q10,160 -30,430z"/>
+      <path d="M1400,472 Q1470,404 1620,384" stroke="#F7F1E3" stroke-width="12" fill="none"/>
+      <g transform="translate(1486,362) rotate(-14)">
+        <g class="sg" stroke-width="5"><circle cx="-44" cy="30" r="30"/><circle cx="50" cy="30" r="30"/><path d="M-44,30 -14,-22 H34 L50,30 M-14,-22 6,30 H-44 M34,-22 6,30 M-24,-28h22 M30,-36h20"/></g>
+        <g class="spin sg" stroke-width="2"><path d="M-74,30h60M-44,0v60"/></g><g class="spin sg" stroke-width="2"><path d="M20,30h60M50,0v60"/></g>
+        <path class="fb" d="M-22,-30 q-6,-60 30,-74 l22,60 -30,30z"/><circle cx="14" cy="-118" r="16" class="fk"/><path class="fb" d="M-4,-126 q18,-22 40,-2 l6,4 h-46z"/><path class="sb" stroke-width="9" stroke-linecap="round" d="M10,-88 40,-40M-12,-28 4,24"/>
+        <rect class="fr" x="-38" y="-76" width="34" height="40" rx="4"/><rect class="fc" x="-32" y="-64" width="22" height="5"/>
+      </g>
+    </g>
+  </svg>
+
+  <!-- 9 · Kestrel Bay -->
+  <svg class="scene" id="sc9" viewBox="0 0 1600 900" preserveAspectRatio="xMinYMin slice" aria-hidden="true">
+    <rect x="-200" width="3400" height="900" fill="#EBDDBD"/>
+    <circle cx="1100" cy="210" r="80" class="fc"/>
+    <rect x="-200" y="430" width="3400" height="120" class="fb" opacity=".75"/>
+    <path class="fk" d="M-200,440 Q200,380 620,470 T1500,500 T3200,470 V900 H-200Z"/>
+    <path fill="#B59A69" d="M-200,640 Q260,560 700,640 T1700,660 T3200,640 V900 H-200Z"/>
+    <path d="M250,440 Q330,560 250,680 T330,900" stroke="#F7F1E3" stroke-width="40" fill="none" stroke-linecap="round" opacity=".85"/>
+    <g class="L">
+      <g transform="translate(-8,114) scale(.74)"><path class="fb" d="M310,168h30v80h-30z"/><g class="fc"><circle class="puff" cx="324" cy="150" r="14"/><circle class="puff" cx="324" cy="150" r="14" style="animation-delay:1.6s"/></g>
+      <path class="fc" d="M60,440 V250 L220,150 L380,250 V440Z"/><path class="fb" d="M34,262 L220,138 L406,262 L392,280 L220,168 L48,280Z"/>
+      <path class="fb" d="M198,138v-44h44v44z"/><path class="fl" d="M206,100h28v32h-28z"/><path class="fr" d="M212,112 q8,-10 16,0 v12 h-16z"/><path class="fb" d="M190,96 L220,74 L250,96Z"/>
+      <rect class="fr" x="186" y="330" width="68" height="110"/><rect class="fc" x="204" y="380" width="32" height="8"/><circle cx="244" cy="392" r="4" class="fc"/>
+      <g class="fb"><rect x="88" y="290" width="62" height="100"/><rect x="290" y="290" width="62" height="100"/></g><g class="sc" stroke-width="4"><path d="M119,290v100M88,340h62M321,290v100M290,340h62"/></g>
+      <rect class="fb" x="150" y="226" width="140" height="30"/><text x="220" y="247" font-size="13" text-anchor="middle" class="fc">KESTREL BAY SCHOOL</text></g>
+      <g class="fc" stroke="#2A3D66" stroke-width="2"><path d="M-10,470l10,-14 10,14v60h-20z M26,470l10,-14 10,14v60h-20z M62,470l10,-14 10,14v60h-20z M98,470l10,-14 10,14v60h-20z M134,470l10,-14 10,14v60h-20z M300,470l10,-14 10,14v60h-20z M336,470l10,-14 10,14v60h-20z M372,470l10,-14 10,14v60h-20z M408,470l10,-14 10,14v60h-20z"/></g><path class="sc" stroke-width="6" d="M-20,492h184M290,492h150"/>
+      <rect class="fg" x="166" y="456" width="10" height="84"/><rect class="fr" x="148" y="436" width="46" height="30" rx="4"/><rect class="fc" x="156" y="446" width="30" height="5"/>
+      <g transform="translate(92,650)"><circle cx="0" cy="-66" r="17" class="fk"/><path class="fd" d="M-14,-78 q14,-18 28,0 q4,10 -2,14 q-12,-14 -24,0z"/><path class="fb" d="M-16,-48 h32 l26,128 h-84z"/><path class="sb" stroke-width="8" stroke-linecap="round" d="M14,-40 40,-64 44,-84"/></g>
+      <g class="fr"><circle cx="270" cy="760" r="8"/><circle cx="300" cy="790" r="7"/><circle cx="234" cy="800" r="8"/><circle cx="330" cy="750" r="6"/><circle cx="50" cy="820" r="8"/></g><g class="sb" stroke-width="3"><path d="M270,768v40M300,797v34M234,808v36M330,756v40M50,828v36"/></g>
+    </g>
+    <g class="R">
+      <g class="glide"><path class="fc" stroke="#2A3D66" stroke-width="3" d="M1380,250 q40,-34 76,-10 q20,-50 84,-70 q-26,40 -44,74 q30,2 64,20 q-40,2 -70,-2 q-50,24 -110,-12z"/><path class="fd" d="M1540,250 q20,-6 40,14 q-26,0 -40,-6z"/></g>
+      <g transform="translate(1470,590) rotate(6)"><g class="sg" stroke-width="5"><circle cx="-48" cy="30" r="32"/><circle cx="54" cy="30" r="32"/><path d="M-48,30 -16,-26 H38 L54,30 M-16,-26 6,30 H-48 M38,-26 6,30 M-28,-32h24 M32,-42h22"/></g><rect class="fr" x="-52" y="-34" width="40" height="30" rx="4"/></g>
+      <path class="fg" d="M1560,640V470h12v170z"/>
+    </g>
+  </svg>
+
+  <!-- 10 · the schoolhouse table -->
+  <svg class="scene" id="sc10" viewBox="0 0 1600 900" preserveAspectRatio="xMinYMin slice" aria-hidden="true">
+    <rect x="-200" width="3400" height="900" fill="#D9C4A0"/>
+    <path class="fc" opacity=".28" d="M-200,0 H900 L500,900 H-200Z"/><path class="fc" opacity=".2" d="M300,0h60L-40,900h-60z M700,0h30L330,900h-30z" fill="#D9C4A0"/>
+    <g class="L" opacity=".9"><g transform="translate(130,330) rotate(-18)"><g class="sg" stroke-width="6"><circle cx="-46" cy="0" r="38"/><circle cx="46" cy="0" r="38"/><path d="M-8,0 q8,-10 16,0 M-84,0 l-30,-60 M84,0 l30,-60"/></g><circle cx="-46" cy="0" r="35" class="fc" opacity=".35"/><circle cx="46" cy="0" r="35" class="fc" opacity=".35"/></g></g>
+    <g class="R"><g transform="translate(1470,640)"><circle r="96" class="fc"/><circle r="96" fill="none" stroke="#2A3D66" stroke-width="5"/><circle r="74" fill="none" stroke="#C8102E" stroke-width="3" stroke-dasharray="14 8"/><circle r="56" class="fb"/><circle r="46" fill="#7A5A33"/><ellipse cx="-12" cy="-14" rx="16" ry="8" class="fc" opacity=".3"/><path class="fb" d="M50,-30 q50,-30 60,10 q0,30 -50,36 l-4,-12 q34,-6 36,-24 q-4,-20 -34,-2z"/></g>
+      <circle cx="1420" cy="330" r="60" fill="none" stroke="#7A5A33" stroke-opacity=".28" stroke-width="5" stroke-dasharray="210 30 90 47"/></g>
+  </svg>
+
+  <svg id="grain" aria-hidden="true"><filter id="gr"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="11"/><feColorMatrix values="0 0 0 0 .32  0 0 0 0 .24  0 0 0 0 .12  0 0 0 .55 -.14"/></filter><rect width="100%" height="100%" filter="url(#gr)"/></svg>
+
+  <!-- the letter -->
+  <article id="letter" aria-label="The letter inside the envelope">
+    <div class="sheet"><div id="lsh"></div>
+      <div class="pan p1"><div class="inkw">
+        <div class="from">3 Net Loft Row, Skerrigate<br>Tuesday the 14th of March</div>
+        <p class="dear">Dear Ottie,</p>
+        <p>It is raining on the harbour in the usual direction, which is sideways. The <em>Margit</em> came in on Sunday with ice on her rails and a new ship's cat, a grey article called Purser, who has already been found asleep in the harbourmaster's hat. Nobody has told the harbourmaster whose hat it is now.</p>
+        <p>I have bought a kettle. You will say the old one had years in it, but the old one had begun to whistle before it boiled, which is a lie, and I will not be lied to in my own kitchen. The new one is Swedish and honest and takes eleven minutes. I stand and watch it. This is my evening.</p>
+        <p>Mother's knee is better, or she says it is, which you know is a different thing. She climbed the chapel steps on Sunday to prove it and then sat through two hymns she doesn't like, to recover. She asks if you have enough blankets. I said your seasons are upside down and she said that was no excuse. I still fill the kettle for two. It is only habit, but I am not trying very hard to break it.</p>
+        <p class="sign">Your brother,<br>Tobias</p>
+        <p class="ps">P.S. The cat sends nothing. I asked.</p>
+      </div></div>
+      <div class="pan p2" aria-hidden="true"></div>
+      <div class="pan p3" aria-hidden="true"></div>
+    </div>
+    <div id="reply">She replied on the 4th. It took 23 days.<button id="again">Post it again</button></div>
+  </article>
+
+  <!-- the envelope -->
+  <div id="env" role="img" aria-label="An airmail envelope addressed to Miss Ottilie Varga, The Schoolhouse, Kestrel Bay, via Port Halcyon, Southern Ocean Territory">
+   <div id="kick"><div class="shadow"></div>
+    <div id="flip">
+    <svg id="front" class="face" viewBox="0 0 1000 620" aria-hidden="true">
+      <defs>
+        <filter id="fib" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".011 .5" numOctaves="3" seed="4"/><feColorMatrix values="0 0 0 0 .5  0 0 0 0 .38  0 0 0 0 .22  0 0 0 .62 -.25"/></filter>
+        <filter id="ink" x="-12%" y="-12%" width="124%" height="124%"><feTurbulence type="fractalNoise" baseFrequency=".04" numOctaves="2" seed="3" result="w"/><feDisplacementMap in="SourceGraphic" in2="w" scale="3.2" result="d"/><feOffset in="d" dx="1.9" dy=".7" result="g"/><feComponentTransfer in="g" result="g2"><feFuncA type="linear" slope=".32"/></feComponentTransfer><feMerge result="m"><feMergeNode in="g2"/><feMergeNode in="d"/></feMerge><feTurbulence type="fractalNoise" baseFrequency=".5" numOctaves="3" seed="8" result="n"/><feColorMatrix in="n" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2 1.85" result="p"/><feTurbulence type="fractalNoise" baseFrequency=".018" numOctaves="2" seed="21" result="n2"/><feColorMatrix in="n2" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.8 1.95" result="p2"/><feComposite in="m" in2="p" operator="in" result="c1"/><feComposite in="c1" in2="p2" operator="in"/></filter>
+        <filter id="ink2" x="-12%" y="-12%" width="124%" height="124%"><feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="2" seed="14" result="w"/><feDisplacementMap in="SourceGraphic" in2="w" scale="3.6" result="d"/><feOffset in="d" dx="-1.6" dy="1" result="g"/><feComponentTransfer in="g" result="g2"><feFuncA type="linear" slope=".3"/></feComponentTransfer><feMerge result="m"><feMergeNode in="g2"/><feMergeNode in="d"/></feMerge><feTurbulence type="fractalNoise" baseFrequency=".6" numOctaves="3" seed="31" result="n"/><feColorMatrix in="n" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2 1.8" result="p"/><feTurbulence type="fractalNoise" baseFrequency=".02" numOctaves="2" seed="5" result="n2"/><feColorMatrix in="n2" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.8 1.9" result="p2"/><feComposite in="m" in2="p" operator="in" result="c1"/><feComposite in="c1" in2="p2" operator="in"/></filter>
+        <filter id="rough" x="-25%" y="-25%" width="150%" height="150%"><feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="3" seed="9" result="w"/><feDisplacementMap in="SourceGraphic" in2="w" scale="22"/></filter>
+        <pattern id="loz" width="56" height="56" patternUnits="userSpaceOnUse" patternTransform="skewX(-38)"><rect width="56" height="56" fill="#F7F1E3"/><rect width="17" height="56" fill="#C8102E"/><rect x="28" width="17" height="56" fill="#2A3D66"/></pattern>
+        <pattern id="hb" width="4" height="3.2" patternUnits="userSpaceOnUse"><path d="M0,1H4" stroke="#2A3D66" stroke-width=".7"/></pattern>
+        <pattern id="hr" width="4" height="3.2" patternUnits="userSpaceOnUse"><path d="M0,1H4" stroke="#C8102E" stroke-width=".6"/></pattern>
+        <pattern id="lining" width="12" height="12" patternUnits="userSpaceOnUse"><rect width="12" height="12" fill="#DCE2EC"/><path d="M0,0l12,12M12,0L0,12" stroke="#2A3D66" stroke-opacity=".55" stroke-width="1.1"/></pattern>
+        <path id="arcT" d="M-40,0A40,40 0 0 1 40,0"/><path id="arcB" d="M-50,0A50,50 0 0 0 50,0"/>
+        <path id="wav" d="M752,112q14,-9 28,0t28,0t28,0t28,0t28,0t28,0t28,0t20,0"/>
+        <mask id="pf1"><rect width="104" height="132" fill="#fff"/><rect width="104" height="132" fill="none" stroke="#000" stroke-width="5.6" stroke-linecap="round" stroke-dasharray="0 8.74"/></mask>
+        <mask id="pf2"><rect width="128" height="100" fill="#fff"/><rect width="128" height="100" fill="none" stroke="#000" stroke-width="5.6" stroke-linecap="round" stroke-dasharray="0 8.77"/></mask>
+      </defs>
+      <rect width="1000" height="620" rx="4" fill="#F7F1E3"/>
+      <rect width="1000" height="620" filter="url(#fib)"/>
+      <path fill="url(#loz)" fill-rule="evenodd" d="M0,0H1000V620H0Z M21,21V599H979V21Z"/>
+      <rect x="21" y="21" width="958" height="578" fill="none" stroke="#3B3B3B" stroke-opacity=".14"/>
+      <rect x=".5" y=".5" width="999" height="619" rx="4" fill="none" stroke="#3B3B3B" stroke-opacity=".3"/>
+      <g id="inside"><rect x="150" y="120" width="700" height="390" fill="#3B3B3B" opacity=".1"/><rect x="150" y="250" width="700" height="130" fill="#3B3B3B" opacity=".07"/><g fill="none" stroke="#2A3D66" stroke-opacity=".2" stroke-width="5" stroke-dasharray="46 12 80 10 30 14"><path d="M210,180H790M210,214H760M210,248H790M210,282H700M210,330H790M210,364H770M210,398H790M210,432H640"/></g></g>
+
+      <!-- etiquette -->
+      <g transform="translate(56,50) rotate(-2)"><rect x="2" y="3" width="200" height="62" fill="#3B3B3B" opacity=".15"/><rect width="200" height="62" fill="#2A3D66"/><rect x="5" y="5" width="190" height="52" fill="none" stroke="#F7F1E3" stroke-width="1.4"/><text x="100" y="31" class="pm" font-size="23" fill="#F7F1E3" letter-spacing="4">PAR AVION</text><path d="M30,38H170" stroke="#F7F1E3"/><text x="100" y="52" class="pm" font-size="11.5" fill="#F7F1E3" letter-spacing="4">BY AIR MAIL</text></g>
+
+      <!-- stamps -->
+      <g transform="translate(720,46) rotate(-1.2 52 66)"><rect x="2" y="3" width="104" height="132" fill="#3B3B3B" opacity=".16"/><g mask="url(#pf1)"><rect width="104" height="132" fill="#FCF9F0"/></g>
+        <rect x="10" y="10" width="84" height="112" fill="#E7EBF2"/><rect x="10" y="24" width="84" height="84" fill="url(#hb)" opacity=".6"/>
+        <path d="M52,50 L10,34V48Z M52,50 L94,30V46Z" fill="#FCF9F0"/>
+        <path d="M30,104 Q42,90 52,95 Q68,88 80,104Z" fill="#2A3D66"/>
+        <path d="M44,97 L47.5,55 H56.5 L60,97Z" fill="#FCF9F0" stroke="#2A3D66" stroke-width="1.4"/><path d="M46.6,66h10.8l.8,10h-12.4z M45.2,84h13.6l.6,8h-14.8z" fill="#2A3D66"/>
+        <path d="M46,55h12v-10h-12z M44,45h16l-8,-9z" fill="#2A3D66"/><rect x="49.5" y="47" width="5" height="6" fill="#FCF9F0"/><path d="M43,55.5H61" stroke="#2A3D66" stroke-width="1.6"/>
+        <g fill="none" stroke="#2A3D66" stroke-width="1"><path d="M10,101q6,-4 12,0t12,0 M70,101q6,-4 12,0t12,0 M10,105.5q6,-4 12,0t12,0t12,0t12,0t12,0t12,0t12,0"/></g>
+        <rect x="10" y="10" width="84" height="15" fill="#2A3D66"/><text x="52" y="21.5" class="pm" font-size="9.5" fill="#FCF9F0" letter-spacing="2.6">NORDHAVN</text>
+        <rect x="10" y="108" width="84" height="14" fill="#2A3D66"/><text x="15" y="119.4" class="pm" font-size="12" fill="#FCF9F0" style="text-anchor:start" letter-spacing=".5">1/3</text><text x="90" y="118" class="pm" font-size="5.6" fill="#FCF9F0" style="text-anchor:end" letter-spacing="1">SKERRIGATE LIGHT</text>
+        <rect x="10" y="10" width="84" height="112" fill="none" stroke="#2A3D66" stroke-width="1.6"/></g>
+      <g transform="translate(836,54) rotate(1.4 64 50)"><rect x="2" y="3" width="128" height="100" fill="#3B3B3B" opacity=".16"/><g mask="url(#pf2)"><rect width="128" height="100" fill="#FCF9F0"/></g>
+        <rect x="10" y="10" width="108" height="80" fill="#FBEDEC"/><rect x="10" y="10" width="108" height="80" fill="url(#hr)" opacity=".45"/>
+        <circle cx="94" cy="32" r="13" fill="#FCF9F0"/>
+        <g transform="translate(13,20) scale(.82)"><path d="M6,56 Q36,30 58,44 Q68,16 106,4 Q90,30 80,50 Q98,50 118,60 Q96,62 78,58 Q58,72 28,62 L4,70 L20,58Z" fill="#C8102E"/><path d="M58,54 Q54,74 36,88 Q62,82 74,56Z" fill="#C8102E"/><path d="M96,52 q10,-3 22,8 q-14,0 -22,-3z" fill="#3B3B3B"/></g>
+        <text x="16" y="24" class="pm" font-size="8.6" fill="#C8102E" style="text-anchor:start" letter-spacing="2.2">NORDHAVN</text>
+        <text x="113" y="85" class="pm" font-size="22" fill="#C8102E" style="text-anchor:end" letter-spacing="0">6d</text><text x="16" y="85" class="pm" font-size="5.6" fill="#C8102E" style="text-anchor:start" letter-spacing="1.2">ARCTIC TERN</text>
+        <rect x="10" y="10" width="108" height="80" fill="none" stroke="#C8102E" stroke-width="1.6"/></g>
+
+      <!-- address -->
+      <g id="addr" class="hand" fill="#1F2B4D" font-size="47">
+        <text x="298" y="304" data-max="500">Miss Ottilie Varga,</text>
+        <text x="342" y="364" data-max="470">The Schoolhouse,</text>
+        <text x="386" y="424" data-max="560">Kestrel Bay, via Port Halcyon,</text>
+        <text x="430" y="484" data-max="500">Southern Ocean Territory</text>
+      </g>
+
+      <!-- marks, in order of travel -->
+      <g id="m-rain" class="mark blot"><g filter="url(#rough)"><ellipse cx="350" cy="296" rx="50" ry="36" fill="#2A3D66" opacity=".11"/><ellipse cx="350" cy="296" rx="50" ry="36" fill="none" stroke="#3B3B3B" stroke-opacity=".28" stroke-width="1.6"/><ellipse cx="350" cy="298" rx="30" ry="20" fill="#F7F1E3" opacity=".35"/><ellipse cx="436" cy="246" rx="15" ry="12" fill="#2A3D66" opacity=".12"/><ellipse cx="436" cy="246" rx="15" ry="12" fill="none" stroke="#3B3B3B" stroke-opacity=".25"/><ellipse cx="270" cy="352" rx="10" ry="9" fill="none" stroke="#3B3B3B" stroke-opacity=".25"/></g></g>
+
+      <g id="m-cds" class="mark stamp"><g class="rot" filter="url(#ink)" fill="#3B3B3B"><g transform="translate(700,150)"><circle r="54" fill="none" stroke="#3B3B3B" stroke-width="3.4"/><circle r="35" fill="none" stroke="#3B3B3B" stroke-width="1.8"/><text class="pm" font-size="12.5"><textPath href="#arcT" startOffset="50%">SKERRIGATE</textPath></text><text class="pm" font-size="10"><textPath href="#arcB" startOffset="50%">· NORDHAVN ·</textPath></text><text class="pm" y="-3" font-size="12.5" letter-spacing=".4">14 MAR 61</text><text class="pm" y="14" font-size="11.5" letter-spacing=".4">6.15 PM</text></g>
+        <g fill="none" stroke="#3B3B3B" stroke-width="3.2" stroke-linecap="round"><use href="#wav"/><use href="#wav" y="11"/><use href="#wav" y="22"/><use href="#wav" y="33"/><use href="#wav" y="44"/><use href="#wav" y="55"/><use href="#wav" y="66"/></g></g></g>
+
+      <g id="m-thumb" class="mark print"><g filter="url(#ink2)" transform="translate(92,540) rotate(-24)" fill="none" stroke="#3B3B3B" stroke-opacity=".5" stroke-width="2.6"><ellipse rx="4" ry="6"/><ellipse rx="9" ry="13"/><ellipse rx="14" ry="20"/><ellipse rx="19" ry="27"/><ellipse rx="24" ry="34"/><ellipse rx="29" ry="41"/><path d="M-34,10 q0,-58 34,-58 q34,0 34,58"/></g></g>
+
+      <g id="m-air" class="mark stamp"><g class="rot" filter="url(#ink2)" fill="#2A3D66"><g transform="translate(166,216) rotate(-8)"><ellipse rx="94" ry="47" fill="none" stroke="#2A3D66" stroke-width="3.4"/><ellipse rx="85" ry="38.5" fill="none" stroke="#2A3D66" stroke-width="1.5"/><text class="pm" y="-3" font-size="21" letter-spacing="2.4">AIR TRANSIT</text><path d="M-56,5H56" stroke="#2A3D66" stroke-width="1.5"/><text class="pm" y="20" font-size="9.6" letter-spacing="1">HALVARD FIELD · 15 MAR 61</text></g></g></g>
+
+      <g id="m-hex" class="mark stamp"><g class="rot" filter="url(#ink)" fill="#6B4A8E"><g transform="translate(140,366) rotate(5)"><path d="M64,0 32,55.4 -32,55.4 -64,0 -32,-55.4 32,-55.4Z" fill="none" stroke="#6B4A8E" stroke-width="3.4"/><path d="M54,0 27,46.8 -27,46.8 -54,0 -27,-46.8 27,-46.8Z" fill="none" stroke="#6B4A8E" stroke-width="1.4"/><text class="pm" y="-15" font-size="10.5" letter-spacing=".8" textLength="80" lengthAdjust="spacingAndGlyphs">RAS EL-TAYYIB</text><text class="pm" y="7" font-size="18.5" letter-spacing="1.2">TRANSIT</text><text class="pm" y="25" font-size="9.5" letter-spacing="1">17 · III · 61</text></g></g></g>
+
+      <g id="m-cust" class="mark label"><g transform="translate(204,474) rotate(-3)"><rect x="2" y="3" width="176" height="92" fill="#3B3B3B" opacity=".16"/><rect width="176" height="92" fill="#FCF9F0"/><rect x="4" y="4" width="168" height="84" fill="none" stroke="#2A3D66" stroke-width="2"/><text x="12" y="23" class="pm" style="text-anchor:start" font-size="12.5" fill="#2A3D66" letter-spacing="1.4">DOUANE · CUSTOMS</text><text x="164" y="52" class="pm" style="text-anchor:end" font-size="26" fill="#2A3D66" letter-spacing="0">C1</text><path d="M12,30H164" stroke="#2A3D66"/><text x="12" y="46" class="ty" font-size="9.5" fill="#3B3B3B">Contents: 1 letter,</text><text x="12" y="59" class="ty" font-size="9.5" fill="#3B3B3B">personal. Value: nil.</text><text x="12" y="79" class="pm" style="text-anchor:start" font-size="6.6" fill="#C8102E" letter-spacing=".9" textLength="152" lengthAdjust="spacingAndGlyphs">MAY BE OPENED OFFICIALLY · PEUT ÊTRE OUVERT D'OFFICE</text></g></g>
+
+      <g id="m-salt" class="mark blot"><g filter="url(#rough)"><ellipse cx="716" cy="410" rx="74" ry="46" fill="#B59A69" opacity=".2"/><ellipse cx="716" cy="410" rx="74" ry="46" fill="none" stroke="#8C7347" stroke-opacity=".5" stroke-width="2.2"/><ellipse cx="712" cy="408" rx="58" ry="33" fill="none" stroke="#8C7347" stroke-opacity=".25" stroke-width="1.4"/><ellipse cx="812" cy="442" rx="15" ry="11" fill="none" stroke="#8C7347" stroke-opacity=".45" stroke-width="1.6"/></g></g>
+
+      <g id="m-crease" class="mark crease"><path d="M0,0H182L0,172Z" fill="#3B3B3B" opacity=".07"/><path class="ln" pathLength="1" d="M182,0 L0,172" stroke="#3B3B3B" stroke-opacity=".42" stroke-width="1.5" fill="none"/><path class="ln" pathLength="1" d="M185,1 L1,175" stroke="#fff" stroke-opacity=".8" stroke-width="1.6" fill="none"/></g>
+
+      <g id="m-hand" class="mark stamp"><g class="rot" filter="url(#ink2)" fill="#C8102E"><g transform="translate(452,182) rotate(-4)"><rect x="-176" y="-35" width="352" height="70" fill="none" stroke="#C8102E" stroke-width="3.2"/><g transform="translate(-166,-19)"><rect x="0" y="5" width="11" height="28"/><path d="M14,8h9q2,-7 9,-7h30q6,0 6,5t-6,5h-18q5,0 5,4.3t-5,4.3q4,0 4,4t-4,4q3,0 3,3.6t-3,3.6h-13q-7,0 -9,-4h-8z"/></g><text class="pm" x="40" y="-7" font-size="15" textLength="252" lengthAdjust="spacingAndGlyphs">NOT KNOWN AT THIS ADDRESS</text><text class="pm" x="40" y="20" font-size="21" textLength="232" lengthAdjust="spacingAndGlyphs">TRY KESTREL BAY</text></g></g></g>
+
+      <g id="m-pencil" class="mark pencil"><g class="hand" fill="#3B3B3B" fill-opacity=".72"><text x="566" y="574" font-size="27" transform="rotate(-3 566 574)" data-max="280">School is at K. Bay — A.</text></g><path d="M384,438 q62,7 124,1 q34,-3 70,3" fill="none" stroke="#3B3B3B" stroke-opacity=".6" stroke-width="2.2" stroke-linecap="round"/><path d="M600,416 q70,-7 150,1 q50,4 104,-3" fill="none" stroke="#3B3B3B" stroke-opacity=".5" stroke-width="2" stroke-linecap="round"/></g>
+
+      <g id="m-redir" class="mark label"><g transform="translate(398,504) rotate(3.5)"><rect x="2" y="3" width="152" height="70" fill="#3B3B3B" opacity=".16"/><rect width="152" height="70" fill="#FCF9F0" stroke="#C8102E" stroke-width="2.4"/><rect width="152" height="20" fill="#C8102E"/><text x="76" y="14.5" class="pm" font-size="11.5" fill="#FCF9F0" letter-spacing="2.6">REDIRECTED</text><text x="10" y="38" class="ty" font-size="10.5" fill="#3B3B3B">to: KESTREL BAY</text><text x="10" y="54" class="ty" font-size="9.5" fill="#3B3B3B">per M.V. Petrel (Thurs.)</text></g></g>
+
+      <g id="m-ship" class="mark stamp"><g class="rot" filter="url(#ink)" fill="#1F2B4D"><g transform="translate(886,238) rotate(3)"><rect x="-78" y="-27" width="156" height="54" fill="none" stroke="#1F2B4D" stroke-width="3"/><text class="pm" y="-3" font-size="18" letter-spacing="2">SHIP MAIL</text><text class="pm" y="16" font-size="9" letter-spacing=".8">M.V. PETREL · 1 APR 61</text></g></g></g>
+
+      <g id="m-recv" class="mark stamp"><g class="rot" filter="url(#ink2)" fill="#3B3B3B"><g transform="translate(905,522)"><circle r="54" fill="none" stroke="#3B3B3B" stroke-width="3.4"/><circle r="35" fill="none" stroke="#3B3B3B" stroke-width="1.8"/><text class="pm" font-size="12"><textPath href="#arcT" startOffset="50%">KESTREL BAY</textPath></text><text class="pm" font-size="10"><textPath href="#arcB" startOffset="50%">· RECEIVED ·</textPath></text><text class="pm" y="-3" font-size="13" letter-spacing=".4">2 APR 61</text><path d="M-14,7H14M-9,13H9" stroke="#3B3B3B" stroke-width="2"/></g></g></g>
+    </svg>
+
+    <svg id="back" class="face" viewBox="0 0 1000 620" aria-hidden="true">
+      <rect width="1000" height="620" rx="4" fill="#F7F1E3"/><rect width="1000" height="620" filter="url(#fib)"/>
+      <path fill="url(#loz)" fill-rule="evenodd" d="M0,0H1000V620H0Z M21,21V599H979V21Z"/>
+      <rect x=".5" y=".5" width="999" height="619" rx="4" fill="none" stroke="#3B3B3B" stroke-opacity=".3"/>
+      <path d="M21,599 L452,264 M979,599 L548,264" stroke="#3B3B3B" stroke-opacity=".22" stroke-width="1.6" fill="none"/>
+      <g filter="url(#ink)" fill="#6B4A8E" opacity=".85" transform="translate(800,462) rotate(-11)"><circle r="52" fill="none" stroke="#6B4A8E" stroke-width="3"/><text class="pm" font-size="11.5"><textPath href="#arcT" startOffset="50%">PORT HALCYON</textPath></text><text class="pm" font-size="10"><textPath href="#arcB" startOffset="50%">· G.P.O. ·</textPath></text><text class="pm" y="4" font-size="13" letter-spacing=".4">26 MAR 61</text></g>
+      <text x="150" y="560" class="hand" font-size="24" fill="#3B3B3B" fill-opacity=".6" transform="rotate(-4 150 560)">1/9 pd.</text>
+      <path id="throat" d="M0,0H1000L530,250Q500,268 470,250Z" fill="url(#lining)"/><path d="M0,0H1000L530,250Q500,268 470,250Z" fill="#1B2947" opacity=".14"/>
+      <g id="flap"><path id="flapP" d="M0,0H1000L530,250Q500,268 470,250Z" fill="#F7F1E3" stroke="#3B3B3B" stroke-opacity=".35" stroke-width="1.5"/><path d="M0,0H1000L530,250Q500,268 470,250Z" filter="url(#fib)"/>
+        <g id="ret" class="hand" fill="#1F2B4D" text-anchor="middle"><text x="500" y="54" font-size="20" fill-opacity=".7">from</text><text x="500" y="92" font-size="31">T. Varga, 3 Net Loft Row,</text><text x="500" y="132" font-size="31">Skerrigate, Nordhavn</text></g></g>
+      <path id="slit" pathLength="1" d="M0,3H1000" stroke="#3B3B3B" stroke-width="2.4" stroke-dasharray="0 1" fill="none"/>
+      <g id="knife" opacity="0"><path d="M0,0 L170,-9 Q204,-2 214,2 Q200,9 170,10Z" fill="#ECE9E0" stroke="#3B3B3B" stroke-width="1.5"/><path d="M10,1 L196,1" stroke="#fff" stroke-width="2"/><rect x="-120" y="-10" width="124" height="21" rx="9" fill="#2A3D66"/><rect x="-4" y="-12" width="10" height="25" rx="2" fill="#C8102E"/><path d="M-104,0h80" stroke="#F7F1E3" stroke-opacity=".5" stroke-width="2"/></g>
+    </svg>
+    </div>
+   </div>
+  </div>
+
+  <div id="foot">
+    <div id="cap" aria-live="polite"><div><h2><em id="capN">REEL 1 OF 9</em><span id="capH">The pillar box</span></h2><p id="capB"></p></div></div>
+    <aside id="tally" aria-label="Running tally"><span><b id="nD">0</b>days</span><span><b id="nK">0</b>km</span><span><b id="nH">0</b>pairs of hands</span></aside>
+  </div>
+</main>
+<div id="track"></div>
+
+<script>
+(()=>{
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const clamp=(x,a=0,b=1)=>x<a?a:x>b?b:x, lerp=(a,b,t)=>a+(b-a)*t;
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const outBack=t=>{const c=1.25;return 1+(c+1)*Math.pow(t-1,3)+c*Math.pow(t-1,2)};
+const HOLD=.35, SEG=1.5, FIN=4.6;
+
+const ST=[null,
+ {p:'SKERRIGATE',n:'Skerrigate',u:.02,m:1058,sp:10,g:'env',h:'The pillar box',
+  b:'Skerrigate, a quarter to six. The last collection. Your letter has four minutes in hand and no idea what is coming. Note the rain. The Post Office does not issue umbrellas to correspondence. It will dry. Everything, in the end, is drying.'},
+ {p:'SKERRIGATE SORTING OFFICE',n:'Sorting office',u:.065,m:1082,sp:30,g:'env',h:'The sorting office',
+  b:'Here your letter is faced, which means turned the right way up by a man named Dennis. The cancelling machine then strikes it, at six hundred letters a minute. Do not be alarmed. The stamps have been expecting this.'},
+ {p:'THE NIGHT MAIL, UP',n:'Night mail',u:.16,m:1330,sp:320,g:'train',h:'The night mail',
+  b:'At sixty miles an hour, sorters fill forty-eight pigeonholes by hand and by memory. Seventeen people will handle your letter. None of them will read it. One of them will bend it. This man has just had his supper.'},
+ {p:'HALVARD FIELD',n:'Halvard Field',u:.26,m:1820,sp:95,g:'plane',h:'The aerodrome',
+  b:'Air mail travels in blue bags, so that it may feel superior. Your letter weighs a third of an ounce. The aeroplane weighs thirty tons. Both have been weighed. Only one of them was charged one-and-ninepence.'},
+ {p:'RAS EL-TAYYIB',n:'Ras el-Tayyib',u:.5,m:5105,sp:110,g:'plane',h:'A stopover',
+  b:'The aeroplane drinks. The passengers are given tea. The mail is given a hexagon. Customs must be satisfied that your letter contains only news. It is forty-one degrees in the shade, and the gum on the label has opinions about that.'},
+ {p:'CORAL COAST SERVICE',n:'Coral Coast',u:.72,m:10650,sp:270,g:'plane',h:'The flying boat',
+  b:'The flying boat alights on the sea eleven times before Port Halcyon, on purpose. The mail rides in the bow. Salt water is not, strictly, permitted in the bow. A crease is not damage. A crease is experience.'},
+ {p:'PORT HALCYON G.P.O.',n:'Port Halcyon',u:.86,m:17895,sp:50,g:'env',h:'A difficulty',
+  b:'There is no Schoolhouse in Port Halcyon. There has never been a school. Mr Abernethy, who has thirty-one years of service and a pencil, knows of one at Kestrel Bay. He has made a note. He has also sighed.'},
+ {p:'PETREL SOUND',n:'Petrel Sound',u:.94,m:26340,sp:1650,g:'boat',h:'The last forty miles',
+  b:'The mail boat sails on Thursdays, weather and the engineer permitting. Thereafter the mail proceeds by bicycle, uphill, into the wind. The postman is called Bram. He has never lost a letter. He has lost several hats.'},
+ {p:'KESTREL BAY',n:'Kestrel Bay',u:.982,m:28000,sp:15,g:'env',h:'Delivered',
+  b:'Nineteen days. Nine pairs of hands that we know of. The letter is struck a final time, to prove that it arrived, and passes out of the care of the Post Office into the care of Miss Varga, who has been watching the road.'}];
+const U=[0,...ST.slice(1).map(s=>s.u)];
+const DAYS=[0,0,0,1,1,3,7,12,18,19], KM=[0,0,1,420,431,6310,14920,17340,17396,17400];
+const ROT=[0,-1.7,1.2,-.9,1.8,-1.3,1,-1.9,1.2,-.6];
+const MARKS=[
+ {id:'m-rain',th:1.6},{id:'m-cds',th:2.5,x:74,y:150,sh:'round'},{id:'m-thumb',th:3.52,flick:1},
+ {id:'m-air',th:4.5,x:166,y:216,sh:'oval'},{id:'m-hex',th:5.45,x:140,y:366,sh:'hex'},{id:'m-cust',th:5.7,tap:1},
+ {id:'m-salt',th:6.47},{id:'m-crease',th:6.7},{id:'m-hand',th:7.45,x:452,y:182,sh:'box'},{id:'m-pencil',th:7.7},
+ {id:'m-redir',th:8.4,tap:1},{id:'m-ship',th:8.62,x:886,y:238,sh:'sbox'},{id:'m-recv',th:9.5,x:905,y:522,sh:'round'}];
+MARKS[1].x=790; // strike lands between datestamp and wavy lines
+MARKS.forEach(m=>{m.el=document.getElementById(m.id);m.want=false;m.busy=false});
+
+const stage=$('#stage'), env=$('#env'), kick=$('#kick'), flip=$('#flip'), front=$('#front'), back=$('#back');
+const scenes=$$('.scene'), cap=$('#cap'), letter=$('#letter'), sheet=$('.sheet'), track=$('#track');
+const map=$('#map'), glyph=$('#glyph'), done=$('#done');
+let vw=0,vh=0,port=false,rib=84,ew=0,eh=0,cy=0,LW=0,LH=0,mapW=0,mapH=0;
+let cur=0,target=0,raf=0,first=true,tiltX=0,tiltY=0,tX=0,tY=0;
+
+/* ---- build: route dots, letter panels, address fitting ---- */
+const dots=ST.slice(1).map((s,k)=>{const b=document.createElement('button');b.className='dot'+(k>5?' e':'');b.setAttribute('aria-label','Go to stage '+(k+1)+': '+s.n);
+  b.innerHTML='<span>'+s.n.toUpperCase()+'</span>';b.addEventListener('click',()=>go(k+1));map.insertBefore(b,glyph);return b});
+const ink1=$('.p1 .inkw'); const pans=$$('.pan');
+pans.slice(1).forEach(p=>p.appendChild(ink1.cloneNode(true)));
+const inks=$$('.inkw');
+$$('text[data-max]').forEach(t=>{const mx=+t.dataset.max; try{if(t.getComputedTextLength()>mx){t.setAttribute('textLength',mx);t.setAttribute('lengthAdjust','spacingAndGlyphs')}}catch(e){}});
+
+function routeXY(u){return [ (20+960*u)/1000*mapW, (46-136*u*(1-u))/60*mapH ]}
+function layout(){
+  const w=window.innerWidth,h=window.innerHeight; const widthChanged=w!==vw; vw=w; vh=h;
+  port=vw/vh<1.15||vw<700; document.body.classList.toggle('port',port);
+  rib=port?74:84; const R=1000/620;
+  if(port){ const res=vw<700?236:250; ew=Math.min(vw*.92,760,(vh-rib-res-70)*R); ew=Math.max(ew,220); eh=ew/R; cy=vh-res-10-eh/2; }
+  else{ const avail=vh-rib-196; ew=Math.max(260,Math.min(vw*.69,(avail-26)*R)); eh=ew/R; cy=rib+avail/2+2; }
+  const st=document.documentElement.style;
+  st.setProperty('--ew',ew+'px');st.setProperty('--eh',eh+'px');st.setProperty('--cy',cy+'px');st.setProperty('--pad',Math.max(16,Math.min((vw-ew)/2,(vw-920)/2))+'px');
+  $$('.fit').forEach(g=>{port?g.removeAttribute('transform'):g.setAttribute('transform',g.dataset.t)});
+  const W=Math.max(380,900*vw/vh);
+  scenes.forEach(s=>{ if(s.tagName.toLowerCase()!=='svg')return; s.setAttribute('viewBox','0 0 '+W.toFixed(1)+' 900');
+    const r=s.querySelector('.R'); if(r){ if(W<880) r.style.display='none'; else{ r.style.display=''; r.setAttribute('transform','translate('+(W-1600).toFixed(1)+',0)') } } });
+  LW=Math.min(740,vw-24); letter.style.width=LW+'px'; letter.style.marginLeft=(-LW/2)+'px';
+  ink1.style.height='auto'; const h3=Math.ceil(ink1.offsetHeight/3); LH=h3*3; sheet.style.height=LH+'px';
+  pans.forEach((p,k)=>{p.style.top=(k*h3)+'px';p.style.height=(h3+(k<2?.6:0))+'px';inks[k].style.top=(-k*h3)+'px';inks[k].style.height=LH+'px'});
+  const mr=map.getBoundingClientRect(); mapW=mr.width; mapH=mr.height;
+  dots.forEach((d,k)=>{const [x,y]=routeXY(U[k+1]); d.style.left=x+'px'; d.style.top=y+'px'});
+  if(widthChanged||first) track.style.height=((HOLD+9*SEG+FIN)*vh+vh)+'px';
+  target=toS(window.scrollY/vh); if(first)cur=target; render();
+}
+function toS(P){ if(P<HOLD)return P/HOLD*.999; P-=HOLD; if(P<9*SEG)return 1+P/SEG; return 10+clamp((P-9*SEG)/FIN) }
+function go(i){ const y=i<1?0:(HOLD+(i-1+.8)*SEG)*vh; window.scrollTo({top:y,behavior:reduce?'auto':'smooth'}) }
+
+/* ---- handstamps ---- */
+let slot=0;
+function setMark(m){ const on=m.want; if(on){const r=m.el.querySelector('.rot'); if(r){const a=(Math.random()*9-4.5).toFixed(1); const bb=r.getBBox(); r.setAttribute('transform','rotate('+a+' '+(bb.x+bb.width/2).toFixed(0)+' '+(bb.y+bb.height/2).toFixed(0)+')')}}
+  m.el.classList.toggle('on',on); m.state=on }
+function recoil(big){ if(reduce)return; kick.animate([{transform:'none'},{transform:'translate(1px,'+(big?7:4)+'px) scale('+(big?.978:.988)+') rotate(.35deg)',offset:.16},{transform:'translate(0,-2px) scale(1.005) rotate(-.15deg)',offset:.48},{transform:'none'}],{duration:440,easing:'cubic-bezier(.25,1.2,.4,1)'}) }
+function fire(m,quiet){
+  if(quiet||reduce||!m.sh){ setMark(m); if(!quiet&&!reduce){ if(m.flick){kick.animate([{transform:'none'},{transform:'translate(2.5%,-3%) rotate(5deg) scale(.93)',offset:.3},{transform:'translate(-.6%,.6%) rotate(-1.2deg) scale(1.01)',offset:.7},{transform:'none'}],{duration:520,easing:'cubic-bezier(.3,1.3,.5,1)'});thump(.35)} else if(m.tap&&m.want){recoil(false);thump(.3)} } return }
+  if(m.busy)return; m.busy=true;
+  const now=performance.now(); const delay=Math.max(0,slot-now); slot=Math.max(now,slot)+120;
+  const on=m.want, d=on?660:440, r=(Math.random()*16-8).toFixed(1);
+  const el=document.createElement('div'); el.className='stamper '+m.sh; el.style.left=(m.x/10)+'%'; el.style.top=(m.y/6.2)+'%'; env.appendChild(el);
+  const c='translate(-50%,-50%) ';
+  const a=el.animate([
+    {transform:c+'translate(-40%,-210%) scale(2.7) rotate(-16deg)',opacity:0,easing:'cubic-bezier(.75,0,1,.55)'},
+    {transform:c+'translate(0,0) scale(1) rotate('+r+'deg)',opacity:1,offset:.46,easing:'linear'},
+    {transform:c+'translate(0,0) scale(.97) rotate('+r+'deg)',opacity:1,offset:.6,easing:'cubic-bezier(.1,.6,.3,1)'},
+    {transform:c+'translate(34%,-190%) scale(2.4) rotate(10deg)',opacity:0}],{duration:d,delay,fill:'both'});
+  setTimeout(()=>{ setMark(m); recoil(true); thump(on?1:.5) },delay+d*.47);
+  a.onfinish=()=>{ el.remove(); m.busy=false; if(m.want!==m.state) fire(m) };
+}
+function checkMarks(s,quiet){
+  const list=s>=lastS?MARKS:[...MARKS].reverse();
+  for(const m of list){ const want=m.want?s>=m.th-.05:s>=m.th; if(want!==m.want){ m.want=want; fire(m,quiet||s>10.07) } }
+  lastS=s;
+}
+let lastS=0;
+
+/* ---- render ---- */
+let capShown=0, capO=0, glyphNow='', dStr='', tStr='', pStr='', nStr=['','',''];
+const MON=d=>d>31?[(d-31),'APR']:[d,'MAR'];
+function render(){
+  const s=cur, i=Math.floor(s), t=s-i, u10=s>=10?s-10:0;
+  let pos, tt=1;
+  if(s<1)pos=0; else if(s<10){tt=clamp(t/.32);pos=i-1+ease(tt)} else pos=9+ease(clamp(u10/.1));
+  scenes.forEach((el,k)=>{ const d=k-pos, vis=Math.abs(d)<1; if(el._v!==vis){el._v=vis;el.style.display=vis?'':'none'}
+    if(vis){ if(reduce){el.style.opacity=(1-Math.abs(d)).toFixed(3)} else el.style.transform='translate3d('+(d*vw).toFixed(1)+'px,0,0)' } });
+
+  /* envelope */
+  let x=0,y=0,rot=0,sc=1,fl=0,op=1,fin=0;
+  if(s<1){ y=-(cy+eh); op=0 }
+  else if(s<10){
+    const e=ease(tt); rot=lerp(ROT[i-1],ROT[i],e);
+    if(i===1){ const f=clamp((t-.07)/.36); if(reduce){op=f} else { y=-(1-outBack(f))*(cy+eh*.75); rot=lerp(-17,ROT[1],ease(f)); x=(1-f)*vw*.05 } op=f>0?op:0 }
+    else if(!reduce){ const w=Math.sin(Math.PI*tt); rot+=w*2.4*(i%2?1:-1); x=-w*vw*.03; y=-w*eh*.025 }
+  } else {
+    rot=ROT[9]*(1-ease(clamp(u10/.1)));
+    fl=ease(clamp((u10-.06)/.16)); fin=ease(clamp(u10/.2)); sc=1-.25*fin-.04*Math.sin(Math.PI*fl);
+    const drop=clamp((u10-.6)/.14); y=fin*eh*.17+drop*drop*drop*(vh-cy+eh); rot+=drop*8;
+  }
+  env.style.opacity=op; env.style.visibility=(op===0||(s>=10&&u10>.76))?'hidden':'visible';
+  env.style.transform='translate3d('+x.toFixed(1)+'px,'+y.toFixed(1)+'px,0) rotate('+rot.toFixed(2)+'deg) scale('+sc.toFixed(3)+')';
+  if(reduce){ front.style.opacity=1-fl; back.style.opacity=fl; back.style.transform='none'; front.style.visibility=fl>.99?'hidden':'visible' }
+  else flip.style.transform='rotateX('+(tiltY*(1-fl)).toFixed(2)+'deg) rotateY('+(fl*180+tiltX*(1-fl)).toFixed(2)+'deg)';
+
+  /* finale: slit, flap, letter */
+  if(s>=10){
+    const sl=clamp((u10-.25)/.11), fo=ease(clamp((u10-.38)/.09)), rise=ease(clamp((u10-.48)/.12)), mv=ease(clamp((u10-.6)/.14));
+    const un3=ease(clamp((u10-.7)/.1)), un1=ease(clamp((u10-.77)/.11)), rd=clamp((u10-.88)/.12);
+    $('#slit').setAttribute('stroke-dasharray',sl.toFixed(3)+' 1');
+    const kn=$('#knife'); kn.setAttribute('opacity',sl>0&&sl<1?1:0); kn.setAttribute('transform','translate('+(-230+sl*1260).toFixed(0)+',4) rotate(-9)');
+    $('#flap').setAttribute('transform','translate(0,2) scale(1,'+(1-2*fo).toFixed(3)+') translate(0,-2)');
+    $('#flapP').setAttribute('fill',fo>.5?'url(#lining)':'#F7F1E3'); $('#ret').setAttribute('opacity',fo>.5?0:1); $('#flap').lastElementChild.previousElementSibling.setAttribute('opacity',fo>.5?0:1);
+    const eH=eh*sc, eC=cy+fin*eh*.17, k=Math.min(1,eH*.8/(LH/3),ew*sc*.86/LW), top=rib+26, over=Math.max(0,LH+(port?230:200)-(vh-top));
+    const c=lerp(lerp(eC,eC-eH*.7,rise),top+LH/2,mv)-rd*over, scl=lerp(k,1,mv);
+    letter.style.opacity=u10>.47?1:0; letter.style.visibility=u10>.47?'visible':'hidden';
+    letter.style.transform='translate3d(0,'+(c-LH/2).toFixed(1)+'px,0) scale('+scl.toFixed(3)+')';
+    const a1=180*(1-un1), a3=180*(1-un3);
+    pans[0].style.transform='translateZ(1px) rotateX('+(-a1).toFixed(1)+'deg)'; inks[0].style.visibility=a1>90?'hidden':'visible';
+    const h3=LH/3, ls=$('#lsh'); ls.style.top=((1-un1)*h3).toFixed(1)+'px'; ls.style.height=(h3*(1+un1+un3)).toFixed(1)+'px';
+    pans[2].style.transform='translateZ(2px) rotateX('+a3.toFixed(1)+'deg)'; inks[2].style.visibility=a3>90?'hidden':'visible';
+    $('#reply').style.opacity=clamp((u10-.9)/.06); $('#reply').style.pointerEvents=u10>.92?'auto':'none';
+  } else if(letter.style.visibility!=='hidden'){ letter.style.opacity=0; letter.style.visibility='hidden' }
+
+  /* caption */
+  let co=0; if(s>=1&&s<10) co=clamp((t-.26)/.1)*(i<9?clamp((1-t)/.05):1); else if(s>=10) co=1-clamp(u10/.05);
+  const ci=clamp(i,1,9);
+  if(ci!==capShown&&(co<.08||capO<.08||capShown===0)){ capShown=ci; $('#capN').textContent='REEL '+ci+' OF 9'; $('#capH').textContent=ST[ci].h; $('#capB').textContent=ST[ci].b }
+  if(capShown!==ci) co=0; capO=co;
+  $('#tally').style.opacity=(s<.6||u10>.8)?0:1; cap.style.opacity=co.toFixed(3); cap.style.transform='translate3d(0,'+((1-co)*16).toFixed(1)+'px,0) rotate('+((1-co)*-.6).toFixed(2)+'deg)';
+
+  /* ticker */
+  const k=clamp(i,1,9), st=ST[k], tm=st.m+st.sp*(s<1?0:s>=10?1:clamp((t-.3)/.7));
+  const dd=MON(14+Math.floor(tm/1440)), hm=Math.floor(tm%1440), ds=dd[0]+' '+dd[1]+' 1961', ts=String(Math.floor(hm/60)).padStart(2,'0')+':'+String(hm%60).padStart(2,'0');
+  if(ds!==dStr)$('#tD').textContent=dStr=ds; if(ts!==tStr)$('#tT').textContent=tStr=ts;
+  const ps=(k===8&&t>.6&&s<10)?'THE CLIFF ROAD':st.p; if(ps!==pStr)$('#tP').textContent=pStr=ps;
+
+  /* tally + route */
+  const e=s<1?0:s>=10?1:ease(tt), a=s<1?0:Math.min(i,9)-1, b=s<1?0:Math.min(i,9);
+  const nv=[Math.round(lerp(DAYS[a],DAYS[b],e)),Math.round(lerp(KM[a],KM[b],e)).toLocaleString('en-GB'),Math.round(lerp(a,b,e))];
+  ['#nD','#nK','#nH'].forEach((q,n)=>{ if(nStr[n]!==nv[n]) $(q).textContent=nStr[n]=nv[n] });
+  const uu=lerp(U[a],U[b],e), [gx,gy]=routeXY(uu); glyph.style.left=gx+'px'; glyph.style.top=Math.max(gy,27)+'px'; done.setAttribute('stroke-dasharray',uu.toFixed(4)+' 1');
+  const reached=s<1?0:(tt>=1||s>=10?b:a); dots.forEach((d,n)=>{d.classList.toggle('lit',n+1<=reached);d.classList.toggle('now',n+1===reached&&s<10)});
+  const g=s<1?'env':(k===8&&t>.6)?'bike':st.g;
+  if(g!==glyphNow){ glyphNow=g; glyph.querySelectorAll('svg').forEach(v=>v.classList.toggle('on',v.dataset.g===g)); }
+  if(stageNow!==k){ stageNow=k; ambience() }
+  checkMarks(s,first); first=false;
+}
+let stageNow=0;
+function tick(){ raf=0;
+  cur+=(target-cur)*(reduce?1:.13); if(Math.abs(target-cur)<.0005)cur=target;
+  tiltX+=(tX-tiltX)*.08; tiltY+=(tY-tiltY)*.08; const tiltLive=Math.abs(tX-tiltX)+Math.abs(tY-tiltY)>.01;
+  render(); if(cur!==target||tiltLive) req(); }
+function req(){ if(!raf&&!document.hidden) raf=requestAnimationFrame(tick) }
+addEventListener('scroll',()=>{ target=toS(window.scrollY/vh); req() },{passive:true});
+addEventListener('resize',layout);
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ if(raf){cancelAnimationFrame(raf);raf=0} if(AC&&on)AC.suspend() } else { if(AC&&on)AC.resume(); req() } });
+addEventListener('pointermove',e=>{ if(e.pointerType!=='mouse'||reduce)return; tX=(e.clientX/vw-.5)*5; tY=-(e.clientY/vh-.5)*4; req() },{passive:true});
+$('#cue').addEventListener('click',()=>go(1));
+$('#again').addEventListener('click',()=>go(0));
+/* hold the envelope up to the light */
+const lit=v=>env.classList.toggle('lit',v);
+env.addEventListener('pointerdown',()=>lit(true)); ['pointerup','pointerleave','pointercancel'].forEach(n=>env.addEventListener(n,()=>lit(false)));
+
+/* ---- sound: synthesised, off until asked ---- */
+let AC=null,on=false,G={},gullOK=false;
+const AMB={rain:[[1],.055],train:[[3],.3],drone:[[4,5,6],.05],sea:[[6,8,9],.09]};
+function audioInit(){
+  AC=new (window.AudioContext||window.webkitAudioContext)(); const sr=AC.sampleRate;
+  const out=AC.createGain(); out.gain.value=0; out.connect(AC.destination); G.out=out;
+  const nb=AC.createBuffer(1,sr*2,sr), nd=nb.getChannelData(0); for(let k=0;k<nd.length;k++)nd[k]=Math.random()*2-1; G.nb=nb;
+  const loop=(buf,type,f)=>{const s=AC.createBufferSource();s.buffer=buf;s.loop=true;const fl=AC.createBiquadFilter();fl.type=type;fl.frequency.value=f;const g=AC.createGain();g.gain.value=0;s.connect(fl);fl.connect(g);g.connect(out);s.start();return g};
+  G.rain=loop(nb,'highpass',2400); G.sea=loop(nb,'lowpass',380);
+  const tb=AC.createBuffer(1,Math.floor(sr*.94),sr), td=tb.getChannelData(0);
+  [0,.13,.47,.6].forEach(t0=>{const a=Math.floor(t0*sr),n=Math.floor(sr*.1);for(let k=0;k<n;k++)td[a+k]+=(Math.random()*2-1)*Math.exp(-k/(sr*.02))});
+  G.train=loop(tb,'lowpass',620);
+  const dg=AC.createGain(); dg.gain.value=0; const lp=AC.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=240;
+  [58,58.8,87.4,116.3].forEach(f=>{const o=AC.createOscillator();o.type='sawtooth';o.frequency.value=f;o.connect(lp);o.start()}); lp.connect(dg); dg.connect(out); G.drone=dg;
+  setInterval(()=>{ if(!on||!gullOK||document.hidden||Math.random()<.4)return; const n=2+Math.floor(Math.random()*3), t0=AC.currentTime;
+    for(let k=0;k<n;k++){const o=AC.createOscillator(),g=AC.createGain(),t=t0+k*.27;o.type='triangle';o.frequency.setValueAtTime(1500+Math.random()*200,t);o.frequency.exponentialRampToValueAtTime(980,t+.2);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.035,t+.04);g.gain.exponentialRampToValueAtTime(.0001,t+.22);o.connect(g);g.connect(out);o.start(t);o.stop(t+.25)} },3600);
+}
+function ambience(){ if(!AC)return; const fin=cur>=10.05; for(const k in AMB) G[k].gain.setTargetAtTime(!fin&&AMB[k][0].includes(stageNow)?AMB[k][1]:0,AC.currentTime,.5); gullOK=[1,8,9].includes(stageNow) }
+function thump(v){ if(!AC||!on)return; const t=AC.currentTime, o=AC.createOscillator(), g=AC.createGain();
+  o.frequency.setValueAtTime(160,t); o.frequency.exponentialRampToValueAtTime(46,t+.11); g.gain.setValueAtTime(.7*v,t); g.gain.exponentialRampToValueAtTime(.0001,t+.2); o.connect(g); g.connect(G.out); o.start(t); o.stop(t+.22);
+  const s=AC.createBufferSource(), f=AC.createBiquadFilter(), g2=AC.createGain(); s.buffer=G.nb; f.type='lowpass'; f.frequency.value=1500; g2.gain.setValueAtTime(.4*v,t); g2.gain.exponentialRampToValueAtTime(.0001,t+.06); s.connect(f); f.connect(g2); g2.connect(G.out); s.start(t,Math.random()); s.stop(t+.08) }
+$('#snd').addEventListener('click',()=>{ if(!AC)audioInit(); on=!on; AC.resume(); G.out.gain.setTargetAtTime(on?.9:0,AC.currentTime,.08);
+  $('#snd').setAttribute('aria-pressed',on); $('#sndL').textContent=on?'SOUND ON':'SOUND OFF'; ambience(); if(on)setTimeout(()=>thump(.6),60) });
+
+layout();
+})();
+</script>
+</body>
+</html>

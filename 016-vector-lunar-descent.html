@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Descent — A Vector Lander</title>
+<style>
+  :root{
+    --black:#020403;
+    --mint:#B8FFD9;
+    --green:#5CFFB0;
+    --case:#070c0a;
+    --case-hi:#0e1813;
+    --edge:#16271f;
+    --engrave:#4f7c66;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:
+      radial-gradient(120% 90% at 50% 38%, #08110d 0%, #040806 46%, var(--black) 100%);
+    color:var(--mint);
+    overflow:hidden;
+    font-family:"Gill Sans","Gill Sans MT",Futura,"Century Gothic","Trebuchet MS",sans-serif;
+    -webkit-user-select:none;user-select:none;
+    -webkit-tap-highlight-color:transparent;
+    overscroll-behavior:none;
+  }
+  .cab{
+    position:fixed;inset:0;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:10px;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  .bezel{
+    position:relative;
+    padding:7px;
+    border-radius:clamp(28px,5.6vmin,72px);
+    background:linear-gradient(160deg,var(--case-hi) 0%,var(--case) 42%,#030605 100%);
+    box-shadow:
+      0 0 0 1px var(--edge),
+      0 0 0 3px #030504,
+      0 30px 80px -20px rgba(0,0,0,.9),
+      0 0 120px -30px rgba(92,255,176,.16);
+    opacity:0;transform:scale(.985);
+    animation:warm 1.4s cubic-bezier(.16,.84,.24,1) .1s forwards;
+  }
+  @keyframes warm{to{opacity:1;transform:none}}
+  .tube{
+    --lit:0;
+    position:relative;
+    width:min(92vw,128vh);height:min(78vh,70vw);
+    border-radius:clamp(22px,5vmin,64px);
+    background:var(--black);
+    overflow:hidden;
+    touch-action:none;
+    cursor:crosshair;
+    box-shadow:0 0 0 1px #0b1510, inset 0 0 0 1px rgba(92,255,176,.05);
+    isolation:isolate;
+  }
+  canvas{position:absolute;left:0;top:0;width:100%;height:100%;display:block}
+  #bloom{width:25%;height:25%;transform:scale(4);transform-origin:0 0;filter:blur(3.3px);mix-blend-mode:screen;opacity:.5;pointer-events:none}
+  .glass{
+    position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+    background:
+      radial-gradient(118% 118% at 50% 50%, transparent 56%, rgba(0,0,0,.34) 82%, rgba(0,0,0,.72) 100%),
+      linear-gradient(118deg, rgba(92,255,176,.045) 0%, rgba(92,255,176,.012) 22%, transparent 36%);
+    box-shadow:
+      inset 0 0 70px 6px rgba(0,0,0,.85),
+      inset 0 2px 2px rgba(92,255,176,.07),
+      inset 0 -1px 1px rgba(92,255,176,.03);
+  }
+  .glass::before{
+    content:"";position:absolute;left:6.5%;top:7%;width:19%;height:31%;
+    border-radius:18% 30% 26% 22%;
+    background:
+      linear-gradient(90deg, transparent 47%, #020403 47%, #020403 53%, transparent 53%),
+      linear-gradient(0deg, transparent 46%, #020403 46%, #020403 52%, transparent 52%),
+      linear-gradient(140deg, #5CFFB0, #1f6b4a);
+    transform:perspective(600px) rotateY(24deg) rotateX(-8deg) skewY(-5deg);
+    filter:blur(9px);
+    opacity:.05;
+  }
+  .glass::after{
+    content:"";position:absolute;inset:0;border-radius:inherit;
+    background:radial-gradient(70% 70% at 50% 56%, rgba(92,255,176,.11), transparent 72%);
+    opacity:var(--lit);
+  }
+  .grain{
+    position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:.06;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .36 0 0 0 0 1 0 0 0 0 .69 .9 0 0 0 -.38'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .tube button{
+    position:absolute;appearance:none;-webkit-appearance:none;
+    background:transparent;border:0;color:transparent;font-size:0;
+    cursor:pointer;touch-action:none;border-radius:6px;
+    outline:none;
+  }
+  .tube button:focus-visible{outline:2px dashed var(--green);outline-offset:4px}
+  .tube button[hidden]{display:none}
+  #bStart{left:50%;top:58%;width:min(74%,330px);height:58px;transform:translate(-50%,-50%)}
+  #bSound,#bPause{top:2.6%;width:46px;height:46px}
+  #bPause{left:calc(50% - 50px)}
+  #bSound{left:calc(50% + 4px)}
+  .pad{bottom:max(14px,3.4%);height:clamp(62px,12.5%,94px);width:27%;display:none}
+  .tube.touch .pad{display:block}
+  #bL{left:5.5%}
+  #bT{left:36.5%}
+  #bR{right:5.5%}
+  @media (max-width:700px){
+    #bSound,#bPause{left:auto;top:96px}
+    #bSound{right:14px}
+    #bPause{right:64px}
+    .tube.attract #bSound{right:auto;left:calc(50% - 23px);top:7px}
+    #bStart{top:52.5%}
+  }
+
+  .plate{
+    display:flex;align-items:center;gap:14px;
+    padding:6px 12px;
+    border-radius:3px;
+    background:linear-gradient(180deg,#0c1511,#080f0c);
+    box-shadow:0 0 0 1px #14231c, inset 0 1px 0 rgba(184,255,217,.05), 0 2px 6px rgba(0,0,0,.8);
+    font-size:10.5px;letter-spacing:.34em;text-transform:uppercase;
+    color:var(--engrave);
+    text-shadow:0 1px 0 rgba(184,255,217,.07), 0 -1px 0 #000;
+    white-space:nowrap;
+    opacity:0;animation:warm 1.2s cubic-bezier(.16,.84,.24,1) .5s forwards;
+  }
+  .plate span{padding-left:.34em}
+  .plate i{
+    width:7px;height:7px;border-radius:50%;flex:none;
+    background:
+      linear-gradient(35deg, transparent 42%, #020403 42%, #020403 58%, transparent 58%),
+      radial-gradient(circle at 35% 30%, #1d3027, #0a120e 70%);
+    box-shadow:0 0 0 1px #030504;
+  }
+  .plate i:last-of-type{transform:rotate(70deg)}
+  .plate b{
+    width:5px;height:5px;border-radius:50%;flex:none;
+    background:var(--mint);
+    box-shadow:0 0 6px 1px var(--green), 0 0 14px 2px rgba(92,255,176,.45);
+    animation:led 5.2s steps(1) infinite;
+  }
+  @keyframes led{0%,93%{opacity:1}94%,96%{opacity:.55}97%{opacity:1}}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  @media (max-width:420px){.plate{font-size:9px;letter-spacing:.26em;gap:10px}}
+  @media (max-height:420px){.plate{display:none}}
+  @media (max-height:520px){#bStart{top:61%;height:46px}}
+  @media (prefers-reduced-motion: reduce){
+    .bezel,.plate{animation-duration:.01s;animation-delay:0s}
+    .plate b{animation:none}
+  }
+</style>
+</head>
+<body>
+<main class="cab">
+  <h1 class="sr">Descent — a vector lander</h1>
+  <p class="sr">A lunar landing game on a vector display. Rotate with the left and right arrow keys or A and D, fire the engine with the up arrow, W or space. Land upright and slowly on a marked pad. P pauses, R restarts.</p>
+  <div class="bezel">
+    <div class="tube" id="tube">
+      <canvas id="scr" aria-hidden="true"></canvas>
+      <canvas id="bloom" aria-hidden="true"></canvas>
+      <div class="grain"></div>
+      <div class="glass"></div>
+      <button id="bStart" type="button" aria-label="Start descent">Start descent</button>
+      <button id="bPause" type="button" aria-label="Pause" aria-pressed="false" hidden>Pause</button>
+      <button id="bSound" type="button" aria-label="Sound" aria-pressed="false">Sound</button>
+      <button id="bL" class="pad" type="button" aria-label="Rotate left">Rotate left</button>
+      <button id="bT" class="pad" type="button" aria-label="Thrust">Thrust</button>
+      <button id="bR" class="pad" type="button" aria-label="Rotate right">Rotate right</button>
+    </div>
+  </div>
+  <div class="plate" aria-hidden="true"><i></i><b></b><span>Vectron 21 · X-Y Display</span><i></i></div>
+  <div class="sr" id="live" aria-live="polite"></div>
+</main>
+
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const tube = $('tube'), cv = $('scr'), bl = $('bloom'), live = $('live');
+const bStart = $('bStart'), bPause = $('bPause'), bSound = $('bSound'), bL = $('bL'), bT = $('bT'), bR = $('bR');
+const dctx = cv.getContext('2d'), bctx = bl.getContext('2d');
+const tc = document.createElement('canvas'), tctx = tc.getContext('2d');
+const RM = matchMedia('(prefers-reduced-motion: reduce)');
+let reduced = RM.matches;
+RM.addEventListener('change', e => { reduced = e.matches; });
+
+const MINT = '#B8FFD9', GREEN = '#5CFFB0';
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const lerp = (a, b, t) => a + (b - a) * t;
+const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+const easeOut = t => 1 - Math.pow(1 - t, 3);
+const R = Math.random;
+function rng(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+/* ---------- stroke font: 4 x 6 grid, pairs of digits, polylines split by spaces ---------- */
+const GL = {
+  A:'0602204246 0444', B:'06003041423303 3344453606', C:'4130100105163645', D:'06002042442606',
+  E:'40000646 0333', F:'400006 0333', G:'41301001051636454323', H:'0006 4046 0343', I:'1030 2026 1636',
+  J:'404536160504', K:'0006 400346', L:'000646', M:'0600234046', N:'06004640', O:'100105163645413010',
+  P:'06003041423303', Q:'100105163645413010 2446', R:'06003041423303 2346', S:'413010010213334445361605',
+  T:'0040 2026', U:'000516364540', V:'002640', W:'0016233640', X:'0046 4006', Y:'002340 2326', Z:'00400646',
+  0:'100105163645413010 1531', 1:'112026 1636', 2:'01103041420646', 3:'01103041423313 334445361605',
+  4:'36300444', 5:'400003334445361605', 6:'4130100105163645443303', 7:'004016',
+  8:'13020110304142331304051636454433', 9:'0516364541301001021343',
+  '.':'2626', ',':'2517', ':':'2222 2525', '-':'1333', '+':'1333 2224', '/':'0640', "'":'2022',
+  '!':'2024 2626', '?':'01103041422324 2626', '=':'0242 0444', '·':'2323', '×':'0145 4105',
+  '→':'0343 214325', '←':'4303 210325', '↑':'2620 022042', '↓':'2026 042644'
+};
+const GP = {};
+for (const k in GL) GP[k] = GL[k].split(' ').map(s => { const p = []; for (let i = 0; i < s.length; i += 2) p.push(+s[i], +s[i + 1]); return p; });
+
+/* ---------- beam list ---------- */
+const D0 = 0, D1 = 1, D2 = 2, D3 = 3, HOT = 4;
+const LV = [0.2, 0.42, 0.7, 1, 1];
+const B = [[], [], [], [], []];
+let cw = 800, ch = 600, dpr = 1, hx = 400, hy = 300, kW = 1, jx = 0, jy = 0, js = 0;
+const KW = 0.02;
+function L(x1, y1, x2, y2, b) {
+  if ((x1 < -40 && x2 < -40) || (x1 > cw + 40 && x2 > cw + 40) || (y1 < -40 && y2 < -40) || (y1 > ch + 40 && y2 > ch + 40)) return;
+  const a = B[b];
+  let nx = (x1 - hx) / hx, ny = (y1 - hy) / hy, f = 1 - KW * (nx * nx + ny * ny);
+  const ax = hx + (x1 - hx) * f + jx + (R() - .5) * js, ay = hy + (y1 - hy) * f + jy + (R() - .5) * js;
+  nx = (x2 - hx) / hx; ny = (y2 - hy) / hy; f = 1 - KW * (nx * nx + ny * ny);
+  a.push(ax, ay, hx + (x2 - hx) * f + jx + (R() - .5) * js, hy + (y2 - hy) * f + jy + (R() - .5) * js);
+}
+function poly(p, b, ox, oy, s) {
+  for (let i = 0; i + 3 < p.length; i += 2) L(ox + p[i] * s, oy + p[i + 1] * s, ox + p[i + 2] * s, oy + p[i + 3] * s, b);
+}
+function textW(str, u, tr) { return str.length * (6 + (tr || 0)) * u - (2 + (tr || 0)) * u; }
+function text(str, x, y, u, b, al, tr) {
+  const adv = (6 + (tr || 0)) * u, w = textW(str, u, tr);
+  if (al === 1) x -= w / 2; else if (al === 2) x -= w;
+  for (let i = 0; i < str.length; i++) {
+    const g = GP[str[i]];
+    if (g) for (const p of g) for (let j = 0; j + 3 < p.length; j += 2) {
+      const x1 = x + p[j] * u, y1 = y + p[j + 1] * u; let x2 = x + p[j + 2] * u; const y2 = y + p[j + 3] * u;
+      if (x1 === x2 && y1 === y2) x2 += 0.5;
+      L(x1, y1, x2, y2, b);
+    }
+    x += adv;
+  }
+  return w;
+}
+function dot(x, y, b) { L(x, y, x + 0.5, y, b); }
+
+/* ---------- world ---------- */
+const PERIOD = 1200, GR = 10, TH = 27, BURN = 30, SAFE_VY = 16, SAFE_VX = 10, SAFE_A = 0.2;
+const SHIP = [
+  [-4, 3, -6, 7, -3, 11, 3, 11, 6, 7, 4, 3],
+  [-7, 3, 7, 3, 7, -2, -7, -2, -7, 3],
+  [-2.2, 6, 0.8, 8.6, 2.6, 6, -2.2, 6],
+  [-7, 1, -11, -8], [-7, -2, -9.3, -4.3], [-13, -8, -9, -8],
+  [7, 1, 11, -8], [7, -2, 9.3, -4.3], [13, -8, 9, -8],
+  [-1.8, -2, -3.5, -6, 3.5, -6, 1.8, -2],
+  [3, 11, 6.5, 14.5], [5, 15.6, 8, 13.4],
+  [-9, 2, -7, 2], [7, 2, 9, 2]
+];
+const CP = [[-11, -8], [11, -8], [0, -6], [-7, 3], [7, 3], [-6, 7], [6, 7], [-3, 11], [3, 11], [6.5, 14.5]];
+const SITES = ['KESSLER FLATS', 'THE QUIET SHELF', 'MARE PATIENTIA', 'HOLLOW OF TUESDAY', 'RIMA OBLIGATA', 'LACUS ADEQUATUS', 'DORSA NERVOSA', 'BASIN OF SECOND THOUGHTS'];
+const MSG_LAND = [
+  'CONTACT LIGHT. ENGINE STOP. THE EAGLE-EYED AMONG YOU MAY EXHALE.',
+  'TOUCHDOWN CONFIRMED. THE FLIGHT SURGEON REPORTS PULSES RETURNING TO NORMAL.',
+  'NOMINAL. WE HAD A SPEECH PREPARED FOR THE OTHER OUTCOME.',
+  'BOTH FEET ON THE REGOLITH. PAPERWORK TO FOLLOW.',
+  'LANDED. THE BACK ROOM OWES THE FRONT ROOM FIVE DOLLARS.'
+];
+const MSG_CRASH = {
+  fast: ['YOU HAVE CREATED A NEW CRATER 2 KM WIDE.', 'THAT WAS LITHOBRAKING. WE DO NOT TEACH LITHOBRAKING.', 'SURFACE ACHIEVED. VEHICLE NOT.'],
+  hard: ['THE LANDING GEAR WAS RATED FOR LESS. SO, IT TURNS OUT, WERE YOU.', 'ON THE PAD, THROUGH THE PAD. PARTIAL CREDIT IS NOT AWARDED.'],
+  tilt: ['ARRIVED SIDEWAYS. THE MANUAL WAS SPECIFIC ABOUT WHICH END GOES DOWN.', 'ATTITUDE NOTED. ALSO YOUR ORIENTATION.'],
+  drift: ['A GENTLE DESCENT, AT A BRISK WALK. THE LEGS HAVE FILED A COMPLAINT.', 'TOUCHDOWN, FOLLOWED BY A SKID, FOLLOWED BY SILENCE.'],
+  off: ['A FINE APPROACH TO A PLACE THAT IS NOT A PAD.', 'TELEMETRY LOST. THE LANDER IS NOW A DEBRIS FIELD WITH A FLAG.', 'THE PADS ARE THE FLAT PARTS. WE CAN SEND A DIAGRAM.']
+};
+
+let site = null, ship = null, debris = [], dust = [], rings = [];
+let mode = 'attract', paused = false, siteN = 1, score = 0, high = 0, lives = 3, seedBase = 1;
+let viewW = 800, viewH = 600, base = 1, playH = 600, inset = 0, touchUI = false;
+let time = 0, modeT = 0, demoWait = 0, msg = null, notice = null, landN = 0, crashN = 0, lit = 0, litSet = -1;
+const cam = { x: 0, y: 0, z: 1 };
+const input = { l: false, r: false, t: false };
+const hover = { start: false, sound: false, pause: false };
+let stars = [], farPts = [];
+
+function makeSite(n, seed) {
+  const r = rng(seed);
+  const oct = [[3, 60], [6, 52], [12, 42], [24, 24], [48, 10]];
+  const tabs = oct.map(o => Array.from({ length: o[0] }, () => r()));
+  const hAt = x => {
+    let h = 9;
+    for (let i = 0; i < oct.length; i++) {
+      const c = oct[i][0], t = tabs[i], f = (((x / PERIOD) % 1) + 1) % 1 * c, i0 = Math.floor(f), fr = f - i0;
+      h += oct[i][1] * lerp(t[i0 % c], t[(i0 + 1) % c], fr);
+    }
+    return h;
+  };
+  const N = 92, dx = PERIOD / N;
+  let pts = [];
+  for (let i = 0; i < N; i++) { const x = (i + (r() - .5) * .7) * dx; pts.push([x, hAt(x)]); }
+  const shrink = Math.max(0.6, 1 - 0.075 * (n - 1));
+  const mults = [2, 3, 5, n > 3 ? 5 : 2];
+  for (let i = 3; i > 0; i--) { const j = (r() * (i + 1)) | 0; const t = mults[i]; mults[i] = mults[j]; mults[j] = t; }
+  const baseW = { 2: 74, 3: 52, 5: 38 }, slot = PERIOD / 4, pads = [];
+  mults.forEach((m, i) => {
+    const w = Math.max(29, baseW[m] * shrink), cx = slot * (i + .5) + (r() - .5) * slot * .42, y = clamp(hAt(cx) * (m === 5 ? .8 : 1), 20, 165);
+    pads.push({ cx, y, w, m });
+    pts = pts.filter(p => p[0] < cx - w / 2 - 5 || p[0] > cx + w / 2 + 5);
+    pts.push([cx - w / 2, y], [cx + w / 2, y]);
+  });
+  pts.sort((a, b) => a[0] - b[0]);
+  const dir = r() < .5 ? -1 : 1;
+  const wind = n < 2 ? 0 : dir * Math.min(6.5, 1.4 + 0.9 * (n - 2));
+  return { n, pts, pads, wind, fuel: Math.max(270, 620 - 50 * (n - 1)), name: SITES[(n - 1) % SITES.length] };
+}
+function groundY(x) {
+  const P = site.pts, n = P.length, xm = ((x % PERIOD) + PERIOD) % PERIOD;
+  if (xm < P[0][0]) { const a = P[n - 1], b = P[0], ax = a[0] - PERIOD; return a[1] + (b[1] - a[1]) * (xm - ax) / (b[0] - ax); }
+  let i = n - 1;
+  while (i > 0 && P[i][0] > xm) i--;
+  const a = P[i], bx = i + 1 < n ? P[i + 1][0] : P[0][0] + PERIOD, by = i + 1 < n ? P[i + 1][1] : P[0][1];
+  return a[1] + (by - a[1]) * (xm - a[0]) / ((bx - a[0]) || 1);
+}
+function maxGround(x0, x1) { let m = 0; if (x1 < x0) { const t = x0; x0 = x1; x1 = t; } for (let x = x0; x <= x1; x += 7) m = Math.max(m, groundY(x)); return m; }
+function padAt(x1, x2) {
+  for (const p of site.pads) {
+    const c = p.cx + Math.round(((x1 + x2) / 2 - p.cx) / PERIOD) * PERIOD;
+    if (x1 >= c - p.w / 2 - 1.5 && x2 <= c + p.w / 2 + 1.5) return p;
+  }
+  return null;
+}
+function newShip() { return { x: 0, y: 0, vx: 0, vy: 0, a: 0, va: 0, vaT: 0, thr: 0, thrT: 0, fuel: 600, alive: true, landed: false, auto: false, target: null }; }
+function startY() { return Math.min(viewH - 118 / base, 560); }
+
+function startDemo() {
+  mode = 'attract'; modeT = 0; paused = false; msg = null; notice = null;
+  site = makeSite(1, (R() * 1e9) | 0);
+  ship = newShip(); ship.auto = true;
+  const p = site.pads[(R() * site.pads.length) | 0];
+  ship.x = p.cx - 380 - R() * 140; ship.y = startY(); ship.vx = 30;
+  ship.target = { cx: p.cx, y: p.y, w: p.w };
+  debris = []; dust = []; rings = [];
+  cam.x = ship.x + viewW * .3; cam.z = 1; cam.y = viewH / 2 - 6;
+  syncUI();
+}
+function newGame() { score = 0; lives = 3; seedBase = (R() * 1e9) | 0; landN = (R() * 5) | 0; crashN = (R() * 3) | 0; startSite(1); }
+function startSite(n) {
+  siteN = n; mode = 'play'; modeT = 0; paused = false; msg = null;
+  site = makeSite(n, seedBase + n * 7919);
+  ship = newShip(); ship.fuel = site.fuel;
+  ship.x = 100; ship.y = startY(); ship.vx = 26 + 3 * Math.min(n, 6);
+  debris = []; dust = []; rings = [];
+  cam.x = ship.x + viewW * .3; cam.z = 1; cam.y = viewH / 2 - 6;
+  const nn = String(n).padStart(2, '0');
+  let s = 'SITE ' + nn + ' · ' + site.name + '. ';
+  if (n === 1) s += 'GUIDANCE IS YOURS. TRY TO RETURN IT IN ONE PIECE.';
+  else if (n === 2) s += 'CROSSWIND REPORTED. YES, ON THE MOON. A MEMO HAS BEEN SENT.';
+  else s += 'PADS NARROWER, TANKS LIGHTER. BUDGET SENDS ITS REGARDS.';
+  notice = { lines: null, str: s, t: 0, dur: 6 };
+  say(s);
+  syncUI();
+}
+function say(s) { live.textContent = s; }
+function setMsg(str, info) { msg = { str, info: info || null, t: 0, lines: null }; say(str + (info ? ' ' + info : '')); }
+
+function land(p) {
+  const s = ship;
+  s.y = p.y + 8; s.a = 0; s.va = 0; s.vx = 0; s.vy = 0; s.thr = 0; s.thrT = 0; s.landed = true;
+  if (s.auto) { demoWait = 3.6; return; }
+  const bonus = p.m * (50 + Math.round(s.fuel));
+  score += bonus; high = Math.max(high, score);
+  mode = 'landed'; modeT = 0; notice = null;
+  setMsg(MSG_LAND[landN++ % MSG_LAND.length], '×' + p.m + ' PAD · FUEL ' + Math.round(s.fuel) + ' · +' + bonus);
+  sfxLand(); syncUI();
+}
+function crash(why) {
+  const s = ship, c = Math.cos(s.a), sn = Math.sin(s.a);
+  s.alive = false; s.thr = 0;
+  const sp = Math.hypot(s.vx, s.vy);
+  for (const p of SHIP) for (let i = 0; i + 3 < p.length; i += 2) {
+    const x1 = s.x + p[i] * c + p[i + 1] * sn, y1 = s.y - p[i] * sn + p[i + 1] * c;
+    const x2 = s.x + p[i + 2] * c + p[i + 3] * sn, y2 = s.y - p[i + 2] * sn + p[i + 3] * c;
+    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2, ox = mx - s.x, oy = my - s.y + 4, d = Math.hypot(ox, oy) || 1;
+    const k = 12 + R() * 22 + sp * .3;
+    debris.push({ x: mx, y: my, hx: (x2 - x1) / 2, hy: (y2 - y1) / 2, vx: s.vx * .35 + ox / d * k + (R() - .5) * 14, vy: Math.abs(s.vy) * .3 + Math.abs(oy / d) * k + 8 + R() * 22, r: 0, vr: (R() - .5) * 9, life: 3.2 + R() * 2.4, age: 0 });
+  }
+  const gy = groundY(s.x);
+  for (let i = 0; i < 46; i++) {
+    const a = R() * Math.PI, v = 30 + R() * 110 + sp;
+    dust.push({ x: s.x + (R() - .5) * 10, y: gy + 1, vx: Math.cos(a) * v, vy: Math.sin(a) * v * .8 + 6, life: .5 + R() * 1.3, age: 0, hot: R() < .5 });
+  }
+  rings.push({ x: s.x, y: gy + 2, age: 0 });
+  lit = 1;
+  if (s.auto) { demoWait = 3.4; return; }
+  lives--;
+  const list = MSG_CRASH[why] || MSG_CRASH.fast;
+  if (lives <= 0) {
+    mode = 'over'; high = Math.max(high, score);
+    setMsg(list[crashN++ % list.length], 'MISSION CLOSED · FINAL SCORE ' + String(score).padStart(6, '0'));
+  } else {
+    mode = 'crashed';
+    setMsg(list[crashN++ % list.length], lives + (lives === 1 ? ' LANDER' : ' LANDERS') + ' REMAINING');
+  }
+  modeT = 0; notice = null;
+  sfxCrash(); syncUI();
+}
+
+function autopilot(s) {
+  const p = s.target;
+  let dx = p.cx - s.x; dx -= Math.round(dx / PERIOD) * PERIOD;
+  const alt = s.y - 8 - p.y;
+  const vxd = clamp(dx * 0.34, -32, 32);
+  const axd = (vxd - s.vx) * 1.15;
+  let ad = clamp(axd / TH * 1.6, -0.5, 0.5);
+  let vyd;
+  if (Math.abs(dx) < p.w * .5 - 12.5 && Math.abs(s.vx) < 5) vyd = -clamp(alt * 0.3 + 4, 5, 30);
+  else { const hold = maxGround(s.x - 16, s.x + dx + (dx > 0 ? 16 : -16)) + 62; vyd = clamp((hold - s.y) * 0.6, -30, 12); }
+  if (alt < 26) ad = clamp(ad, -0.1, 0.1);
+  if (alt < 5) ad = 0;
+  s.vaT = clamp((ad - s.a) * 7, -2.5, 2.5);
+  s.thrT = clamp((vyd - s.vy) * 0.4 + GR / (TH * Math.max(.5, Math.cos(s.a))), 0, 1);
+}
+function windNow() { return site.wind ? site.wind * (1 + .35 * Math.sin(time * .7)) : 0; }
+
+function sim(h) {
+  const s = ship;
+  if (s.alive && !s.landed) {
+    if (s.auto) autopilot(s);
+    else { s.vaT = ((input.r ? 1 : 0) - (input.l ? 1 : 0)) * 2.5; s.thrT = (input.t && s.fuel > 0) ? 1 : 0; }
+    s.va += (s.vaT - s.va) * Math.min(1, h * 11); s.a += s.va * h;
+    s.a = Math.atan2(Math.sin(s.a), Math.cos(s.a));
+    s.thr += (s.thrT - s.thr) * Math.min(1, h * (s.thrT > s.thr ? 8 : 13));
+    if (!s.auto) { s.fuel = Math.max(0, s.fuel - BURN * s.thr * h); if (s.fuel <= 0) s.thrT = 0; }
+    const T = TH * s.thr;
+    s.vx += (Math.sin(s.a) * T + (s.auto ? 0 : windNow())) * h;
+    s.vy += (Math.cos(s.a) * T - GR) * h;
+    s.x += s.vx * h; s.y += s.vy * h;
+    if (s.y > viewH + 30 && s.vy > 0) s.vy *= 1 - Math.min(1, h * 4);
+    const c = Math.cos(s.a), sn = Math.sin(s.a);
+    let hit = false, body = false;
+    for (let i = 0; i < CP.length; i++) {
+      const lx = CP[i][0], ly = CP[i][1], wx = s.x + lx * c + ly * sn, wy = s.y - lx * sn + ly * c;
+      if (wy <= groundY(wx)) { hit = true; if (i > 1) body = true; }
+    }
+    if (hit) {
+      const p = padAt(s.x - 11 * c - 8 * sn, s.x + 11 * c - 8 * sn);
+      let why = null;
+      if (s.vy < -SAFE_VY * 1.8 || Math.abs(s.vx) > SAFE_VX * 2.2) why = 'fast';
+      else if (!p) why = 'off';
+      else if (body || Math.abs(s.a) > SAFE_A) why = 'tilt';
+      else if (s.vy < -SAFE_VY) why = 'hard';
+      else if (Math.abs(s.vx) > SAFE_VX) why = 'drift';
+      if (why) crash(why); else land(p);
+    }
+    /* plume striking the surface raises dust */
+    if (s.alive && s.thr > .08) {
+      const dxn = -Math.sin(s.a), dyn = -Math.cos(s.a), nx = s.x + dxn * 6, ny = s.y + dyn * 6, reach = 95;
+      let t = 0; for (; t < reach; t += 3) if (ny + dyn * t <= groundY(nx + dxn * t)) break;
+      s.gdist = t;
+      if (t < reach) {
+        const f = (1 - t / reach) * s.thr, px = nx + dxn * t, py = groundY(px);
+        let n = f * 260 * h; n = (n | 0) + (R() < n % 1 ? 1 : 0);
+        for (let i = 0; i < n && dust.length < 240; i++) {
+          const sgn = R() < .5 ? -1 : 1, v = (34 + R() * 96) * (.45 + f);
+          dust.push({ x: px + sgn * R() * 5, y: py + .6, vx: sgn * v + s.vx * .3, vy: 5 + R() * 44 * f + R() * 8, life: .35 + R() * .85, age: 0, hot: R() < .35 });
+        }
+      }
+    } else s.gdist = 999;
+  }
+  for (let i = debris.length - 1; i >= 0; i--) {
+    const d = debris[i]; d.age += h; if (d.age > d.life) { debris.splice(i, 1); continue; }
+    d.vy -= GR * h; d.x += d.vx * h; d.y += d.vy * h; d.r += d.vr * h;
+    const g = groundY(d.x);
+    if (d.y < g + .8) { d.y = g + .8; if (d.vy < 0) { d.vy = -d.vy * .36; d.vx *= .62; d.vr *= .55; if (Math.abs(d.vy) < 2.5) { d.vy = 0; d.vx *= .8; d.vr *= .8; } } }
+  }
+  for (let i = dust.length - 1; i >= 0; i--) {
+    const d = dust[i]; d.age += h; if (d.age > d.life) { dust[i] = dust[dust.length - 1]; dust.pop(); continue; }
+    d.vy -= GR * .8 * h; d.x += d.vx * h; d.y += d.vy * h;
+    if (d.y < groundY(d.x)) { d.age = d.life; }
+  }
+  for (let i = rings.length - 1; i >= 0; i--) { rings[i].age += h; if (rings[i].age > 1.1) rings.splice(i, 1); }
+}
+
+function updateCam(dt) {
+  const s = ship;
+  let zt = 0;
+  if (mode !== 'attract') {
+    const alt = s.y - 8 - Math.max(groundY(s.x), groundY(s.x - 11), groundY(s.x + 11));
+    zt = smooth(175, 46, alt);
+  }
+  const zT = 1 + 1.5 * zt;
+  cam.z += (zT - cam.z) * Math.min(1, dt * 2.2);
+  const z = cam.z, f = (z - 1) / 1.5;
+  const yT = lerp(viewH / 2 - 6, Math.max(viewH / (2 * z) - 6, groundY(s.x) + 0.27 * viewH / z), f);
+  cam.y += (yT - cam.y) * Math.min(1, dt * 5);
+  const dead = viewW / (2 * z) * (0.56 - 0.46 * f);
+  const xT = clamp(cam.x, s.x - dead, s.x + dead);
+  cam.x += (xT - cam.x) * Math.min(1, dt * 7);
+}
+
+/* ---------- drawing the world ---------- */
+let S = 1, pmid = 300;
+const sx = x => hx + (x - cam.x) * S;
+const sy = y => pmid - (y - cam.y) * S;
+function WL(x1, y1, x2, y2, b) { L(hx + (x1 - cam.x) * S, pmid - (y1 - cam.y) * S, hx + (x2 - cam.x) * S, pmid - (y2 - cam.y) * S, b); }
+function nearSy(px) { return sy(groundY(cam.x + (px - hx) / S)); }
+const FPER = 900;
+function farAt(x) { const n = farPts.length, f = (((x / FPER) % 1) + 1) % 1 * n, i = Math.floor(f); return lerp(farPts[i % n], farPts[(i + 1) % n], f - i); }
+function farGeom() { const zf = 1 + (cam.z - 1) * .4, sc = base * zf; return { sc, cx: cam.x * .5, cy: lerp(viewH / 2 - 6, cam.y, .45) }; }
+function farSy(px, g) { return pmid - (farAt(g.cx + (px - hx) / g.sc) - g.cy) * g.sc; }
+
+let keep = null;
+const inKeep = (x, y) => x > keep.x && x < keep.x + keep.w && y > keep.y && y < keep.y + keep.h;
+function drawWorld(dim) {
+  const tb = dim ? D1 : D2, pb = dim ? D2 : D3;
+  /* far ridge with parallax, hidden where the near ground covers it */
+  const g = farGeom(), step = FPER / farPts.length;
+  const f0 = Math.floor((g.cx - hx / g.sc) / step), f1 = Math.ceil((g.cx + hx / g.sc) / step);
+  let ppx = 0, ppy = 0, pv = false;
+  for (let i = f0; i <= f1; i++) {
+    const fx = i * step, px = hx + (fx - g.cx) * g.sc, py = pmid - (farPts[((i % farPts.length) + farPts.length) % farPts.length] - g.cy) * g.sc;
+    const vis = py < nearSy(px) - 3 && !(keep && px > keep.x && px < keep.x + keep.w && py > keep.y && py < keep.y + keep.h);
+    if (i > f0 && vis && pv) L(ppx, ppy, px, py, D0);
+    ppx = px; ppy = py; pv = vis;
+  }
+  for (const st of stars) {
+    const px = st[0] * cw, py = st[1] * playH;
+    if (py < Math.min(nearSy(px), farSy(px, g)) - 5 && (st[2] > .2 || R() > .04)) dot(px, py, st[2] > .8 ? D1 : D0);
+  }
+  /* terrain */
+  const P = site.pts, n = P.length, hw = viewW / (2 * cam.z) + 30;
+  const k0 = Math.floor((cam.x - hw) / PERIOD), k1 = Math.floor((cam.x + hw) / PERIOD);
+  for (let k = k0; k <= k1; k++) {
+    const ox = k * PERIOD;
+    for (let i = 0; i < n; i++) {
+      const a = P[i], x1 = a[0] + ox, x2 = (i + 1 < n ? P[i + 1][0] : P[0][0] + PERIOD) + ox, y2 = i + 1 < n ? P[i + 1][1] : P[0][1];
+      if (x2 < cam.x - hw || x1 > cam.x + hw) continue;
+      if (keep && (inKeep(sx(x1), sy(a[1])) || inKeep(sx(x2), sy(y2)))) continue;
+      WL(x1, a[1], x2, y2, tb);
+    }
+    for (const p of site.pads) {
+      const c = p.cx + ox, a = c - p.w / 2, b2 = c + p.w / 2;
+      if (b2 < cam.x - hw || a > cam.x + hw) continue;
+      WL(a, p.y, b2, p.y, pb); WL(a, p.y - 1.6, b2, p.y - 1.6, pb);
+      WL(a, p.y, a, p.y - 4.5, pb); WL(b2, p.y, b2, p.y - 4.5, pb);
+      const ul = clamp(1.05 * S, 1.25, 3.4);
+      text('×' + p.m, sx(c), sy(p.y - 5) + 3, ul, dim ? D1 : (p.m === 5 && Math.sin(time * 5) > 0 ? D3 : D2), 1);
+    }
+  }
+  /* ship */
+  const s = ship;
+  if (s.alive) {
+    const c = Math.cos(s.a), sn = Math.sin(s.a), sb = dim ? D2 : D3;
+    const tx = (lx, ly) => hx + (s.x + lx * c + ly * sn - cam.x) * S, ty = (lx, ly) => pmid - (s.y - lx * sn + ly * c - cam.y) * S;
+    for (const p of SHIP) for (let i = 0; i + 3 < p.length; i += 2) L(tx(p[i], p[i + 1]), ty(p[i], p[i + 1]), tx(p[i + 2], p[i + 3]), ty(p[i + 2], p[i + 3]), sb);
+    if (s.thr > .03) {
+      const fl = reduced ? .5 : 1, maxL = Math.min(46, Math.max(4, (s.gdist || 999) + 2)), N = 7;
+      const tip = Math.min(maxL, s.thr * (30 + R() * 10 * fl));
+      const wob = (R() - .5) * 2.4 * fl * s.thr;
+      L(tx(-3.5, -6), ty(-3.5, -6), tx(wob, -6 - tip), ty(wob, -6 - tip), HOT);
+      L(tx(3.5, -6), ty(3.5, -6), tx(wob, -6 - tip), ty(wob, -6 - tip), HOT);
+      for (let i = 0; i < N; i++) {
+        const o = (i / (N - 1) - .5), an = o * .62 + (R() - .5) * .16 * fl;
+        const len = Math.min(maxL, s.thr * (15 + R() * 17 * fl) * (1 - Math.abs(o) * 1.1));
+        const bx = o * 5.4, ex = bx + Math.sin(an) * len, ey = -6 - Math.cos(an) * len;
+        L(tx(bx, -6), ty(bx, -6), tx(ex, ey), ty(ex, ey), HOT);
+      }
+      if (s.thr > .5 && !reduced && R() < .6) { const o = (R() - .5) * 7, l = tip * (.9 + R() * .5); L(tx(o, -6 - l), ty(o, -6 - l), tx(o * 1.3, -6 - l - 2 - R() * 4), ty(o * 1.3, -6 - l - 2 - R() * 4), HOT); }
+    }
+  }
+  for (const d of debris) {
+    const lf = 1 - d.age / d.life; if (lf < .25 && R() > lf * 4) continue;
+    const c = Math.cos(d.r), sn = Math.sin(d.r), ax = d.hx * c - d.hy * sn, ay = d.hx * sn + d.hy * c;
+    WL(d.x - ax, d.y - ay, d.x + ax, d.y + ay, lf > .7 ? HOT : lf > .45 ? D3 : lf > .22 ? D2 : D1);
+  }
+  for (const d of dust) {
+    const lf = 1 - d.age / d.life, k = 0.035 + .03 * lf;
+    WL(d.x, d.y, d.x - d.vx * k, d.y - d.vy * k, d.hot && lf > .4 ? HOT : lf > .5 ? D2 : D1);
+  }
+  for (const r of rings) {
+    const t = r.age / 1.1, rad = 6 + easeOut(t) * 70, b = t < .3 ? HOT : t < .6 ? D2 : D1, n2 = 22;
+    for (let i = 0; i < n2; i++) {
+      if ((i + (r.age * 30 | 0)) % 3 === 0) continue;
+      const a1 = Math.PI * i / n2, a2 = Math.PI * (i + 1) / n2;
+      WL(r.x + Math.cos(a1) * rad, r.y + Math.sin(a1) * rad * .5, r.x + Math.cos(a2) * rad, r.y + Math.sin(a2) * rad * .5, b);
+    }
+  }
+}
+
+/* ---------- attract: title trace and wireframe moon ---------- */
+const title = { segs: [], len: 0 };
+(function buildTitle() {
+  const str = 'DESCENT'; let x = 0, len = 0;
+  for (const chr of str) {
+    for (const p of GP[chr]) for (let j = 0; j + 3 < p.length; j += 2) {
+      const sh = y => (6 - y) * .17;
+      const a = [x + p[j] + sh(p[j + 1]), p[j + 1], x + p[j + 2] + sh(p[j + 3]), p[j + 3]];
+      const l = Math.hypot(a[2] - a[0], a[3] - a[1]); a.push(len, l); len += l; title.segs.push(a);
+    }
+    x += 5.7;
+  }
+  title.len = len; title.w = x - 1.7 + 1;
+})();
+function drawTitle(cx, top, U, t) {
+  const dur = reduced ? .01 : 2.5, p = clamp((t - .35) / dur, 0, 1), e = p < 1 ? (p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2) : 1;
+  const reach = e * title.len, x0 = cx - title.w * U / 2, off = Math.max(1.6, U * .13);
+  let sweep = -1;
+  if (p >= 1 && !reduced) { const c = (t - 4) % 8; if (c > 0 && c < 1.5) sweep = (c / 1.5) * title.len; }
+  for (const s of title.segs) {
+    if (s[4] >= reach) break;
+    const f = Math.min(1, (reach - s[4]) / s[5]);
+    const x1 = x0 + s[0] * U, y1 = top + s[1] * U, x2 = x0 + lerp(s[0], s[2], f) * U, y2 = top + lerp(s[1], s[3], f) * U;
+    const near = sweep >= 0 && sweep > s[4] - 1.5 && sweep < s[4] + s[5] + 1.5;
+    L(x1, y1, x2, y2, near ? HOT : D3);
+    L(x1 + off, y1 + off * .55, x2 + off, y2 + off * .55, D2);
+    if (f < 1 && p < 1) {
+      for (let i = 0; i < 3; i++) dot(x2 + (R() - .5) * 2, y2 + (R() - .5) * 2, HOT);
+      L(x2, y2, x2 + (R() - .5) * U * .7, y2 + (R() - .5) * U * .7, HOT);
+    }
+  }
+  return p;
+}
+const CRATERS = [[.5, .3, .2], [-.9, .55, .13], [1.9, -.35, .24], [2.9, .1, .11], [-2.2, -.5, .17], [3.9, .62, .15], [.2, -.75, .1]];
+function drawMoon(cx, cy, rad, t) {
+  const th = t * (reduced ? .03 : .11), tilt = .42, ct = Math.cos(tilt), st = Math.sin(tilt), roll = -.22, cr = Math.cos(roll), sr = Math.sin(roll);
+  const P = (x, y, z) => { const y2 = y * ct - z * st, z2 = y * st + z * ct; return [cx + (x * cr - y2 * sr) * rad, cy - (x * sr + y2 * cr) * rad, z2]; };
+  const seg = (a, b, bf) => { if (a[2] > 0 && b[2] > 0) L(a[0], a[1], b[0], b[1], bf); else if (a[2] > -0.5 && b[2] > -0.5 && (a[2] > 0 || b[2] > 0)) L(a[0], a[1], b[0], b[1], D0); };
+  for (let la = -60; la <= 60; la += 30) {
+    const ph = la * Math.PI / 180, c = Math.cos(ph), s = Math.sin(ph); let pr = null;
+    for (let i = 0; i <= 28; i++) { const lo = i / 28 * Math.PI * 2 + th, q = P(c * Math.cos(lo), s, c * Math.sin(lo)); if (pr) seg(pr, q, la === 0 ? D1 : D0); pr = q; }
+  }
+  for (let m = 0; m < 10; m++) {
+    const lo = m / 10 * Math.PI * 2 + th; let pr = null;
+    for (let i = 0; i <= 14; i++) { const ph = (i / 14 - .5) * Math.PI, q = P(Math.cos(ph) * Math.cos(lo), Math.sin(ph), Math.cos(ph) * Math.sin(lo)); if (pr) seg(pr, q, D0); pr = q; }
+  }
+  for (const c of CRATERS) {
+    const lo = c[0] + th, ph = c[1], cxn = Math.cos(ph) * Math.cos(lo), cyn = Math.sin(ph), czn = Math.cos(ph) * Math.sin(lo);
+    const ux = -Math.sin(lo), uz = Math.cos(lo), vx = -cyn * uz, vy = czn * ux - cxn * uz, vz = cyn * ux;
+    const cs = Math.cos(c[2]), sn = Math.sin(c[2]); let pr = null;
+    for (let i = 0; i <= 12; i++) {
+      const a = i / 12 * Math.PI * 2, ca = Math.cos(a) * sn, sa = Math.sin(a) * sn;
+      const q = P(cxn * cs + ux * ca + vx * sa, cyn * cs + vy * sa, czn * cs + uz * ca + vz * sa);
+      if (pr && pr[2] > 0 && q[2] > 0) L(pr[0], pr[1], q[0], q[1], D1); pr = q;
+    }
+  }
+  for (let i = 0; i < 48; i++) { const a1 = i / 48 * Math.PI * 2, a2 = (i + 1) / 48 * Math.PI * 2; L(cx + Math.cos(a1) * rad, cy + Math.sin(a1) * rad, cx + Math.cos(a2) * rad, cy + Math.sin(a2) * rad, D1); }
+}
+
+/* ---------- HUD and controls ---------- */
+function wrap(s, n) { const w = s.split(' '), o = []; let l = ''; for (const x of w) { if (l && (l + ' ' + x).length > n) { o.push(l); l = x; } else l = l ? l + ' ' + x : x; } if (l) o.push(l); return o; }
+function rect(el) { return { x: el.offsetLeft, y: el.offsetTop, w: el.offsetWidth, h: el.offsetHeight }; }
+function tr(el) { const r = rect(el); if (el === bStart) { r.x -= r.w / 2; r.y -= r.h / 2; } return r; }
+function frameBox(r, b, c) {
+  const x = r.x, y = r.y, w = r.w, h = r.h;
+  L(x + c, y, x + w - c, y, b); L(x + w - c, y, x + w, y + c, b); L(x + w, y + c, x + w, y + h - c, b); L(x + w, y + h - c, x + w - c, y + h, b);
+  L(x + w - c, y + h, x + c, y + h, b); L(x + c, y + h, x, y + h - c, b); L(x, y + h - c, x, y + c, b); L(x, y + c, x + c, y, b);
+}
+function hatch(r, b, gap) {
+  for (let c = -r.h + gap; c < r.w; c += gap) {
+    const x1 = Math.max(c, 0), y1 = Math.max(-c, 0), x2 = Math.min(r.w, c + r.h), y2 = Math.min(r.h, r.w - c);
+    if (x2 > x1 + 2) L(r.x + x1 + 3, r.y + r.h - y1 - 3, r.x + x2 - 3, r.y + r.h - (y1 + (x2 - x1)) + 3, b);
+  }
+}
+function brackets(r, b, c) {
+  const x = r.x, y = r.y, w = r.w, h = r.h;
+  L(x, y + c, x, y, b); L(x, y, x + c, y, b); L(x + w - c, y, x + w, y, b); L(x + w, y, x + w, y + c, b);
+  L(x + w, y + h - c, x + w, y + h, b); L(x + w, y + h, x + w - c, y + h, b); L(x + c, y + h, x, y + h, b); L(x, y + h, x, y + h - c, b);
+}
+function arcArrow(cx, cy, r, dir, b) {
+  const a0 = -Math.PI / 2 - dir * .5, n = 9, span = dir * 4.1; let px = 0, py = 0;
+  for (let i = 0; i <= n; i++) { const a = a0 + span * i / n, x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r; if (i) L(px, py, x, y, b); px = x; py = y; }
+  const a = a0 + span, tx = -Math.sin(a) * dir, ty = Math.cos(a) * dir, nx = Math.cos(a), ny = Math.sin(a), k = r * .55;
+  L(px, py, px - tx * k + nx * k * .7, py - ty * k + ny * k * .7, b); L(px, py, px - tx * k - nx * k * .7, py - ty * k - ny * k * .7, b);
+}
+function drawPads(u) {
+  if (!touchUI) return;
+  const defs = [[bL, input.l, 'ROTATE', -1], [bT, input.t, 'THRUST', 0], [bR, input.r, 'ROTATE', 1]];
+  for (const d of defs) {
+    const r = rect(d[0]); if (!r.w) continue;
+    const on = d[1], b = on ? HOT : D2, cy = r.y + r.h * .4, cx = r.x + r.w / 2, q = Math.min(r.h * .2, 15);
+    frameBox(r, b, 9);
+    if (on) hatch(r, D1, 7);
+    if (d[3]) arcArrow(cx, cy, q, d[3], on ? HOT : D3);
+    else {
+      L(cx, cy - q * 1.15, cx - q * .9, cy + q * .25, on ? HOT : D3); L(cx, cy - q * 1.15, cx + q * .9, cy + q * .25, on ? HOT : D3); L(cx - q * .9, cy + q * .25, cx + q * .9, cy + q * .25, on ? HOT : D3);
+      for (let i = -1; i <= 1; i++) { const l = on ? q * (.5 + R() * .7) : q * .45; L(cx + i * q * .45, cy + q * .5, cx + i * q * .6, cy + q * .5 + l, on ? HOT : D2); }
+    }
+    text(d[2], cx, r.y + r.h - 6 * Math.min(u, 1.5) - 8, Math.min(u, 1.5), on ? D3 : D1, 1, .6);
+  }
+}
+function drawIcons() {
+  let r = rect(bSound);
+  if (r.w) {
+    const cx = r.x + r.w / 2 - 3, cy = r.y + r.h / 2, q = 2.7, b = hover.sound ? D3 : D2;
+    brackets(r, hover.sound ? D2 : D0, 7);
+    poly([-5, -1.6, -2.6, -1.6, 0, -4.2, 0, 4.2, -2.6, 1.6, -5, 1.6, -5, -1.6], b, cx, cy, q);
+    if (snd) { for (const rr of [2.6, 5]) { let px = 0, py = 0; for (let i = 0; i <= 4; i++) { const a = -0.8 + 1.6 * i / 4, x = cx + (1 + Math.cos(a) * rr) * q, y = cy + Math.sin(a) * rr * q; if (i) L(px, py, x, y, D3); px = x; py = y; } } }
+    else { L(cx + 2.4 * q, cy - 1.7 * q, cx + 5.8 * q, cy + 1.7 * q, b); L(cx + 5.8 * q, cy - 1.7 * q, cx + 2.4 * q, cy + 1.7 * q, b); }
+  }
+  r = rect(bPause);
+  if (r.w) {
+    const cx = r.x + r.w / 2, cy = r.y + r.h / 2, b = hover.pause ? D3 : D2;
+    brackets(r, hover.pause ? D2 : D0, 7);
+    if (paused) poly([-5, -7, 7, 0, -5, 7, -5, -7], D3, cx, cy, 1);
+    else { poly([-6, -7, -2, -7, -2, 7, -6, 7, -6, -7], b, cx, cy, 1); poly([2, -7, 6, -7, 6, 7, 2, 7, 2, -7], b, cx, cy, 1); }
+  }
+}
+function drawStart(label, u) {
+  if (bStart.hidden) return;
+  const r = tr(bStart), hot = hover.start || document.activeElement === bStart && bStart.matches(':focus-visible');
+  const pulse = Math.sin(time * 3.2) > -.2;
+  frameBox(r, hot ? HOT : pulse ? D3 : D2, 10);
+  const in2 = { x: r.x + 5, y: r.y + 5, w: r.w - 10, h: r.h - 10 };
+  brackets(in2, D1, 8);
+  if (hot) hatch(r, D0, 8);
+  const ub = Math.min(u * 1.25, (r.w - 40) / (label.length * 6.8));
+  text(label, r.x + r.w / 2, r.y + r.h / 2 - 3 * ub, ub, hot || pulse ? D3 : D2, 1, .8);
+}
+function drawMessage(m, top, u, b) {
+  const maxc = Math.max(16, Math.floor(cw * .84 / (6 * u)));
+  if (!m.lines || m.cols !== maxc) { m.lines = wrap(m.str, Math.min(maxc, 46)); m.cols = maxc; }
+  let shown = reduced ? 1e9 : Math.floor(m.t * 46), y = top;
+  for (const ln of m.lines) {
+    if (shown <= 0) break;
+    const sub = ln.slice(0, shown), w = textW(ln, u), x0 = hx - w / 2;
+    text(sub, x0, y, u, b, 0);
+    if (shown < ln.length && !reduced) { const cxp = x0 + sub.length * 6 * u; L(cxp, y, cxp + 4 * u, y, HOT); L(cxp, y + 6 * u, cxp + 4 * u, y + 6 * u, HOT); L(cxp, y, cxp, y + 6 * u, HOT); L(cxp + 4 * u, y, cxp + 4 * u, y + 6 * u, HOT); }
+    shown -= ln.length + 1; y += 10.5 * u;
+  }
+  return top + m.lines.length * 10.5 * u;
+}
+function miniShip(x, y, q, b) { for (const p of SHIP) for (let i = 0; i + 3 < p.length; i += 2) L(x + p[i] * q, y - p[i + 1] * q, x + p[i + 2] * q, y - p[i + 3] * q, b); }
+
+function drawHUD() {
+  const wide = cw > 700, u = clamp(cw / 300, 1.38, 2.25), px = Math.max(20, cw * .036), py = Math.max(22, ch * .042), lh = 10.2 * u;
+  const z6 = n => String(Math.max(0, Math.round(n))).padStart(6, '0'), z = (n, k) => String(Math.min(Math.pow(10, k) - 1, Math.abs(Math.round(n)))).padStart(k, '0');
+  const lv = (label, val, x, y, al, vb) => {
+    if (al === 2) { const w = textW(val, u); text(val, x, y, u, vb, 2); text(label, x - w - 6 * u, y, u, D1, 2); }
+    else { const w = text(label, x, y, u, D1, 0); text(val, x + w + 6 * u, y, u, vb, 0); }
+  };
+  if (mode === 'attract') {
+    lv(wide ? 'HIGH SCORE' : 'HIGH', z6(high), px, py, 0, D2);
+    text(wide ? 'AUTOPILOT DEMONSTRATION' : 'AUTO DEMO', cw - px, py, u, Math.sin(time * 2.4) > 0 ? D2 : D1, 2);
+    const tU = Math.min(cw * (wide ? .8 : .88) / title.w, ch * .2 / 6), tTop = ch * (wide ? .2 : .15);
+    const short = ch < 430;
+    if (short) drawMoon(cw * .88, ch * .5, ch * .13, time);
+    else drawMoon(wide ? cw * .78 : cw * .5, wide ? ch * .355 : ch * .352, wide ? ch * .23 : Math.min(cw * .2, ch * .1), time);
+    const p = drawTitle(hx, tTop, tU, modeT);
+    const subT = modeT - (reduced ? 0 : 3), su = clamp(tU * .135, 1.5, 3.2), sy0 = tTop + 6 * tU + 5.5 * su;
+    if (subT > 0) {
+      const sub = 'A VECTOR LANDER', nsh = reduced ? 99 : Math.floor(subT * 22), w = textW(sub, su, 5);
+      text(sub.slice(0, nsh), hx - w / 2, sy0, su, D3, 0, 5);
+      const rw = Math.min(1, subT * 1.2) * (title.w * tU / 2 - w / 2 - 6 * su);
+      if (rw > 4) { L(hx - w / 2 - 4 * su, sy0 + 3 * su, hx - w / 2 - 4 * su - rw, sy0 + 3 * su, D1); L(hx + w / 2 + 4 * su, sy0 + 3 * su, hx + w / 2 + 4 * su + rw, sy0 + 3 * su, D1); }
+    }
+    if (!short && (subT > .9 || p >= 1 && reduced)) {
+      const r = tr(bStart), yb = r.y + r.h + 16, us = Math.min(u, 1.9);
+      if (!touchUI) {
+        text('← → ROTATE · ↑ THRUST · P PAUSE · R RESTART', hx, yb, us * .92, D1, 1);
+        text('LAND UPRIGHT AND SLOWLY ON A MARKED PAD', hx, yb + 11 * us, us * .92, D1, 1);
+      } else {
+        text('LAND UPRIGHT, SLOWLY,', hx, yb, us, D1, 1); text('ON A MARKED PAD', hx, yb + 10 * us, us, D1, 1);
+      }
+    }
+    drawStart('START DESCENT', u);
+    drawIcons(); drawPads(u);
+    return;
+  }
+  const s = ship, alt = Math.max(0, s.y - 8 - groundY(s.x));
+  lv('SCORE', z6(score), px, py, 0, D3);
+  lv('SITE', z(siteN, 2), px, py + lh, 0, D3);
+  for (let i = 0; i < lives - (mode === 'play' || mode === 'landed' ? 1 : 0); i++) miniShip(px + 54 * u + 2 + i * 13 * u * .9, py + lh + 4.2 * u, u * .36, D2);
+  const fx = px + text('FUEL', px, py + 2 * lh, u, D1, 0) + 6 * u, frac = s.fuel / 620, low = s.fuel < 110, nseg = 20, segw = wide ? 3.8 * u : 2.9 * u;
+  const blink = Math.sin(time * 11) > 0;
+  for (let i = 0; i < nseg; i++) {
+    const x = fx + i * segw, y = py + 2 * lh, on = frac * nseg > i + .02, w = segw - 1.5 * u;
+    if (on) { const b = low ? (blink ? HOT : D1) : D3; L(x, y, x + w, y, b); L(x + w, y, x + w, y + 6 * u, b); L(x + w, y + 6 * u, x, y + 6 * u, b); L(x, y + 6 * u, x, y, b); L(x + w / 2, y + 1.2 * u, x + w / 2, y + 4.8 * u, b); }
+    else L(x, y + 6 * u, x + w, y + 6 * u, D0);
+  }
+  if (s.fuel <= 0 && mode === 'play' && blink) text('TANKS DRY', fx, py + 3 * lh, u, D3, 0);
+  const rx = cw - px, danger = mode === 'play' && alt < 150 && s.vy < -SAFE_VY, dh = mode === 'play' && alt < 150 && Math.abs(s.vx) > SAFE_VX;
+  lv('ALTITUDE', z(alt, 4), rx, py, 2, D3);
+  lv(wide ? 'HORIZONTAL SPEED' : 'HORIZONTAL', z(s.vx, 3) + ' ' + (Math.abs(s.vx) < .5 ? '·' : s.vx > 0 ? '→' : '←'), rx, py + lh, 2, dh ? (blink ? HOT : D1) : D3);
+  lv(wide ? 'VERTICAL SPEED' : 'VERTICAL', z(s.vy, 3) + ' ' + (Math.abs(s.vy) < .5 ? '·' : s.vy > 0 ? '↑' : '↓'), rx, py + 2 * lh, 2, danger ? (blink ? HOT : D1) : D3);
+  if (site.wind) { const w = windNow(); lv(wide ? 'CROSSWIND' : 'WIND', z(Math.abs(w) * 3, 2) + ' ' + (w > 0 ? '→' : '←'), rx, py + 3 * lh, 2, D2); }
+  if (mode === 'play' && danger && blink && alt > 20) text('DESCENT RATE', hx, wide ? py + 4.6 * lh : py + 5.8 * lh, u, D3, 1, 1);
+
+  const um = clamp(cw / 300, 1.45, 2.7);
+  if (notice && mode === 'play') {
+    const fade = notice.t > notice.dur - .5;
+    if (!fade || blink) drawMessage(notice, wide ? ch * .3 : 156, um * .82, D2);
+  }
+  if (msg) {
+    const top = wide ? ch * .17 : 158;
+    let y = drawMessage(msg, top, um, D3);
+    if (msg.info && (reduced || msg.t * 46 > msg.str.length + 6)) { text(msg.info, hx, y + 3 * um, um * .86, mode === 'landed' ? (Math.sin(time * 6) > -.3 ? D3 : D1) : D2, 1); y += 13 * um; }
+    const want = Math.round(y + 14 + 29);
+    if (startTop !== want) { startTop = want; bStart.style.top = want + 'px'; }
+    if (reduced || msg.t > .9) drawStart(mode === 'landed' ? 'NEXT SITE' : mode === 'crashed' ? 'RETRY SITE' : 'NEW MISSION', u);
+  }
+  if (paused) {
+    text('HOLD', hx, ch * .36, um * 2.2, Math.sin(time * 4) > 0 ? D3 : D2, 1, 3);
+    text('THE FLIGHT CLOCK IS STOPPED. THE MOON IS NOT.', hx, ch * .36 + 20 * um, Math.min(um, cw * .86 / (44 * 6)), D2, 1);
+    text(touchUI ? 'TAP PAUSE TO RESUME' : 'P TO RESUME', hx, ch * .36 + 32 * um, um * .8, D1, 1);
+  }
+  drawIcons(); drawPads(u);
+}
+let startTop = -1;
+
+function syncUI() {
+  const showStart = mode !== 'play';
+  bStart.hidden = !showStart;
+  bPause.hidden = mode !== 'play';
+  bPause.setAttribute('aria-pressed', String(paused));
+  bPause.setAttribute('aria-label', paused ? 'Resume' : 'Pause');
+  const lab = mode === 'attract' ? 'Start descent' : mode === 'landed' ? 'Next site' : mode === 'crashed' ? 'Retry site' : 'New mission';
+  bStart.setAttribute('aria-label', lab); bStart.textContent = lab;
+  tube.classList.toggle('attract', mode === 'attract');
+  if (mode === 'attract') { startTop = -1; bStart.style.top = ''; }
+}
+function action() {
+  if (mode === 'play') return;
+  if (mode !== 'attract' && modeT < .7) return;
+  if (mode === 'attract' || mode === 'over') newGame();
+  else if (mode === 'landed') startSite(siteN + 1);
+  else startSite(siteN);
+}
+function togglePause() { if (mode !== 'play') return; paused = !paused; syncUI(); say(paused ? 'Paused' : 'Resumed'); }
+
+/* ---------- sound ---------- */
+let AC = null, snd = false, master = null, thrG = null, lastBeep = 0;
+function noiseBuf(sec) { const b = AC.createBuffer(1, AC.sampleRate * sec, AC.sampleRate), d = b.getChannelData(0); let l = 0; for (let i = 0; i < d.length; i++) { l = l * .6 + (R() * 2 - 1) * .4; d[i] = l; } return b; }
+function toggleSound() {
+  if (!AC) {
+    const C = window.AudioContext || window.webkitAudioContext; if (!C) return;
+    AC = new C(); master = AC.createGain(); master.gain.value = 0; master.connect(AC.destination);
+    const src = AC.createBufferSource(); src.buffer = noiseBuf(2); src.loop = true;
+    const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 170; lp.Q.value = 1.2;
+    thrG = AC.createGain(); thrG.gain.value = 0; src.connect(lp); lp.connect(thrG); thrG.connect(master); src.start();
+  }
+  snd = !snd;
+  if (snd) AC.resume();
+  master.gain.setTargetAtTime(snd ? .7 : 0, AC.currentTime, .03);
+  bSound.setAttribute('aria-pressed', String(snd));
+  if (snd) beep(660, .07, .12);
+}
+function beep(f, d, v) {
+  if (!snd) return; const t = AC.currentTime, o = AC.createOscillator(), g = AC.createGain();
+  o.type = 'triangle'; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + .008); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+  o.connect(g); g.connect(master); o.start(t); o.stop(t + d + .02);
+}
+function sfxLand() { beep(196, .22, .2); setTimeout(() => beep(294, .34, .2), 170); }
+function sfxCrash() {
+  if (!snd) return; const t = AC.currentTime, src = AC.createBufferSource(), lp = AC.createBiquadFilter(), g = AC.createGain();
+  src.buffer = noiseBuf(1.3); lp.type = 'lowpass'; lp.frequency.setValueAtTime(1500, t); lp.frequency.exponentialRampToValueAtTime(55, t + 1.1);
+  g.gain.setValueAtTime(.9, t); g.gain.exponentialRampToValueAtTime(.001, t + 1.25);
+  src.connect(lp); lp.connect(g); g.connect(master); src.start(t);
+  const o = AC.createOscillator(), og = AC.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(92, t); o.frequency.exponentialRampToValueAtTime(26, t + .6);
+  og.gain.setValueAtTime(.7, t); og.gain.exponentialRampToValueAtTime(.001, t + .7); o.connect(og); og.connect(master); o.start(t); o.stop(t + .75);
+}
+function audioFrame() {
+  if (!snd) return;
+  const playing = mode === 'play' && !paused && ship.alive;
+  thrG.gain.setTargetAtTime(playing ? ship.thr * .85 : 0, AC.currentTime, .04);
+  if (playing) {
+    const alt = ship.y - 8 - groundY(ship.x);
+    if (alt < 150 && ship.vy < -SAFE_VY) { const gap = .16 + alt / 150 * .4; if (time - lastBeep > gap) { lastBeep = time; beep(132, .09, .22); } }
+    else if (ship.fuel > 0 && ship.fuel < 110 && time - lastBeep > 1.1) { lastBeep = time; beep(98, .14, .16); }
+  }
+}
+
+/* ---------- frame ---------- */
+function build(dt) {
+  S = base * cam.z; pmid = playH / 2;
+  if (reduced) { jx = jy = js = 0; }
+  else { jx = (R() - .5) * .5; jy = (R() - .5) * .5; js = .32; }
+  if (mode === 'attract' && !bStart.hidden) { const r = tr(bStart); keep = ch < 430 ? { x: r.x - 14, y: r.y - 10, w: r.w + 28, h: r.h + 20 } : { x: r.x - 70, y: r.y - 12, w: r.w + 140, h: r.h + 70 }; } else keep = null;
+  drawWorld(mode === 'attract');
+  drawHUD();
+}
+let flick = 1, fadeAcc = 0;
+function render(dt) {
+  /* phosphor decay is applied in ~20 Hz steps so that 8-bit rounding cannot leave a burned-in residue */
+  fadeAcc += dt;
+  const step = fadeAcc >= .046, fade = step ? 1 - Math.exp(-fadeAcc / (reduced ? .04 : .125)) : 0;
+  const k = kW;
+  if (step) {
+    fadeAcc = 0;
+    tctx.setTransform(1, 0, 0, 1, 0, 0);
+    tctx.globalCompositeOperation = 'source-over'; tctx.globalAlpha = 1;
+    tctx.fillStyle = 'rgba(0,0,0,' + fade.toFixed(4) + ')'; tctx.fillRect(0, 0, tc.width, tc.height);
+    tctx.globalCompositeOperation = 'color-burn'; tctx.fillStyle = '#fcfcfc'; tctx.fillRect(0, 0, tc.width, tc.height);
+  }
+  tctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  tctx.globalCompositeOperation = 'lighter'; tctx.strokeStyle = GREEN; tctx.lineCap = 'round'; tctx.lineJoin = 'round';
+  if (reduced) flick = 1; else flick = R() < .012 ? .72 : .95 + R() * .05;
+  const paths = [], dots = [];
+  for (let b = 0; b < 5; b++) {
+    const a = B[b], p = new Path2D(), d = new Path2D();
+    for (let i = 0; i < a.length; i += 4) {
+      p.moveTo(a[i], a[i + 1]); p.lineTo(a[i + 2], a[i + 3]);
+      d.moveTo(a[i], a[i + 1]); d.lineTo(a[i] + .01, a[i + 1]); d.moveTo(a[i + 2], a[i + 3]); d.lineTo(a[i + 2] + .01, a[i + 3]);
+    }
+    paths.push(p); dots.push(d);
+    if (!a.length || (b !== HOT && !step)) continue;
+    const ta = (b === HOT ? (reduced ? .16 : .34) : fade * .52) * LV[b];
+    tctx.globalAlpha = Math.min(1, ta); tctx.lineWidth = 3.3 * k; tctx.stroke(p);
+    tctx.globalAlpha = Math.min(1, ta * .34); tctx.lineWidth = 11 * k; tctx.stroke(p);
+  }
+  dctx.setTransform(1, 0, 0, 1, 0, 0);
+  dctx.globalCompositeOperation = 'copy'; dctx.globalAlpha = 1; dctx.drawImage(tc, 0, 0);
+  dctx.globalCompositeOperation = 'lighter'; dctx.fillStyle = '#020403'; dctx.fillRect(0, 0, cv.width, cv.height);
+  dctx.setTransform(dpr, 0, 0, dpr, 0, 0); dctx.lineCap = 'round'; dctx.lineJoin = 'round';
+  for (let b = 0; b < 5; b++) {
+    if (!B[b].length) continue;
+    const lv = LV[b] * flick;
+    dctx.globalCompositeOperation = 'lighter'; dctx.strokeStyle = GREEN;
+    dctx.globalAlpha = .2 * lv; dctx.lineWidth = 3 * k; dctx.stroke(paths[b]);
+    dctx.globalCompositeOperation = 'source-over'; dctx.strokeStyle = MINT;
+    dctx.globalAlpha = lv; dctx.lineWidth = 1.2 * k; dctx.stroke(paths[b]);
+    dctx.globalAlpha = Math.min(1, lv * 1.25); dctx.lineWidth = (b >= D2 ? 2.05 : 1.6) * k; dctx.stroke(dots[b]);
+    B[b].length = 0;
+  }
+  bctx.globalCompositeOperation = 'copy'; bctx.drawImage(cv, 0, 0, bl.width, bl.height);
+}
+let raf = 0, last = 0, acc = 0;
+function frame(now) {
+  raf = requestAnimationFrame(frame);
+  const dt = Math.min(.05, Math.max(.001, (now - last) / 1000)); last = now;
+  time += dt; modeT += dt;
+  if (!paused) {
+    acc += dt; const h = 1 / 120;
+    while (acc >= h) { sim(h); acc -= h; }
+    updateCam(dt);
+    if (msg) msg.t += dt;
+    if (notice) { notice.t += dt; if (notice.t > notice.dur) notice = null; }
+    if (mode === 'attract' && (ship.landed || !ship.alive)) { demoWait -= dt; if (demoWait <= 0) { const t = modeT; startDemo(); modeT = t; } }
+  }
+  const target = ship.alive ? ship.thr * (ship.gdist < 95 ? 1 : .55) : 0;
+  lit += (target - lit) * Math.min(1, dt * (target > lit ? 9 : 2.2));
+  const lq = Math.round(lit * 40) / 40;
+  if (lq !== litSet) { litSet = lq; tube.style.setProperty('--lit', lq); }
+  audioFrame();
+  build(dt); render(dt);
+}
+function run() { if (!raf && !document.hidden) { last = performance.now(); raf = requestAnimationFrame(frame); } }
+function halt() { cancelAnimationFrame(raf); raf = 0; }
+
+/* ---------- layout ---------- */
+function layout() {
+  const vw = window.innerWidth, vh = window.innerHeight, small = vw < 700 || vh < 520;
+  const m = small ? 7 : 22, plate = vh > 420 ? (small ? 40 : 52) : 0;
+  const aw = vw - 2 * m - 14, ah = vh - 2 * m - plate - 14;
+  let w, h;
+  if (aw > ah * 1.05) { w = Math.min(aw, ah * 1.56); h = Math.min(ah, w / 1.28); }
+  else { w = aw; h = Math.min(ah, w * 2.15); }
+  w = Math.max(240, Math.floor(w)); h = Math.max(200, Math.floor(h));
+  tube.style.width = w + 'px'; tube.style.height = h + 'px';
+  cw = w; ch = h; hx = w / 2; hy = h / 2;
+  dpr = Math.min(2, window.devicePixelRatio || 1);
+  for (const c of [cv, tc]) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+  bl.width = Math.max(2, Math.round(w / 4)); bl.height = Math.max(2, Math.round(h / 4));
+  kW = clamp(w / 900, .78, 1.5);
+  touchUI = touchUI || matchMedia('(pointer: coarse)').matches || vw < 700;
+  tube.classList.toggle('touch', touchUI);
+  inset = touchUI ? h - bT.offsetTop + 8 : 0;
+  playH = h - inset;
+  const oldW = viewW;
+  viewW = w >= h * 1.05 ? 800 : 440; base = w / viewW; viewH = playH / base;
+  if (oldW !== viewW && ship) cam.x = ship.x;
+  startTop = -1; if (mode === 'attract') bStart.style.top = '';
+}
+(function seedSky() {
+  const r = rng(2107);
+  for (let i = 0; i < 64; i++) stars.push([r(), r() * .62, r()]);
+  for (let i = 0; i < 46; i++) farPts.push(118 + r() * 44 + (i % 5 === 0 ? r() * 46 : 0) + Math.sin(i * .41) * 16);
+})();
+
+/* ---------- input ---------- */
+const KEYS = { ArrowLeft: 'l', a: 'l', A: 'l', ArrowRight: 'r', d: 'r', D: 'r', ArrowUp: 't', w: 't', W: 't', ' ': 't' };
+window.addEventListener('keydown', e => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const onBtn = e.target && e.target.tagName === 'BUTTON';
+  if ((e.key === 'Enter' || e.key === ' ') && onBtn) return;
+  if (e.key in KEYS) { e.preventDefault(); if (mode === 'play') input[KEYS[e.key]] = true; }
+  if (e.repeat) return;
+  if ((e.key === 'Enter' || e.key === ' ') && mode !== 'play') { e.preventDefault(); action(); }
+  else if (e.key === 'p' || e.key === 'P') togglePause();
+  else if (e.key === 'r' || e.key === 'R') { if (mode !== 'attract') newGame(); }
+  else if (e.key === 'm' || e.key === 'M') toggleSound();
+  else if (e.key === 'Escape' && mode !== 'attract') { startDemo(); modeT = 4; }
+});
+window.addEventListener('keyup', e => { if (e.key in KEYS) input[KEYS[e.key]] = false; });
+window.addEventListener('blur', () => { input.l = input.r = input.t = false; });
+function hold(btn, key) {
+  const set = v => { input[key] = v && mode === 'play'; };
+  btn.addEventListener('pointerdown', e => { e.preventDefault(); try { btn.setPointerCapture(e.pointerId); } catch (_) {} if (mode !== 'play' && key === 't') action(); set(true); });
+  for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) btn.addEventListener(ev, () => set(false));
+  btn.addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); set(true); } });
+  btn.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); set(false); } });
+  btn.addEventListener('blur', () => set(false));
+  btn.addEventListener('contextmenu', e => e.preventDefault());
+}
+hold(bL, 'l'); hold(bT, 't'); hold(bR, 'r');
+bStart.addEventListener('click', action);
+bPause.addEventListener('click', togglePause);
+bSound.addEventListener('click', toggleSound);
+for (const [el, k] of [[bStart, 'start'], [bSound, 'sound'], [bPause, 'pause']]) {
+  el.addEventListener('pointerenter', e => { if (e.pointerType !== 'touch') hover[k] = true; });
+  el.addEventListener('pointerleave', () => { hover[k] = false; });
+}
+window.addEventListener('pointerdown', e => {
+  if (e.pointerType === 'touch' && !touchUI) { touchUI = true; layout(); }
+}, { passive: true });
+tube.addEventListener('contextmenu', e => e.preventDefault());
+let rz = 0;
+window.addEventListener('resize', () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(layout); });
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { halt(); input.l = input.r = input.t = false; if (mode === 'play' && !paused) { paused = true; syncUI(); } if (AC && snd) AC.suspend(); }
+  else { if (AC && snd) AC.resume(); run(); }
+});
+
+layout();
+startDemo();
+run();
+})();
+</script>
+</body>
+</html>

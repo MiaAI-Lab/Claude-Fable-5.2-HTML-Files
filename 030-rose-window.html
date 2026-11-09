@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rose Window</title>
+<style>
+  :root {
+    --stone-dark: #08070A;
+    --stone-mid: #2A2830;
+    --stone-light: #3A3842;
+    --gold: #E0A100;
+    --pale: #E9E2CF;
+    --ease-out: cubic-bezier(.16, .84, .24, 1);
+    --ease-swing: cubic-bezier(.6, -0.18, .22, 1.22);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; height: 100%;
+    background: var(--stone-dark);
+    overflow: hidden;
+    color: var(--pale);
+    font-family: Georgia, "Times New Roman", Times, serif;
+    -webkit-text-size-adjust: 100%;
+  }
+  body { position: fixed; inset: 0; }
+  #nave {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    display: block;
+    touch-action: none;
+    cursor: none;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+  }
+  #nave:focus-visible { box-shadow: inset 0 0 0 1px rgba(224, 161, 0, .55); }
+
+  /* inscription cut into the base of the wall */
+  .inscription {
+    position: absolute; left: 0; right: 0;
+    top: var(--iy, 64%);
+    margin: 0;
+    transform: translateY(-50%);
+    text-align: center;
+    font-size: clamp(8.5px, 1.02vw, 13px);
+    letter-spacing: .44em;
+    text-indent: .44em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: #a09ca8;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 rgba(150, 146, 168, .22);
+    pointer-events: none;
+    user-select: none;
+    opacity: 0;
+    transition: opacity 1.4s var(--ease-out), letter-spacing 1.6s var(--ease-out);
+  }
+  .inscription.cut { opacity: .92; }
+  .inscription.recut { opacity: 0; letter-spacing: .52em; transition-duration: .28s; }
+  .inscription i { font-style: normal; color: #6f6b78; padding: 0 .5em; }
+  .inscription b { font-weight: normal; color: #c3bdb0; }
+
+  /* hint cut into a floor slab */
+  .slab {
+    position: absolute; left: 50%;
+    top: var(--sy, 86%);
+    transform: translate(-50%, -50%) perspective(700px) rotateX(50deg);
+    transform-origin: 50% 50%;
+    display: flex; align-items: center; gap: 1.1em;
+    padding: 1.15em 2.2em 1.05em;
+    font-size: clamp(10px, 1.05vw, 14px);
+    letter-spacing: .38em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: #e0dacb;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, .95), 0 1px 0 rgba(160, 156, 176, .25);
+    background: linear-gradient(180deg, rgba(58, 56, 66, .42), rgba(42, 40, 48, .3));
+    border: 1px solid rgba(8, 7, 10, .95);
+    box-shadow: inset 0 1px 0 rgba(58, 56, 66, .55), inset 0 0 0 4px rgba(8, 7, 10, .14), 0 1px 0 rgba(58, 56, 66, .3);
+    pointer-events: none;
+    user-select: none;
+    opacity: 0;
+    transition: opacity 2.2s var(--ease-out);
+  }
+  .slab.cut { opacity: 1; }
+  .slab.worn { opacity: .5; }
+  .slab.gone { opacity: 0; transition-duration: 2.8s; }
+  .slab .pip {
+    width: 5px; height: 5px; transform: rotate(45deg);
+    background: #6f6b78; box-shadow: 0 -1px 0 rgba(0, 0, 0, .9);
+    flex: none;
+  }
+
+  /* time-of-day control */
+  .hours {
+    position: absolute;
+    right: max(16px, 3.1vw); bottom: max(16px, 3.4vh);
+    display: flex; align-items: center; gap: 12px;
+    padding: 6px 6px 6px 14px;
+    background: none; border: 0; margin: 0;
+    color: #b9b4a6;
+    font: inherit;
+    font-size: 10px;
+    letter-spacing: .36em;
+    text-transform: uppercase;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    opacity: 0;
+    transition: opacity 1.8s var(--ease-out) .6s, color .4s;
+  }
+  .hours.cut { opacity: 1; }
+  .hours:hover { color: var(--pale); }
+  .hours:focus { outline: none; }
+  .hours:focus-visible .dial { box-shadow: 0 0 0 1px var(--stone-dark), 0 0 0 2.5px var(--gold); }
+  .hours .word { display: block; min-width: 5.2em; text-align: right; text-shadow: 0 -1px 0 #000; }
+  .hours .word small {
+    display: block; font-size: 7.5px; letter-spacing: .34em; color: #77737f; margin-bottom: 5px;
+  }
+  .hours .word span { display: inline-block; transition: opacity .35s, transform .5s var(--ease-out); }
+  .hours .word span.swap { opacity: 0; transform: translateY(5px); transition-duration: .15s; }
+  .dial {
+    width: 46px; height: 46px; border-radius: 50%; flex: none;
+    background: radial-gradient(circle at 38% 30%, #24222a, #0d0c10 72%);
+    border: 1px solid var(--stone-light);
+    box-shadow: 0 0 0 1px var(--stone-dark), 0 6px 18px rgba(0, 0, 0, .6);
+    transition: border-color .4s, transform .5s var(--ease-swing), box-shadow .3s;
+  }
+  .hours:hover .dial { border-color: #8a6a12; transform: scale(1.06); }
+  .hours:active .dial { transform: scale(.95); transition-duration: .1s; }
+  .dial svg { display: block; width: 100%; height: 100%; }
+  .dial .orb { transform-origin: 22px 24px; transition: transform 1.1s var(--ease-swing); }
+
+  @media (max-width: 620px) {
+    .inscription { letter-spacing: .24em; text-indent: .24em; }
+    .inscription.recut { letter-spacing: .3em; }
+    .inscription i { padding: 0 .15em; }
+    .slab { flex-direction: column; gap: .7em; padding: 1.1em 1.9em 1em; letter-spacing: .32em; }
+    .slab .pip { width: 4px; height: 4px; }
+    .hours { right: 8px; bottom: 10px; gap: 9px; }
+    .hours .word small { display: none; }
+    .dial { width: 42px; height: 42px; }
+  }
+  @media (max-height: 520px) { .slab { display: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .inscription, .slab, .hours, .dial, .dial .orb, .hours .word span { transition-duration: .01s; transition-delay: 0s; }
+  }
+</style>
+</head>
+<body>
+<canvas id="nave" tabindex="0" role="img" aria-label="A stained-glass rose window high in a dark stone wall, its coloured light falling across the flagstones. Move the pointer or use the arrow keys to move the sun; click or press Space for a new window."></canvas>
+
+<p class="inscription" id="inscription" aria-live="polite">Rose Window<i>&middot;</i>Order <b id="ord">XII</b><i>&middot;</i>Opus <b id="opus">0231</b></p>
+
+<div class="slab" id="slab" aria-hidden="true"><span>Move the sun</span><span class="pip"></span><span id="slabAct">Click for a new window</span></div>
+
+<button class="hours" id="hours" type="button" aria-label="Time of day: dawn. Press to change.">
+  <span class="word"><small>The hour</small><span id="hourWord">Dawn</span></span>
+  <span class="dial" aria-hidden="true">
+    <svg viewBox="0 0 44 44">
+      <path d="M8 24 A14 14 0 0 1 36 24" fill="none" stroke="#5b5763" stroke-width=".8" stroke-dasharray="1.2 2.6"/>
+      <path d="M8 24 A14 14 0 0 0 36 24" fill="none" stroke="#34323c" stroke-width=".8" stroke-dasharray="1.2 2.6"/>
+      <path d="M5 24 H39" stroke="#8d8896" stroke-width=".9"/>
+      <path d="M22 8.2 V6 M9.4 14.6 L7.8 13.2 M34.6 14.6 L36.2 13.2" stroke="#5b5763" stroke-width=".8" stroke-linecap="round"/>
+      <g class="orb" id="orb">
+        <circle cx="22" cy="10" r="3.4" fill="#E0A100"/>
+        <circle cx="22" cy="10" r="5.6" fill="none" stroke="#E0A100" stroke-opacity=".35" stroke-width=".8"/>
+      </g>
+    </svg>
+  </span>
+</button>
+
+<script>
+(() => {
+'use strict';
+
+/* ---------- palette ---------- */
+const PAL = [[179, 32, 42], [27, 79, 160], [224, 161, 0], [46, 139, 87], [108, 42, 122], [233, 226, 207]];
+const RUBY = 0, COBALT = 1, GOLD = 2, EMERALD = 3, AMETHYST = 4, WHITE = 5;
+const TAU = Math.PI * 2;
+const EXT = 1.24;            // the window canvas spans this many glass radii from the centre
+const LEAD_DUR = 0.34;
+
+const cv = document.getElementById('nave');
+const ctx = cv.getContext('2d');
+const elInscr = document.getElementById('inscription');
+const elOrd = document.getElementById('ord');
+const elOpus = document.getElementById('opus');
+const elSlab = document.getElementById('slab');
+const elHours = document.getElementById('hours');
+const elHourWord = document.getElementById('hourWord');
+const elOrb = document.getElementById('orb');
+
+const RMQ = window.matchMedia('(prefers-reduced-motion: reduce)');
+let reduced = RMQ.matches;
+
+const mk = (w, h, opt) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return [c, c.getContext('2d', opt)]; };
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const lerp = (a, b, t) => a + (b - a) * t;
+const rgb = (r, g, b) => 'rgb(' + (clamp(r, 0, 255) | 0) + ',' + (clamp(g, 0, 255) | 0) + ',' + (clamp(b, 0, 255) | 0) + ')';
+function mulberry(a) {
+  return function () {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+/* ---------- canvases ---------- */
+let [bg, bgx] = mk(2, 2), [fg, fgx] = mk(2, 2), [joints, jointsx] = mk(2, 2), [pool, poolx] = mk(2, 2);
+let [glass, glassx] = mk(2, 2), [lead, leadx] = mk(2, 2), [stone, stonex] = mk(2, 2), [stoneT, stoneTx] = mk(2, 2);
+let [lit, litx] = mk(2, 2), [b1, b1x] = mk(2, 2), [b2, b2x] = mk(2, 2), [b3, b3x] = mk(2, 2), [snap, snapx] = mk(2, 2);
+const SM = 48;
+const [smp, smpx] = mk(SM, SM, { willReadFrequently: true });
+let smpData = new Uint8ClampedArray(SM * SM * 4);
+let avgCol = [120, 60, 90];
+
+const G = {};      // geometry of the scene
+
+/* ---------- times of day ---------- */
+const TOD = [
+  { name: 'Dawn',  tint: [255, 212, 166], inten: .96, amb: .40, len: 1.40, pool: .98, desat: 0,   wall: [214, 190, 180], bloom: .90, dodge: .46, orb: -62 },
+  { name: 'Noon',  tint: [255, 252, 242], inten: 1.0, amb: .56, len: .98,  pool: 1.35, desat: 0,  wall: [240, 240, 246], bloom: 1.15, dodge: .62, orb: 0 },
+  { name: 'Dusk',  tint: [255, 156, 92],  inten: .96, amb: .34, len: 1.28, pool: 1.05, desat: 0,  wall: [196, 156, 146], bloom: 1.0, dodge: .52, orb: 62 },
+  { name: 'Night', tint: [156, 184, 255], inten: .64, amb: .21, len: 1.0,  pool: .36, desat: .84, wall: [108, 124, 170], bloom: .5, dodge: .16, orb: 180 }
+];
+let todIdx = 0, orbAngle = TOD[0].orb;
+const cur = JSON.parse(JSON.stringify(TOD[0]));
+
+/* =====================================================================
+   WINDOW GENERATION — everything in glass-radius units, y pointing out
+   ===================================================================== */
+function buildWindow(opus) {
+  const rnd = mulberry(opus * 7919 + 13);
+  const pick = a => a[Math.floor(rnd() * a.length)];
+  const first = opus === 231;
+  const n = first ? 12 : pick([8, 10, 12, 16]);
+  const pr = first ? [RUBY, COBALT] : pick([[0, 1], [1, 0], [0, 1], [0, 3], [1, 4], [4, 1], [3, 0], [1, 0]]);
+  const A = pr[0], B = pr[1];
+  const F = (A === EMERALD || B === EMERALD) ? AMETHYST : EMERALD;       // foliage colour
+  const Tt = [AMETHYST, EMERALD, RUBY, COBALT].find(c => c !== A && c !== B && c !== F);
+  const pieces = [], holes = [];
+
+  const rot = (p, a) => { const c = Math.cos(a), s = Math.sin(a); return [p[0] * c + p[1] * s, p[0] * s - p[1] * c]; };
+  const pol = (r, a) => [r * Math.sin(a), r * Math.cos(a)];
+  function add(zone, pts, ang, col, layer, gris) {
+    pieces.push({ zone, layer, col, pts: pts.map(p => rot(p, ang)), gris: gris ? gris.map(l => l.map(p => rot(p, ang))) : null });
+  }
+  function hole(pts, ang) { holes.push({ pts: pts.map(p => rot(p, ang)), inv: false }); }
+  function circ(x, y, r, k) {
+    k = k || Math.max(14, Math.round(r * 300)); const o = [];
+    for (let i = 0; i < k; i++) { const a = i / k * TAU; o.push([x + Math.sin(a) * r, y + Math.cos(a) * r]); }
+    return o;
+  }
+  // a cusped foil: the union of k overlapping circles, traced by rays from its centre
+  function foil(x, y, size, k, r0, sh) {
+    const a = size * (sh || (k >= 5 ? 0.6 : 0.46)), b = size - a, o = [], N = k * 14;
+    for (let i = 0; i < N; i++) {
+      const ph = i / N * TAU; let d = 0;
+      for (let j = 0; j < k; j++) {
+        const de = ph - (r0 + j * TAU / k), s = a * Math.sin(de);
+        if (Math.abs(s) <= b) { const v = a * Math.cos(de) + Math.sqrt(b * b - s * s); if (v > d) d = v; }
+      }
+      o.push([x + Math.sin(ph) * d, y + Math.cos(ph) * d]);
+    }
+    return o;
+  }
+  function seg(r0, r1, a0, a1) {
+    const k = Math.max(2, Math.ceil((a1 - a0) * r1 / 0.02)), o = [];
+    for (let i = 0; i <= k; i++) o.push(pol(r1, a0 + (a1 - a0) * i / k));
+    for (let i = k; i >= 0; i--) o.push(pol(r0, a0 + (a1 - a0) * i / k));
+    return o;
+  }
+  const veins = (x, y, r, k, r0) => { const o = []; for (let j = 0; j < k; j++) { const a = r0 + j * TAU / k; o.push([[x + Math.sin(a) * r * .18, y + Math.cos(a) * r * .18], [x + Math.sin(a) * r * .78, y + Math.cos(a) * r * .78]]); } return o; };
+
+  // a round light: ring of segments, disc, foil and boss, scaled to what fits
+  function roundel(zone, x, y, r, ang, c1, c2, c3, kf) {
+    hole(circ(x, y, r), ang);
+    if (r > 0.05) {
+      const k = 8, ri = r * 0.73, m = 5;
+      for (let j = 0; j < k; j++) {
+        const a0 = (j - .5) / k * TAU, a1 = (j + .5) / k * TAU, o = [];
+        for (let q = 0; q <= m; q++) { const a = a0 + (a1 - a0) * q / m; o.push([x + Math.sin(a) * r, y + Math.cos(a) * r]); }
+        for (let q = m; q >= 0; q--) { const a = a0 + (a1 - a0) * q / m; o.push([x + Math.sin(a) * ri, y + Math.cos(a) * ri]); }
+        add(zone, o, ang, j % 2 ? c3 : c1, 0);
+      }
+      add(zone, circ(x, y, ri), ang, c2, 0);
+      add(zone, foil(x, y, ri * 0.88, kf, 0), ang, c3, 1, veins(x, y, ri * .88, kf, 0));
+      add(zone, circ(x, y, ri * 0.27), ang, c1, 2);
+    } else if (r > 0.027) {
+      add(zone, circ(x, y, r), ang, c1, 0);
+      add(zone, foil(x, y, r * 0.8, 4, Math.PI / 4), ang, c3, 1, veins(x, y, r * .8, 4, Math.PI / 4));
+      add(zone, circ(x, y, r * 0.24), ang, c2, 2);
+    } else {
+      add(zone, circ(x, y, r), ang, c3, 0);
+      if (r > 0.017) add(zone, circ(x, y, r * 0.42), ang, c2, 1);
+    }
+  }
+
+  /* --- lancet / teardrop lights, used for the petals and the middle ring --- */
+  function lancets(o) {
+    const T = Math.tan(Math.PI / o.count), cosf = Math.cos(Math.PI / o.count), kk = Math.sqrt(1 + 2 * o.e);
+    const ys = (o.r2 + kk * o.gap / 2) / (1 + kk * T);
+    const hw = (y, d) => y * T - o.gap / 2 - d / cosf;
+    const E = o.e * hw(ys, 0);
+    const bw = o.border ? Math.min(clamp(hw(ys, 0) * 0.2, 0.017, 0.026), hw(o.r1, 0) * 0.42) : 0;
+    const ybOf = d => { const rb = o.r1 + d; let yb = rb; for (let i = 0; i < 3; i++) { const x = hw(yb, d); yb = Math.sqrt(Math.max(1e-6, rb * rb - x * x)); } return yb; };
+    function P(sec, f, d) {
+      const rb = o.r1 + d, yb = ybOf(d);
+      if (sec === 'b') { const x = (f * 2 - 1) * hw(yb, d); return [x, Math.sqrt(rb * rb - x * x)]; }
+      if (sec === 'r' || sec === 'l') { const y = yb + (ys - yb) * f, x = hw(y, d); return [sec === 'r' ? x : -x, y]; }
+      const rho = hw(ys, 0) + E - d, am = Math.acos(Math.min(1, E / rho)), a = am * f;
+      const x = -E + rho * Math.cos(a), y = ys + rho * Math.sin(a);
+      return [sec === 'ra' ? x : -x, y];
+    }
+    const outline = d => {
+      const q = [];
+      for (let i = 0; i <= 4; i++) q.push(P('b', i / 4, d));
+      for (let i = 1; i <= 5; i++) q.push(P('r', i / 5, d));
+      for (let i = 1; i <= 10; i++) q.push(P('ra', i / 10, d));
+      for (let i = 9; i >= 0; i--) q.push(P('la', i / 10, d));
+      for (let i = 4; i >= 1; i--) q.push(P('l', i / 5, d));
+      return q;
+    };
+    const tpl = [];     // {pts, col(i), layer, gris}
+    const yb = ybOf(bw), hs = hw(ys, bw);
+
+    if (bw > 0) {       // border of rectangular quarries
+      const quarry = (sec, f0, f1, m) => { const p = []; for (let j = 0; j <= m; j++) p.push(P(sec, f0 + (f1 - f0) * j / m, 0)); for (let j = m; j >= 0; j--) p.push(P(sec, f0 + (f1 - f0) * j / m, bw)); return p; };
+      const ns = Math.max(2, Math.round((ys - o.r1) / (bw * 2.5)));
+      const rho = hw(ys, 0) + E, na = Math.max(2, Math.round(rho * Math.acos(Math.min(1, E / rho)) / (bw * 2.5)));
+      const nbq = hw(o.r1, 0) > bw * 2.6 ? 2 : 1;
+      for (let j = 0; j < nbq; j++) tpl.push({ pts: quarry('b', j / nbq, (j + 1) / nbq, 2), col: o.cBorder(0), layer: 0 });
+      for (let j = 0; j < ns; j++) { tpl.push({ pts: quarry('r', j / ns, (j + 1) / ns, 1), col: o.cBorder(j + 1), layer: 0 }); tpl.push({ pts: quarry('l', j / ns, (j + 1) / ns, 1), col: o.cBorder(j + 1), layer: 0 }); }
+      for (let j = 0; j < na; j++) { tpl.push({ pts: quarry('ra', j / na, (j + 1) / na, 4), col: o.cBorder(ns + j + 1), layer: 0 }); tpl.push({ pts: quarry('la', j / na, (j + 1) / na, 4), col: o.cBorder(ns + j + 1), layer: 0 }); }
+    }
+    // field, cut into curved bands
+    const nb = o.nb, lev = [];
+    for (let k = 0; k <= nb; k++) lev.push(yb + (ys - yb) * k / nb);
+    const C = (k, s) => { const w = hw(lev[k], bw), bul = w * (k === nb ? 0.2 : 0.46) * o.dir; return [s * w, lev[k] + bul * (1 - s * s)]; };
+    for (let k = 0; k < nb; k++) {
+      const p = [];
+      if (k === 0) for (let i = 0; i <= 6; i++) p.push(P('b', i / 6, bw));
+      else for (let i = 0; i <= 10; i++) p.push(C(k, -1 + i / 5));
+      for (let i = 10; i >= 0; i--) p.push(C(k + 1, -1 + i / 5));
+      const ym = (lev[k] + lev[k + 1]) / 2, w = hw(ym, bw), h = lev[k + 1] - lev[k];
+      let gris = null;
+      if (o.vine && k === o.vineAt) {         // a wave of vine across the foliage band
+        const wave = []; for (let i = 0; i <= 16; i++) { const s = -0.82 + 1.64 * i / 16; wave.push([s * w, ym + h * 0.2 * Math.sin(s * Math.PI * 2.5) + w * .3 * o.dir * (1 - s * s)]); }
+        gris = [wave, [[-w * .45, ym + h * .05], [-w * .3, ym + h * .32]], [[w * .45, ym + h * .05], [w * .3, ym + h * .32]], [[0, ym - h * .08], [0, ym - h * .34]]];
+      } else if (k % 2 === 0) {
+        gris = [[[w * .16, ym - h * .18], [w * .46, ym + h * .02], [w * .72, ym + h * .3]], [[-w * .16, ym - h * .18], [-w * .46, ym + h * .02], [-w * .72, ym + h * .3]],
+                [[w * .3, ym - h * .26], [w * .62, ym - h * .06]], [[-w * .3, ym - h * .26], [-w * .62, ym - h * .06]]];
+      }
+      tpl.push({ pts: p, col: o.cBand(k), layer: 0, gris });
+    }
+    { // the head
+      const p = [];
+      for (let i = 0; i <= 10; i++) p.push(C(nb, -1 + i / 5));
+      for (let i = 0; i <= 10; i++) p.push(P('ra', i / 10, bw));
+      for (let i = 9; i >= 0; i--) p.push(P('la', i / 10, bw));
+      const top = P('ra', 1, bw)[1];
+      let gris = null;
+      if (!o.trefoil) gris = [[[0, ys + hs * .28], [0, top - hs * .2]], [[0, ys + hs * .4], [hs * .42, ys + hs * .62]], [[0, ys + hs * .4], [-hs * .42, ys + hs * .62]]];
+      tpl.push({ pts: p, col: o.cHead, layer: 0, gris });
+      if (o.trefoil) {
+        const ty = ys + hs * (0.42 + 0.22 * (kk - 1)), tr = hs * 0.52;
+        tpl.push({ pts: foil(0, ty, tr, 3, 0), col: o.cTref, layer: 1, gris: veins(0, ty, tr, 3, 0) });
+        tpl.push({ pts: circ(0, ty, tr * 0.2), col: o.cBoss, layer: 2 });
+      }
+    }
+    // knots on the axis where the bands meet
+    for (let k = 1; k < nb; k++) {
+      const w = hw(lev[k], bw), m = Math.min(w * 0.5, 0.05); if (m < 0.011) continue;
+      const cy = C(k, 0)[1];
+      if ((k + o.knot) % 2) tpl.push({ pts: circ(0, cy, m), col: o.cKnot(k), layer: 1, gris: [circ(0, cy, m * .55, 12).concat([[0, cy + m * .55]]), [[0, cy - m * .22], [0, cy + m * .22]], [[-m * .22, cy], [m * .22, cy]]] });
+      else tpl.push({ pts: [[0, cy + m * 1.3], [m, cy], [0, cy - m * 1.3], [-m, cy]], col: o.cKnot(k), layer: 1, gris: [[[0, cy + m * .62], [m * .48, cy], [0, cy - m * .62], [-m * .48, cy], [0, cy + m * .62]]] });
+    }
+    const out0 = outline(0);
+    for (let i = 0; i < o.count; i++) {
+      const ang = o.off + i * TAU / o.count;
+      hole(out0, ang);
+      for (const t of tpl) add(o.zone, t.pts, ang, typeof t.col === 'function' ? t.col(i) : t.col, t.layer, t.gris);
+    }
+    return { out0, ys, hw };
+  }
+
+  /* --- radii of the zones --- */
+  const gapP = 0.036;
+  const r1p = Math.max(0.2, (0.045 + gapP / 2) / Math.tan(Math.PI / n));
+  const r0 = r1p - 0.032, r2p = 0.6;
+  const m1 = 0.634, m2 = 0.806, o1 = 0.824, o2 = 0.972, q1 = 0.987, q2 = 1.037;
+
+  /* --- oculus --- */
+  hole(circ(0, 0, r0, 64), 0);
+  const rin = r0 - Math.min(0.036, r0 * 0.2);
+  for (let j = 0; j < 2 * n; j++) add(0, seg(rin, r0, (j - .5) * TAU / (2 * n), (j + .5) * TAU / (2 * n)), 0, j % 2 ? GOLD : (j % 4 ? B : WHITE), 0);
+  add(0, circ(0, 0, rin, 56), 0, B, 0);
+  const starry = first ? true : rnd() < 0.5;
+  const ko = n <= 10 ? n : n / 2;
+  if (starry) {
+    const ro_ = rin * 0.95, ri_ = rin * (ko > 6 ? 0.56 : 0.44), rc_ = rin * 0.2;
+    for (let j = 0; j < ko; j++) {
+      const a = j * TAU / ko, h = Math.PI / ko;
+      add(0, [pol(rc_, a), pol(ri_, a - h), pol(ro_, a)], 0, j % 2 ? A : GOLD, 1, [[pol(rin * .34, a - h * .3), pol(rin * .7, a - h * .1)]]);
+      add(0, [pol(rc_, a), pol(ro_, a), pol(ri_, a + h)], 0, j % 2 ? GOLD : A, 1);
+    }
+  } else {
+    add(0, foil(0, 0, rin * 0.94, ko, 0, 0.62), 0, GOLD, 1);
+    for (let j = 0; j < ko; j++) { const c = pol(rin * 0.56, j * TAU / ko); add(0, circ(c[0], c[1], rin * 0.2), 0, j % 2 ? A : Tt, 2, [circ(c[0], c[1], rin * .09, 8).concat([[c[0], c[1] + rin * .09]])]); }
+  }
+  add(0, circ(0, 0, rin * 0.27), 0, WHITE, 2, veins(0, 0, rin * .27, ko, Math.PI / ko).concat([circ(0, 0, rin * .1, 10).concat([[0, rin * .1]])]));
+
+  /* --- the petals --- */
+  const ePet = first ? 0.55 : pick([0, 0.5, 0.95]);
+  const nbP = n <= 8 ? 4 : n <= 12 ? (rnd() < .5 ? 4 : 3) : 3;
+  const vine = first ? true : rnd() < 0.7;
+  const pet = lancets({
+    zone: 1, count: n, off: 0, r1: r1p, r2: r2p, gap: gapP, e: ePet, border: true, nb: nbP,
+    dir: first ? 1 : (rnd() < .65 ? 1 : -1), vine, vineAt: nbP > 3 ? 2 : 1, knot: rnd() < .5 ? 1 : 0, trefoil: true,
+    cBorder: idx => i => idx % 5 === 4 ? WHITE : (idx % 2 ? (i % 2 ? A : B) : GOLD),
+    cBand: k => i => (vine && k === (nbP > 3 ? 2 : 1)) ? F : ((k + i) % 2 ? B : A),
+    cHead: i => ((nbP + i) % 2 ? B : A),
+    cTref: i => (i % 2 ? GOLD : WHITE), cBoss: i => (i % 2 ? A : B),
+    cKnot: k => i => (k % 2 ? GOLD : WHITE)
+  });
+
+  /* --- eyes in the spandrels between the petal heads --- */
+  {
+    const a = Math.PI / n, ca = Math.cos(a), sa = Math.sin(a);
+    const nb_ = pet.out0.map(p => [p[0] * ca - p[1] * sa, p[0] * sa + p[1] * ca]);   // neighbour petal seen from the bisector
+    let best = 0, bestR = 0;
+    for (let rr = pet.ys - 0.03; rr < r2p + 0.01; rr += 0.003) {
+      let d = 1; for (const p of nb_) { const q = Math.hypot(p[0], p[1] - rr); if (q < d) d = q; }
+      const f = Math.min(d - 0.014, r2p + 0.014 - rr);
+      if (f > best) { best = f; bestR = rr; }
+    }
+    if (best > 0.013) for (let i = 0; i < n; i++) roundel(1, 0, bestR, best, a + i * TAU / n, i % 2 ? F : Tt, WHITE, GOLD, 4);
+  }
+
+  /* --- middle ring: 2n smaller lights --- */
+  const eMid = first ? 0 : pick([0, 0, 0.6]);
+  lancets({
+    zone: 2, count: 2 * n, off: Math.PI / (2 * n), r1: m1, r2: m2, gap: 0.03, e: eMid, border: false, nb: 2,
+    dir: 1, vine: false, vineAt: -1, knot: 1, trefoil: false,
+    cBand: k => j => ((k + (j >> 1) + j) % 2 ? Tt : F),
+    cHead: j => (((j >> 1) + j) % 2 ? Tt : F),
+    cKnot: k => j => (j % 2 ? GOLD : WHITE)
+  });
+
+  /* --- outer ring: roundels with packed eyelets in the gaps --- */
+  {
+    const rc = (o1 + o2) / 2, ro = (o2 - o1) / 2, m = n === 16 ? 16 : 2 * n, step = TAU / m;
+    const placed = [[rc, 0, ro, 0]];
+    const fit = (r, a) => {
+      let f = Math.min(r - o1, o2 - r); const p = pol(r, a);
+      for (const c of placed) for (let k = -1; k <= 1; k++) { const q = pol(c[0], c[1] + k * step); f = Math.min(f, Math.hypot(p[0] - q[0], p[1] - q[1]) - c[2] - 0.012); }
+      return f;
+    };
+    const r2nd = Math.min(fit(rc, step / 2), ro * 0.82);
+    const has2 = r2nd > 0.028;
+    if (has2) placed.push([rc, step / 2, r2nd, 1]);
+    for (const ca of (has2 ? [step / 4, step * 3 / 4] : [step / 2])) {
+      for (const side of [0, 1]) {
+        let best = 0, br = 0;
+        for (let rr = side ? rc : o1 + 0.012; rr < (side ? o2 - 0.012 : rc); rr += 0.003) { const f = fit(rr, ca); if (f > best) { best = f; br = rr; } }
+        if (best > 0.012) placed.push([br, ca, Math.min(best, 0.04), 2]);
+      }
+    }
+    const kf = n % 5 === 0 ? 5 : (rnd() < .5 ? 4 : 6);
+    for (const c of placed) for (let i = 0; i < m; i++) {
+      const ang = c[1] + i * step;
+      if (c[3] === 0) roundel(3, 0, c[0], c[2], ang, i % 2 ? A : B, i % 2 ? B : A, i % 2 ? WHITE : GOLD, kf);
+      else if (c[3] === 1) roundel(3, 0, c[0], c[2], ang, F, Tt, GOLD, 4);
+      else roundel(3, 0, c[0], c[2], ang, Tt, WHITE, i % 2 ? F : GOLD, 4);
+    }
+  }
+
+  /* --- outermost band of quarries and diamonds --- */
+  {
+    const nq = n <= 10 ? n * 8 : n * 6, st = TAU / nq, rm = (q1 + q2) / 2;
+    for (let j = 0; j < nq; j++) {
+      const a0 = (j - .5) * st, a1 = (j + .5) * st, c = [A, GOLD, B, GOLD][j % 4];
+      const t = rm * st * 0.5;
+      add(4, seg(q1, q2, a0, a1), 0, c, 0, j % 4 === 1 ? [[[-t * .6, rm - .008], [-t * .2, rm + .008], [t * .2, rm - .008], [t * .6, rm + .008]]] : null);
+      if (j % 2 === 0) add(4, [[0, rm + 0.019], [t * .62, rm], [0, rm - 0.019], [-t * .62, rm]], j * st, j % 4 ? WHITE : GOLD, 1);
+    }
+    holes.push({ pts: circ(0, 0, q2, 180), inv: false, ring: true });
+    holes.push({ pts: circ(0, 0, q1, 180), inv: true, ring: true });
+  }
+
+  /* --- schedule: leads from the centre outward, then glass ring by ring --- */
+  const zr = [[9, 0], [9, 0], [9, 0], [9, 0], [9, 0]];
+  let sid = opus * 131 + 7;
+  for (const p of pieces) {
+    let x = 0, y = 0; for (const q of p.pts) { x += q[0]; y += q[1]; }
+    p.rr = Math.hypot(x / p.pts.length, y / p.pts.length);
+    if (p.rr < zr[p.zone][0]) zr[p.zone][0] = p.rr; if (p.rr > zr[p.zone][1]) zr[p.zone][1] = p.rr;
+    p.seed = (sid = sid * 1103515245 + 12345 | 0);
+  }
+  for (const p of pieces) {
+    const z = zr[p.zone];
+    p.tl = 0.1 + (p.rr / 1.04) * 0.86 + rnd() * 0.05;
+    p.tg = 0.74 + p.zone * 0.27 + ((p.rr - z[0]) / (z[1] - z[0] || 1)) * 0.2 + p.layer * 0.12 + rnd() * 0.04;
+  }
+  return { n, opus, pieces, holes, q1, q2, byLead: pieces.slice().sort((a, b) => a.tl - b.tl), byGlass: pieces.slice().sort((a, b) => a.tg - b.tg) };
+}
+
+/* ---------- turn unit geometry into paths at the current resolution ---------- */
+function realize(win) {
+  const U = G.U, c = G.S / 2;
+  for (const p of win.pieces) {
+    const path = new Path2D(); let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9, len = 0, px = 0, py = 0, fx = 0, fy = 0;
+    for (let i = 0; i < p.pts.length; i++) {
+      const x = c + p.pts[i][0] * U, y = c + p.pts[i][1] * U;
+      if (i) { path.lineTo(x, y); len += Math.hypot(x - px, y - py); } else { path.moveTo(x, y); fx = x; fy = y; }
+      px = x; py = y; if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+    }
+    len += Math.hypot(fx - px, fy - py); path.closePath();
+    p.path = path; p.len = len; p.x0 = x0; p.y0 = y0; p.x1 = x1; p.y1 = y1;
+    if (p.gris) { const gp = new Path2D(); for (const l of p.gris) l.forEach((q, i) => i ? gp.lineTo(c + q[0] * U, c + q[1] * U) : gp.moveTo(c + q[0] * U, c + q[1] * U)); p.gp = gp; }
+  }
+  for (const h of win.holes) {
+    h.px = h.pts.map(q => [c + q[0] * U, c + q[1] * U]);
+    const path = new Path2D(); h.px.forEach((q, i) => i ? path.lineTo(q[0], q[1]) : path.moveTo(q[0], q[1])); path.closePath(); h.path = path;
+  }
+}
+
+/* ---------- one piece of glass ---------- */
+function drawPiece(g, p) {
+  const r = mulberry(p.seed), S = G.S, c = PAL[p.col], k = S / 900;
+  const j = 0.8 + r() * 0.4, hs = (r() - .5) * 30;
+  const cr = c[0] * j + hs, cg = c[1] * j + (r() - .5) * 20, cb = c[2] * j - hs;
+  const w = p.x1 - p.x0, h = p.y1 - p.y0;
+  g.save(); g.clip(p.path);
+  const gx = p.x0 + w * r(), gy = p.y0 + h * r(), rad = Math.max(w, h) * (0.7 + r() * .5) + 2;
+  const rg = g.createRadialGradient(gx, gy, 0, gx, gy, rad);
+  rg.addColorStop(0, rgb(cr * 1.42 + 20, cg * 1.42 + 16, cb * 1.42 + 16));
+  rg.addColorStop(.55, rgb(cr, cg, cb));
+  rg.addColorStop(1, rgb(cr * .58, cg * .58, cb * .62));
+  g.fillStyle = rg; g.fillRect(p.x0 - 1, p.y0 - 1, w + 2, h + 2);
+  const ang = r() * Math.PI, dx = Math.cos(ang), dy = Math.sin(ang), mx = p.x0 + w / 2, my = p.y0 + h / 2, ext = rad * 1.5, ns = 2 + (r() * 4 | 0);
+  for (let i = 0; i < ns; i++) {              // streaks from the blowing of the glass
+    const o = (r() - .5) * ext * 1.2;
+    g.strokeStyle = r() < .5 ? 'rgba(255,250,232,' + (.05 + r() * .1) + ')' : 'rgba(0,0,12,' + (.07 + r() * .13) + ')';
+    g.lineWidth = (0.6 + r() * 2.8) * k;
+    g.beginPath(); g.moveTo(mx - dy * o - dx * ext, my + dx * o - dy * ext); g.lineTo(mx - dy * o + dx * ext, my + dx * o + dy * ext); g.stroke();
+  }
+  const nbb = 1 + (r() * 3 | 0);
+  for (let i = 0; i < nbb; i++) {             // seed bubbles
+    const bx = p.x0 + w * r(), by = p.y0 + h * r(), br = (0.5 + r() * 1.1) * k;
+    g.fillStyle = 'rgba(255,252,238,.32)'; g.beginPath(); g.arc(bx, by, br, 0, TAU); g.fill();
+    g.fillStyle = 'rgba(0,0,10,.22)'; g.beginPath(); g.arc(bx + br * .5, by + br * .5, br * .6, 0, TAU); g.fill();
+  }
+  g.lineWidth = G.lw * 3.2; g.strokeStyle = 'rgba(10,6,12,.27)'; g.stroke(p.path);     // matting near the lead
+  if (p.gp) { g.lineWidth = Math.max(.8, S * 0.0013); g.lineCap = 'round'; g.lineJoin = 'round'; g.strokeStyle = 'rgba(16,9,12,.66)'; g.stroke(p.gp); }
+  g.restore();
+}
+
+/* ---------- the stone tracery ---------- */
+function renderStone(win) {
+  const g = stonex, S = G.S, U = G.U, c = S / 2;
+  g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, S, S);
+  g.fillStyle = '#1f1e25'; g.beginPath(); g.arc(c, c, 1.205 * U, 0, TAU); g.fill();
+  g.save(); g.clip();
+  const r = mulberry(5);
+  for (let i = 0; i < 3200; i++) { const x = r() * S, y = r() * S; g.fillStyle = r() < .5 ? 'rgba(58,56,66,.22)' : 'rgba(0,0,0,.3)'; g.fillRect(x, y, 1 + r() * 1.6, 1 + r() * 1.6); }
+  g.restore();
+  // carved mouldings of the great ring, lit from the upper left
+  const gA = g.createLinearGradient(c - U * .85, c - U * .85, c + U * .85, c + U * .85);
+  gA.addColorStop(0, '#77737f'); gA.addColorStop(.42, '#3A3842'); gA.addColorStop(1, '#0b0a0e');
+  const gB = g.createLinearGradient(c - U * .85, c - U * .85, c + U * .85, c + U * .85);
+  gB.addColorStop(0, '#08070A'); gB.addColorStop(.55, '#24232a'); gB.addColorStop(1, '#565360');
+  const ring = (rad, w, style) => { g.strokeStyle = style; g.lineWidth = w * U; g.beginPath(); g.arc(c, c, rad * U, 0, TAU); g.stroke(); };
+  ring(1.062, 0.034, gB);
+  ring(1.083, 0.008, '#040305');
+  ring(1.118, 0.052, gA);
+  ring(1.104, 0.008, 'rgba(120,116,134,.22)');
+  ring(1.149, 0.01, '#040305');
+  ring(1.172, 0.03, gB);
+  ring(1.196, 0.016, gA);
+  // chamfers round every light: each edge shaded by the way it faces
+  const bk = []; for (let i = 0; i < 7; i++) bk.push(new Path2D());
+  const lx = -0.6, ly = -0.8;
+  for (const h of win.holes) {
+    const q = h.px; let ar = 0;
+    for (let i = 0; i < q.length; i++) { const a = q[i], b = q[(i + 1) % q.length]; ar += a[0] * b[1] - b[0] * a[1]; }
+    const sgn = (ar > 0 ? 1 : -1) * (h.inv ? -1 : 1);
+    for (let i = 0; i < q.length; i++) {
+      const a = q[i], b = q[(i + 1) % q.length], ex = b[0] - a[0], ey = b[1] - a[1], l = Math.hypot(ex, ey) || 1;
+      const s = ((-ey / l) * lx + (ex / l) * ly) * sgn;
+      const path = bk[clamp(Math.round((s + 1) * 3), 0, 6)];
+      path.moveTo(a[0], a[1]); path.lineTo(b[0], b[1]);
+    }
+  }
+  g.lineCap = 'round'; g.lineWidth = U * 0.02;
+  for (let i = 0; i < 7; i++) { const t = i / 6; g.strokeStyle = rgb(lerp(3, 124, t * t), lerp(3, 120, t * t), lerp(5, 138, t * t)); g.stroke(bk[i]); }
+  g.lineCap = 'butt';
+  g.globalCompositeOperation = 'destination-out';
+  g.fillStyle = '#000';
+  for (const h of win.holes) if (!h.ring) g.fill(h.path);
+  g.strokeStyle = '#000'; g.lineWidth = (win.q2 - win.q1) * U; g.beginPath(); g.arc(c, c, (win.q1 + win.q2) / 2 * U, 0, TAU); g.stroke();
+  g.globalCompositeOperation = 'source-over';
+  stoneKey = '';
+}
+let stoneKey = '';
+function tintStone() {
+  const w = cur.wall, key = (w[0] | 0) + ',' + (w[1] | 0) + ',' + (w[2] | 0);
+  if (key === stoneKey) return; stoneKey = key;
+  const g = stoneTx, S = G.S;
+  g.globalCompositeOperation = 'copy'; g.drawImage(stone, 0, 0);
+  g.globalCompositeOperation = 'multiply'; g.fillStyle = 'rgb(' + key + ')'; g.fillRect(0, 0, S, S);
+  g.globalCompositeOperation = 'destination-in'; g.drawImage(stone, 0, 0);
+  g.globalCompositeOperation = 'source-over';
+}
+
+/* =====================================================================
+   ARCHITECTURE
+   ===================================================================== */
+function proj(X, z) { const sc = G.d0 / (G.d0 - z); return [G.cx + (X - G.cx) * sc, G.vpY + (G.floorY - G.vpY) * sc, sc]; }
+
+function floorQuads(cb) {
+  const rr = mulberry(31), { W, H, cx, floorY, vpY, d0 } = G;
+  const zb = d0 * (1 - (floorY - vpY) / (H + 4 - vpY));
+  const rowD = clamp(H * 0.105, 60, 120), sw = rowD * 1.62;
+  for (let k = 0, z = 0; z < zb; k++, z += rowD) {
+    const z1 = Math.min(z + rowD, d0 * 0.985), off = (k % 2) * sw * 0.5 + (rr() - .5) * sw * .16;
+    for (let X = cx - W * 0.95 - off; X < cx + W * 0.95; X += sw) cb(proj(X, z), proj(X + sw, z), proj(X + sw, z1), proj(X, z1), rr());
+  }
+}
+
+function archPath(g, d) {
+  const { cx, R, floorY } = G, a = 1.33 * R, rho = 1.652 * R, ys = G.cy + 0.12 * R, off = rho - a;
+  const th = Math.acos(off / (rho + d));
+  g.beginPath();
+  g.moveTo(cx - a - d, floorY);
+  g.lineTo(cx - a - d, ys);
+  g.arc(cx + off, ys, rho + d, Math.PI, Math.PI + th);
+  g.arc(cx - off, ys, rho + d, -th, 0);
+  g.lineTo(cx + a + d, floorY);
+}
+
+function renderBg() {
+  const g = bgx, { W, H, dpr, cx, cy, R, floorY } = G;
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.fillStyle = '#08070A'; g.fillRect(0, 0, W, H);
+  // ashlar wall
+  const rr = mulberry(77), bh = clamp(H / 11.5, 44, 96);
+  for (let row = 0, y = floorY; y > -bh; row++, y -= bh) {
+    let x = -rr() * bh * 1.6 - (row % 2) * bh * .9;
+    while (x < W) {
+      const bw = bh * (1.5 + rr() * 1.35), v = rr(), L = 31 + v * 15;
+      g.fillStyle = rgb(L, L - 1, L + 6); g.fillRect(x, y - bh, bw + 1, bh + 1);
+      const fgr = g.createLinearGradient(0, y - bh, 0, y); fgr.addColorStop(0, 'rgba(70,68,80,.16)'); fgr.addColorStop(.5, 'rgba(0,0,0,0)'); fgr.addColorStop(1, 'rgba(0,0,0,.22)');
+      g.fillStyle = fgr; g.fillRect(x, y - bh, bw, bh);
+      g.fillStyle = 'rgba(8,7,10,.95)'; g.fillRect(x, y - 1.6, bw, 1.6); g.fillRect(x + bw - 1.5, y - bh, 1.5, bh);
+      g.fillStyle = 'rgba(58,56,66,.55)'; g.fillRect(x, y - bh, bw - 1.5, 1);
+      g.fillStyle = 'rgba(58,56,66,.3)'; g.fillRect(x, y - bh, 1, bh - 1.6);
+      x += bw;
+    }
+  }
+  for (let i = 0; i < W * H / 110; i++) { const x = rr() * W, y = rr() * floorY; g.fillStyle = rr() < .5 ? 'rgba(120,116,134,.07)' : 'rgba(0,0,0,.2)'; g.fillRect(x, y, 1 + rr() * 1.4, 1 + rr() * 1.4); }
+  // the niche of the pointed arch
+  g.save(); archPath(g, 0); g.clip();
+  g.fillStyle = 'rgba(0,0,0,.3)'; g.fillRect(0, 0, W, H);
+  archPath(g, 0); g.lineWidth = R * .34; g.strokeStyle = 'rgba(0,0,0,.2)'; g.stroke();
+  archPath(g, 0); g.lineWidth = R * .14; g.strokeStyle = 'rgba(0,0,0,.28)'; g.stroke();
+  g.restore();
+  // shadow under the great ring
+  const sh = g.createRadialGradient(cx + R * .03, cy + R * .05, R * 1.16, cx + R * .03, cy + R * .05, R * 1.36);
+  sh.addColorStop(0, 'rgba(0,0,0,.75)'); sh.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = sh; g.fillRect(cx - R * 1.5, cy - R * 1.5, R * 3, R * 3);
+  // mouldings of the arch
+  const st = (d, w, s) => { archPath(g, d * R); g.lineWidth = w; g.strokeStyle = s; g.stroke(); };
+  st(0.055, 0.125 * R, '#25242b');
+  st(0.002, 1.6, '#040305');
+  st(0.022, 0.03 * R, '#111015');
+  st(0.05, 0.026 * R, '#4a4853');
+  st(0.043, 1, 'rgba(120,116,134,.4)');
+  st(0.074, 0.014 * R, '#07060a');
+  st(0.097, 0.028 * R, '#34323c');
+  st(0.116, 1.2, 'rgba(90,87,102,.75)');
+  st(0.121, 1.4, '#040305');
+  // plinth course at the foot of the wall
+  const ph = Math.max(10, H * 0.017);
+  g.fillStyle = '#211f27'; g.fillRect(0, floorY - ph, W, ph);
+  g.fillStyle = 'rgba(90,87,102,.6)'; g.fillRect(0, floorY - ph, W, 1);
+  g.fillStyle = 'rgba(0,0,0,.6)'; g.fillRect(0, floorY - ph - 2.5, W, 2.5);
+  // the wall falls away into darkness
+  const vg = g.createRadialGradient(cx, cy + R * .6, R * 1.2, cx, cy + R * .6, Math.max(W * .62, H * .9));
+  vg.addColorStop(0, 'rgba(4,3,6,0)'); vg.addColorStop(.55, 'rgba(4,3,6,.3)'); vg.addColorStop(1, 'rgba(4,3,6,.82)');
+  g.fillStyle = vg; g.fillRect(0, 0, W, floorY);
+
+  // flagstones
+  g.fillStyle = '#0b0a0e'; g.fillRect(0, floorY, W, H - floorY);
+  floorQuads((a, b, c, d, v) => {
+    const L = 31 + v * 17;
+    g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.lineTo(c[0], c[1]); g.lineTo(d[0], d[1]); g.closePath();
+    g.fillStyle = rgb(L, L - 1, L + 6); g.fill();
+    g.lineWidth = 1.3 + a[2] * .5; g.strokeStyle = '#08070A'; g.stroke();
+    g.beginPath(); g.moveTo(a[0] + 2, a[1] + 1.4 * a[2]); g.lineTo(b[0] - 2, b[1] + 1.4 * a[2]); g.lineWidth = 1; g.strokeStyle = 'rgba(86,83,98,.42)'; g.stroke();
+  });
+  for (let i = 0; i < W * H / 200; i++) { const x = rr() * W, y = floorY + rr() * (H - floorY); g.fillStyle = rr() < .5 ? 'rgba(120,116,134,.06)' : 'rgba(0,0,0,.2)'; g.fillRect(x, y, 1 + rr() * 2, 1); }
+  const js = g.createLinearGradient(0, floorY, 0, floorY + H * .05); js.addColorStop(0, 'rgba(0,0,0,.7)'); js.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = js; g.fillRect(0, floorY, W, H * .05);
+  const fd = g.createRadialGradient(cx, floorY + (H - floorY) * .3, R * .5, cx, floorY + (H - floorY) * .3, Math.max(W * .62, H * .7));
+  fd.addColorStop(0, 'rgba(4,3,6,0)'); fd.addColorStop(.6, 'rgba(4,3,6,.3)'); fd.addColorStop(1, 'rgba(4,3,6,.8)');
+  g.fillStyle = fd; g.fillRect(0, floorY, W, H - floorY);
+
+  // joints, drawn again over the light so they show through it
+  const j = jointsx;
+  j.setTransform(dpr, 0, 0, dpr, 0, -floorY * dpr); j.clearRect(0, floorY, W, H - floorY);
+  floorQuads((a, b, c, d, v) => {
+    j.beginPath(); j.moveTo(a[0], a[1]); j.lineTo(b[0], b[1]); j.lineTo(c[0], c[1]); j.lineTo(d[0], d[1]); j.closePath();
+    j.fillStyle = 'rgba(0,0,0,' + (0.3 - v * 0.3) + ')'; j.fill();
+    j.lineWidth = 1.3 + a[2] * .5; j.strokeStyle = 'rgba(5,4,7,.9)'; j.stroke();
+    j.beginPath(); j.moveTo(a[0] + 2, a[1] + 1.4 * a[2]); j.lineTo(b[0] - 2, b[1] + 1.4 * a[2]); j.lineWidth = 1; j.strokeStyle = 'rgba(255,250,240,.07)'; j.stroke();
+  });
+}
+
+function renderFg() {
+  const g = fgx, { W, H, dpr } = G;
+  g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+  const cw = clamp(W * 0.082, 30, 150), narrow = W < 700;
+  const column = (x, lit) => {      // lit: +1 if the window is to the right of the column
+    const grad = (x0, w) => {
+      const a = lit > 0 ? x0 : x0 + w, b = lit > 0 ? x0 + w : x0, gr = g.createLinearGradient(a, 0, b, 0);
+      gr.addColorStop(0, '#020203'); gr.addColorStop(.5, '#0a090d'); gr.addColorStop(.82, '#1b1a21'); gr.addColorStop(.94, '#2e2c35'); gr.addColorStop(1, '#131217');
+      return gr;
+    };
+    const pl = H * 0.1, band = (cxm, w, y, h) => { g.fillStyle = grad(cxm - w / 2, w); g.fillRect(cxm - w / 2, y, w, h); g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(cxm - w / 2, y + h - 1.5, w, 1.5); g.fillStyle = 'rgba(86,83,98,.22)'; g.fillRect(cxm - w / 2, y, w, 1); };
+    const m = x + cw / 2;
+    g.fillStyle = 'rgba(0,0,0,.5)'; g.fillRect(lit > 0 ? x + cw : x - cw * .22, 0, cw * .22, H);
+    g.fillStyle = grad(x, cw); g.fillRect(x, -4, cw, H - pl);
+    for (let i = 1; i < 5; i++) { g.fillStyle = 'rgba(0,0,0,.2)'; g.fillRect(x + cw * i / 5, 0, 1, H - pl); }
+    band(m, cw * 1.1, H * 0.2, H * 0.02); band(m, cw * 1.04, H * 0.2 + H * 0.024, H * 0.008);
+    band(m, cw * 1.12, H - pl - H * 0.062, H * 0.018);
+    band(m, cw * 1.26, H - pl - H * 0.042, H * 0.042);
+    band(m, cw * 1.46, H - pl, pl + 2);
+  };
+  column(narrow ? -cw * .5 : W * 0.036, 1);
+  column(narrow ? W - cw * .5 : W * (1 - 0.036) - cw, -1);
+  const vg = g.createRadialGradient(W / 2, H * .46, Math.min(W, H) * .42, W / 2, H * .46, Math.hypot(W, H) * .62);
+  vg.addColorStop(0, 'rgba(3,2,5,0)'); vg.addColorStop(1, 'rgba(3,2,5,.7)');
+  g.fillStyle = vg; g.fillRect(0, 0, W, H);
+}
+
+/* =====================================================================
+   LAYOUT
+   ===================================================================== */
+let win = null, t0 = 0, li = 0, gi = 0, snapOn = false, firstRun = true;
+const motes = [];
+
+function layout() {
+  const W = Math.max(320, window.innerWidth), H = Math.max(320, window.innerHeight), dpr = Math.min(2, window.devicePixelRatio || 1);
+  const R = Math.min(0.21 * H, 0.345 * W);
+  const cy = Math.min(0.355 * H, 1.62 * R + 0.035 * H);
+  const floorY = Math.min(0.69 * H, cy + 1.2 * R + 0.105 * H);
+  Object.assign(G, { W, H, dpr, R, cx: W / 2, cy, floorY, vpY: floorY - 0.25 * H, d0: 1.5 * H, hW: floorY - cy });
+  const ss = Math.max(dpr, 1.5);
+  G.S = Math.min(1400, Math.ceil(2 * EXT * R * ss / 2) * 2);
+  G.U = G.S / (2 * EXT);
+  G.lw = Math.max(1.5, G.U * 0.0085);
+  const sz = (c, w, h) => { c.width = w; c.height = h; };
+  sz(cv, Math.round(W * dpr), Math.round(H * dpr));
+  sz(bg, cv.width, cv.height); sz(fg, cv.width, cv.height);
+  sz(joints, cv.width, Math.max(2, Math.ceil((H - floorY) * dpr)));
+  G.PS = 0.5; sz(pool, Math.ceil(W * G.PS), Math.max(2, Math.ceil(H - floorY)));
+  for (const c of [glass, lead, stone, stoneT, lit, snap]) sz(c, G.S, G.S);
+  sz(b1, Math.round(G.S / 3), Math.round(G.S / 3)); sz(b2, Math.round(G.S / 11), Math.round(G.S / 11)); sz(b3, Math.round(G.S / 10), Math.round(G.S / 10));
+  renderBg(); renderFg();
+  document.documentElement.style.setProperty('--iy', ((cy + 1.2 * R + floorY - Math.max(10, H * .017)) / 2 + 2) + 'px');
+  document.documentElement.style.setProperty('--sy', (floorY + (H - floorY) * (W < 620 ? 0.6 : 0.7)) + 'px');
+  // motes
+  const want = reduced ? 90 : (W < 700 ? 110 : 190);
+  motes.length = 0;
+  const mr = mulberry(9);
+  for (let i = 0; i < want; i++) {
+    const a = mr() * TAU, q = Math.sqrt(mr()) * 0.98;
+    motes.push({ u: Math.cos(a) * q, v: Math.sin(a) * q, t: mr(), vt: (mr() - .35) * 0.022, ph: mr() * TAU, f: 0.7 + mr() * 2.4, s: mr(), wx: mr() * TAU, wf: .1 + mr() * .25 });
+  }
+  if (win) { realize(win); renderStone(win); redrawWindow(); }
+}
+
+function redrawWindow() {       // everything already set, at the current resolution
+  glassx.clearRect(0, 0, G.S, G.S); leadx.clearRect(0, 0, G.S, G.S);
+  for (let i = 0; i < gi; i++) drawPiece(glassx, win.byGlass[i]);
+  leadStyle(leadx);
+  for (let i = 0; i < li; i++) leadx.stroke(win.byLead[i].path);
+}
+function leadStyle(g) { g.strokeStyle = '#0B0A0C'; g.lineWidth = G.lw; g.lineJoin = 'round'; g.lineCap = 'round'; }
+
+const ROMAN = { 8: 'VIII', 10: 'X', 12: 'XII', 16: 'XVI' };
+let opus = 231;
+function commission(now) {
+  if (win && !firstRun) {
+    snapx.globalCompositeOperation = 'copy'; snapx.drawImage(lit, 0, 0);
+    snapx.globalCompositeOperation = 'source-over'; snapx.drawImage(lead, 0, 0); snapx.drawImage(stoneT, 0, 0);
+    snapOn = true;
+    opus = opus >= 9999 ? 1 : opus + 1;
+  }
+  win = buildWindow(opus);
+  realize(win); renderStone(win);
+  glassx.clearRect(0, 0, G.S, G.S); leadx.clearRect(0, 0, G.S, G.S);
+  li = 0; gi = 0; t0 = now;
+  if (reduced) for (const p of win.pieces) { p.tl = -9; p.tg = -9; }
+  const ord = ROMAN[win.n], num = String(opus).padStart(4, '0');
+  if (firstRun) { elOrd.textContent = ord; elOpus.textContent = num; }
+  else {
+    elInscr.classList.add('recut');
+    setTimeout(() => { elOrd.textContent = ord; elOpus.textContent = num; elInscr.classList.remove('recut'); }, reduced ? 20 : 420);
+  }
+  document.title = 'Rose Window · Opus ' + num;
+  firstRun = false;
+}
+
+/* =====================================================================
+   FRAME
+   ===================================================================== */
+const sun = { x: 0.3, y: 0.4 }, target = { x: 0.3, y: 0.4 };
+let lastInput = -1e9, dayK = 1, clock = 0, last = 0, raf = 0, frameNo = 0;
+let pointerIn = false;
+
+function lightWindow(hx, hy) {
+  const g = litx, S = G.S, t = cur.tint, I = cur.inten * dayK, a = cur.amb * (0.55 + 0.45 * dayK);
+  g.globalAlpha = 1; g.globalCompositeOperation = 'copy'; g.drawImage(glass, 0, 0);
+  if (cur.desat > 0.01) { g.globalCompositeOperation = 'saturation'; g.globalAlpha = cur.desat; g.fillStyle = '#808080'; g.fillRect(0, 0, S, S); g.globalAlpha = 1; }
+  g.globalCompositeOperation = 'multiply';
+  let rg = g.createRadialGradient(hx, hy, 0, hx, hy, S * 0.6);
+  const m1 = Math.min(1, I), m2 = lerp(a, I, .5);
+  rg.addColorStop(0, rgb(t[0] * m1, t[1] * m1, t[2] * m1));
+  rg.addColorStop(.42, rgb(t[0] * m2, t[1] * m2, t[2] * m2));
+  rg.addColorStop(1, rgb(t[0] * a, t[1] * a, t[2] * a));
+  g.fillStyle = rg; g.fillRect(0, 0, S, S);
+  g.globalCompositeOperation = 'color-dodge';
+  const d = cur.dodge * dayK;
+  rg = g.createRadialGradient(hx, hy, 0, hx, hy, S * 0.4);
+  rg.addColorStop(0, rgb(t[0] * d, t[1] * d, t[2] * d)); rg.addColorStop(.5, rgb(t[0] * d * .4, t[1] * d * .4, t[2] * d * .4)); rg.addColorStop(1, '#000');
+  g.fillStyle = rg; g.fillRect(0, 0, S, S);
+  g.globalCompositeOperation = 'destination-in'; g.drawImage(glass, 0, 0);
+  g.globalCompositeOperation = 'source-over';
+  // blurred copies: halation, the pool on the floor, and the colour the motes pass through
+  b1x.clearRect(0, 0, b1.width, b1.height); b1x.drawImage(lit, 0, 0, b1.width, b1.height);
+  b3x.globalCompositeOperation = 'copy'; b3x.imageSmoothingQuality = 'high'; b3x.drawImage(b1, 0, 0, b3.width, b3.height);
+  b2x.globalCompositeOperation = 'copy'; b2x.drawImage(b1, 0, 0, b2.width, b2.height);
+  const k = b2.width / S, hg = b2x.createRadialGradient(hx * k, hy * k, 0, hx * k, hy * k, b2.width * .62);
+  hg.addColorStop(0, 'rgba(0,0,0,1)'); hg.addColorStop(.45, 'rgba(0,0,0,.5)'); hg.addColorStop(1, 'rgba(0,0,0,.12)');
+  b2x.globalCompositeOperation = 'destination-in'; b2x.fillStyle = hg; b2x.fillRect(0, 0, b2.width, b2.height);
+  if (frameNo % 5 === 0) {
+    smpx.clearRect(0, 0, SM, SM); smpx.drawImage(b1, 0, 0, SM, SM);
+    smpData = smpx.getImageData(0, 0, SM, SM).data;
+    let r = 0, gg = 0, b = 0, n = 0;
+    for (let i = 0; i < smpData.length; i += 16) { const al = smpData[i + 3]; r += smpData[i] * al; gg += smpData[i + 1] * al; b += smpData[i + 2] * al; n += al; }
+    if (n > 0) { avgCol[0] = lerp(avgCol[0], r / n, .3); avgCol[1] = lerp(avgCol[1], gg / n, .3); avgCol[2] = lerp(avgCol[2], b / n, .3); }
+  }
+}
+
+function drawPool(shear, Lc) {
+  const g = poolx, { cx, R, floorY, vpY, d0, hW, PS } = G;
+  g.clearRect(0, 0, pool.width, pool.height);
+  g.imageSmoothingQuality = 'high';
+  const ext = EXT * R, ph = pool.height, span = floorY - vpY;
+  for (let row = 0; row < ph; row++) {          // one floor row at a time, looked up through the perspective
+    const y = floorY + row + .5, sc = (y - vpY) / span, h = d0 * (1 - 1 / sc) / Lc;
+    const f = (h - (hW - ext)) / (2 * ext);
+    if (f < 0) continue; if (f > 1) break;
+    const sc2 = (y + 1 - vpY) / span, df = (d0 * (1 - 1 / sc2) / Lc - h) / (2 * ext);
+    const src = df * b1.height > 3.2 ? b3 : b1, s1 = src.height;     // a coarser copy where the image is squeezed
+    const srcH = Math.max(1.6, df * s1), sy = clamp((1 - f) * s1 - srcH / 2, 0, s1 - srcH);
+    const w = 2 * ext * sc, xc = cx + h * shear * sc;
+    g.drawImage(src, 0, sy, s1, srcH, (xc - w / 2) * PS, row, w * PS, 1);
+  }
+}
+
+function drawMotes(shear, Lc, strength) {
+  const { cx, cy, R, floorY, vpY, d0, hW, W, H } = G;
+  ctx.globalCompositeOperation = 'lighter';
+  for (const m of motes) {
+    const wu = reduced ? 0 : Math.sin(clock * m.wf + m.wx) * 0.03, wv = reduced ? 0 : Math.cos(clock * m.wf * .8 + m.wx) * 0.03;
+    const u = m.u + wu, v = m.v + wv;
+    const ix = clamp(((u / EXT) * .5 + .5) * SM | 0, 0, SM - 1), iy = clamp(((v / EXT) * .5 + .5) * SM | 0, 0, SM - 1), o = (iy * SM + ix) * 4;
+    const al = smpData[o + 3] / 255; if (al < .05) continue;
+    const h = hW - v * R, ht = h * (1 - m.t), z = m.t * h * Lc; if (z > d0 * .9) continue;
+    const sc = d0 / (d0 - z), X = cx + u * R + m.t * h * shear;
+    const sx = cx + (X - cx) * sc, sy = vpY + (floorY - ht - vpY) * sc;
+    if (sx < -5 || sx > W + 5 || sy > H + 5) continue;
+    const tw = reduced ? .5 : Math.pow(Math.max(0, Math.sin(clock * m.f + m.ph)), 4);
+    const a = al * strength * (0.2 + 0.95 * tw) * (0.6 + .4 * m.s);
+    const r = smpData[o] * 1.25 + 34, gg = smpData[o + 1] * 1.25 + 30, b = smpData[o + 2] * 1.25 + 30;
+    const rad = (0.55 + m.s * 1.05) * (0.7 + sc * .5);
+    ctx.fillStyle = 'rgba(' + (Math.min(255, r) | 0) + ',' + (Math.min(255, gg) | 0) + ',' + (Math.min(255, b) | 0) + ',' + Math.min(1, a).toFixed(3) + ')';
+    ctx.beginPath(); ctx.arc(sx, sy, rad, 0, TAU); ctx.fill();
+    if (tw > .7) { ctx.globalAlpha = (tw - .7) * 1.1; ctx.fillRect(sx - rad * 3.2, sy - .35, rad * 6.4, .7); ctx.fillRect(sx - .35, sy - rad * 3.2, .7, rad * 6.4); ctx.globalAlpha = 1; }
+  }
+  ctx.globalCompositeOperation = 'source-over';
+}
+
+function drawSun(x, y) {
+  const t = cur.tint, c = (t[0] | 0) + ',' + (t[1] | 0) + ',' + (t[2] | 0), night = cur.desat / .84;
+  ctx.save(); ctx.translate(x, y);
+  ctx.globalCompositeOperation = 'lighter';
+  const rg = ctx.createRadialGradient(0, 0, 0, 0, 0, 64);
+  rg.addColorStop(0, 'rgba(' + c + ',' + (.2 * dayK) + ')'); rg.addColorStop(.3, 'rgba(' + c + ',' + (.06 * dayK) + ')'); rg.addColorStop(1, 'rgba(' + c + ',0)');
+  ctx.fillStyle = rg; ctx.fillRect(-64, -64, 128, 128);
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.strokeStyle = 'rgba(' + c + ',.9)'; ctx.lineWidth = 1.2; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.arc(0, 0, 6.5, 0, TAU); ctx.stroke();
+  ctx.fillStyle = 'rgba(' + c + ',' + (.25 + .5 * night) + ')';
+  ctx.beginPath(); ctx.arc(0, 0, 6.5, -Math.PI / 2, Math.PI / 2); ctx.arc(lerp(-6, 2.6, night), 0, lerp(8.8, 7, night), Math.PI / 2 - lerp(.83, 1.2, night), -Math.PI / 2 + lerp(.83, 1.2, night), true); ctx.fill();
+  if (night < .98) {
+    ctx.globalAlpha = (1 - night) * .85; ctx.rotate(reduced ? 0 : clock * .12);
+    ctx.beginPath();
+    for (let i = 0; i < 12; i++) { const a = i / 12 * TAU, r1 = 10.5, r2 = i % 2 ? 13.5 : 16.5; ctx.moveTo(Math.cos(a) * r1, Math.sin(a) * r1); ctx.lineTo(Math.cos(a) * r2, Math.sin(a) * r2); }
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+const POOL_TAPS = [[-2.2, 0], [2.2, 0], [0, -1.6], [0, 1.6], [0, 0]];
+const easeOut = t => 1 - Math.pow(1 - t, 3);
+
+function frame(now) {
+  raf = requestAnimationFrame(frame);
+  if (!win) return;
+  const dt = Math.min(.05, (now - last) / 1000 || 0); last = now; clock += dt; frameNo++;
+  const { W, H, dpr, cx, cy, R, floorY, S, U } = G;
+
+  // ease the light toward the chosen hour
+  const T = TOD[todIdx], kt = reduced ? 1 : 1 - Math.exp(-dt * 2.6);
+  for (const key of ['inten', 'amb', 'len', 'pool', 'desat', 'bloom', 'dodge']) cur[key] += (T[key] - cur[key]) * kt;
+  for (const key of ['tint', 'wall']) for (let i = 0; i < 3; i++) cur[key][i] += (T[key][i] - cur[key][i]) * kt;
+
+  // the sun: the viewer's hand, or a slow passage from east to west
+  let day = 1;
+  if (!reduced && now - lastInput > 6500) {
+    const f = (clock / 64 + 0.2) % 1;
+    target.x = 0.13 + 0.74 * f; target.y = 0.62 - 0.36 * Math.sin(Math.PI * f);
+    day = clamp(Math.sin(Math.PI * f) * 3.4, 0, 1);
+  }
+  dayK += (day - dayK) * (1 - Math.exp(-dt * 3));
+  const ks = reduced ? 1 : 1 - Math.exp(-dt * 5.5);
+  sun.x += (target.x - sun.x) * ks; sun.y += (target.y - sun.y) * ks;
+
+  const shear = (0.5 - sun.x) * 1.1 * Math.min(1, W / H * 1.05);
+  const Lc = cur.len * lerp(0.72, 1.4, clamp(sun.y * 1.15, 0, 1));
+  const hu = clamp(-(sun.x - .5) * 1.25, -.72, .72), hv = clamp(-(sun.y - .45) * 1.1, -.6, .6);
+  const hx = S / 2 + hu * U, hy = S / 2 + hv * U;
+
+  // set the leads and the glass that are due
+  const t = (now - t0) / 1000;
+  if (li < win.byLead.length) { leadStyle(leadx); while (li < win.byLead.length && win.byLead[li].tl + LEAD_DUR <= t) leadx.stroke(win.byLead[li++].path); }
+  while (gi < win.byGlass.length && win.byGlass[gi].tg <= t) drawPiece(glassx, win.byGlass[gi++]);
+  const winA = reduced ? clamp(t / .7, 0, 1) : 1;
+
+  lightWindow(hx, hy);
+  tintStone();
+
+  // wall and floor
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  ctx.drawImage(bg, 0, 0);
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.fillStyle = rgb(cur.wall[0], cur.wall[1], cur.wall[2]); ctx.fillRect(0, 0, cv.width, cv.height);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  // the pool of colour
+  const pI = cur.pool * dayK * winA;
+  drawPool(shear, Lc);
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.save(); ctx.beginPath(); ctx.rect(0, floorY, W, H - floorY); ctx.clip();
+  ctx.globalAlpha = Math.min(1, pI * .25);
+  for (const o of POOL_TAPS) ctx.drawImage(pool, o[0], floorY + o[1], pool.width / G.PS, pool.height);
+  ctx.restore();
+  // colour spilling up the foot of the wall and out across the stones
+  const bxp = cx + G.hW * shear * 0.55, a0 = 0.13 * Math.min(1.2, pI);
+  let wg = ctx.createRadialGradient(bxp, floorY + R * .25, 0, bxp, floorY + R * .25, R * 2.1);
+  wg.addColorStop(0, 'rgba(' + (avgCol[0] | 0) + ',' + (avgCol[1] | 0) + ',' + (avgCol[2] | 0) + ',' + a0 + ')');
+  wg.addColorStop(1, 'rgba(' + (avgCol[0] | 0) + ',' + (avgCol[1] | 0) + ',' + (avgCol[2] | 0) + ',0)');
+  ctx.globalAlpha = 1; ctx.fillStyle = wg; ctx.fillRect(bxp - R * 2.1, floorY - R * 1.9, R * 4.2, R * 4.3);
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.drawImage(joints, 0, floorY, W, H - floorY);
+
+  // the window itself
+  const wx = cx - EXT * R, wy = cy - EXT * R, ws = 2 * EXT * R;
+  ctx.fillStyle = rgb(9 + cur.tint[0] * .11 * dayK * cur.inten, 9 + cur.tint[1] * .115 * dayK * cur.inten, 13 + cur.tint[2] * .13 * dayK * cur.inten);
+  ctx.beginPath(); ctx.arc(cx, cy, R * 1.05, 0, TAU); ctx.fill();
+  ctx.globalAlpha = winA;
+  ctx.drawImage(lit, wx, wy, ws, ws);
+  ctx.drawImage(lead, wx, wy, ws, ws);
+  const kS = ws * dpr / S;
+  if (li < win.byLead.length) {           // leads still being drawn
+    ctx.setTransform(kS, 0, 0, kS, wx * dpr, wy * dpr); leadStyle(ctx);
+    for (let j = li; j < win.byLead.length && win.byLead[j].tl <= t; j++) {
+      const p = win.byLead[j], e = easeOut(clamp((t - p.tl) / LEAD_DUR, 0, 1));
+      ctx.setLineDash([p.len * e, p.len + 8]); ctx.stroke(p.path);
+    }
+    ctx.setLineDash([]); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  ctx.drawImage(stoneT, wx, wy, ws, ws);
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.globalAlpha = Math.min(1, .62 * cur.bloom * dayK) * winA; ctx.drawImage(b2, wx, wy, ws, ws);
+  ctx.globalAlpha = Math.min(1, .2 * cur.bloom * dayK) * winA; ctx.drawImage(b1, wx, wy, ws, ws);
+  if (gi > 0 && t < 3.2) {                // pieces just set flare as they catch the light
+    ctx.setTransform(kS, 0, 0, kS, wx * dpr, wy * dpr);
+    for (let j = gi - 1; j >= 0; j--) {
+      const p = win.byGlass[j], age = t - p.tg; if (age > .36) break;
+      const f = 1 - age / .36; ctx.globalAlpha = f * f * .62; ctx.fillStyle = 'rgb(255,238,196)'; ctx.fill(p.path);
+    }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  if (snapOn) {                            // the previous window, leaving
+    const f = 1 - t / (reduced ? .7 : .42);
+    if (f <= 0) snapOn = false; else { ctx.globalAlpha = f * f; ctx.drawImage(snap, wx, wy, ws, ws); ctx.globalAlpha = 1; }
+  }
+
+  drawMotes(shear, Lc, Math.min(1.1, cur.pool * .95 + .1) * dayK * winA);
+  ctx.drawImage(fg, 0, 0, W, H);
+  drawSun(target.x * W, target.y * H);
+}
+
+/* =====================================================================
+   INTERACTION
+   ===================================================================== */
+let usedMove = false, usedClick = false, moveDist = 0, down = null;
+function touchHint() {
+  if (usedClick) { elSlab.classList.add('gone'); return; }
+  if (usedMove) elSlab.classList.add('worn');
+}
+function setSun(px, py) {
+  const nx = clamp(px / G.W, 0.02, .98), ny = clamp(py / G.H, 0.03, .97);
+  moveDist += Math.hypot((nx - target.x) * G.W, (ny - target.y) * G.H);
+  target.x = nx; target.y = ny; lastInput = performance.now();
+  if (!usedMove && moveDist > 260) { usedMove = true; touchHint(); }
+}
+window.addEventListener('pointermove', e => { if (e.clientX === 0 && e.clientY === 0) return; if (e.pointerType === 'mouse' || down) setSun(e.clientX, e.clientY); }, { passive: true });
+cv.addEventListener('pointerdown', e => {
+  down = { x: e.clientX, y: e.clientY, t: performance.now(), id: e.pointerId };
+  if (e.pointerType !== 'mouse') setSun(e.clientX, e.clientY);
+  try { cv.setPointerCapture(e.pointerId); } catch (err) { /* capture is optional */ }
+});
+const release = e => {
+  if (!down) return;
+  const d = Math.hypot(e.clientX - down.x, e.clientY - down.y), held = performance.now() - down.t;
+  down = null;
+  if (e.type === 'pointerup' && d < 12 && held < 600) newWindow();
+};
+cv.addEventListener('pointerup', release);
+cv.addEventListener('pointercancel', release);
+function newWindow() {
+  const now = performance.now();
+  if (now - t0 < 450) return;
+  commission(now);
+  if (!usedClick) { usedClick = true; setTimeout(touchHint, 900); }
+}
+window.addEventListener('keydown', e => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const onButton = e.target === elHours;
+  const step = e.shiftKey ? 0.08 : 0.035;
+  let moved = true;
+  if (e.key === 'ArrowLeft') target.x = clamp(target.x - step, .02, .98);
+  else if (e.key === 'ArrowRight') target.x = clamp(target.x + step, .02, .98);
+  else if (e.key === 'ArrowUp') target.y = clamp(target.y - step, .03, .97);
+  else if (e.key === 'ArrowDown') target.y = clamp(target.y + step, .03, .97);
+  else moved = false;
+  if (moved) { e.preventDefault(); lastInput = performance.now(); moveDist += 90; if (!usedMove && moveDist > 260) { usedMove = true; touchHint(); } return; }
+  if ((e.key === ' ' || e.code === 'Space' || e.key === 'Enter') && !onButton) { e.preventDefault(); if (!e.repeat) newWindow(); }
+  else if ((e.key === 't' || e.key === 'T') && !onButton) nextHour();
+});
+function nextHour() {
+  const prev = TOD[todIdx].orb;
+  todIdx = (todIdx + 1) % TOD.length;
+  const nx = TOD[todIdx].orb;
+  orbAngle += ((nx - prev) % 360 + 360) % 360;
+  elOrb.style.transform = 'rotate(' + orbAngle + 'deg)';
+  elHourWord.classList.add('swap');
+  setTimeout(() => { elHourWord.textContent = TOD[todIdx].name; elHourWord.classList.remove('swap'); }, reduced ? 10 : 170);
+  elHours.setAttribute('aria-label', 'Time of day: ' + TOD[todIdx].name.toLowerCase() + '. Press to change.');
+}
+elHours.addEventListener('click', nextHour);
+
+let rsz = 0;
+window.addEventListener('resize', () => { clearTimeout(rsz); rsz = setTimeout(layout, 120); });
+document.addEventListener('visibilitychange', () => {
+  cancelAnimationFrame(raf);
+  if (!document.hidden) { last = performance.now(); raf = requestAnimationFrame(frame); }
+});
+const onRM = () => { reduced = RMQ.matches; layout(); };
+if (RMQ.addEventListener) RMQ.addEventListener('change', onRM); else if (RMQ.addListener) RMQ.addListener(onRM);
+
+/* ---------- begin ---------- */
+if (window.matchMedia('(hover: none)').matches) document.getElementById('slabAct').textContent = 'Tap for a new window';
+elOrb.style.transform = 'rotate(' + orbAngle + 'deg)';
+layout();
+const start = performance.now();
+commission(start + (reduced ? 0 : 250));
+last = start;
+raf = requestAnimationFrame(frame);
+requestAnimationFrame(() => { elInscr.classList.add('cut'); elSlab.classList.add('cut'); elHours.classList.add('cut'); });
+})();
+</script>
+</body>
+</html>

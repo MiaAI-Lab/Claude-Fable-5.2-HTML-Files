@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Everyone in Ostrava-under-Hill</title>
+<style>
+:root{
+  --cream:#FFF9F0; --ink:#2F2F2F; --coral:#EF767A; --blue:#456990; --teal:#49BEAA; --gold:#EEB868; --grey:#D9D4CC;
+  --serif:Georgia,Palatino,"Palatino Linotype","Book Antiqua","Times New Roman",serif;
+  --sans:"Gill Sans","Gill Sans MT","Trebuchet MS",Calibri,"Segoe UI",sans-serif;
+  --out:cubic-bezier(.16,.84,.24,1); --draw:cubic-bezier(.6,.05,.2,1); --pop:cubic-bezier(.3,1.5,.5,1);
+}
+*{box-sizing:border-box}
+html{background:var(--cream)}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input{font:inherit;color:inherit}
+.grain{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;opacity:.075;mix-blend-mode:multiply;z-index:5}
+.page{position:relative;display:grid;grid-template-columns:clamp(310px,29vw,430px) minmax(0,1fr);grid-template-rows:auto auto 1fr;
+  grid-template-areas:"mast stage" "nav stage" "tools stage";height:100vh;min-height:760px}
+.page::before{content:"";position:absolute;left:clamp(310px,29vw,430px);top:38px;bottom:38px;width:1px;
+  background:repeating-linear-gradient(var(--ink) 0 3px,transparent 3px 7px);opacity:.28}
+
+/* masthead */
+.mast{grid-area:mast;padding:38px 34px 0 44px}
+.kicker{display:flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink)}
+.kicker svg{flex:none;width:44px;height:26px}
+.kicker span{opacity:.78;white-space:nowrap}
+.mast h1{font:400 clamp(27px,2.5vw,37px)/1.06 var(--serif);margin:16px 0 0;letter-spacing:-.012em}
+.mast h1 em{font-style:italic}
+.mast p{margin:9px 0 0;font-size:14.5px;line-height:1.45;max-width:30ch;opacity:.8}
+.rule{height:5px;margin:20px 0 0;border-top:1.5px solid var(--ink);border-bottom:.5px solid var(--ink);opacity:.75}
+
+/* questions */
+.asks{grid-area:nav;padding:14px 22px 0 44px}
+.asks ol{list-style:none;margin:0;padding:0;counter-reset:q}
+.asks li{counter-increment:q}
+.q{position:relative;display:block;width:100%;text-align:left;background:none;border:0;padding:7px 4px 9px 30px;cursor:pointer;
+  font:400 clamp(20px,1.78vw,26px)/1.14 var(--serif);color:rgba(47,47,47,.72);border-radius:4px;
+  transition:color .35s var(--out),transform .5s var(--out)}
+.q::before{content:counter(q);position:absolute;left:2px;top:.86em;font:600 11px/1 var(--sans);letter-spacing:.06em;color:var(--blue);
+  width:17px;height:17px;border-radius:50%;display:grid;place-items:center;transition:background .35s,color .35s,transform .5s var(--pop)}
+.q span{position:relative;display:inline-block}
+.q svg{position:absolute;left:-3px;right:-5px;bottom:-7px;width:calc(100% + 8px);height:10px;overflow:visible;pointer-events:none}
+.q svg{clip-path:inset(-5px 101% -5px -4px);transition:clip-path .3s var(--draw)}
+.q svg path{fill:none;stroke:var(--coral);stroke-width:3;stroke-linecap:round}
+.q:hover{color:var(--ink);transform:translateX(5px)}
+.q[aria-pressed="true"]{color:var(--ink);font-weight:700;transform:none}
+.q[aria-pressed="true"]::before{background:var(--blue);color:var(--cream);transform:scale(1.1)}
+.q[aria-pressed="true"] svg{clip-path:inset(-5px -8px -5px -4px);transition:clip-path .8s .12s var(--draw)}
+.q:focus-visible,.reroll:focus-visible,.hits button:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+#cv:focus-visible{outline:2px dashed var(--blue);outline-offset:4px;border-radius:6px}
+
+/* tools */
+.tools{grid-area:tools;padding:20px 34px 30px 44px;display:flex;flex-direction:column;gap:16px;min-height:0}
+.find{position:relative;max-width:300px;z-index:9}
+.find label{display:block;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;opacity:.75;margin-bottom:2px}
+.find .field{position:relative}
+.find input{width:100%;background:none;border:0;border-radius:0;padding:7px 4px 9px 28px;font:italic 17px/1.2 var(--serif);outline:none;-webkit-appearance:none;appearance:none}
+.find input::placeholder{color:rgba(47,47,47,.55)}
+.find input::-webkit-search-cancel-button{display:none}
+.find .lens{position:absolute;left:1px;top:8px;width:19px;height:19px;pointer-events:none;transition:transform .5s var(--pop)}
+.find:focus-within .lens{transform:rotate(-14deg) scale(1.12)}
+.find .line{position:absolute;left:0;bottom:0;width:100%;height:7px;overflow:visible;pointer-events:none}
+.find .line path{fill:none;stroke:var(--ink);stroke-width:1.4;stroke-linecap:round;transition:stroke .3s,stroke-width .3s}
+.find:focus-within .line path{stroke:var(--blue);stroke-width:2.4}
+.hits{position:absolute;left:0;right:0;top:100%;margin:6px 0 0;padding:5px;list-style:none;background:var(--cream);border:1px solid var(--ink);
+  border-radius:3px 9px 4px 8px;box-shadow:4px 5px 0 rgba(47,47,47,.1);z-index:8;display:none}
+.hits.on{display:block}
+.hits button{display:flex;gap:9px;align-items:baseline;width:100%;text-align:left;background:none;border:0;padding:6px 8px;cursor:pointer;border-radius:3px;font:15px var(--serif)}
+.hits button i{flex:none;width:9px;height:9px;border-radius:50%;transform:translateY(-1px)}
+.hits button small{margin-left:auto;font:11.5px var(--sans);opacity:.75;white-space:nowrap}
+.hits button:hover,.hits button.act{background:rgba(238,184,104,.3)}
+.hits .none{padding:7px 8px;font:italic 14px var(--serif);opacity:.8}
+.reroll{align-self:flex-start;display:flex;align-items:center;gap:11px;background:none;border:0;padding:5px 8px 5px 2px;cursor:pointer;text-align:left;border-radius:6px}
+.reroll svg{width:31px;height:31px;flex:none;transition:transform .9s var(--pop)}
+.reroll:hover svg{transform:rotate(22deg)}
+.reroll b{display:block;font:400 16px/1.15 var(--serif);border-bottom:1px solid rgba(47,47,47,.5);padding-bottom:1px;transition:border-color .3s}
+.reroll:hover b{border-color:var(--coral)}
+.reroll small{display:block;margin-top:4px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.75;font-variant-numeric:tabular-nums}
+.colophon{margin:auto 0 0;font:italic 12.5px/1.45 var(--serif);opacity:.7;max-width:34ch}
+
+/* stage */
+.stage{grid-area:stage;display:flex;flex-direction:column;min-width:0;min-height:0;padding:30px 46px 26px 44px}
+.answer{display:flex;align-items:flex-end;gap:22px;min-height:118px}
+.num{position:relative;font:400 clamp(86px,9.4vw,138px)/.82 var(--serif);font-variant-numeric:tabular-nums lining-nums;letter-spacing:-.035em;padding-bottom:10px}
+.num svg{position:absolute;left:2%;bottom:-6px;width:96%;height:12px;overflow:visible}
+.num svg path{fill:none;stroke:var(--gold);stroke-width:5;stroke-linecap:round}
+.says{padding-bottom:9px;min-width:0;transition:opacity .28s,transform .5s var(--out)}
+.says h2{margin:0;font:italic 400 clamp(22px,2.3vw,33px)/1.1 var(--serif)}
+.says p{margin:7px 0 0;font-size:14.5px;line-height:1.35;opacity:.82}
+.swap .says,.swap .insight,.swap .legend ul{opacity:0;transform:translateY(7px)}
+.legend{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-top:16px;min-height:22px;font-size:12.5px}
+.legend ul{display:flex;flex-wrap:wrap;gap:4px 18px;list-style:none;margin:0;padding:0;transition:opacity .28s,transform .5s var(--out)}
+.legend li{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.legend li i{width:10px;height:10px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(47,47,47,.18)}
+.legend li i.ln{width:17px;height:0;border-radius:0;box-shadow:none;border-top:2px solid}
+.hint{display:flex;align-items:center;gap:7px;font-style:italic;opacity:.78;white-space:nowrap;font-family:var(--serif)}
+.hint svg{width:17px;height:17px}
+.wrap{position:relative;flex:1;min-height:0;margin-top:8px}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y;cursor:default}
+.insight{display:flex;gap:12px;align-items:flex-start;margin:10px 0 0;min-height:52px;font:italic 400 clamp(16px,1.42vw,20px)/1.36 var(--serif);max-width:62ch;
+  transition:opacity .28s,transform .5s var(--out)}
+.insight svg{flex:none;width:20px;height:20px;margin-top:3px}
+
+/* card */
+.card{position:absolute;left:0;top:0;width:268px;padding:13px 15px 12px;background:var(--cream);border:1px solid var(--ink);border-radius:3px 12px 4px 10px;
+  box-shadow:5px 6px 0 rgba(47,47,47,.11);pointer-events:none;opacity:0;transform:translate(var(--x,0),var(--y,0)) scale(.94);transform-origin:var(--ox,0%) 50%;
+  transition:opacity .16s,transform .3s var(--pop);z-index:6}
+.card.on{opacity:1;transform:translate(var(--x,0),var(--y,0)) scale(1)}
+.card .tag{position:absolute;right:12px;top:-8px;width:16px;height:16px;border-radius:50%;border:1px solid var(--ink);background:var(--coral)}
+.card h3{margin:0;font:700 18.5px/1.15 var(--serif);padding-right:16px}
+.card h3 span{font-weight:400}
+.card .meta{margin-top:5px;font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;opacity:.8}
+.card p{margin:8px 0 0;font:14.5px/1.38 var(--serif)}
+.card p.bf{font-style:italic;padding-top:7px;border-top:1px dashed rgba(47,47,47,.4)}
+.card .foot{margin-top:8px;font-size:11.5px;opacity:.75}
+
+/* entrance */
+@keyframes inL{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:none}}
+@keyframes inU{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.mast>*,.asks li,.tools>*{animation:inL .9s var(--out) both}
+.mast>:nth-child(2){animation-delay:.07s}.mast>:nth-child(3){animation-delay:.14s}.mast>:nth-child(4){animation-delay:.2s}
+.asks li:nth-child(1){animation-delay:.26s}.asks li:nth-child(2){animation-delay:.32s}.asks li:nth-child(3){animation-delay:.38s}
+.asks li:nth-child(4){animation-delay:.44s}.asks li:nth-child(5){animation-delay:.5s}.asks li:nth-child(6){animation-delay:.56s}.asks li:nth-child(7){animation-delay:.62s}
+.tools>*{animation-delay:.74s}.tools>:nth-child(2){animation-delay:.82s}.tools>:nth-child(3){animation-delay:.9s}
+.answer,.legend,.insight-row{animation:inU 1s var(--out) both}
+.legend{animation-delay:.2s}.insight-row{animation-delay:1.3s}
+
+@media (max-width:900px){
+  .page{display:block;height:auto;min-height:0}
+  .page::before{display:none}
+  .mast{padding:22px 16px 0}
+  .mast h1{font-size:27px;margin-top:12px}
+  .mast p{display:none}
+  .rule{margin-top:14px}
+  .asks{padding:8px 0 0;position:relative}
+  .asks::after{content:"";position:absolute;right:0;top:0;bottom:0;width:34px;background:linear-gradient(90deg,rgba(255,249,240,0),var(--cream));pointer-events:none}
+  .asks ol{display:flex;gap:4px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding:4px 40px 14px 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .asks ol::-webkit-scrollbar{display:none}
+  .asks li{flex:none;scroll-snap-align:start;scroll-margin-left:12px}
+  .q{font-size:19px;white-space:nowrap;padding:7px 10px 9px 28px;width:auto}
+  .q:hover{transform:none}
+  .stage{padding:6px 16px 8px}
+  .answer{gap:14px;min-height:92px}
+  .num{font-size:78px}
+  .says h2{font-size:20px}
+  .says p{font-size:13px;margin-top:5px}
+  .legend{margin-top:12px;flex-direction:column;align-items:flex-start;gap:6px;min-height:46px}
+  .legend ul{gap:3px 13px}
+  .hint{font-size:12.5px;order:2}
+  .wrap{flex:none;height:clamp(430px,64vh,540px);margin-top:4px}
+  .insight{font-size:16px;min-height:88px}
+  .tools{padding:14px 16px 30px;gap:18px}
+  .find{max-width:none}
+  .colophon{margin-top:6px}
+  .card{width:min(262px,calc(100vw - 44px))}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01s!important;animation-delay:0s!important;transition-duration:.01s!important;transition-delay:0s!important}
+}
+</style>
+</head>
+<body>
+<svg class="grain" aria-hidden="true"><filter id="gr"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7"/><feColorMatrix values="0 0 0 0 .18  0 0 0 0 .18  0 0 0 0 .18  0 0 0 .9 0"/></filter><rect width="100%" height="100%" filter="url(#gr)"/></svg>
+
+<div class="page">
+  <header class="mast">
+    <div class="kicker">
+      <svg viewBox="0 0 44 26" aria-hidden="true" fill="none" stroke="#2F2F2F" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 24 C8 23 12 6 22 5 S36 22 43 24"/><path d="M8 24 h28" opacity=".5"/>
+        <path d="M17 24 v-6 h7 v6 M24 24 v-10 l2.2-4 2.2 4 v10 M26.2 10 v-3.4 M24.9 8 h2.6"/>
+        <circle cx="36.5" cy="6" r="2.2" stroke="#EF767A"/>
+      </svg>
+      <span>Parish census &middot; <span id="edition">No. 1887</span></span>
+    </div>
+    <h1>Everyone in <em>Ostrava&#8209;under&#8209;Hill</em></h1>
+    <p>Three hundred of us, one dot each, counted kindly. Ask the village a question and watch us sort ourselves out.</p>
+    <div class="rule"></div>
+  </header>
+
+  <nav class="asks" aria-label="Questions for the village"><ol id="asks"></ol></nav>
+
+  <section class="stage" id="stage" aria-live="polite">
+    <div class="answer">
+      <div class="num"><span id="num">0</span><svg viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true"><path vector-effect="non-scaling-stroke" d="M1 7 C14 2 24 10 38 6 S62 3 74 7 S92 9 99 4"/></svg></div>
+      <div class="says"><h2 id="phrase"></h2><p id="sub"></p></div>
+    </div>
+    <div class="legend">
+      <ul id="legend"></ul>
+      <div class="hint"><svg viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="#2F2F2F" stroke-width="1.2" stroke-linecap="round"><circle cx="8" cy="8" r="3" fill="#EF767A" stroke="none"/><circle cx="8" cy="8" r="6"/><path d="M12.6 12.6 L16.5 16.5"/></svg><span id="hint">Hover a dot to meet someone. Click to follow them.</span></div>
+    </div>
+    <div class="wrap" id="wrap">
+      <canvas id="cv" tabindex="0" role="img" aria-label="Three hundred dots, one for each resident."></canvas>
+      <div class="card" id="card" aria-hidden="true"><i class="tag" id="ctag"></i><h3 id="cname"></h3><div class="meta" id="cmeta"></div><p id="cstory"></p><p class="bf" id="cbf"></p><div class="foot" id="cfoot"></div></div>
+    </div>
+    <div class="insight-row"><p class="insight" id="insightRow"><svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="#EF767A" stroke-width="1.8" stroke-linecap="round"><path d="M10 2.5 v15 M3.5 6.2 l13 7.6 M16.5 6.2 l-13 7.6"/></svg><span id="insight"></span></p></div>
+  </section>
+
+  <div class="tools">
+    <div class="find" id="find">
+      <label for="who">Find a neighbour</label>
+      <div class="field">
+        <svg class="lens" viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="#2F2F2F" stroke-width="1.5" stroke-linecap="round"><path d="M13.2 8.3 a5 5.1 0 1 1 -10 .2 a5 5.1 0 0 1 10 -.2 M12 12.4 L17.4 17.6"/></svg>
+        <input id="who" type="search" autocomplete="off" spellcheck="false" placeholder="a name, any name" role="combobox" aria-expanded="false" aria-controls="hits" aria-autocomplete="list">
+        <svg class="line" viewBox="0 0 100 7" preserveAspectRatio="none" aria-hidden="true"><path vector-effect="non-scaling-stroke" d="M0 4 C12 2 22 6 36 3.6 S60 5.6 74 3.4 S92 2.4 100 4.6"/></svg>
+      </div>
+      <ul class="hits" id="hits" role="listbox" aria-label="Matching residents"></ul>
+    </div>
+    <button class="reroll" id="reroll" type="button">
+      <svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="#2F2F2F" stroke-width="1.4" stroke-linejoin="round"><path d="M5 9.5 Q4.6 5 9 4.8 L23 4.4 Q27.4 4.4 27.4 9 L27.6 23 Q27.5 27.6 23 27.5 L9.4 27.8 Q4.8 27.6 4.9 23 Z" fill="#FFF9F0"/><circle cx="11" cy="11" r="2.1" fill="#EF767A" stroke="none"/><circle cx="21" cy="21" r="2.1" fill="#456990" stroke="none"/><circle cx="21" cy="11" r="2.1" fill="#49BEAA" stroke="none"/><circle cx="11" cy="21" r="2.1" fill="#EEB868" stroke="none"/><circle cx="16" cy="16" r="2.1" fill="#2F2F2F" stroke="none"/></svg>
+      <span><b>Re-roll the village</b><small id="seedlbl">Village No. 1887</small></span>
+    </button>
+    <p class="colophon">Counted on the first Tuesday of November. Several residents were interrupted; none were harmed. Every one of us is invented.</p>
+  </div>
+</div>
+
+<script>
+(() => {
+'use strict';
+const SANS = '"Gill Sans","Gill Sans MT","Trebuchet MS",Calibri,"Segoe UI",sans-serif';
+const SERIF = 'Georgia,Palatino,"Palatino Linotype","Book Antiqua","Times New Roman",serif';
+const NOW = 2026.85, N = 300, TAU = Math.PI * 2;
+const C = { coral:[239,118,122], blue:[69,105,144], teal:[73,190,170], gold:[238,184,104], grey:[217,212,204] };
+const HEX = { coral:'#EF767A', blue:'#456990', teal:'#49BEAA', gold:'#EEB868', grey:'#D9D4CC' };
+const STREETS = ['Mill Lane','Upper Row','The Shambles','Chapel Street','Goose Green','Station Approach'];
+const STREET_N = [20,22,16,21,17,17];
+const VOICES = ['soprano','alto','tenor','bass'];
+const FN = {
+  fe:['Agnieszka','Dorothy','Ludmila','Winifred','Božena','Edith','Halina','Marjorie','Zdenka','Beryl','Jadwiga','Enid','Věra','Hilda','Irena','Mabel','Stanislava','Joyce','Danuta','Olive','Květa','Phyllis','Marta','Gwendoline'],
+  me:['Bohumil','Arthur','Zdeněk','Wilfred','Stanisław','Cyril','Václav','Ernest','Kazimierz','Reginald','Miloslav','Herbert','Tadeusz','Norman','Oldřich','Percy','Leopold','Stanley','Ignác','Clifford','Bedřich','Horace'],
+  fa:['Katarzyna','Helen','Lenka','Joanna','Petra','Rachel','Magda','Claire','Zuzana','Hannah','Ewa','Louise','Tereza','Sally','Monika','Ruth','Ivana','Bridget','Dominika','Alice','Hana','Imogen','Renata','Polly'],
+  ma:['Tomasz','Daniel','Petr','Simon','Marek','Andrew','Jakub','Martin','Paweł','Colin','Ondřej','Gareth','Radek','Philip','Lukáš','Edmund','Michał','Rupert','Jiří','Owen','Filip','Hugh','Karel','Neil'],
+  fk:['Zofia','Poppy','Eliška','Maisie','Anežka','Ivy','Lena','Martha','Julie','Flora','Kaja','Nell','Barbora','Edie','Hania','Tilly','Rozálie','Wren','Ola','Bea','Adéla','Clementine'],
+  mk:['Kuba','Alfie','Vojta','Arlo','Matěj','Wilf','Antek','Jonty','Šimon','Rory','Staś','Ned','Tobiáš','Kit','Olek','Bertie','Vítek','Ralph','Franek','Monty','Hynek','Gus']
+};
+const SUR = ['Dvořák','Novák','Whitlow','Thistlewood','Kowalski','Marsh','Svoboda','Pemberton','Horák','Ackroyd','Zieliński','Fenwick','Procházka','Gathercole','Němec','Tull','Wójcik','Birdwhistle','Kučera','Ottley','Pokorný','Halloway','Sedláček','Crabtree','Mazur','Underhill','Kopecký','Larkin','Wiśniewski','Applegarth','Veselý','Dunnock','Kamiński','Rook','Hrubý','Pickersgill','Jelínek','Catchpole','Sowa','Hillbeck','Beneš','Quarmby','Lis','Oddie'];
+const GROUPS = { retired:'retired', school:'at school', commute:'commuters', wfh:'work from home', trades:'trades', under5:'under five', creamery:'the creamery',
+  carers:'nurses & carers', farmers:'farmers', home:'home with children', students:'students', shop:'shop & post office', pub:'the Drowned Goose',
+  between:'between jobs', teachers:'teachers', bakers:'rival bakers', vicar:'vicar', bell:'bell-ringer', light:'lighthouse keeper, retired' };
+const T = {
+  retired:['retired cheesemaker','retired district nurse','retired headteacher','retired railway clerk','retired dairy hand','retired organ tuner','retired bus driver','retired librarian','retired butcher','retired piano teacher','retired vet','retired hedge-layer','retired telephone operator','retired school cook','retired surveyor','retired midwife','retired police sergeant','retired beekeeper','retired signal-box keeper','retired upholsterer'],
+  commute:['commuter, something in insurance','commuter, hospital pharmacist','commuter, solicitor’s clerk','commuter, software tester','commuter, museum conservator','commuter, town planner','commuter, dental nurse','commuter, tax inspector (nobody minds)','commuter, radio producer','commuter, structural engineer'],
+  trades:['plumber','thatcher','dry-stone waller','electrician','farrier','mechanic at the garage','roofer','joiner','chimney sweep','painter and decorator'],
+  wfh:['translator, working from the spare room','illustrator, working from the attic','bookkeeper, working from the kitchen table','software developer, working from the shed','copy-editor, working from the landing','actuary, working from the box room','podcast producer, working from a cupboard'],
+  carers:['district nurse','care-home assistant','home carer','pharmacy dispenser','veterinary nurse','physiotherapist','health visitor'],
+  creamery:['cheesemaker at the creamery','creamery van driver','creamery packer','butter taster at the creamery','creamery night-shift foreman'],
+  students:['student at the agricultural college','apprentice hedge-layer','art student, home at weekends'],
+  shop:['shopkeeper','keeper of the post office counter','shop assistant, Saturdays and most other days'],
+  pub:['barkeeper at the Drowned Goose','cook at the Drowned Goose','cellar hand at the Drowned Goose'],
+  between:['between jobs, and quite cheerful about it','writing a novel, has been for some time','resting actor'],
+  farmers:['sheep farmer','dairy farmer','goose farmer','farmer, mostly of mud']
+};
+const WORDS = ['no','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen','twenty'];
+const nw = n => (n >= 0 && n <= 20 ? WORDS[n] : String(n));
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const sstep = t => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
+const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ł/g, 'l').replace(/Ł/g, 'L').toLowerCase();
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const hash = n => { let x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+
+/* ───────────── the village ───────────── */
+function makeVillage(seed) {
+  const R = mulberry32(seed);
+  const ri = (a, b) => a + Math.floor(R() * (b - a + 1));
+  const pick = a => a[Math.floor(R() * a.length)];
+  const shuf = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const tpl = [];
+  const add = (k, n, roles) => { for (let i = 0; i < n; i++) tpl.push({ k, roles }); };
+  add('A',14,'e'); add('B',28,'ee'); add('C',5,'eeaakk'); add('C2',4,'eaakk'); add('D',6,'ea'); add('E',4,'a'); add('F',16,'aa'); add('G',3,'akk');
+  add('H',12,'aak'); add('H',11,'aakk'); add('H',3,'aakkk'); add('H',2,'aakkkk'); add('I',4,'aaa'); add('J',1,'aaaa');
+  shuf(tpl);
+  const slots = []; STREET_N.forEach((n, s) => { for (let i = 0; i < n; i++) slots.push(s); }); shuf(slots);
+  const kidFlags = shuf([...Array(61).fill(1), ...Array(14).fill(0)]); let kf = 0;
+  const newest = tpl.findIndex(t => t.k === 'H');
+  const used = new Set(), P = [], HH = [];
+  const person = (role, sex, age, sur, h, street) => {
+    const list = FN[sex + (role === 'e' ? 'e' : role === 'a' ? 'a' : 'k')];
+    let first, name, tries = 0;
+    do { first = pick(list); name = first + ' ' + sur; } while (used.has(name) && ++tries < 12);
+    used.add(name);
+    const p = { i: P.length, first, sur, name, key: norm(name), sex, age, role, hh: h, street, years: 0, born: false, days: 0, months: 0, g: '', title: '', choir: -1, bf: -1, mutual: false };
+    P.push(p); return p;
+  };
+  tpl.forEach((t, h) => {
+    const street = slots[h], sur = pick(SUR), share = t.k === 'I' || t.k === 'J';
+    const roles = t.roles.split('');
+    const kids = roles.filter(r => r === 'k').map(() => (kidFlags[kf++] ? ri(5, 17) : ri(0, 4))).sort((a, b) => b - a);
+    const nA = roles.filter(r => r === 'a').length, nE = roles.filter(r => r === 'e').length;
+    const aA = [], eA = [];
+    if (nA) {
+      if (kids.length) { const a1 = clamp(kids[0] + ri(21, 36), 20, 62); aA.push(a1); for (let i = 1; i < nA; i++) aA.push(clamp(a1 + ri(-4, 5), 19, 66)); }
+      else if (share) for (let i = 0; i < nA; i++) aA.push(ri(19, 31));
+      else if (t.k !== 'D') { const a1 = ri(23, 66); aA.push(a1); for (let i = 1; i < nA; i++) aA.push(clamp(a1 + ri(-6, 6), 19, 66)); }
+    }
+    if (nE) {
+      if (t.k === 'C' || t.k === 'C2') { const e1 = clamp(Math.max(...aA) + ri(22, 30), 67, 96); eA.push(e1); if (nE > 1) eA.push(clamp(e1 + ri(-4, 4), 67, 97)); }
+      else if (t.k === 'D') { const e1 = ri(78, 97); eA.push(e1); aA.push(clamp(e1 - ri(24, 36), 40, 66)); }
+      else { const e1 = 67 + Math.floor(29 * Math.pow(R(), 1.4)); eA.push(e1); if (nE > 1) { const e2 = e1 + ri(-5, 5); eA.push(e2 < 67 ? 67 + ri(0, 4) : Math.min(97, e2)); } }
+    }
+    let yrs;
+    if (h === newest) yrs = 0.08;
+    else if (t.k === 'A' || t.k === 'B' || t.k === 'D') yrs = R() < 0.3 ? NOW - (1973 + ri(0, 4) + R()) : ri(2, 46) + R();
+    else if (share) yrs = ri(1, 6) + R();
+    else yrs = 1 + Math.floor(Math.pow(R(), 1.2) * 34) + R();
+    const hh = { id: h, street, sur, m: [], k: t.k, yrs }; HH.push(hh);
+    const settle = (p, pBorn) => {
+      if (h !== newest && R() < pBorn) { p.years = p.age + R() * 0.98; p.born = true; }
+      else { p.years = Math.min(yrs, p.age - 17); if (p.years <= 0) { p.years = p.age + R() * 0.98; p.born = true; } }
+      hh.m.push(p.i);
+    };
+    let s0 = R() < 0.58 ? 'f' : 'm';
+    eA.forEach((a, k) => settle(person('e', k ? (R() < 0.93 ? (s0 === 'f' ? 'm' : 'f') : s0) : s0, a, sur, h, street), 0.46));
+    const couple = nA === 2 && !share;
+    s0 = R() < 0.5 ? 'f' : 'm';
+    aA.forEach((a, k) => {
+      const sx = couple ? (k ? (R() < 0.92 ? (s0 === 'f' ? 'm' : 'f') : s0) : s0) : (R() < 0.5 ? 'f' : 'm');
+      settle(person('a', sx, a, share ? pick(SUR) : sur, h, street), share ? 0.08 : 0.27);
+    });
+    kids.forEach(a => {
+      const p = person('k', R() < 0.5 ? 'f' : 'm', a, sur, h, street);
+      p.born = a <= yrs;
+      if (a === 0) { p.months = ri(1, 11); p.age = p.months / 12; p.born = p.age <= yrs; p.years = Math.min(p.age, yrs); }
+      else p.years = p.born ? Math.min(a + R() * 0.98, Math.max(a, yrs)) : yrs;
+      hh.m.push(p.i);
+    });
+  });
+  // one newborn
+  const tots = P.filter(p => p.role === 'k' && p.age < 5);
+  const baby = tots.reduce((a, b) => (b.age < a.age ? b : a));
+  baby.days = ri(3, 27); baby.months = 0; baby.age = baby.days / 365; baby.years = baby.age; baby.born = true;
+
+  // what we do all day
+  const set = (p, g, title) => { p.g = g; p.title = title; };
+  const elders = shuf(P.filter(p => p.role === 'e').map(p => p.i));
+  set(P[elders[0]], 'bell', 'bell-ringer');
+  set(P[elders[1]], 'light', 'retired lighthouse keeper');
+  for (let k = 2; k < 5; k++) set(P[elders[k]], 'farmers', 'farmer, officially retired, actually not');
+  for (let k = 5; k < elders.length; k++) { const p = P[elders[k]]; set(p, 'retired', p.sex === 'f' && R() < 0.09 ? 'retired postmistress' : pick(T.retired)); }
+  const hasKids = h => HH[h].m.some(j => P[j].role === 'k');
+  const pool = shuf(P.filter(p => p.role === 'a').map(p => p.i));
+  const take = (n, pred) => { const out = []; for (let k = 0; k < pool.length && out.length < n; k++) { const i = pool[k]; if (!pred || pred(P[i])) { out.push(i); pool.splice(k, 1); k--; } } return out; };
+  take(9, p => p.age <= 21).forEach(i => set(P[i], 'students', pick(T.students)));
+  take(10, p => hasKids(p.hh)).forEach(i => set(P[i], 'home', 'at home with the children'));
+  take(8).forEach(i => set(P[i], 'farmers', pick(T.farmers)));
+  take(4).forEach((i, k) => set(P[i], 'teachers', k ? 'teacher at the village school' : 'headteacher of the village school'));
+  const b1 = take(1)[0], b2 = take(1, p => p.hh !== P[b1].hh)[0];
+  set(P[b1], 'bakers', 'baker at Crumb & Daughters'); set(P[b2], 'bakers', 'baker at The Proper Bakery');
+  take(1).forEach(i => set(P[i], 'vicar', 'vicar of St Hedwig’s'));
+  take(23).forEach(i => set(P[i], 'commute', pick(T.commute)));
+  take(6).forEach(i => set(P[i], 'shop', pick(T.shop)));
+  take(5).forEach((i, k) => set(P[i], 'pub', k ? pick(T.pub) : (P[i].sex === 'f' ? 'landlady' : 'landlord') + ' of the Drowned Goose'));
+  take(13).forEach((i, k) => set(P[i], 'carers', k ? pick(T.carers) : 'doctor at the surgery'));
+  take(17).forEach(i => set(P[i], 'trades', pick(T.trades)));
+  take(18).forEach(i => set(P[i], 'wfh', pick(T.wfh)));
+  take(5).forEach(i => set(P[i], 'between', pick(T.between)));
+  take(999).forEach(i => set(P[i], 'creamery', pick(T.creamery)));
+  P.forEach(p => {
+    if (p.role !== 'k') return;
+    if (p.age >= 5) set(p, 'school', p.age <= 10 ? 'Year ' + (p.age - 4) + ' at the village school' : 'takes the school bus to town');
+    else set(p, 'under5', p.days ? 'newborn' : p.age < 1 ? 'baby' : 'full-time toddler');
+  });
+
+  // the choir: 10 sopranos, 9 altos, 7 tenors, 8 basses
+  const upper = shuf(P.filter(p => (p.sex === 'f' && p.age >= 8) || (p.sex === 'm' && p.age >= 8 && p.age <= 12)).map(p => p.i));
+  const lower = shuf(P.filter(p => p.sex === 'm' && p.age >= 15).map(p => p.i));
+  const bias = a => a.sort((x, y) => (P[y].age > 60 ? 1 : 0) * 0.5 + R() - ((P[x].age > 60 ? 1 : 0) * 0.5 + R()));
+  bias(upper).slice(0, 19).forEach((i, k) => { P[i].choir = k < 10 ? 0 : 1; });
+  bias(lower).slice(0, 15).forEach((i, k) => { P[i].choir = k < 7 ? 2 : 3; });
+
+  // best friends
+  const elig = P.filter(p => p.age >= 3).map(p => p.i);
+  const cand = (p, free) => {
+    const tol = Math.max(4, p.age * 0.25);
+    let c = elig.filter(j => j !== p.i && P[j].hh !== p.hh && Math.abs(P[j].age - p.age) <= tol && (!free || P[j].bf < 0));
+    if (!c.length && !free) c = elig.filter(j => j !== p.i && P[j].hh !== p.hh);
+    const same = c.filter(j => P[j].street === p.street);
+    return same.length && R() < 0.6 ? same : c;
+  };
+  const order = shuf(elig.slice());
+  order.forEach(i => { const p = P[i]; if (p.bf >= 0 || R() > 0.36) return; const c = cand(p, true); if (c.length) { const j = pick(c); p.bf = j; P[j].bf = i; } });
+  order.forEach(i => { if (P[i].bf < 0) P[i].bf = pick(cand(P[i], false)); });
+  P.forEach(p => { if (p.bf < 0) p.bf = pick(HH[p.hh].m.filter(j => P[j].age >= 16)); });
+  P.forEach(p => { p.mutual = P[p.bf].bf === p.i; });
+
+  // figures
+  const S = {};
+  const ages = P.map(p => p.age).sort((a, b) => a - b);
+  S.median = Math.round((ages[149] + ages[150]) / 2);
+  S.oldest = P.reduce((a, b) => (b.age > a.age ? b : a)); S.baby = baby;
+  S.elders = P.filter(p => p.age >= 67).length; S.kids = P.filter(p => p.age < 18).length;
+  S.twenties = P.filter(p => p.age >= 20 && p.age < 30).length;
+  S.born = P.filter(p => p.born).length;
+  S.alone = HH.filter(h => h.m.length === 1).length;
+  S.big = HH.reduce((a, b) => (b.m.length > a.m.length ? b : a));
+  S.bakers = [P[b1], P[b2]]; S.bell = P[elders[0]]; S.light = P[elders[1]];
+  S.miles = 170 + seed % 90;
+  S.streetPop = STREETS.map((_, s) => P.filter(p => p.street === s).length);
+  S.busiest = S.streetPop.indexOf(Math.max(...S.streetPop));
+  S.longest = P.reduce((a, b) => (b.years > a.years ? b : a));
+  S.newest = HH[newest];
+  S.choir = [0, 1, 2, 3].map(v => P.filter(p => p.choir === v).sort((a, b) => a.age - b.age));
+  const singers = P.filter(p => p.choir >= 0);
+  S.choirOld = singers.reduce((a, b) => (b.age > a.age ? b : a)); S.choirYoung = singers.reduce((a, b) => (b.age < a.age ? b : a));
+  S.pairs = P.filter(p => p.mutual).length / 2; S.unreq = N - S.pairs * 2;
+  const inc = new Array(N).fill(0); P.forEach(p => inc[p.bf]++);
+  S.popular = P[inc.indexOf(Math.max(...inc))]; S.popularN = Math.max(...inc);
+  S.women = P.filter(p => p.sex === 'f').length;
+  const gm = {}; P.forEach(p => (gm[p.g] = gm[p.g] || []).push(p.i));
+  const groups = Object.keys(gm).map(id => ({ id, label: GROUPS[id], m: gm[id].sort((a, b) => P[a].age - P[b].age) })).sort((a, b) => b.m.length - a.m.length || (a.label < b.label ? -1 : 1));
+  return { seed, P, HH, S, groups };
+}
+
+let V = makeVillage(1887), P = V.P, HH = V.HH, S = V.S;
+const ageText = p => (p.days ? nw(p.days) + ' days old' : p.age < 1 ? nw(p.months) + (p.months === 1 ? ' month' : ' months') : String(Math.floor(p.age)));
+const gcol = p => (p.age < 18 ? C.gold : p.age < 40 ? C.teal : p.age < 67 ? C.blue : C.coral);
+const her = p => (p.sex === 'f' ? 'her' : 'his');
+
+function story(p) {
+  let occ = cap(p.title) + (p.choir >= 0 ? ', ' + VOICES[p.choir] : '') + '. ';
+  if (p.g === 'bakers') occ += 'Does not discuss the other bakery. ';
+  if (p.g === 'light') occ += cap(nw(S.miles)) + ' miles from the nearest sea; keeps a lamp in the window anyway. ';
+  if (p.g === 'bell') occ += 'Rings all six bells, though not at once. ';
+  const y = Math.floor(p.years); let t;
+  if (p.days) t = 'Has lived here all ' + her(p) + ' life, which is ' + nw(p.days) + ' days.';
+  else if (p.age < 1) t = 'Born here ' + nw(p.months) + (p.months === 1 ? ' month' : ' months') + ' ago; has met nearly everyone.';
+  else if (p.years < 0.5 && !p.born) t = 'Arrived last month and is still one of “the new people”.';
+  else if (p.born && p.age >= 60) t = 'Has lived here ' + y + ' years and has opinions about all of them.';
+  else if (p.born && p.age < 18) t = 'Born here, and has not yet considered the alternatives.';
+  else if (p.born) t = 'Born here ' + y + ' years ago; left once, for a weekend.';
+  else if (y < 3) t = 'Moved here ' + (y < 1 ? 'this year' : y === 1 ? 'a year ago' : 'two years ago') + '; nearly knows which bin day is which.';
+  else if (y < 20) t = 'Has lived here ' + y + ' years, which locally counts as visiting.';
+  else t = 'Has lived here ' + y + ' years; still described as “from away”.';
+  return occ + t;
+}
+function friendLine(p) {
+  const f = P[p.bf];
+  if (p.age < 3) return 'Best friend: ' + f.name + ', by default.';
+  return p.mutual ? 'Best friend: ' + f.name + '. It is mutual.' : 'Best friend: ' + f.name + ', who would name somebody else.';
+}
+
+/* ───────────── canvas & drawing helpers ───────────── */
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d'), wrap = document.getElementById('wrap');
+let W = 0, H = 0, DPR = 1;
+const ink = a => 'rgba(47,47,47,' + a + ')';
+const rgba = (c, a) => 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')';
+function txt(s, x, y, o) {
+  o = o || {};
+  ctx.font = o.font || ('12px ' + SANS); ctx.textAlign = o.align || 'left'; ctx.textBaseline = o.base || 'alphabetic';
+  if ('letterSpacing' in ctx) ctx.letterSpacing = o.ls || '0px';
+  const a = o.a === undefined ? 1 : o.a; if (a <= 0.01) return;
+  if (o.halo) { ctx.lineWidth = 4; ctx.lineJoin = 'round'; ctx.strokeStyle = 'rgba(255,249,240,' + a * 0.92 + ')'; ctx.strokeText(s, x, y); }
+  ctx.fillStyle = o.col ? rgba(o.col, a) : ink(a * (o.dim || 0.9)); ctx.fillText(s, x, y);
+}
+function part(pts, p) { // stroke the first p of a polyline
+  if (p <= 0 || pts.length < 2) return;
+  let tot = 0; const L = [0];
+  for (let i = 1; i < pts.length; i++) { tot += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); L.push(tot); }
+  const lim = tot * Math.min(1, p);
+  ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 1; i < pts.length; i++) {
+    if (L[i] <= lim) ctx.lineTo(pts[i][0], pts[i][1]);
+    else { const f = (lim - L[i - 1]) / (L[i] - L[i - 1] || 1); ctx.lineTo(lerp(pts[i - 1][0], pts[i][0], f), lerp(pts[i - 1][1], pts[i][1], f)); break; }
+  }
+  ctx.stroke();
+}
+function smooth(pts, seg) { // Catmull-Rom through the points, with a little hand wobble
+  const o = []; seg = seg || 14;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[Math.max(0, i - 1)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(pts.length - 1, i + 2)];
+    for (let s = 0; s < seg; s++) {
+      const t = s / seg, t2 = t * t, t3 = t2 * t;
+      o.push([0.5 * (2 * p1[0] + (-p0[0] + p2[0]) * t + (2 * p0[0] - 5 * p1[0] + 4 * p2[0] - p3[0]) * t2 + (-p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0]) * t3) + Math.sin((i * seg + s) * 0.9) * 0.5,
+              0.5 * (2 * p1[1] + (-p0[1] + p2[1]) * t + (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * t2 + (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * t3) + Math.cos((i * seg + s) * 0.7) * 0.5]);
+    }
+  }
+  o.push(pts[pts.length - 1].slice()); return o;
+}
+function along(pts) { // returns fn(t 0..1) -> {x,y,nx,ny}
+  let tot = 0; const L = [0];
+  for (let i = 1; i < pts.length; i++) { tot += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); L.push(tot); }
+  const f = t => {
+    const d = clamp(t, 0, 1) * tot; let i = 1; while (i < pts.length - 1 && L[i] < d) i++;
+    const u = (d - L[i - 1]) / (L[i] - L[i - 1] || 1), dx = pts[i][0] - pts[i - 1][0], dy = pts[i][1] - pts[i - 1][1], l = Math.hypot(dx, dy) || 1;
+    return { x: lerp(pts[i - 1][0], pts[i][0], u), y: lerp(pts[i - 1][1], pts[i][1], u), nx: -dy / l, ny: dx / l };
+  };
+  f.len = tot; return f;
+}
+function clump(n, d) { // n offsets, roughly d apart, centred
+  if (n === 1) return [[0, 0]];
+  if (n === 2) return [[-d / 2, 0], [d / 2, 0]];
+  if (n === 3) return [0, 1, 2].map(k => [Math.cos(k * TAU / 3 - 1.57) * d * 0.6, Math.sin(k * TAU / 3 - 1.57) * d * 0.6]);
+  const o = [], c = 0.575 * d; let mx = 0, my = 0;
+  for (let k = 0; k < n; k++) { const a = k * 2.39996323, r = c * Math.sqrt(k + 0.6); o.push([Math.cos(a) * r, Math.sin(a) * r]); mx += o[k][0]; my += o[k][1]; }
+  if (n < 9) o.forEach(q => { q[0] -= mx / n; q[1] -= my / n; });
+  return o;
+}
+const clumpR = (n, d) => (n === 1 ? d / 2 : n <= 3 ? d * 1.05 : 0.575 * d * Math.sqrt(n - 0.4) + d / 2);
+const blank = () => P.map(() => ({ x: 0, y: 0, r: 3, c: C.grey, a: 1, o: 0 }));
+
+/* ───────────── the seven layouts ───────────── */
+let clusterCache = {};
+function simCluster(asp) {
+  const R = mulberry32(V.seed ^ 0x51ed), x = new Float32Array(N), y = new Float32Array(N), r = new Float32Array(N);
+  let cum = 0; const sa = Math.sqrt(asp);
+  HH.forEach((h, j) => {
+    const m = h.m.length, rad = 11.6 * Math.sqrt(cum + m / 2), a = j * 2.39996323; cum += m;
+    h.m.forEach(i => { const p = P[i]; r[i] = 10 * (p.age < 5 ? 0.58 : p.age < 13 ? 0.74 : p.age < 18 ? 0.87 : 1); x[i] = Math.cos(a) * rad * sa + (R() - 0.5) * 14; y[i] = Math.sin(a) * rad / sa + (R() - 0.5) * 14; });
+  });
+  for (let it = 0; it < 300; it++) {
+    const soft = it < 220 && it % 2 === 0;
+    if (soft) {
+      for (let i = 0; i < N; i++) { x[i] -= x[i] * 0.009 / asp; y[i] -= y[i] * 0.009 * asp; }
+      HH.forEach(h => { if (h.m.length < 2) return; let mx = 0, my = 0; h.m.forEach(i => { mx += x[i]; my += y[i]; }); mx /= h.m.length; my /= h.m.length; h.m.forEach(i => { x[i] += (mx - x[i]) * 0.05; y[i] += (my - y[i]) * 0.05; }); });
+    }
+    for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) {
+      const dx = x[j] - x[i], dy = y[j] - y[i], m = r[i] + r[j] + 1.2;
+      if (dx > m || dx < -m || dy > m || dy < -m) continue;
+      const d2 = dx * dx + dy * dy; if (d2 >= m * m) continue;
+      const d = Math.sqrt(d2) || 0.01, k = (m - d) / d * 0.5; x[i] -= dx * k; y[i] -= dy * k; x[j] += dx * k; y[j] += dy * k;
+    }
+  }
+  let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
+  for (let i = 0; i < N; i++) { x0 = Math.min(x0, x[i] - r[i]); x1 = Math.max(x1, x[i] + r[i]); y0 = Math.min(y0, y[i] - r[i]); y1 = Math.max(y1, y[i] + r[i]); }
+  for (let i = 0; i < N; i++) { x[i] -= (x0 + x1) / 2; y[i] -= (y0 + y1) / 2; }
+  return { x, y, r, w: x1 - x0, h: y1 - y0 };
+}
+function layCluster() {
+  const wide = W >= 720;
+  const bw = wide ? Math.min(W * 0.56, W - 440) : W * 0.98, bh = wide ? H * 0.95 : H * 0.7;
+  const asp = clamp(bw / bh, 0.7, 1.55), key = V.seed + ':' + asp.toFixed(2);
+  if (!clusterCache[key]) { clusterCache = {}; clusterCache[key] = simCluster(asp); }
+  const sim = clusterCache[key], sc = Math.min(bw / sim.w, bh / sim.h), cx = W / 2, cy = H / 2;
+  const pts = P.map((p, i) => ({ x: cx + sim.x[i] * sc, y: cy + sim.y[i] * sc, r: sim.r[i] * sc * 0.94, c: gcol(p), a: 1, o: 0 }));
+  const hw = sim.w * sc / 2, hh = sim.h * sc / 2;
+  const notes = [
+    { p: S.oldest, t: 'the oldest of us', n: 'oldest', s: S.oldest.name + ', ' + ageText(S.oldest) },
+    { p: S.bell, t: 'the bell-ringer', n: 'bell-ringer', s: S.bell.name },
+    { p: S.bakers[0], t: 'a baker', n: 'a baker', s: S.bakers[0].name },
+    { p: S.baby, t: 'the newest of us', n: 'newest', s: S.baby.name + ', ' + S.baby.days + ' days' },
+    { p: S.light, t: 'the lighthouse keeper', n: 'lighthouse|keeper', s: S.light.name },
+    { p: S.bakers[1], t: 'the other baker', n: 'the other|baker', s: S.bakers[1].name }
+  ];
+  const taken = new Set(notes.map(n => n.p.i));
+  notes.forEach((n, k) => {
+    const side = k < 3 ? -1 : 1, slot = (k % 3) - 1;
+    if (wide) { n.ax = cx + side * (hw + 30); n.ay = cy + slot * H * 0.29; n.px = cx + side * hw * (slot ? 0.7 : 1); n.py = cy + slot * hh * 0.72; }
+    else { n.ax = W * (0.5 + slot * 0.335); n.ay = cy + side * (hh + (slot ? 20 : 30)); n.px = cx + slot * hw * 0.72; n.py = cy + side * hh * (slot ? 0.7 : 1); }
+    let best = -1, bd = 1e9;
+    pts.forEach((q, j) => { if (taken.has(j)) return; const d = Math.hypot(q.x - n.px, q.y - n.py); if (d < bd) { bd = d; best = j; } });
+    const a = pts[n.p.i], b = pts[best]; [a.x, b.x] = [b.x, a.x]; [a.y, b.y] = [b.y, a.y]; taken.add(best);
+    n.side = side;
+  });
+  return { pts, decor: { over(p) {
+    notes.forEach((n, k) => {
+      const q = clamp(p * 1.7 - k * 0.11, 0, 1); if (q <= 0) return;
+      const d = pts[n.p.i], dx = n.ax - d.x, dy = n.ay - d.y, l = Math.hypot(dx, dy) || 1, s = d.r + 3;
+      ctx.strokeStyle = ink(0.75); ctx.lineWidth = 1;
+      part([[d.x + dx / l * s, d.y + dy / l * s], [n.ax - dx / l * 4, n.ay - dy / l * 4]], sstep(q));
+      ctx.beginPath(); ctx.arc(d.x, d.y, d.r + 2.5, 0, TAU * sstep(q)); ctx.stroke();
+      const a = sstep(q * 2 - 1);
+      if (wide) {
+        const al = n.side < 0 ? 'right' : 'left', tx = n.ax + n.side * 4;
+        txt(n.t.toUpperCase(), tx, n.ay - 3, { font: '600 10.5px ' + SANS, ls: '1.6px', align: al, a, dim: 0.78 });
+        txt(n.s, tx, n.ay + 14, { font: 'italic 15px ' + SERIF, align: al, a });
+      } else {
+        const lines = n.n.split('|');
+        lines.forEach((ln, j) => txt(ln.toUpperCase(), n.ax, n.ay + n.side * 8 + (n.side < 0 ? (j - lines.length + 1) * 12 : j * 12 + 6), { font: '600 9.5px ' + SANS, ls: '1.1px', align: 'center', a, dim: 0.82 }));
+      }
+    });
+  } } };
+}
+
+function layPyramid() {
+  const narrow = W < 560, padT = 34, padB = 24, gut = narrow ? 30 : 44, cx = W / 2, bandH = (H - padT - padB) / 20;
+  const bins = []; for (let b = 0; b < 20; b++) bins.push({ f: [], m: [] });
+  P.slice().sort((a, b) => a.age - b.age).forEach(p => bins[Math.min(19, Math.floor(p.age / 5))][p.sex].push(p.i));
+  const maxC = Math.max(...bins.map(b => Math.max(b.f.length, b.m.length))), halfW = (W - gut) / 2 - (narrow ? 4 : 30);
+  const d = Math.min(bandH * 0.92, halfW / maxC, 26), r = d * 0.43, pts = blank();
+  bins.forEach((bn, b) => { const y = H - padB - (b + 0.5) * bandH;
+    bn.f.forEach((i, k) => { pts[i] = { x: cx - gut / 2 - d * (k + 0.5), y, r, c: gcol(P[i]), a: 1, o: 0 }; });
+    bn.m.forEach((i, k) => { pts[i] = { x: cx + gut / 2 + d * (k + 0.5), y, r, c: gcol(P[i]), a: 1, o: 0 }; }); });
+  const yTw = H - padB - 5 * bandH;
+  return { pts, decor: { under(p) {
+    const a = sstep(p * 1.5);
+    ctx.strokeStyle = ink(0.42); ctx.lineWidth = 1;
+    part([[cx - gut / 2, H - padB], [cx - gut / 2, padT - 2]], p * 1.4); part([[cx + gut / 2, H - padB], [cx + gut / 2, padT - 2]], p * 1.4);
+    for (let b = 0; b <= 20; b += 2) { const y = H - padB - b * bandH, q = sstep(p * 2.4 - b * 0.05);
+      txt(String(b * 5), cx, y, { font: '11.5px ' + SANS, align: 'center', base: 'middle', a: q, dim: 0.85 }); }
+    txt('WOMEN  ' + S.women, cx - gut / 2 - 8, padT - 16, { font: '600 11px ' + SANS, ls: '1.6px', align: 'right', a });
+    txt('MEN  ' + (N - S.women), cx + gut / 2 + 8, padT - 16, { font: '600 11px ' + SANS, ls: '1.6px', a });
+    txt('age', cx, padT - 16, { font: 'italic 12.5px ' + SERIF, align: 'center', a, dim: 0.8 });
+    if (!narrow) {
+      const waist = 'the waist: our twenties, mostly spent elsewhere'; ctx.font = 'italic 14px ' + SERIF;
+      const q = sstep(p * 2 - 0.9), x = Math.min(W - ctx.measureText(waist).width - 6, cx + gut / 2 + d * (bins[5].m.length + bins[4].m.length) / 2 + 60);
+      ctx.strokeStyle = ink(0.6);
+      part(smooth([[x - 8, yTw - 2], [x - 30, yTw + 5], [cx + gut / 2 + d * (bins[5].m.length + 0.6) + 4, yTw + bandH * 0.5]], 8), q);
+      txt(waist, x, yTw + 2, { font: 'italic 14px ' + SERIF, a: q });
+    }
+  } } };
+}
+
+function layGroups() {
+  const narrow = W < 560, fs = narrow ? 10.5 : 12.5, G = V.groups, labH = narrow ? 29 : 36, gx = narrow ? 8 : 26, gy = narrow ? 9 : 18, padX = narrow ? 2 : 10;
+  ctx.font = fs + 'px ' + SANS; if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
+  const lw = G.map(g => ctx.measureText(g.label).width + 4);
+  let best = null;
+  for (let r = 10; r >= 1.4 && !best; r -= 0.2) {
+    const d = 2 * r + (r > 3 ? 1.2 : 0.7), rows = [[]]; let x = 0, ok = true;
+    G.forEach((g, k) => { const R = clumpR(g.m.length, d), w = Math.max(2 * R, lw[k]) + gx;
+      if (x + w > W - padX * 2 && rows[rows.length - 1].length) { rows.push([]); x = 0; }
+      rows[rows.length - 1].push({ g, R, w, k }); x += w; if (w > W - padX * 2) ok = false; });
+    let th = 0; rows.forEach(row => { row.h = Math.max(...row.map(c => 2 * c.R)) + labH + gy; row.w = row.reduce((s, c) => s + c.w, 0); th += row.h; });
+    if (ok && th - gy <= H - 6) best = { r, d, rows, th: th - gy };
+  }
+  const pts = blank(), labels = []; let y = Math.max(4, (H - best.th) / 2);
+  best.rows.forEach(row => { let x = (W - row.w) / 2; const base = y + row.h - labH - gy;
+    row.forEach(c => { const ccx = x + c.w / 2, ccy = base - c.R - (2 * c.R < row.h - labH - gy ? Math.min(10, (row.h - labH - gy - 2 * c.R) * 0.25) : 0), off = clump(c.g.m.length, best.d);
+      c.g.m.forEach((i, k) => { pts[i] = { x: ccx + off[k][0], y: ccy + off[k][1], r: best.r, c: gcol(P[i]), a: 1, o: 0 }; });
+      labels.push({ x: ccx, y: base, t: c.g.label, n: c.g.m.length }); x += c.w; });
+    y += row.h; });
+  return { pts, decor: { under(p) {
+    labels.forEach((l, k) => { const a = sstep(p * 2.6 - k * 0.085);
+      ctx.strokeStyle = ink(0.5 * a); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(l.x - 7 * a, l.y + 5); ctx.lineTo(l.x + 7 * a, l.y + 5); ctx.stroke();
+      txt(l.t, l.x, l.y + (narrow ? 17 : 20), { font: fs + 'px ' + SANS, align: 'center', a });
+      txt(String(l.n), l.x, l.y + (narrow ? 30 : 36), { font: '700 ' + (narrow ? 12 : 14.5) + 'px ' + SERIF, align: 'center', a }); });
+  } } };
+}
+
+function layMap() {
+  const narrow = W < 560, pad = narrow ? 8 : 26, mw = W - pad * 2, mh = H - pad * 2;
+  const M = (x, y) => [pad + x * mw, pad + y * mh], line = a => smooth(a.map(q => M(q[0], q[1])));
+  const r = clamp(Math.min(mw / 150, mh / 105), 2.1, 4.8), d = 2 * r + (narrow ? 0.5 : 1);
+  const geo = [
+    { pts: line([[0.47, 0.745], [0.34, 0.775], [0.2, 0.755], [0.06, 0.8]]), t0: 0.12, t1: 0.98, lab: [0.25, 0.875, 'center'] },
+    { pts: line([[0.2, 0.26], [0.42, 0.215], [0.66, 0.225], [0.92, 0.275]]), t0: 0.03, t1: 0.98, lab: [0.185, 0.265, 'right'] },
+    { pts: line([[0.5, 0.5], [0.6, 0.465], [0.67, 0.545], [0.78, 0.495], [0.88, 0.555]]), t0: 0.2, t1: 0.99, lab: [0.795, 0.655, 'center'] },
+    { pts: line([[0.47, 0.17], [0.46, 0.4], [0.49, 0.6], [0.475, 0.745]]), t0: 0.2, t1: 0.9, lab: [0.455, 0.158, 'right'] },
+    null,
+    { pts: line([[0.475, 0.745], [0.62, 0.775], [0.76, 0.735], [0.915, 0.765]]), t0: 0.14, t1: 0.95, lab: [0.7, 0.875, 'center'] }
+  ];
+  const gc = M(0.165, 0.52), grx = mw * (narrow ? 0.085 : 0.07), gry = mh * 0.095;
+  const pts = blank(), byStreet = STREETS.map((_, s) => HH.filter(h => h.street === s));
+  byStreet.forEach((hs, s) => {
+    if (s === 4) { hs.forEach((h, k) => { const a = 0.42 + (TAU - 0.84) * (k + 0.5) / hs.length, R = clumpR(h.m.length, d) + 3, off = clump(h.m.length, d);
+        const hx = gc[0] + Math.cos(a) * (grx + R), hy = gc[1] + Math.sin(a) * (gry + R);
+        h.m.forEach((i, j) => { pts[i] = { x: hx + off[j][0], y: hy + off[j][1], r, c: gcol(P[i]), a: 1, o: 0 }; }); }); return; }
+    const g = geo[s], f = along(g.pts), n = Math.ceil(hs.length / 2);
+    hs.forEach((h, k) => { const q = f(g.t0 + (g.t1 - g.t0) * (Math.floor(k / 2) + 0.5) / n), side = k % 2 ? 1 : -1, R = clumpR(h.m.length, d) + (narrow ? 2 : 3.5), off = clump(h.m.length, d);
+      const hx = q.x + q.nx * side * R, hy = q.y + q.ny * side * R;
+      h.m.forEach((i, j) => { pts[i] = { x: hx + off[j][0], y: hy + off[j][1], r, c: gcol(P[i]), a: 1, o: 0 }; }); });
+  });
+  const hill = [0.34, 0.265, 0.19, 0.115].map((rx, k) => { const o = []; for (let a = 0.06; a <= Math.PI - 0.06; a += 0.05) o.push(M(0.735 + Math.cos(a) * rx, -0.1 + Math.sin(a) * rx * 0.66 + Math.sin(a * 5 + k) * 0.004)); return o; });
+  const river = k => { const o = []; for (let x = -0.02; x <= 1.03; x += 0.02) { const q = M(x, 0.945 + 0.016 * Math.sin(x * 8.5 + 0.6) + 0.006 * Math.sin(x * 23)); o.push([q[0], q[1] + k]); } return o; };
+  const rail = line([[0.985, 0.0], [0.972, 0.4], [0.958, 0.7], [0.962, 1.0]]), lane = line([[0.305, 0.515], [0.39, 0.5], [0.462, 0.47]], 8);
+  const u = clamp(Math.min(mw, mh) / 520, 0.72, 1.2), ch = M(0.47, 0.125), st = M(0.935, 0.765), ml = M(0.055, 0.915), fs = narrow ? 8.5 : 10.5;
+  return { pts, decor: { under(p) {
+    const a = sstep(p * 1.3), e = sstep(p);
+    ctx.lineCap = 'round'; ctx.lineWidth = 1; ctx.strokeStyle = ink(0.34);
+    hill.forEach((h, k) => part(h, p * 1.6 - k * 0.12));
+    ctx.strokeStyle = rgba(C.blue, 0.8); ctx.lineWidth = 1.2; part(river(0), e * 1.2); part(river(narrow ? 5 : 7), e * 1.2 - 0.08);
+    ctx.strokeStyle = ink(0.5); ctx.lineWidth = 1; part(rail, e * 1.3);
+    const rf = along(rail); for (let k = 0; k < 1; k += 9 / rf.len) { if (k > e * 1.3) break; const q = rf(k); ctx.beginPath(); ctx.moveTo(q.x - q.nx * 3, q.y - q.ny * 3); ctx.lineTo(q.x + q.nx * 3, q.y + q.ny * 3); ctx.stroke(); }
+    ctx.strokeStyle = ink(0.62); ctx.lineWidth = 1.3; geo.forEach((g, k) => g && part(g.pts, e * 1.5 - k * 0.07));
+    ctx.setLineDash([3, 4]); part(lane, e * 1.5 - 0.3); ctx.setLineDash([]);
+    ctx.strokeStyle = rgba(C.teal, 0.95 * a); ctx.lineWidth = 1.3; ctx.beginPath(); ctx.ellipse(gc[0], gc[1], grx, gry, 0, -1.5, -1.5 + TAU * e); ctx.stroke();
+    ctx.fillStyle = rgba(C.teal, 0.1 * a); ctx.beginPath(); ctx.ellipse(gc[0], gc[1], grx, gry, 0, 0, TAU); ctx.fill();
+    // church
+    ctx.save(); ctx.globalAlpha *= a; ctx.translate(ch[0], ch[1]); ctx.scale(u, u); ctx.strokeStyle = ink(0.85); ctx.fillStyle = '#FFF9F0'; ctx.lineWidth = 1.1 / u; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.rect(-15, -4, 17, 12); ctx.moveTo(-16.5, -4); ctx.lineTo(-6.5, -11); ctx.lineTo(3, -4); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.rect(2, -13, 9, 21); ctx.moveTo(1, -13); ctx.lineTo(6.5, -27); ctx.lineTo(12, -13); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(6.5, -27); ctx.lineTo(6.5, -34); ctx.moveTo(4, -31.5); ctx.lineTo(9, -31.5); ctx.moveTo(-8, 8); ctx.lineTo(-8, 2.5); ctx.arc(-6, 2.5, 2, Math.PI, 0); ctx.lineTo(-4, 8); ctx.stroke(); ctx.restore();
+    // station
+    ctx.save(); ctx.globalAlpha *= a; ctx.translate(st[0], st[1]); ctx.scale(u, u); ctx.strokeStyle = ink(0.85); ctx.fillStyle = '#FFF9F0'; ctx.lineWidth = 1.1 / u;
+    ctx.beginPath(); ctx.rect(-9, -8, 15, 10); ctx.moveTo(-12, -8); ctx.lineTo(-1.5, -14); ctx.lineTo(9, -8); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore();
+    // mill wheel
+    ctx.save(); ctx.globalAlpha *= a; ctx.translate(ml[0], ml[1]); ctx.scale(u, u); ctx.strokeStyle = ink(0.85); ctx.fillStyle = '#FFF9F0'; ctx.lineWidth = 1.1 / u;
+    ctx.beginPath(); ctx.arc(0, 0, 9, 0, TAU); ctx.fill(); ctx.stroke(); ctx.beginPath(); for (let k = 0; k < 4; k++) { const an = k * Math.PI / 4 + p * 1.2; ctx.moveTo(Math.cos(an) * 9, Math.sin(an) * 9); ctx.lineTo(-Math.cos(an) * 9, -Math.sin(an) * 9); } ctx.stroke(); ctx.restore();
+    // geese
+    ctx.strokeStyle = ink(0.8 * a); ctx.lineWidth = 1; [[-0.3, 0.42], [0.25, 0.55]].forEach(q => { const x = gc[0] + q[0] * grx, y = gc[1] + q[1] * gry; ctx.beginPath(); ctx.ellipse(x, y, 4 * u, 2.4 * u, 0, 0, TAU); ctx.moveTo(x + 3.4 * u, y - 1.4 * u); ctx.lineTo(x + 5 * u, y - 6 * u); ctx.lineTo(x + 7.4 * u, y - 5.6 * u); ctx.stroke(); });
+    geo.forEach((g, k) => { if (!g) return; const q = M(g.lab[0], g.lab[1]); txt(STREETS[k].toUpperCase(), q[0], q[1], { font: '600 ' + fs + 'px ' + SANS, ls: '1.5px', align: g.lab[2], a: sstep(p * 2 - 0.5 - k * 0.06), halo: 1 }); });
+    const al = sstep(p * 2 - 0.7);
+    txt('GOOSE', gc[0], gc[1] - 5, { font: '600 ' + fs + 'px ' + SANS, ls: '1.5px', align: 'center', a: al }); txt('GREEN', gc[0], gc[1] + fs - 3, { font: '600 ' + fs + 'px ' + SANS, ls: '1.5px', align: 'center', a: al });
+    const it = 'italic ' + (narrow ? 11.5 : 14) + 'px ' + SERIF;
+    txt('the Hill', M(0.735, 0)[0], M(0, 0.062)[1], { font: it, align: 'center', a: al, halo: 1 });
+    txt('St Hedwig’s', ch[0] + 17 * u, ch[1] - 14 * u, { font: it, a: al, halo: 1 });
+    txt(narrow ? 'the Slow Water' : 'the Slow Water, in no hurry', M(0.5, 0)[0], M(0, 0.945)[1] - 15, { font: it, align: 'center', a: al, halo: 1, col: C.blue });
+    txt(narrow ? 'the 07:14' : 'to the city, 07:14', st[0] + 2, st[1] + 17 * u, { font: it, align: 'right', a: al, halo: 1 });
+    txt('the mill', ml[0] + 13 * u, ml[1] - 9 * u, { font: it, a: al, halo: 1 });
+  } } };
+}
+
+function layArrive() {
+  const narrow = W < 560, padL = narrow ? 14 : 44, padR = narrow ? 14 : 44, axisY = H - 34, top = 46;
+  const y0 = Math.floor((NOW - S.longest.years) / 10) * 10, X = yr => padL + (yr - y0) / (2028 - y0) * (W - padL - padR);
+  const cy = (top + axisY - 14) / 2, avail = (axisY - 14 - top) / 2;
+  const ord = P.map(p => p.i).sort((a, b) => P[b].years - P[a].years);
+  let ys, r;
+  for (r = 8; r >= 1.4; r -= 0.2) {
+    const d = 2 * r + 0.8, placed = []; let max = 0; ys = new Float32Array(N);
+    for (const i of ord) { const x = X(NOW - P[i].years); let y = 0, n = 0;
+      for (;;) { let hit = false;
+        for (let k = placed.length - 1; k >= 0; k--) { const q = placed[k], dx = x - q[0]; if (dx >= d) break; const dy = y - q[1]; if (dx * dx + dy * dy < d * d) { hit = true; break; } }
+        if (!hit) break; n++; y = (n % 2 ? 1 : -1) * Math.ceil(n / 2) * r * 0.55; }
+      placed.push([x, y]); ys[i] = y; max = Math.max(max, Math.abs(y)); }
+    if (max + r <= avail) break;
+  }
+  const pts = P.map(p => ({ x: X(NOW - p.years), y: cy + ys[p.i], r, c: p.born ? C.gold : p.years < 1 ? C.coral : p.years < 5 ? C.teal : C.blue, a: 1, o: 0 }));
+  const lg = S.longest, nh = S.newest, np = pts[nh.m[0]], lp = pts[lg.i], xc = X(1974);
+  return { pts, decor: { under(p) {
+    const e = sstep(p * 1.2);
+    ctx.strokeStyle = ink(0.75); ctx.lineWidth = 1.2; part(smooth([[padL - 6, axisY], [W * 0.3, axisY + 0.6], [W * 0.7, axisY - 0.5], [W - padR + 6, axisY]], 10), e);
+    const step = narrow ? 20 : 10;
+    for (let yr = y0; yr <= 2026; yr += 10) { const x = X(yr), q = sstep(p * 2.2 - (x - padL) / W * 1.1); ctx.strokeStyle = ink(0.6 * q); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x, axisY); ctx.lineTo(x, axisY + 5 * q); ctx.stroke();
+      if ((yr - y0) % step === 0) txt(String(yr), x, axisY + 19, { font: '11.5px ' + SANS, align: 'center', a: q }); }
+    const q1 = sstep(p * 2 - 0.5), q2 = sstep(p * 2 - 0.8), it = 'italic ' + (narrow ? 12 : 14) + 'px ' + SERIF;
+    ctx.strokeStyle = ink(0.45); ctx.setLineDash([2, 4]); part([[xc, axisY - 2], [xc, top - 12]], q1); ctx.setLineDash([]);
+    txt(narrow ? '1974: the creamery' : '1974: the creamery opens, and half a valley moves in', narrow ? xc - 60 : xc - 8, top - 16, { font: it, a: q1, halo: 1, align: narrow ? 'left' : 'right' });
+    ctx.strokeStyle = ink(0.7); ctx.lineWidth = 1;
+    const lt = lg.first + (lg.born ? ', born here in ' : ', here since ') + Math.floor(NOW - lg.years);
+    if (narrow) { part([[lp.x, lp.y + lp.r + 3], [lp.x + 3, axisY - 30]], q2); txt(lt, 2, axisY - 14, { font: it, a: q2, halo: 1 }); }
+    else { part([[lp.x, lp.y - lp.r - 3], [lp.x + 5, lp.y - 38]], q2); txt(lt, Math.max(4, lp.x - 4), lp.y - 46, { font: it, a: q2, halo: 1 }); }
+  }, over(p) {
+    const q2 = sstep(p * 2 - 0.8), ex = Math.min(W - 5, np.x + (narrow ? 9 : 22));
+    txt('last month: the ' + nh.sur + 's', W - padR + (narrow ? 8 : 20), top - 16, { font: 'italic ' + (narrow ? 12 : 14) + 'px ' + SERIF, align: 'right', a: q2, halo: 1 });
+    ctx.strokeStyle = ink(0.75); ctx.lineWidth = 1; ctx.lineCap = 'round';
+    part(smooth([[np.x + np.r + 2, np.y], [ex, np.y - 30], [ex, (np.y + top) / 2], [ex - 10, top - 8]], 8), q2);
+  } } };
+}
+
+function layChoir() {
+  const narrow = W < 560, cx = W / 2, rows = S.choir, maxN = Math.max(...rows.map(r => r.length));
+  const rc = clamp(Math.min((W * (narrow ? 0.52 : 0.56)) / maxN / 2.6, H * 0.036), 5.5, 17), sp = rc * 2.6, gap = rc * 3.1, top = 22 + rc, hw = maxN * sp / 2, bow = rc * 1.7;
+  const pts = blank(), cols = [C.coral, C.gold, C.teal, C.blue], arcs = [];
+  rows.forEach((row, v) => { const y = top + v * gap; row.forEach((p, k) => { const dx = (k - (row.length - 1) / 2) * sp; pts[p.i] = { x: cx + dx, y: y + bow * (dx / hw) * (dx / hw), r: rc, c: cols[v], a: 1, o: 0 }; });
+    const a = []; for (let t = -1.12; t <= 1.121; t += 0.08) a.push([cx + t * hw, y + bow * t * t + rc + 4]); arcs.push(a); });
+  const ya = top + 3 * gap + bow + rc + (narrow ? 50 : 58), aw = W * (narrow ? 0.97 : 0.8), ah = H - ya - 8, rest = [];
+  HH.forEach(h => h.m.forEach(i => { if (P[i].choir < 0) rest.push(i); }));
+  let s = Math.min(Math.sqrt(aw * ah / rest.length), 26), colsN, rw;
+  for (;;) { colsN = Math.floor((aw - s * 1.4) / s); colsN -= colsN % 2; rw = Math.ceil(rest.length / colsN); if (rw * s <= ah || s < 3) break; s *= 0.975; }
+  rest.forEach((i, k) => { const c = k % colsN, rr = Math.floor(k / colsN), last = rr === rw - 1 ? rest.length - rr * colsN : colsN;
+    const xo = (c - (colsN - 1) / 2) * s + (c < colsN / 2 ? -s * 0.7 : s * 0.7) + (last < colsN && false ? 0 : 0);
+    pts[i] = { x: cx + xo, y: ya + (rr + 0.5) * s, r: s * 0.36, c: C.grey, a: 1, o: 0.3 }; });
+  const stageY = ya - (narrow ? 20 : 24), xl = cx - hw * 1.12 - 12, xr = cx + hw * 1.12 + 12;
+  return { pts, decor: { under(p) {
+    ctx.lineWidth = 1; ctx.lineCap = 'round';
+    arcs.forEach((a, v) => { const q = p * 1.8 - (3 - v) * 0.14; ctx.strokeStyle = ink(0.5); part(a, q);
+      const al = sstep(q * 1.4 - 0.3), y = top + v * gap + bow * 1.25 + 4;
+      txt(VOICES[v].toUpperCase(), Math.max(narrow ? 54 : 0, xl), y, { font: '600 ' + (narrow ? 9.5 : 11) + 'px ' + SANS, ls: narrow ? '1px' : '1.6px', align: 'right', a: al });
+      txt(String(rows[v].length), Math.min(narrow ? W - 30 : W, xr), y + 2, { font: '700 ' + (narrow ? 14 : 17) + 'px ' + SERIF, a: al }); });
+    const e = sstep(p * 1.5 - 0.3);
+    ctx.strokeStyle = ink(0.6); part(smooth([[cx - aw / 2, stageY], [cx - aw * 0.1, stageY + 0.8], [cx + aw * 0.2, stageY - 0.6], [cx + aw / 2, stageY]], 8), e);
+    txt('THE AUDIENCE  ' + rest.length, cx - aw / 2, stageY - 7, { font: '600 ' + (narrow ? 9.5 : 11) + 'px ' + SANS, ls: '1.6px', a: e });
+    txt(narrow ? 'told it would be short' : 'several of whom were told it would be short', cx + aw / 2, stageY - 7, { font: 'italic ' + (narrow ? 12 : 14) + 'px ' + SERIF, align: 'right', a: e });
+  } } };
+}
+
+function layFriends() {
+  const narrow = W < 560, cx = W / 2, cy = H / 2, R0 = Math.min(W, H) / 2 - (narrow ? 22 : 34), gapS = 4, slotsN = N + gapS * 6;
+  const r = clamp(TAU * R0 / slotsN * 0.74, 1.8, 5.2), pts = blank(), ang = new Float32Array(N), arcs = [];
+  let slot = gapS / 2;
+  STREETS.forEach((nm, s) => { const a0 = slot; HH.forEach(h => { if (h.street !== s) return; h.m.forEach(i => { const a = -Math.PI / 2 + TAU * slot / slotsN, rr = R0 - (slot % 2 ? r * 2.5 : 0); ang[i] = a;
+      pts[i] = { x: cx + Math.cos(a) * rr, y: cy + Math.sin(a) * rr, r, c: P[i].mutual ? C.coral : C.grey, a: 1, o: P[i].mutual ? 0 : 0.34 }; slot++; }); });
+    arcs.push({ a0: -Math.PI / 2 + TAU * (a0 - 0.3) / slotsN, a1: -Math.PI / 2 + TAU * (slot - 0.7) / slotsN, nm }); slot += gapS; });
+  const links = [];
+  P.forEach(p => { if (p.mutual && p.bf < p.i) return; const a = pts[p.i], b = pts[p.bf]; let da = Math.abs(ang[p.i] - ang[p.bf]); if (da > Math.PI) da = TAU - da;
+    const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, k = 0.82 * (1 - da / Math.PI) * (da < 0.5 ? 0.86 + da * 0.2 : 1), ml = Math.hypot(mx - cx, my - cy) || 1, cr = Math.min(ml, R0 * k);
+    links.push({ a, b, qx: cx + (mx - cx) / ml * cr, qy: cy + (my - cy) / ml * cr, m: p.mutual, k: hash(p.i) }); });
+  links.sort((u, v) => u.m - v.m);
+  const arcText = (s, rad, mid, a) => { ctx.font = '600 ' + (narrow ? 8.5 : 10.5) + 'px ' + SANS; if ('letterSpacing' in ctx) ctx.letterSpacing = '0px'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = ink(0.88 * a);
+    const flip = Math.sin(mid) > 0.15, ls = narrow ? 1.2 : 2, ws = s.split('').map(ch => ctx.measureText(ch).width + ls), tot = ws.reduce((x, y) => x + y, 0); let t = -tot / 2;
+    s.split('').forEach((ch, k) => { const off = (t + ws[k] / 2) / rad, an = flip ? mid - off : mid + off; t += ws[k]; ctx.save(); ctx.translate(cx + Math.cos(an) * rad, cy + Math.sin(an) * rad); ctx.rotate(an + (flip ? -Math.PI / 2 : Math.PI / 2)); ctx.fillText(ch, 0, 0); ctx.restore(); }); };
+  return { pts, decor: { under(p) {
+    ctx.lineCap = 'round';
+    links.forEach(l => { const q = sstep(clamp(p * 1.7 - l.k * 0.6 - (l.m ? 0.1 : 0), 0, 1)); if (q <= 0) return;
+      ctx.strokeStyle = l.m ? rgba(C.coral, 0.92) : 'rgba(190,184,174,.85)'; ctx.lineWidth = l.m ? (narrow ? 1.2 : 1.6) : 0.9;
+      const o = []; for (let s = 0; s <= 14; s++) { const t = s / 14, u = 1 - t; o.push([u * u * l.a.x + 2 * u * t * l.qx + t * t * l.b.x, u * u * l.a.y + 2 * u * t * l.qy + t * t * l.b.y]); } part(o, q); });
+    arcs.forEach((a, k) => { const q = sstep(p * 2 - k * 0.12), rad = R0 + r + (narrow ? 5 : 8); ctx.strokeStyle = ink(0.6); ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(cx, cy, rad, a.a0, a.a0 + (a.a1 - a.a0) * q); ctx.stroke();
+      arcText(a.nm.toUpperCase(), rad + (narrow ? 8 : 11), (a.a0 + a.a1) / 2, sstep(q * 2 - 1)); });
+  } } };
+}
+
+/* ───────────── questions ───────────── */
+const VIEWS = [
+  { q: 'Who lives here?', lay: layCluster, n: () => N, phrase: 'of us live here', sub: () => HH.length + ' households, six streets, one hill.',
+    legend: [['under 18', 'gold'], ['18 to 39', 'teal'], ['40 to 66', 'blue'], ['67 and over', 'coral']],
+    insight: () => 'We are ' + HH.length + ' households. The largest is the ' + nw(S.big.m.length) + ' ' + S.big.sur + 's of ' + STREETS[S.big.street] + '; ' + nw(S.alone) + ' of us live alone, and all ' + nw(S.alone) + ' say they prefer it.' },
+  { q: 'How old are we?', lay: layPyramid, n: () => S.median, phrase: 'is the age in the middle of us', sub: () => S.elders + ' of us are past 67; ' + S.kids + ' are not yet 18.',
+    legend: [['under 18', 'gold'], ['18 to 39', 'teal'], ['40 to 66', 'blue'], ['67 and over', 'coral']],
+    insight: () => 'The oldest of us is ' + S.oldest.name + ', ' + ageText(S.oldest) + '; the youngest is ' + S.baby.name + ', ' + ageText(S.baby) + '. Only ' + nw(S.twenties) + ' of us are in our twenties, and they are thinking about it.' },
+  { q: 'What do we do all day?', lay: layGroups, n: () => V.groups.length, phrase: 'ways to fill a day', sub: () => 'From ' + V.groups[0].m.length + ' retired to exactly one bell-ringer.',
+    legend: [['under 18', 'gold'], ['18 to 39', 'teal'], ['40 to 66', 'blue'], ['67 and over', 'coral']],
+    insight: () => { const a = S.bakers[0], b = S.bakers[1]; return 'The two bakers, ' + a.first + ' and ' + b.first + ', live ' + (a.street === b.street ? 'on the same street, ' + STREETS[a.street] + ',' : 'on ' + STREETS[a.street] + ' and ' + STREETS[b.street]) + ' and have not compared loaves in years. ' + S.light.first + ', the lighthouse keeper, is ' + S.miles + ' miles from the nearest sea.'; } },
+  { q: 'Where do we live?', lay: layMap, n: () => HH.length, phrase: 'front doors on six streets', sub: () => 'Busiest: ' + STREETS[S.busiest] + ', with ' + S.streetPop[S.busiest] + ' of us.',
+    legend: [['under 18', 'gold'], ['18 to 39', 'teal'], ['40 to 66', 'blue'], ['67 and over', 'coral']],
+    insight: () => { const s = S.baby.street, o = P.filter(p => p.street === s).reduce((a, b) => (b.age > a.age ? b : a)); return 'The oldest person on ' + STREETS[s] + ' is ' + ageText(o) + '; the youngest is ' + ageText(S.baby) + '. They are neighbours.'; } },
+  { q: 'How long have we been here?', lay: layArrive, n: () => S.born, phrase: 'of us were born here', sub: () => 'The other ' + (N - S.born) + ' arrived, and were eventually forgiven.',
+    legend: [['born here', 'gold'], ['moved in', 'blue'], ['in the last five years', 'teal'], ['this year', 'coral']],
+    insight: () => S.longest.name + ' has been here longest, since ' + Math.floor(NOW - S.longest.years) + '. The ' + S.newest.sur + 's arrived last month and are still finding the light switches.' },
+  { q: 'Who sings?', lay: layChoir, n: () => 34, phrase: 'of us sing', sub: () => 'The other ' + (N - 34) + ' listen, mostly willingly.',
+    legend: [['soprano', 'coral'], ['alto', 'gold'], ['tenor', 'teal'], ['bass', 'blue'], ['audience', 'grey']],
+    insight: () => 'The choir’s oldest voice is ' + ageText(S.choirOld) + ', its youngest ' + nw(Math.floor(S.choirYoung.age)) + '. There are ' + nw(S.choir[3].length) + ' basses to ' + nw(S.choir[0].length) + ' sopranos, which the basses consider about even.' },
+  { q: 'Who is whose best friend?', lay: layFriends, n: () => S.pairs, phrase: 'pairs of best friends agree', sub: () => 'The other ' + S.unreq + ' of us named someone who named somebody else.',
+    legend: () => [['mutual · ' + S.pairs + ' pairs', 'coral', 1], ['unrequited · ' + S.unreq, 'grey', 1]],
+    insight: () => S.popular.name + ' is best friend to ' + nw(S.popularN) + ' people and knows about ' + (S.popular.mutual ? 'exactly one' : 'none') + ' of them. On the ring, neighbours sit together; the long lines are friendships that cross the village.' }
+];
+
+/* ───────────── state, transitions, rendering ───────────── */
+const RM = matchMedia('(prefers-reduced-motion: reduce)');
+let view = 0, cur = [], from = [], to = [], decor = null, prevDecor = null, tr = null, decorT0 = -1e9, prevT0 = -1e9, raf = 0, hiddenAt = 0;
+let hov = -1, pin = -1, filter = null, grid = null, lastFocus = -2, started = false;
+const spring = t => (t <= 0 ? 0 : t >= 1 ? 1 : 1 - Math.exp(-8 * t) * (Math.cos(7.8 * t) + 1.0256 * Math.sin(7.8 * t)));
+const rainE = t => { if (t <= 0) return 0; if (t >= 1) return 1; if (t < 0.7) { const q = t / 0.7; return q * q; } const u = (t - 0.7) / 0.3; return 1 - 0.05 * Math.sin(Math.PI * u) * (1 - u * 0.4); };
+const copy = q => ({ x: q.x, y: q.y, r: q.r, c: q.c, a: q.a, o: q.o });
+
+function go(mode) {
+  const L = VIEWS[view].lay(), now = performance.now();
+  if (RM.matches && mode !== 'snap') mode = 'fade';
+  from = cur.map(copy); to = L.pts;
+  prevDecor = mode === 'snap' ? null : decor; prevT0 = now; decor = L.decor; grid = null;
+  if (mode === 'snap') { cur = to.map(copy); tr = null; decorT0 = now - 5000; buildGrid(); render(); return; }
+  if (mode === 'rain') from = to.map((q, i) => ({ x: q.x + (hash(i) - 0.5) * 26, y: -14 - hash(i * 3.1) * H * 0.9 - q.r, r: q.r, c: q.c, a: 1, o: q.o }));
+  // families travel together: households leave in a wave ordered by where they are going
+  const hx = HH.map(h => h.m.reduce((s, i) => s + to[i].x + to[i].y * 0.35, 0) / h.m.length), rank = HH.map((_, k) => k).sort((a, b) => hx[a] - hx[b]), pos = []; rank.forEach((h, k) => { pos[h] = k / (HH.length - 1); });
+  const delay = new Float32Array(N), bend = new Float32Array(N);
+  P.forEach(p => { delay[p.i] = mode === 'fade' ? 0 : mode === 'rain' ? hash(p.hh * 7.3) * 780 + hash(p.i) * 90 : pos[p.hh] * 500 + hash(p.i) * 55; bend[p.i] = (p.hh % 2 ? 1 : -1) * (0.1 + 0.13 * hash(p.hh)); });
+  const dur = mode === 'fade' ? 520 : mode === 'rain' ? 900 : 860;
+  tr = { t0: now, mode, dur, delay, bend, end: dur + (mode === 'fade' ? 0 : mode === 'rain' ? 880 : 560) };
+  decorT0 = now + (mode === 'fade' ? 120 : mode === 'rain' ? 1150 : 640);
+  render();
+}
+function buildGrid() {
+  grid = new Map();
+  cur.forEach((q, i) => { const k = Math.floor(q.x / 28) + Math.floor(q.y / 28) * 4096; let a = grid.get(k); if (!a) grid.set(k, a = []); a.push(i); });
+}
+function hit(x, y, reach) {
+  let best = -1, bd = 1e9;
+  const test = i => { const q = cur[i], d = Math.hypot(q.x - x, q.y - y) - q.r; if (d < bd && d < reach) { bd = d; best = i; } };
+  if (grid) { const gx = Math.floor(x / 28), gy = Math.floor(y / 28), s = Math.ceil((reach + 14) / 28);
+    for (let j = gy - s; j <= gy + s; j++) for (let i = gx - s; i <= gx + s; i++) { const a = grid.get(i + j * 4096); if (a) a.forEach(test); } }
+  else for (let i = 0; i < N; i++) test(i);
+  return best;
+}
+function render() { if (!raf && !document.hidden) raf = requestAnimationFrame(frame); }
+function frame(now) {
+  raf = 0; let busy = false;
+  if (tr) {
+    const el = now - tr.t0;
+    for (let i = 0; i < N; i++) {
+      const a = from[i], b = to[i], q = cur[i], t = (el - tr.delay[i]) / tr.dur;
+      if (tr.mode === 'fade') { const e = sstep(t); q.x = b.x; q.y = b.y; q.r = b.r; q.c = b.c; q.o = b.o; q.a = b.a * e; }
+      else if (tr.mode === 'rain') { const e = rainE(t); q.x = lerp(a.x, b.x, sstep(t)); q.y = lerp(a.y, b.y, e); q.r = b.r; q.c = b.c; q.o = b.o; q.a = 1; }
+      else { const s = spring(t), u = 1 - s, dx = b.x - a.x, dy = b.y - a.y, bx = (a.x + b.x) / 2 - dy * tr.bend[i], by = (a.y + b.y) / 2 + dx * tr.bend[i], k = clamp(s, 0, 1);
+        q.x = u * u * a.x + 2 * u * s * bx + s * s * b.x; q.y = u * u * a.y + 2 * u * s * by + s * s * b.y; q.r = Math.max(0.4, lerp(a.r, b.r, s));
+        q.c = a.c === b.c ? b.c : [lerp(a.c[0], b.c[0], k) | 0, lerp(a.c[1], b.c[1], k) | 0, lerp(a.c[2], b.c[2], k) | 0]; q.a = lerp(a.a, b.a, k); q.o = lerp(a.o, b.o, k); }
+    }
+    if (el >= tr.end) { cur = to.map(copy); tr = null; buildGrid(); } else busy = true;
+  }
+  const dp = clamp((now - decorT0) / 950, 0, 1), pf = 1 - clamp((now - prevT0) / 280, 0, 1);
+  if (dp < 1 || pf > 0) busy = true;
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0); ctx.clearRect(0, 0, W, H);
+  if (prevDecor && pf > 0) { ctx.save(); ctx.globalAlpha = pf; if (prevDecor.under) prevDecor.under(1); if (prevDecor.over) prevDecor.over(1); ctx.restore(); } else prevDecor = null;
+  if (tr && tr.mode === 'fade') { const e = 1 - sstep((now - tr.t0) / tr.dur); if (e > 0) from.forEach(q => { ctx.globalAlpha = q.a * e; ctx.fillStyle = rgba(q.c, 1); ctx.beginPath(); ctx.arc(q.x, q.y, q.r, 0, TAU); ctx.fill(); }); ctx.globalAlpha = 1; }
+  if (decor && decor.under && dp > 0) decor.under(dp);
+  const focus = hov >= 0 ? hov : pin, dim = hov >= 0 ? 0.55 : 1, near = new Set();
+  if (focus >= 0) { HH[P[focus].hh].m.forEach(i => near.add(i)); near.add(P[focus].bf); }
+  for (let i = 0; i < N; i++) {
+    const q = cur[i]; let a = q.a;
+    if (filter && !filter.has(i)) a *= 0.16; else if (dim < 1 && !near.has(i)) a *= dim;
+    if (a <= 0.004) continue;
+    ctx.globalAlpha = a; ctx.fillStyle = 'rgb(' + q.c[0] + ',' + q.c[1] + ',' + q.c[2] + ')'; ctx.beginPath(); ctx.arc(q.x, q.y, q.r, 0, TAU); ctx.fill();
+    if (q.o > 0.02) { ctx.strokeStyle = ink(q.o); ctx.lineWidth = 0.8; ctx.stroke(); }
+  }
+  ctx.globalAlpha = 1;
+  if (decor && decor.over && dp > 0) decor.over(dp);
+  if (filter && filter.size < 40) filter.forEach(i => { const q = cur[i]; ctx.strokeStyle = ink(0.8); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(q.x, q.y, q.r + 3, 0, TAU); ctx.stroke(); });
+  if (pin >= 0 && pin !== focus) ring(pin, 1);
+  if (focus >= 0) {
+    const p = P[focus], q = cur[focus], f = cur[p.bf];
+    ctx.lineCap = 'round'; ctx.strokeStyle = ink(0.7); ctx.lineWidth = 1;
+    HH[p.hh].m.forEach(i => { if (i === focus) return; const m = cur[i]; ctx.beginPath(); ctx.moveTo(q.x, q.y); ctx.lineTo(m.x, m.y); ctx.stroke(); });
+    const dx = f.x - q.x, dy = f.y - q.y; ctx.strokeStyle = rgba([222, 84, 92], 1); ctx.lineWidth = 1.7; if (!p.mutual) ctx.setLineDash([5, 5]);
+    ctx.beginPath(); ctx.moveTo(q.x, q.y); ctx.quadraticCurveTo((q.x + f.x) / 2 - dy * 0.14, (q.y + f.y) / 2 + dx * 0.14, f.x, f.y); ctx.stroke(); ctx.setLineDash([]);
+    HH[p.hh].m.forEach(i => { if (i === focus) return; const m = cur[i]; dot(m); ctx.strokeStyle = ink(0.85); ctx.lineWidth = 1.1; ctx.beginPath(); ctx.arc(m.x, m.y, Math.max(m.r, 3) + 2.2, 0, TAU); ctx.stroke(); });
+    dot(f, 1.25); ctx.strokeStyle = rgba([222, 84, 92], 1); ctx.lineWidth = 1.8; ctx.beginPath(); ctx.arc(f.x, f.y, Math.max(f.r * 1.25, 3.6) + 2.6, 0, TAU); ctx.stroke();
+    ring(focus, focus === pin ? 1 : 0);
+  }
+  placeCard(focus);
+  if (busy) render();
+}
+function dot(q, k) { ctx.fillStyle = 'rgb(' + q.c[0] + ',' + q.c[1] + ',' + q.c[2] + ')'; ctx.beginPath(); ctx.arc(q.x, q.y, Math.max(q.r, 2.6) * (k || 1), 0, TAU); ctx.fill(); }
+function ring(i, pinned) {
+  const q = cur[i], rr = Math.max(q.r * 1.5, 5);
+  ctx.fillStyle = '#FFF9F0'; ctx.beginPath(); ctx.arc(q.x, q.y, rr + 3.4, 0, TAU); ctx.fill();
+  ctx.fillStyle = 'rgb(' + q.c[0] + ',' + q.c[1] + ',' + q.c[2] + ')'; ctx.beginPath(); ctx.arc(q.x, q.y, rr, 0, TAU); ctx.fill();
+  ctx.strokeStyle = ink(1); ctx.lineWidth = pinned ? 2 : 1.4; ctx.beginPath(); ctx.arc(q.x, q.y, rr + 3.4, 0, TAU); ctx.stroke();
+  if (pinned) { ctx.lineWidth = 1; ctx.setLineDash([2, 3.5]); ctx.beginPath(); ctx.arc(q.x, q.y, rr + 7.5, 0, TAU); ctx.stroke(); ctx.setLineDash([]); }
+}
+
+/* ───────────── the card ───────────── */
+const card = document.getElementById('card'), $ = id => document.getElementById(id);
+const coarse = matchMedia('(pointer: coarse)').matches;
+function placeCard(focus) {
+  if (focus < 0) { if (lastFocus !== -1) { card.classList.remove('on'); lastFocus = -1; } return; }
+  const p = P[focus], state = focus + ':' + pin + ':' + V.seed;
+  if (state !== lastFocus) {
+    lastFocus = state;
+    $('cname').innerHTML = ''; $('cname').append(p.name, Object.assign(document.createElement('span'), { textContent: ', ' + ageText(p) + '.' }));
+    const n = HH[p.hh].m.length; $('cmeta').textContent = STREETS[p.street] + ' · ' + (n === 1 ? 'lives alone' : 'household of ' + nw(n));
+    $('cstory').textContent = story(p); $('cbf').textContent = friendLine(p);
+    $('cfoot').textContent = focus === pin ? 'Following through every question. ' + (coarse ? 'Tap' : 'Click') + ' the dot again to let go.' : (coarse ? 'Tap' : 'Click') + ' to follow through every question.';
+    const c = cur[focus].c; $('ctag').style.background = 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')';
+    card.classList.add('on');
+  }
+  const q = cur[focus], cw = card.offsetWidth, chh = card.offsetHeight, off = Math.max(q.r, 5) + 16; let x, y;
+  if (W >= 620) { const right = q.x + off + cw < W + 30; x = right ? q.x + off : q.x - off - cw; y = clamp(q.y - chh / 2, -20, Math.max(-20, H - chh + 26)); card.style.setProperty('--ox', right ? '0%' : '100%'); }
+  else { x = clamp(q.x - cw / 2, 0, W - cw); y = q.y < H * 0.52 ? q.y + off : q.y - off - chh; card.style.setProperty('--ox', '50%'); }
+  card.style.setProperty('--x', Math.round(x) + 'px'); card.style.setProperty('--y', Math.round(y) + 'px');
+}
+
+/* ───────────── headline, legend, insight ───────────── */
+let numNow = 0, numRaf = 0, swapT = 0;
+function countTo(target) {
+  cancelAnimationFrame(numRaf); const el = $('num'), a = numNow, t0 = performance.now(), dur = RM.matches ? 1 : 1300;
+  const step = now => { const t = clamp((now - t0) / dur, 0, 1), e = 1 - Math.pow(1 - t, 4); numNow = Math.round(lerp(a, target, e)); el.textContent = numNow; if (t < 1) numRaf = requestAnimationFrame(step); };
+  numRaf = requestAnimationFrame(step);
+}
+function fillText() {
+  const v = VIEWS[view];
+  $('phrase').textContent = v.phrase; $('sub').textContent = v.sub(); $('insight').textContent = v.insight();
+  const lg = $('legend'); lg.innerHTML = '';
+  (typeof v.legend === 'function' ? v.legend() : v.legend).forEach(l => { const li = document.createElement('li'), i = document.createElement('i'); if (l[2]) { i.className = 'ln'; i.style.borderColor = HEX[l[1]]; } else i.style.background = HEX[l[1]]; li.append(i, l[0]); lg.append(li); });
+  cv.setAttribute('aria-label', v.q + ' ' + v.n() + ' ' + v.phrase + '. ' + v.insight());
+}
+function announce(instant) {
+  const st = $('stage'); countTo(VIEWS[view].n()); clearTimeout(swapT);
+  if (instant) { fillText(); return; }
+  st.classList.add('swap'); swapT = setTimeout(() => { fillText(); st.classList.remove('swap'); }, 300);
+}
+
+/* ───────────── questions list ───────────── */
+const asks = $('asks'), qBtns = [];
+VIEWS.forEach((v, k) => {
+  const li = document.createElement('li'), b = document.createElement('button');
+  b.className = 'q'; b.type = 'button'; b.setAttribute('aria-pressed', k === 0 ? 'true' : 'false');
+  const d = ['M2 6 C30 2 52 9 84 5 S150 2 198 6', 'M2 5 C40 9 70 2 110 6 S170 8 198 4', 'M2 7 C26 3 66 8 96 4 S160 7 198 5'][k % 3];
+  b.innerHTML = '<span>' + v.q + '<svg viewBox="0 0 200 10" preserveAspectRatio="none" aria-hidden="true"><path vector-effect="non-scaling-stroke" d="' + d + '"/></svg></span>';
+  b.addEventListener('click', () => ask(k)); li.append(b); asks.append(li); qBtns.push(b);
+});
+function ask(k) {
+  if (k === view || !started) return;
+  view = k; qBtns.forEach((b, j) => b.setAttribute('aria-pressed', j === k ? 'true' : 'false'));
+  if (asks.scrollWidth > asks.clientWidth + 4) asks.scrollTo({ left: Math.max(0, qBtns[k].parentNode.offsetLeft - 28), behavior: RM.matches ? 'auto' : 'smooth' });
+  hov = -1; announce(false); go('move');
+}
+
+/* ───────────── pointer & keyboard ───────────── */
+const local = e => { const b = cv.getBoundingClientRect(); return [e.clientX - b.left, e.clientY - b.top]; };
+let down = null;
+cv.addEventListener('pointermove', e => { if (e.pointerType !== 'mouse') return; const [x, y] = local(e), h = hit(x, y, 9); cv.style.cursor = h >= 0 ? 'pointer' : 'default'; if (h !== hov) { hov = h; render(); } });
+cv.addEventListener('pointerleave', () => { if (hov >= 0) { hov = -1; render(); } });
+cv.addEventListener('pointerdown', e => { down = [e.clientX, e.clientY]; });
+cv.addEventListener('pointerup', e => {
+  if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 9) { down = null; return; } down = null;
+  const [x, y] = local(e), h = hit(x, y, e.pointerType === 'mouse' ? 9 : 20);
+  pin = h >= 0 && h !== pin ? h : -1; if (e.pointerType !== 'mouse') hov = -1; lastFocus = -2; render();
+});
+cv.addEventListener('keydown', e => {
+  const f = hov >= 0 ? hov : pin;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { hov = (f + 1 + N) % N; e.preventDefault(); }
+  else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { hov = (f - 1 + N) % N; e.preventDefault(); }
+  else if (e.key === 'Enter' || e.key === ' ') { if (f >= 0) pin = pin === f ? -1 : f; e.preventDefault(); }
+  else if (e.key === 'Escape') { hov = -1; pin = -1; }
+  else return;
+  lastFocus = -2; render();
+});
+cv.addEventListener('blur', () => { if (hov >= 0) { hov = -1; render(); } });
+
+/* ───────────── search ───────────── */
+const who = $('who'), hits = $('hits'); let found = [], act = 0;
+function showHits() {
+  const q = norm(who.value.trim()); hits.innerHTML = '';
+  if (!q) { filter = null; found = []; hits.classList.remove('on'); who.setAttribute('aria-expanded', 'false'); render(); return; }
+  found = P.filter(p => p.key.includes(q)).sort((a, b) => a.key.indexOf(q) - b.key.indexOf(q) || (a.key < b.key ? -1 : 1));
+  filter = new Set(found.map(p => p.i)); act = 0;
+  if (!found.length) { const li = document.createElement('li'); li.className = 'none'; li.textContent = 'Nobody by that name. Try the next village.'; hits.append(li); }
+  found.slice(0, 6).forEach((p, k) => { const li = document.createElement('li'), b = document.createElement('button'), i = document.createElement('i'), s = document.createElement('small'), c = gcol(p);
+    b.type = 'button'; b.setAttribute('role', 'option'); b.tabIndex = -1; if (k === 0) b.className = 'act'; i.style.background = 'rgb(' + c.join(',') + ')'; s.textContent = ageText(p).replace(' old', '') + ' · ' + STREETS[p.street];
+    b.append(i, p.name, s); b.addEventListener('pointerdown', ev => ev.preventDefault()); b.addEventListener('click', () => choose(p.i)); li.append(b); hits.append(li); });
+  hits.classList.add('on'); who.setAttribute('aria-expanded', 'true'); render();
+}
+function choose(i) {
+  pin = i; hov = -1; filter = null; who.value = P[i].name; hits.classList.remove('on'); who.setAttribute('aria-expanded', 'false'); lastFocus = -2; who.blur();
+  if (W < 620 || innerWidth <= 900) wrap.scrollIntoView({ block: 'center', behavior: RM.matches ? 'auto' : 'smooth' });
+  render();
+}
+who.addEventListener('input', showHits);
+who.addEventListener('focus', () => { if (who.value) { who.select(); showHits(); } });
+who.addEventListener('blur', () => { hits.classList.remove('on'); who.setAttribute('aria-expanded', 'false'); if (filter) { filter = null; render(); } });
+who.addEventListener('keydown', e => {
+  const n = Math.min(6, found.length);
+  if (e.key === 'ArrowDown' && n) { act = (act + 1) % n; e.preventDefault(); }
+  else if (e.key === 'ArrowUp' && n) { act = (act - 1 + n) % n; e.preventDefault(); }
+  else if (e.key === 'Enter') { if (n) choose(found[act].i); e.preventDefault(); return; }
+  else if (e.key === 'Escape') { who.value = ''; showHits(); return; }
+  else return;
+  [...hits.querySelectorAll('button')].forEach((b, k) => b.classList.toggle('act', k === act));
+});
+
+/* ───────────── re-roll ───────────── */
+let spin = 0;
+$('reroll').addEventListener('click', () => {
+  if (!started) return;
+  let s; do { s = 1000 + Math.floor(Math.random() * 9000); } while (s === V.seed);
+  V = makeVillage(s); P = V.P; HH = V.HH; S = V.S; pin = -1; hov = -1; filter = null; who.value = ''; lastFocus = -2;
+  $('seedlbl').textContent = 'Village No. ' + s; $('edition').textContent = 'No. ' + s;
+  spin += 360; $('reroll').querySelector('svg').style.transform = 'rotate(' + spin + 'deg)';
+  announce(false); go('move');
+});
+
+/* ───────────── sizing & start ───────────── */
+function size() {
+  const w = wrap.clientWidth, h = wrap.clientHeight; if (!w || !h) return false;
+  DPR = Math.min(2, window.devicePixelRatio || 1);
+  if (w === W && h === H && cv.width === Math.round(w * DPR)) return false;
+  W = w; H = h; cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR); return true;
+}
+function start() {
+  if (coarse) $('hint').textContent = 'Tap a dot to meet someone and follow them.';
+  fillText(); size(); cur = blank(); started = true; countTo(VIEWS[0].n());
+  if (RM.matches) go('snap'); else go('rain');
+  let rt = 0;
+  new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(() => {
+      if (!size()) return; lastFocus = -2;
+      if (!tr) { go('snap'); return; }
+      const L = VIEWS[view].lay(); to = L.pts; decor = L.decor; // re-aim dots that are still travelling
+      if (tr.mode === 'rain') from = to.map((q, i) => ({ x: q.x + (hash(i) - 0.5) * 26, y: -14 - hash(i * 3.1) * H * 0.9 - q.r, r: q.r, c: q.c, a: 1, o: q.o }));
+      render();
+    }, 90); }).observe(wrap);
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { hiddenAt = performance.now(); cancelAnimationFrame(raf); raf = 0; }
+  else { const d = performance.now() - hiddenAt; if (tr) tr.t0 += d; decorT0 += d; prevT0 += d; render(); }
+});
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+</script>
+</body>
+</html>

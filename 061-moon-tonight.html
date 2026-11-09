@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A0A0D">
+<title>The Moon Tonight</title>
+<style>
+:root{
+  --night:#0A0A0D;
+  --ivory:#E8E4D8;
+  --grey:#8F8B80;
+  --gold:#F2C879;
+  --rule:rgba(143,139,128,.28);
+  --serif:Didot,"Bodoni MT","Bodoni 72",Baskerville,"Baskerville Old Face",Georgia,"Times New Roman","Liberation Serif",serif;
+  --sans:"Gill Sans","Gill Sans MT","Helvetica Neue",Helvetica,Arial,"Liberation Sans",sans-serif;
+  --settle:cubic-bezier(.16,.84,.24,1);
+  --swing:cubic-bezier(.66,0,.18,1);
+  --D:max(150px,min(60vmin,calc(100vh - 372px)));
+}
+@supports (height:100dvh){
+  :root{--D:max(150px,min(60vmin,calc(100dvh - 372px)))}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--night);color:var(--ivory);-webkit-text-size-adjust:100%}
+body{
+  min-height:100vh;min-height:100dvh;
+  background:var(--night);
+  font-family:var(--sans);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;
+  -webkit-tap-highlight-color:transparent;
+}
+#sky{position:fixed;inset:0;width:100%;height:100%;z-index:0;opacity:0;transition:opacity 2.4s linear}
+body.ready #sky{opacity:1}
+
+.caps{
+  font:400 11px/1.5 var(--sans);
+  letter-spacing:.2em;text-transform:uppercase;
+  color:var(--grey);
+  font-variant-numeric:tabular-nums lining-nums;
+  font-feature-settings:"tnum" 1,"lnum" 1;
+}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;letter-spacing:inherit;text-transform:inherit}
+:focus{outline:none}
+:focus-visible{outline:1px solid var(--ivory);outline-offset:5px;border-radius:1px}
+
+.chrome{transition:opacity .9s var(--settle)}
+body.pre .chrome{opacity:0}
+body.moonlight .chrome{opacity:0;pointer-events:none;transition:opacity 1.1s var(--settle)}
+
+/* ---------- top ---------- */
+.top{
+  position:relative;z-index:3;
+  display:flex;justify-content:space-between;align-items:flex-start;gap:16px;
+  padding:22px 28px 0;
+  height:0;overflow:visible;
+}
+.mark{white-space:nowrap}
+.mark b{font-weight:400;color:var(--ivory)}
+.mark span{display:block;letter-spacing:.14em;opacity:.8;margin-top:3px}
+.ctl{display:flex;align-items:center;gap:22px;white-space:nowrap}
+.ctl button{position:relative;padding:4px 0;color:var(--grey);transition:color .35s var(--settle)}
+.ctl button:hover,.ctl button[aria-pressed="true"]{color:var(--ivory)}
+.ctl .txt{position:relative}
+.ctl .txt::after{
+  content:"";position:absolute;left:0;right:.2em;bottom:-3px;height:1px;background:var(--ivory);
+  transform:scaleX(0);transform-origin:left;transition:transform .5s var(--settle);
+}
+.ctl button:hover .txt::after{transform:scaleX(1)}
+.ctl svg{width:11px;height:11px;vertical-align:-1px;margin-right:8px;fill:currentColor;stroke:none}
+.hemi{display:flex;align-items:center;gap:0;border:1px solid var(--rule);border-radius:99px;padding:2px;position:relative}
+.hemi button{width:26px;height:20px;padding:0;text-align:center;letter-spacing:0;position:relative;z-index:1;border-radius:99px;transition:color .5s var(--settle)}
+.hemi button[aria-pressed="true"]{color:var(--night)}
+.hemi i{
+  position:absolute;top:2px;left:2px;width:26px;height:20px;border-radius:99px;background:var(--ivory);
+  transition:transform .7s var(--swing);
+}
+.hemi.south i{transform:translateX(26px)}
+kbd{font:inherit;display:inline-block;min-width:1.9em;padding:0 .45em;margin-left:9px;border:1px solid var(--rule);border-radius:2px;text-align:center;letter-spacing:.06em;color:var(--grey)}
+
+/* ---------- centre ---------- */
+main{
+  position:relative;z-index:2;flex:1 0 auto;
+  display:flex;flex-direction:column;align-items:center;
+  padding-top:clamp(18px,3.2vh,34px);
+}
+.moon{
+  position:relative;width:var(--D);height:var(--D);flex:none;
+  touch-action:none;cursor:none;
+  transition:transform 1.8s var(--swing);
+}
+.moon .spin{
+  position:absolute;left:-15%;top:-15%;width:130%;height:130%;
+  transition:transform 1.9s var(--swing);
+}
+.moon.south .spin{transform:rotate(180deg)}
+#moon{display:block;width:100%;height:100%;opacity:0;transition:opacity 1.1s linear}
+body.ready #moon{opacity:1}
+body.moonlight .moon{transform:translateY(var(--ml,0px)) scale(1.14)}
+
+.probe{position:absolute;left:0;top:0;pointer-events:none;opacity:0;transition:opacity .35s var(--settle);z-index:4}
+.probe.on{opacity:1}
+.probe .ring{
+  position:absolute;left:-9px;top:-9px;width:18px;height:18px;border:1px solid var(--ivory);border-radius:50%;
+  mix-blend-mode:difference;
+}
+.probe .ring::before,.probe .ring::after{content:"";position:absolute;background:var(--ivory)}
+.probe .ring::before{left:50%;top:-6px;width:1px;height:4px}
+.probe .ring::after{left:50%;bottom:-6px;width:1px;height:4px}
+.probe .say{
+  position:absolute;top:-9px;left:26px;white-space:nowrap;
+  background:var(--night);border:1px solid var(--rule);padding:5px 11px 4px;
+  color:var(--ivory);letter-spacing:.14em;
+}
+.probe .say::before{content:"";position:absolute;right:100%;top:8px;width:9px;height:1px;background:var(--rule)}
+.probe.left .say{left:auto;right:26px}
+.probe.left .say::before{right:auto;left:100%}
+.probe .say em{font-style:normal;color:var(--grey)}
+
+h1{
+  font:400 min(8.4vw,11.2vh)/1 var(--serif);
+  letter-spacing:-.022em;
+  color:var(--ivory);
+  white-space:nowrap;
+  margin-top:clamp(12px,2.4vh,26px);
+  font-kerning:normal;
+  text-rendering:optimizeLegibility;
+}
+h1 span{display:inline-block;white-space:pre}
+h1.settle span{
+  opacity:0;transform:translateY(.42em);
+  animation:settle 1.7s var(--settle) forwards;
+  animation-delay:calc(.5s + var(--i)*58ms);
+}
+@keyframes settle{
+  0%{opacity:0;transform:translateY(.42em) scaleY(1.12);letter-spacing:.14em}
+  55%{opacity:1}
+  100%{opacity:1;transform:none;letter-spacing:0}
+}
+h1.tick{animation:tick .55s var(--settle)}
+@keyframes tick{0%{opacity:.25;letter-spacing:.02em}100%{opacity:1}}
+
+.line{
+  font:italic 400 clamp(14px,1.25vw,17px)/1.45 var(--serif);
+  color:var(--grey);letter-spacing:.01em;
+  margin-top:clamp(8px,1.5vh,14px);
+  text-align:center;padding:0 22px;max-width:44em;
+  min-height:1.45em;
+  transition:opacity .5s var(--settle);
+}
+.line.swap{opacity:0}
+
+.data{display:flex;align-items:center;justify-content:center;margin-top:clamp(12px,2.1vh,20px);white-space:nowrap}
+.data>span{padding:1px 20px;border-left:1px solid var(--rule)}
+.data>span:first-child{border-left:0}
+.data b{font-weight:400;color:var(--ivory);margin-left:.7em;display:inline-block;text-align:left}
+#ill{min-width:4.2em}#age{min-width:6.6em}
+
+/* ---------- side columns ---------- */
+.side{
+  position:absolute;z-index:3;top:calc(clamp(18px,3.2vh,34px) + var(--D)/2);
+  transform:translateY(-50%);
+  width:max(170px,calc((100vw - var(--D))/2 - 120px));max-width:250px;
+}
+.side h2{font:inherit;letter-spacing:inherit;color:var(--grey);padding-bottom:9px;border-bottom:1px solid var(--rule);margin-bottom:4px}
+.side li{list-style:none;display:flex;justify-content:space-between;align-items:baseline;padding:7px 0 6px;border-bottom:1px solid rgba(143,139,128,.13)}
+.side li>span:first-child{color:var(--ivory)}
+.side.keys{left:28px}
+.side.keys li>span:first-child{color:var(--grey)}
+.side.keys kbd{margin:0 0 0 4px}
+.side.next{right:28px}
+.side.next li.full>span{color:var(--gold)}
+.side.next li small{font-size:inherit;opacity:.62;margin-left:.9em}
+.side p{margin-top:13px;letter-spacing:.12em;text-transform:none;font-size:11px;line-height:1.55;opacity:.85}
+
+/* ---------- strip ---------- */
+.strip{position:relative;z-index:3;flex:none;padding-bottom:max(8px,env(safe-area-inset-bottom))}
+.status{height:24px;display:flex;justify-content:center;align-items:center;gap:14px}
+#back{
+  display:inline-flex;align-items:center;gap:10px;padding:3px 2px;color:var(--ivory);
+  opacity:0;transform:translateY(5px);pointer-events:none;
+  transition:opacity .5s var(--settle),transform .5s var(--settle);
+}
+#back.on{opacity:1;transform:none;pointer-events:auto}
+#back i{width:7px;height:7px;border-radius:50%;background:var(--gold);display:block;transition:transform .5s var(--settle)}
+#back:hover i{transform:scale(1.55)}
+#back em{font-style:normal;color:var(--grey)}
+#hint{position:absolute;left:0;right:0;top:0;height:24px;display:flex;justify-content:center;align-items:center;transition:opacity .6s var(--settle);pointer-events:none}
+#hint.off{opacity:0}
+#hint svg{width:22px;height:7px;stroke:var(--grey);fill:none;stroke-width:1;margin:0 12px}
+.tape{position:relative;height:82px;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.tape.drag{cursor:grabbing}
+.tape canvas{display:block;width:100%;height:100%}
+.tape:focus-visible{outline:none;box-shadow:inset 0 1px 0 rgba(232,228,216,.5)}
+
+noscript p{position:relative;z-index:5;text-align:center;padding:40vh 24px 0;font:italic 18px/1.5 var(--serif);color:var(--grey)}
+
+.data i.k{font-style:normal}
+.tol{display:none;text-align:center;letter-spacing:.12em;text-transform:none;opacity:.8;margin-top:12px;padding:0 16px}
+
+/* ---------- small screens ---------- */
+@media (max-width:1020px){
+  :root{--D:max(140px,min(70vmin,calc(100vh - 480px)))}
+  @supports (height:100dvh){:root{--D:max(140px,min(70vmin,calc(100dvh - 480px)))}}
+  .top{height:auto;padding:14px 16px 0;align-items:center}
+  .mark span{display:none}
+  .ctl{gap:14px}
+  .ctl .lbl,.ctl kbd{display:none}
+  .ctl svg{width:13px;height:13px;margin:0}
+  .ctl button.ico{width:30px;height:30px;display:grid;place-items:center}
+  .side.keys{display:none}
+  .side.next{position:static;transform:none;width:auto;max-width:none;margin:clamp(12px,2.4vh,24px) auto 0;padding:0 16px;order:5}
+  .side.next h2,.side.next p{display:none}
+  .side.next ul{display:grid;grid-template-columns:repeat(4,auto);gap:0;justify-content:center}
+  .side.next li{display:block;border:0;border-left:1px solid var(--rule);padding:0 14px;text-align:center}
+  .side.next li:first-child{border-left:0}
+  .side.next li>span{display:block}
+  .side.next li small{display:none}
+  main{padding-top:14px;justify-content:center}
+  .moon{margin-top:auto}
+  .tol{margin-bottom:auto;order:6}
+  h1{font-size:min(11vw,9vh)}
+  body.moonlight .moon{transform:translateY(var(--ml,0px)) scale(1.3)}
+  .tol{display:block}
+}
+@media (max-width:520px){
+  .caps{font-size:10.5px;letter-spacing:.16em}
+  .data>span{padding:1px 10px}
+  .data i.k{display:none}
+  .data b{margin-left:0}
+  #ill{min-width:0}#age{min-width:0}
+  .side.next{padding:0 12px}
+  .side.next ul{grid-template-columns:repeat(2,1fr);row-gap:8px;max-width:340px;margin:0 auto}
+  .side.next li{display:flex;justify-content:space-between;gap:8px;padding:0 10px;text-align:left;white-space:nowrap}
+  .side.next li:nth-child(3){border-left:0}
+  #hint .kb{display:none}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:.01ms !important;animation-duration:.01ms !important;animation-delay:0s !important}
+}
+</style>
+</head>
+<body class="pre">
+<canvas id="sky" aria-hidden="true"></canvas>
+
+<header class="top chrome">
+  <p class="mark caps"><b>The Moon Tonight</b><span>a mean-month instrument</span></p>
+  <div class="ctl caps">
+    <div class="hemi" id="hemi" role="group" aria-label="Observer's hemisphere">
+      <i aria-hidden="true"></i>
+      <button type="button" id="hN" aria-pressed="true" aria-label="Northern hemisphere view" title="Northern sky">N</button>
+      <button type="button" id="hS" aria-pressed="false" aria-label="Southern hemisphere view" title="Southern sky">S</button>
+    </div>
+    <button type="button" id="play" class="ico" aria-pressed="false" aria-label="Play a month">
+      <svg viewBox="0 0 12 12" aria-hidden="true"><path id="playIcon" d="M2 1l9 5-9 5z"/></svg><span class="txt lbl" id="playLbl">Play a month</span>
+    </button>
+    <button type="button" id="ml" class="ico" aria-pressed="false" aria-label="Moonlight mode: hide all text">
+      <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M8.6 .9A5.4 5.4 0 1 0 11.2 8 4.4 4.4 0 0 1 8.6 .9z"/></svg><span class="txt lbl">Moonlight</span><kbd>M</kbd>
+    </button>
+  </div>
+</header>
+
+<main>
+  <div class="moon" id="moonBox">
+    <div class="spin"><canvas id="moon" role="img" aria-label="The Moon at its current phase"></canvas></div>
+    <div class="probe caps" id="probe" aria-hidden="true"><div class="ring"></div><div class="say" id="say"></div></div>
+  </div>
+  <h1 id="name" class="chrome" aria-live="off">&nbsp;</h1>
+  <p class="line chrome" id="line">&nbsp;</p>
+  <div class="data caps chrome">
+    <span><i class="k">Illuminated</i><b id="ill">&ndash;</b></span>
+    <span><i class="k">Age</i><b id="age">&ndash;</b></span>
+    <span><b id="date" style="margin-left:0">&ndash;</b></span>
+  </div>
+
+  <aside class="side keys caps chrome" aria-label="Keys">
+    <h2>Instrument</h2>
+    <ul>
+      <li><span>One day</span><span><kbd>&larr;</kbd><kbd>&rarr;</kbd></span></li>
+      <li><span>Six hours</span><span><kbd>&#8679;</kbd><kbd>&larr;</kbd><kbd>&rarr;</kbd></span></li>
+      <li><span>Play a month</span><span><kbd>Space</kbd></span></li>
+      <li><span>Tonight</span><span><kbd>T</kbd></span></li>
+      <li><span>Flip N / S</span><span><kbd>H</kbd></span></li>
+    </ul>
+    <p>Touch the lit ground to read the height of the Sun above it.</p>
+  </aside>
+
+  <aside class="side next caps chrome" aria-label="Next phases">
+    <h2>Next</h2>
+    <ul id="next"></ul>
+    <p>Counted from the mean month of 29.530589 days. Phase times are approximate, good to within half a day.</p>
+  </aside>
+  <p class="tol caps chrome">Phase times approximate, to within half a day.</p>
+</main>
+
+<footer class="strip chrome">
+  <div class="status caps">
+    <div id="hint"><span>Drag the days</span><svg viewBox="0 0 22 7" aria-hidden="true"><path d="M4 .5L1 3.5l3 3M1 3.5h20M18 .5l3 3-3 3"/></svg><span class="kb">or use the arrow keys</span></div>
+    <button type="button" id="back" aria-label="Return to tonight"><i></i><span>Return to tonight</span><em id="off"></em></button>
+  </div>
+  <div class="tape" id="tape" role="slider" tabindex="0" aria-label="Date shown, one moon per day" aria-valuemin="-100000" aria-valuemax="100000" aria-valuenow="0" aria-valuetext="Tonight">
+    <canvas id="tapeC" aria-hidden="true"></canvas>
+  </div>
+</footer>
+
+<noscript><p>The Moon is up there regardless. This instrument needs scripting to work out where.</p></noscript>
+
+<script>
+(function(){
+'use strict';
+
+/* ================= the model ================= */
+var SYN = 29.530588853, DAY = 864e5, TAU = Math.PI*2;
+var EPOCH = (2451550.1 - 2440587.5) * DAY;          /* new moon, 2000 Jan 6 18:14 UTC */
+var SYN_MS = SYN * DAY, QTR = SYN_MS / 4;
+
+function ageAt(ms){ var a = ((ms - EPOCH) / DAY) % SYN; return a < 0 ? a + SYN : a; }
+function litAt(ms){ return (1 - Math.cos(ageAt(ms) / SYN * TAU)) / 2; }
+
+var NAMES = ['New Moon','Waxing Crescent','First Quarter','Waxing Gibbous','Full Moon','Waning Gibbous','Last Quarter','Waning Crescent'];
+var LINES = [
+  'Nothing to see. It is up there all day, lost beside the Sun.',
+  'Look west after sunset. The dark part is lit by us.',
+  'Half a disc, high at dusk and gone by midnight. Its shadows are at their longest.',
+  'Already up before dark, and a little brighter every evening.',
+  'Rises at sunset, sets at sunrise, keeps the whole night.',
+  'Rises later each night, by about fifty minutes. Stay up for it.',
+  'Rises near midnight and lingers, pale, into the morning.',
+  'Look east before dawn. A thin curve, then the Sun takes it back.'
+];
+var QNAME = ['New','First quarter','Full','Last quarter'];
+var QSHORT = ['New','First Qtr','Full','Last Qtr'];
+var WD = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+var MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+/* ================= helpers ================= */
+function $(id){ return document.getElementById(id); }
+function clamp(v,a,b){ return v<a?a:v>b?b:v; }
+function sstep(a,b,x){ var t=clamp((x-a)/(b-a),0,1); return t*t*(3-2*t); }
+function rng(seed){ var s=seed>>>0; return function(){ s=(s+0x6D2B79F5)|0; var t=Math.imul(s^(s>>>15),1|s); t=(t+Math.imul(t^(t>>>7),61|t))^t; return ((t^(t>>>14))>>>0)/4294967296; }; }
+function pad2(n){ return n<10?'0'+n:''+n; }
+
+var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+var south = false;
+try{ south = localStorage.getItem('moon-hemisphere') === 'S'; }catch(e){}
+
+/* ================= lattice noise ================= */
+var noise = (function(){
+  var r = rng(1969), perm = new Uint8Array(512), val = new Float32Array(256), i, j, t, p = [];
+  for(i=0;i<256;i++){ p[i]=i; val[i]=r(); }
+  for(i=255;i>0;i--){ j=(r()*(i+1))|0; t=p[i]; p[i]=p[j]; p[j]=t; }
+  for(i=0;i<512;i++) perm[i]=p[i&255];
+  return function(x,y,z){
+    var xi=Math.floor(x), yi=Math.floor(y), zi=Math.floor(z);
+    var xf=x-xi, yf=y-yi, zf=z-zi;
+    xi&=255; yi&=255; zi&=255;
+    var u=xf*xf*(3-2*xf), v=yf*yf*(3-2*yf), w=zf*zf*(3-2*zf);
+    var A=perm[xi]+yi, B=perm[xi+1]+yi;
+    var AA=perm[A]+zi, AB=perm[A+1]+zi, BA=perm[B]+zi, BB=perm[B+1]+zi;
+    var a=val[perm[AA]], b=val[perm[BA]], c=val[perm[AB]], d=val[perm[BB]];
+    var e=val[perm[AA+1]], f=val[perm[BA+1]], g=val[perm[AB+1]], h=val[perm[BB+1]];
+    var l1=a+(b-a)*u, l2=c+(d-c)*u, l3=e+(f-e)*u, l4=g+(h-g)*u;
+    var m1=l1+(l2-l1)*v, m2=l3+(l4-l3)*v;
+    return m1+(m2-m1)*w;
+  };
+})();
+
+/* ================= the surface (fixed seed) ================= */
+/* seas: x right, y up on the near face, radius in lunar radii */
+var SEAS = [
+  [-.27,.50,.31],[.27,.46,.19],[.45,.17,.21],[.36,.30,.12],[.80,.29,.10],[.73,-.07,.14],
+  [.51,-.27,.10],[-.66,.22,.29],[-.60,-.07,.20],[-.53,.50,.19],[-.21,-.36,.18],[-.58,-.41,.11],
+  [-.38,-.12,.15],[-.27,.80,.085],[-.09,.83,.085],[.09,.83,.085],[.26,.78,.075],[.06,.23,.07],[-.05,.02,.07],
+  [-.30,-.26,.10],[.58,.03,.10]
+];
+(function(){ for(var i=0;i<SEAS.length;i++){ var s=SEAS[i]; s[3]=Math.sqrt(Math.max(0,1-s[0]*s[0]-s[1]*s[1])); } })();
+function seaAt(x,y,z,w){
+  var m=0, i, s, dx, dy, dz, d, v;
+  for(i=0;i<SEAS.length;i++){
+    s=SEAS[i]; dx=x-s[0]; dy=y-s[1]; dz=z-s[3];
+    d=(dx*dx+dy*dy+dz*dz)/(s[2]*s[2]);
+    if(d>4.6) continue;
+    m+=Math.exp(-1.22*d);
+  }
+  return sstep(.22,.52,m+w);
+}
+function warpAt(x,y,z){ return (noise(x*2.6+7.1,y*2.6+3.3,z*2.6+1.7)*.36+noise(x*6.1+2.2,y*6.1+9.4,z*6.1+5.5)*.3+noise(x*14+4.2,y*14+1.4,z*14+8.5)*.2+noise(x*33+6.6,y*33+2.9,z*33+3.1)*.14-.5)*.62; }
+
+var CRATERS = (function(){
+  var r = rng(4061969), list = [], i, x, y, z, a, rad, m, q;
+  /* young, rayed craters */
+  var young = [[-.12,-.70,.040,1.05,1],[-.34,.16,.043,.40,.8],[-.62,.13,.017,.24,.8],[-.69,.40,.019,.18,1],[.63,-.43,.016,.26,.7],[.71,.25,.013,.17,.8],[.22,-.52,.012,.12,.6],[.05,.62,.014,.13,.5]];
+  for(i=0;i<young.length;i++){
+    q=young[i]; z=Math.sqrt(1-q[0]*q[0]-q[1]*q[1]);
+    list.push({x:q[0],y:q[1],z:z,r:q[2],f:1,el:.02,ea:0,ray:q[3],rs:q[4],k:q[2]*.2});
+  }
+  var n=0, guard=0;
+  while(n<2500 && guard++<30000){
+    z=.03+r()*.97; a=r()*TAU; q=Math.sqrt(1-z*z); x=q*Math.cos(a); y=q*Math.sin(a);
+    rad=.0050*Math.pow(1-r()*.9975,-1/2.0); if(rad>.105) rad=.105;
+    m=seaAt(x,y,z,warpAt(x,y,z));
+    if(m>.45 && (r()<.84 || rad>.03)) continue;
+    if(y>-.1 && rad>.07 && r()<.6) continue;
+    list.push({x:x,y:y,z:z,r:rad,f:.3+.7*Math.pow(r(),1.4),el:(r()-.5)*.16,ea:r()*Math.PI,ray:0,rs:0,k:rad*(.45+r())});
+    n++;
+  }
+  list.sort(function(p,q){ return q.k-p.k; });
+  return list;
+})();
+
+/* ================= baking the height / normal buffers ================= */
+var N=0, R=0, C=0, PX, PZ, NX, NZ, ALB, AL, XA, XB, img, off, offCtx;
+var moonC=$('moon'), moonCtx=moonC.getContext('2d'), b1=document.createElement('canvas'), b2=document.createElement('canvas');
+var PADF=.15, M=0, padPx=0;
+
+function bake(n){
+  N=n; C=N/2; R=N/2-1.5;
+  var size=N*N, H=new Float32Array(size), Z=new Float32Array(size);
+  PX=new Float32Array(size); PZ=new Float32Array(size); NX=new Float32Array(size); NZ=new Float32Array(size);
+  ALB=new Float32Array(size); AL=new Uint8Array(size); XA=new Int32Array(N); XB=new Int32Array(N);
+  var i,j,idx,x,y,z,r2,rr,a,k,w,m,n1,n2,n3,n4,n5,det;
+
+  for(j=0;j<N;j++){
+    y=-(j+.5-C)/R; XA[j]=N; XB[j]=-1;
+    for(i=0;i<N;i++){
+      x=(i+.5-C)/R; r2=x*x+y*y; rr=Math.sqrt(r2);
+      a=(1-rr)*R+.5; idx=j*N+i;
+      if(a<=0) continue;
+      AL[idx]=a>=1?255:(a*255)|0;
+      if(i<XA[j]) XA[j]=i; XB[j]=i;
+      var yy=y;
+      if(r2>.9992){ k=Math.sqrt(.9992)/rr; x*=k; yy=y*k; r2=.9992; }
+      z=Math.sqrt(1-r2); Z[idx]=z;
+      w=warpAt(x,yy,z); m=seaAt(x,yy,z,w);
+      n1=noise(x*4+11,yy*4+5,z*4+2); n2=noise(x*9+3,yy*9+8,z*9+6); n3=noise(x*19+1,yy*19+4,z*19+7);
+      n4=noise(x*41+6,yy*41+2,z*41+9); n5=noise(x*88+4,yy*88+7,z*88+3);
+      det=n1*.4+n2*.3+n3*.2+n4*.1; det=clamp((det-.5)*1.7+.5,0,1);
+      ALB[idx]=(.69+.36*det)*(1-m)+(.33+.26*det+.06*n5)*m;
+      H[idx]=(1-m*.86)*((n2-.5)*.0034+(n3-.5)*.0011+(n4-.5)*.00042+(n5-.5)*.00016)+(n1-.5)*.002-m*.0012;
+    }
+  }
+
+  /* craters: oldest and largest first, each softening what lay beneath */
+  var ci,c,ext,i0,i1,j0,j1,dx,dy,dz,d2,d,dd,p,h,dp,rim,ca,sa,qq,er,keep,inv;
+  for(ci=0;ci<CRATERS.length;ci++){
+    c=CRATERS[ci]; if(c.r*R<.9) continue;
+    ext=2.5*c.r; inv=1/c.r;
+    i0=Math.max(0,Math.floor(C+(c.x-ext)*R)); i1=Math.min(N-1,Math.ceil(C+(c.x+ext)*R));
+    j0=Math.max(0,Math.floor(C-(c.y+ext)*R)); j1=Math.min(N-1,Math.ceil(C-(c.y-ext)*R));
+    var big=c.r>.034, pw=big?3.6:2;
+    dp=c.r*c.f*(big?.115:.215)*(c.r>.07?.8:1); rim=dp*(big?.3:.24);
+    ca=Math.cos(c.ea); sa=Math.sin(c.ea);
+    for(j=j0;j<=j1;j++){
+      y=-(j+.5-C)/R; dy=y-c.y;
+      for(i=i0;i<=i1;i++){
+        idx=j*N+i; if(!AL[idx]) continue;
+        x=(i+.5-C)/R; dx=x-c.x; dz=Z[idx]-c.z;
+        dd=dx*dx+dy*dy; d2=(dd+dz*dz)*inv*inv;
+        if(d2>6.2) continue;
+        qq=dx*ca+dy*sa; er=1+c.el*(2*qq*qq/(dd+1e-9)-1);
+        d=Math.sqrt(d2)*er;
+        if(d<1){
+          p=pw===2?d*d:Math.pow(d,pw);
+          h=-dp+(dp+rim)*p;
+          if(c.r>.046) h+=dp*.55*Math.exp(-d*d/.022);
+          keep=1-.8*c.f*(1-sstep(.75,1,d));
+          ALB[idx]+=c.f*c.f*.07*(d>.55?1:d/.55)+(c.ray?.1:0)-(big?.03*(1-c.f):0);
+        }else{
+          h=rim*Math.exp(-(d-1)/.34)*(1-sstep(1.9,2.45,d));
+          keep=1-.3*c.f*(1-sstep(1,1.5,d));
+          if(d<1.7) ALB[idx]+=c.f*c.f*.07*(1.7-d)/.7;
+        }
+        H[idx]=H[idx]*keep+h;
+      }
+    }
+  }
+
+  /* bright ejecta rays around the few young craters */
+  var rr2=rng(7711), TAB=720, S=new Float32Array(TAB), L=new Float32Array(TAB), s,t,g,ang,e1x,e1z,e2x,e2y,e2z,len,u,v,ai,inten;
+  for(ci=0;ci<CRATERS.length;ci++){
+    c=CRATERS[ci]; if(!c.ray) continue;
+    S.fill(0); L.fill(0);
+    var spokes=13+((rr2()*9)|0);
+    for(s=0;s<spokes;s++){
+      var a0=rr2()*TAB, wd=1.4+rr2()*4.2, st=.35+.65*rr2(), ln=c.ray*(.3+.7*rr2()*rr2());
+      for(t=-24;t<=24;t++){
+        g=Math.exp(-t*t/(wd*wd)); k=((Math.round(a0)+t)%TAB+TAB)%TAB;
+        if(st*g>S[k]) S[k]=st*g; if(ln*g>L[k]) L[k]=ln*g;
+      }
+    }
+    len=Math.sqrt(c.x*c.x+c.z*c.z)||1; e1x=c.z/len; e1z=-c.x/len;
+    e2x=c.y*e1z; e2y=c.z*e1x-c.x*e1z; e2z=-c.y*e1x;
+    ext=c.ray*1.05;
+    i0=Math.max(0,Math.floor(C+(c.x-ext)*R)); i1=Math.min(N-1,Math.ceil(C+(c.x+ext)*R));
+    j0=Math.max(0,Math.floor(C-(c.y+ext)*R)); j1=Math.min(N-1,Math.ceil(C-(c.y-ext)*R));
+    for(j=j0;j<=j1;j++){
+      y=-(j+.5-C)/R; dy=y-c.y;
+      for(i=i0;i<=i1;i++){
+        idx=j*N+i; if(!AL[idx]) continue;
+        x=(i+.5-C)/R; dx=x-c.x; dz=Z[idx]-c.z;
+        d=Math.sqrt(dx*dx+dy*dy+dz*dz);
+        if(d>ext||d<c.r*.98) continue;
+        u=dx*e1x+dz*e1z; v=dx*e2x+dy*e2y+dz*e2z;
+        ang=Math.atan2(v,u)/TAU; if(ang<0) ang+=1;
+        ai=(ang*TAB)|0; if(ai>=TAB) ai=TAB-1;
+        inten=S[ai]*Math.exp(-(d-c.r)/(L[ai]*.42+.004))*sstep(c.r,c.r*1.5,d)
+             +.4*Math.exp(-(d-c.r)/(c.r*1.1));
+        inten*=.3+1.3*noise(x*38+ci,y*38,Z[idx]*38);
+        ALB[idx]+=.22*c.rs*(inten>1?1:inten);
+      }
+    }
+  }
+
+  /* positions and perturbed normals */
+  var hx,hy,zc,fz,ax,az,bx,by,bz,ay,nx,ny,nz,l,hh,sc=R/2;
+  for(j=0;j<N;j++){
+    y=-(j+.5-C)/R;
+    for(i=XA[j];i<=XB[j];i++){
+      idx=j*N+i; if(!AL[idx]) continue;
+      x=(i+.5-C)/R; z=Z[idx]; hh=H[idx];
+      r2=x*x+y*y; var xs=x, ys=y;
+      if(r2>.9992){ k=Math.sqrt(.9992/r2); xs=x*k; ys=y*k; }
+      hx=((i<N-1&&AL[idx+1]?H[idx+1]:hh)-(i>0&&AL[idx-1]?H[idx-1]:hh))*sc;
+      hy=((j>0&&AL[idx-N]?H[idx-N]:hh)-(j<N-1&&AL[idx+N]?H[idx+N]:hh))*sc;
+      fz=sstep(.04,.3,z); hx*=fz; hy*=fz;
+      zc=z<.07?.07:z;
+      ax=(1+hh)+xs*hx; ay=ys*hx; az=-(1+hh)*xs/zc+z*hx;
+      bx=xs*hy; by=(1+hh)+ys*hy; bz=-(1+hh)*ys/zc+z*hy;
+      nx=ay*bz-az*by; ny=az*bx-ax*bz; nz=ax*by-ay*bx;
+      l=1/Math.sqrt(nx*nx+ny*ny+nz*nz);
+      NX[idx]=nx*l; NZ[idx]=nz*l;
+      PX[idx]=xs*(1+hh*fz); PZ[idx]=z*(1+hh*fz);
+      a=ALB[idx]; ALB[idx]=a<.3?.3:a>1.16?1.16:a;
+    }
+  }
+
+  off=document.createElement('canvas'); off.width=off.height=N; offCtx=off.getContext('2d');
+  img=offCtx.createImageData(N,N);
+  padPx=Math.round(N*PADF); M=N+padPx*2;
+  moonC.width=moonC.height=M;
+  b1.width=b1.height=Math.ceil(M/9); b2.width=b2.height=Math.ceil(M/30);
+}
+
+/* ================= shading: runs only when the phase moves ================= */
+var LUT=(function(){ var n=2048,t=new Uint8Array(n),i; for(i=0;i<n;i++) t[i]=Math.round(246*Math.min(1,Math.pow((i/(n-1))*2/1.13,.86))); return t; })();
+var shadedAt=NaN;
+
+function shade(phi){
+  shadedAt=phi;
+  var sx=Math.sin(phi), sz=-Math.cos(phi);
+  var E=.125*Math.pow((1+Math.cos(phi))/2,2);
+  var eR=E*255*.60, eG=E*255*.68, eB=E*255*.88;
+  var data=img.data, soft=1/.0019, j,i,a,b,i0,y,rho,row,idx,o,t,tmax,sh,mu0,mu,I,al,v,ab;
+  for(j=0;j<N;j++){
+    a=XA[j]; b=XB[j]; if(b<a) continue;
+    y=(j+.5-C)/R; rho=Math.sqrt(Math.max(0,1-y*y)); row=j*N;
+    if(sz>0){ i0=Math.round(C+sx*rho*R-.5); i0=i0<a?a:i0>b?b:i0; }
+    else i0=sx>=0?b:a-1;
+    tmax=-1e9;
+    for(i=i0;i>=a;i--){
+      idx=row+i; o=idx<<2; al=AL[idx]; ab=ALB[idx];
+      t=PZ[idx]*sx-PX[idx]*sz;
+      sh=1-(tmax-t)*soft; if(t>tmax) tmax=t;
+      mu0=NX[idx]*sx+NZ[idx]*sz;
+      if(sh>0&&mu0>0){ if(sh>1)sh=1; mu=NZ[idx]; if(mu<.04)mu=.04; I=mu0/(mu0+mu); if(I>.5)I=.5+(I-.5)*.32; I*=ab*sh; v=LUT[I>=1?2047:(I*2047)|0]; } else v=0;
+      data[o]=10+v+ab*eR; data[o+1]=10+v*.983+ab*eG; data[o+2]=13+v*.931+ab*eB; data[o+3]=al;
+    }
+    tmax=-1e9;
+    for(i=i0+1;i<=b;i++){
+      idx=row+i; o=idx<<2; al=AL[idx]; ab=ALB[idx];
+      t=PX[idx]*sz-PZ[idx]*sx;
+      sh=1-(tmax-t)*soft; if(t>tmax) tmax=t;
+      mu0=NX[idx]*sx+NZ[idx]*sz;
+      if(sh>0&&mu0>0){ if(sh>1)sh=1; mu=NZ[idx]; if(mu<.04)mu=.04; I=mu0/(mu0+mu); if(I>.5)I=.5+(I-.5)*.32; I*=ab*sh; v=LUT[I>=1?2047:(I*2047)|0]; } else v=0;
+      data[o]=10+v+ab*eR; data[o+1]=10+v*.983+ab*eG; data[o+2]=13+v*.931+ab*eB; data[o+3]=al;
+    }
+  }
+  offCtx.putImageData(img,0,0);
+
+  /* a faint veil of scattered light beside the lit limb */
+  var c1=b1.getContext('2d'), c2=b2.getContext('2d'), s1=b1.width/M, s2=b2.width/M;
+  c1.clearRect(0,0,b1.width,b1.height); c1.imageSmoothingQuality='high';
+  c1.drawImage(off,padPx*s1,padPx*s1,N*s1,N*s1);
+  c2.clearRect(0,0,b2.width,b2.height); c2.imageSmoothingQuality='high';
+  c2.drawImage(b1,0,0,b2.width,b2.height);
+  moonCtx.clearRect(0,0,M,M);
+  moonCtx.imageSmoothingEnabled=true; moonCtx.imageSmoothingQuality='high';
+  moonCtx.globalAlpha=.13; moonCtx.drawImage(b2,0,0,M,M);
+  moonCtx.globalAlpha=.09; moonCtx.drawImage(b1,0,0,M,M);
+  moonCtx.globalAlpha=1; moonCtx.drawImage(off,padPx,padPx);
+}
+
+/* ================= the fixed stars ================= */
+var sky=$('sky'), skyCtx=sky.getContext('2d');
+function drawSky(){
+  var d=Math.min(2,window.devicePixelRatio||1), w=window.innerWidth, h=window.innerHeight;
+  sky.width=Math.round(w*d); sky.height=Math.round(h*d);
+  skyCtx.setTransform(d,0,0,d,0,0); skyCtx.clearRect(0,0,w,h);
+  var r=rng(1610), n=Math.min(190,Math.round(w*h/7400)), i, x, y, m, s;
+  for(i=0;i<n;i++){
+    x=r()*w; y=r()*h; m=Math.pow(r(),3.2); s=.38+m*.85;
+    skyCtx.globalAlpha=.2+m*.75+r()*.12;
+    skyCtx.fillStyle=r()<.22?'#8F8B80':'#E8E4D8';
+    skyCtx.beginPath(); skyCtx.arc(x,y,s,0,TAU); skyCtx.fill();
+  }
+  skyCtx.globalAlpha=1;
+}
+
+/* ================= the month strip ================= */
+var tape=$('tape'), tapeC=$('tapeC'), tctx=tapeC.getContext('2d'), tW=0, tH=0, pitch=36, tDpr=1;
+function sizeTape(){
+  tDpr=Math.min(2,window.devicePixelRatio||1); tW=tape.clientWidth; tH=tape.clientHeight;
+  tapeC.width=Math.round(tW*tDpr); tapeC.height=Math.round(tH*tDpr);
+  pitch=clamp(tW/33,25,40);
+}
+function glyph(ctx,x,y,r,frac,flip){
+  var phi=frac*TAU, waning=frac>.5, c=Math.cos(phi), rx=Math.abs(c)*r, dir=(waning?-1:1)*(flip?-1:1);
+  ctx.save(); ctx.translate(x,y); ctx.scale(dir,1);
+  ctx.beginPath(); ctx.arc(0,0,r,-Math.PI/2,Math.PI/2,false);
+  ctx.ellipse(0,0,Math.max(rx,.01),r,0,Math.PI/2,Math.PI*1.5,c<0?false:true);
+  ctx.closePath(); ctx.fill(); ctx.restore();
+}
+function dayKey(d){ return d.getFullYear()*10000+d.getMonth()*100+d.getDate(); }
+function setSpacing(ctx,v){ if('letterSpacing' in ctx) ctx.letterSpacing=v; }
+
+function drawTape(T,now,appear){
+  var ctx=tctx, cx=tW/2, half=Math.ceil(tW/2/pitch)+1, d0=new Date(T), k, day, t, x, fade, near, r, key, ev, frac;
+  var r0=pitch<30?7:8.5, gy=28, small=tW<520;
+  ctx.setTransform(tDpr,0,0,tDpr,0,0); ctx.clearRect(0,0,tW,tH);
+
+  /* principal phases falling inside the window */
+  var evs={}, q0=Math.floor((T-(half+2)*DAY-EPOCH)/QTR), q1=Math.ceil((T+(half+2)*DAY-EPOCH)/QTR), q, tq, nextFull=null;
+  for(q=q0;q<=q1;q++){ tq=EPOCH+q*QTR; var kind=((q%4)+4)%4; evs[dayKey(new Date(tq))]={kind:kind,t:tq}; }
+  nextFull=EPOCH+(Math.ceil((T-EPOCH-2*QTR)/SYN_MS)*SYN_MS)+2*QTR;
+  var todayKey=dayKey(new Date(now));
+
+  ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+  for(k=-half;k<=half;k++){
+    day=new Date(d0.getFullYear(),d0.getMonth(),d0.getDate()+k,12);
+    t=day.getTime(); x=cx+(t-T)/DAY*pitch;
+    fade=Math.cos(clamp(Math.abs(x-cx)/(tW/2+pitch),0,1)*Math.PI/2); fade=Math.pow(fade,.8);
+    if(appear<1){ fade*=clamp(appear*2.2-Math.abs(k)/half*1.2,0,1); }
+    if(fade<=.01) continue;
+    near=Math.exp(-Math.pow((x-cx)/(pitch*1.15),2)); r=r0*(1+.26*near);
+    frac=ageAt(t)/SYN; key=dayKey(day); ev=evs[key];
+
+    ctx.globalAlpha=fade*.34; ctx.strokeStyle='#8F8B80'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.arc(x,gy,r,0,TAU); ctx.stroke();
+    ctx.globalAlpha=fade*(.8+.2*near); ctx.fillStyle='#E8E4D8';
+    glyph(ctx,x,gy,r,frac,south);
+
+    if(key===todayKey){
+      ctx.globalAlpha=fade; ctx.strokeStyle='#F2C879'; ctx.lineWidth=1.25;
+      ctx.beginPath(); ctx.arc(x,gy,r+4.5,0,TAU); ctx.stroke();
+    }
+    var gold=ev&&ev.kind===2&&Math.abs(ev.t-nextFull)<DAY;
+    ctx.font='400 '+(small?9.5:10)+'px "Gill Sans","Gill Sans MT","Helvetica Neue",Helvetica,Arial,sans-serif';
+    setSpacing(ctx,'0.06em');
+    ctx.fillStyle=gold?'#F2C879':ev?'#E8E4D8':'#8F8B80';
+    ctx.globalAlpha=fade*(ev?1:(key===todayKey?.95:.5+.4*near));
+    ctx.fillText(''+day.getDate(),x,gy+26);
+    if(ev){
+      setSpacing(ctx,'0.18em');
+      ctx.font='400 '+(small?9:9.5)+'px "Gill Sans","Gill Sans MT","Helvetica Neue",Helvetica,Arial,sans-serif';
+      ctx.fillStyle=gold?'#F2C879':'#8F8B80'; ctx.globalAlpha=fade;
+      ctx.fillText((QSHORT[ev.kind]+' · '+MO[day.getMonth()]).toUpperCase(),x,gy+42);
+    }
+  }
+  /* index: the moment shown */
+  ctx.globalAlpha=appear<1?clamp(appear*2,0,1):1; ctx.fillStyle='#E8E4D8';
+  ctx.fillRect(Math.round(cx)-.5,0,1,9);
+  ctx.globalAlpha=1;
+}
+
+/* ================= readouts ================= */
+var elName=$('name'), elLine=$('line'), elIll=$('ill'), elAge=$('age'), elDate=$('date'), elNext=$('next'), elBack=$('back'), elOff=$('off'), elHint=$('hint');
+var cache={}, lineTimer=0, fav=null, favFrac=-1;
+function put(el,key,str){ if(cache[key]!==str){ cache[key]=str; el.textContent=str; return true; } return false; }
+
+function setName(str,settle){
+  if(cache.name===str) return; cache.name=str;
+  elName.textContent=''; elName.setAttribute('aria-label',str);
+  var i,s;
+  for(i=0;i<str.length;i++){ s=document.createElement('span'); s.textContent=str[i]; s.style.setProperty('--i',i); s.setAttribute('aria-hidden','true'); elName.appendChild(s); }
+  elName.classList.remove('tick','settle');
+  if(settle) elName.classList.add('settle');
+  else if(!reduced.matches){ void elName.offsetWidth; elName.classList.add('tick'); }
+}
+function setLine(str,instant){
+  if(cache.line===str) return; cache.line=str;
+  clearTimeout(lineTimer);
+  if(instant||reduced.matches){ elLine.textContent=str; elLine.classList.remove('swap'); return; }
+  elLine.classList.add('swap');
+  lineTimer=setTimeout(function(){ elLine.textContent=str; elLine.classList.remove('swap'); },260);
+}
+function fmtDay(d){ return d.getDate()+' '+MO[d.getMonth()]; }
+function describeOffset(ms){
+  var a=Math.abs(ms), dir=ms>0?' ahead':' ago', n;
+  if(a<36e5*1.5){ n=Math.max(1,Math.round(a/6e4)); return n+' min'+dir; }
+  if(a<DAY*2){ n=Math.round(a/36e5); return n+' hours'+dir; }
+  n=Math.round(a/DAY); return n+' days'+dir;
+}
+function setFavicon(frac){
+  if(Math.abs(frac-favFrac)<.012) return; favFrac=frac;
+  try{
+    var c=document.createElement('canvas'); c.width=c.height=32; var x=c.getContext('2d');
+    x.fillStyle='#0A0A0D'; x.beginPath(); x.arc(16,16,16,0,TAU); x.fill();
+    x.strokeStyle='rgba(143,139,128,.7)'; x.lineWidth=1; x.beginPath(); x.arc(16,16,12.5,0,TAU); x.stroke();
+    x.fillStyle='#E8E4D8'; glyph(x,16,16,12.5,frac,south);
+    if(!fav){ fav=document.createElement('link'); fav.rel='icon'; document.head.appendChild(fav); }
+    fav.href=c.toDataURL('image/png');
+  }catch(e){}
+}
+
+function readouts(T,live,offset,intro){
+  var age=ageAt(T), frac=age/SYN, k=(1-Math.cos(frac*TAU))/2, idx=Math.round(frac*8)%8, d=new Date(T);
+  setName(NAMES[idx],intro===1);
+  setLine(LINES[idx],intro===1);
+  put(elIll,'ill',(k*100).toFixed(1)+'%');
+  put(elAge,'age',age.toFixed(1)+' days');
+  put(elDate,'date',WD[d.getDay()]+' '+d.getDate()+' '+MO[d.getMonth()]+' '+d.getFullYear()+' · '+pad2(d.getHours())+':'+pad2(d.getMinutes()));
+
+  var q=Math.ceil((T-EPOCH)/QTR), i, tq, kind, sig='', rows=[];
+  for(i=0;i<4;i++){ tq=EPOCH+(q+i)*QTR; kind=(((q+i)%4)+4)%4; rows.push([kind,tq]); sig+=(window.innerWidth<=520)+kind+':'+fmtDay(new Date(tq))+':'+Math.max(0,Math.round((tq-T)/DAY))+'|'; }
+  if(cache.next!==sig){
+    cache.next=sig; elNext.textContent='';
+    rows.forEach(function(r){
+      var li=document.createElement('li'), a=document.createElement('span'), b=document.createElement('span'), s=document.createElement('small');
+      var days=Math.max(0,Math.round((r[1]-T)/DAY));
+      a.textContent=window.innerWidth<=520?QSHORT[r[0]]:QNAME[r[0]]; b.textContent=fmtDay(new Date(r[1]));
+      s.textContent=days===0?'today':days===1?'1 day':days+' days';
+      if(r[0]===2) li.className='full';
+      b.appendChild(s); li.appendChild(a); li.appendChild(b); elNext.appendChild(li);
+    });
+  }
+  var away=!live;
+  if(cache.away!==away){ cache.away=away; elBack.classList.toggle('on',away); elBack.tabIndex=away?0:-1; if(away) elHint.classList.add('off'); }
+  if(away) put(elOff,'off','· '+describeOffset(offset));
+  var title=(live?'':'• ')+NAMES[idx]+' · '+Math.round(k*100)+'% — The Moon Tonight';
+  if(cache.title!==title){ cache.title=title; document.title=title; }
+  if(live) setFavicon(frac);
+  var vt=WD[d.getDay()]+' '+fmtDay(d)+', '+NAMES[idx]+', '+Math.round(k*100)+' percent lit';
+  if(cache.vt!==vt){ cache.vt=vt; tape.setAttribute('aria-valuetext',vt); tape.setAttribute('aria-valuenow',Math.round(offset/DAY)); }
+}
+
+/* ================= sun-elevation probe ================= */
+var box=$('moonBox'), probe=$('probe'), say=$('say'), probeAt=null, probeTimer=0, curPhi=0;
+function probeUpdate(){
+  if(!probeAt) return;
+  var b=box.getBoundingClientRect(), Rc=b.width/2, px=probeAt.x-b.left-Rc, py=probeAt.y-b.top-Rc;
+  var x=px/Rc, y=-py/Rc, r2=x*x+y*y;
+  if(r2>=.995){ probe.classList.remove('on'); return; }
+  if(south){ x=-x; y=-y; }
+  var z=Math.sqrt(1-r2), el=Math.asin(clamp(x*Math.sin(curPhi)-z*Math.cos(curPhi),-1,1))*180/Math.PI, a=Math.round(Math.abs(el)), txt, note;
+  var waxing=curPhi%TAU<Math.PI, k=(1-Math.cos(curPhi))/2;
+  if(el<-.5){ txt='Night here. The Sun is '+a+'° below this horizon'; note=k<.3?'lit only by earthlight':(waxing?'dawn is coming':'dusk has passed'); }
+  else if(el<.5){ txt='The Sun sits on this horizon'; note=waxing?'sunrise line':'sunset line'; }
+  else{
+    txt='The Sun is '+a+'° above this horizon';
+    note=el<12?'long shadows':el<38?'low, raking light':el<74?'high sun, short shadows':'near noon, no shadows at all';
+  }
+  var s=txt+': '; if(cache.say!==s+note){ cache.say=s+note; say.textContent=s; var em=document.createElement('em'); em.textContent=note; say.appendChild(em); }
+  var sc=b.width/box.offsetWidth||1;
+  probe.style.transform='translate('+(px+Rc)/sc+'px,'+(py+Rc)/sc+'px)';
+  probe.classList.toggle('left',probeAt.x>window.innerWidth*.5);
+  probe.classList.add('on');
+}
+box.addEventListener('pointermove',function(e){ probeAt={x:e.clientX,y:e.clientY}; clearTimeout(probeTimer); probeUpdate(); });
+box.addEventListener('pointerdown',function(e){ probeAt={x:e.clientX,y:e.clientY}; clearTimeout(probeTimer); probeUpdate(); });
+function probeHide(e){
+  clearTimeout(probeTimer);
+  if(e&&e.pointerType==='touch'){ probeTimer=setTimeout(function(){ probeAt=null; probe.classList.remove('on'); },2600); }
+  else{ probeAt=null; probe.classList.remove('on'); }
+}
+box.addEventListener('pointerleave',probeHide);
+box.addEventListener('pointerup',function(e){ if(e.pointerType==='touch') probeHide(e); });
+box.addEventListener('pointercancel',probeHide);
+
+/* ================= time state and the frame loop ================= */
+var view=0, target=0, anim=null, dragging=false, raf=0, last=0, intro=null, appear=0, baked=false, playing=false;
+function kick(){ if(!raf) raf=requestAnimationFrame(frame); }
+function easeIO(t){ return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2; }
+function easeSweep(t){ return t<.5?8*t*t*t*t:1-Math.pow(-2*t+2,4)/2; }
+
+function frame(ts){
+  raf=0; if(!baked) return;
+  var dt=Math.min(60,ts-(last||ts)); last=ts;
+  var busy=false, now=Date.now(), p;
+
+  if(anim){
+    p=clamp((ts-anim.t0)/anim.dur,0,1);
+    if(anim.kind==='play'){
+      if(reduced.matches) view=target=anim.from+Math.floor(p*30)/30*anim.span;
+      else view=target=anim.from+(p-Math.sin(p*TAU)/TAU*.5)*anim.span;
+    }else view=target=anim.from+easeIO(p)*anim.span;
+    if(p>=1){ if(anim.kind==='play') setPlaying(false); anim=null; if(Math.abs(target)<6e4) view=target=0; }
+    else busy=true;
+  }else if(view!==target){
+    if(reduced.matches) view=target;
+    else{ view+=(target-view)*(1-Math.exp(-dt/(dragging?55:120))); if(Math.abs(target-view)<4e4) view=target; else busy=true; }
+  }
+
+  var live=view===0&&target===0&&!anim, T=now+view, phi=ageAt(T)/SYN*TAU, showPhi=phi;
+  if(intro){
+    if(!intro.t0) intro.t0=ts;
+    p=clamp((ts-intro.t0-420)/2150,0,1);
+    showPhi=intro.from+(phi-intro.from)*easeSweep(p);
+    appear=clamp((ts-intro.t0-700)/1500,0,1);
+    if(p>=1&&appear>=1){ intro=null; appear=1; } else busy=true;
+  }
+  curPhi=showPhi;
+  if(isNaN(shadedAt)||Math.abs(showPhi-shadedAt)>.0006){ shade(showPhi); if(probeAt) probeUpdate(); }
+  drawTape(T,now,appear);
+  readouts(T,live,view,intro?1:0);
+  if(busy||dragging) kick(); else last=0;
+}
+
+function setPlaying(on){
+  playing=on; var b=$('play'); b.setAttribute('aria-pressed',on?'true':'false');
+  $('playLbl').textContent=on?'Stop':'Play a month';
+  b.setAttribute('aria-label',on?'Stop':'Play a month');
+  $('playIcon').setAttribute('d',on?'M2 1.5h8v9H2z':'M2 1l9 5-9 5z');
+}
+function stopAnim(){ if(anim&&anim.kind==='play') setPlaying(false); anim=null; }
+function nudge(ms){ stopAnim(); intro=null; appear=1; target+=ms; if(Math.abs(target)<6e4) target=0; kick(); }
+function goTonight(){
+  stopAnim(); intro=null; appear=1;
+  if(view===0&&target===0) return;
+  if(reduced.matches){ view=target=0; kick(); return; }
+  anim={kind:'back',t0:performance.now(),dur:700+Math.min(1300,Math.abs(view)/DAY*60),from:view,span:-view}; last=0; kick();
+}
+function togglePlay(){
+  if(playing){ stopAnim(); target=view; kick(); return; }
+  intro=null; appear=1;
+  anim={kind:'play',t0:performance.now(),dur:12000,from:view,span:SYN_MS}; setPlaying(true); last=0; kick();
+}
+
+/* ---------- strip: drag, wheel, keys ---------- */
+var dragX=0, dragT=0, vel=0, dragId=null;
+tape.addEventListener('pointerdown',function(e){
+  if(e.button) return;
+  stopAnim(); intro=null; appear=1; dragging=true; dragId=e.pointerId; dragX=e.clientX; dragT=e.timeStamp; vel=0;
+  target=view; tape.classList.add('drag');
+  try{ tape.setPointerCapture(e.pointerId); }catch(err){}
+  kick();
+});
+tape.addEventListener('pointermove',function(e){
+  if(!dragging||e.pointerId!==dragId) return;
+  var dx=e.clientX-dragX, dtm=Math.max(1,e.timeStamp-dragT);
+  target-=dx/pitch*DAY; vel=vel*.6+(-dx/pitch*DAY/dtm)*.4;
+  dragX=e.clientX; dragT=e.timeStamp; kick();
+});
+function endDrag(e){
+  if(!dragging||(e&&e.pointerId!==dragId)) return;
+  dragging=false; tape.classList.remove('drag');
+  if(!reduced.matches&&e&&e.timeStamp-dragT<80) target+=clamp(vel,-DAY/40,DAY/40)*240;
+  if(Math.abs(target)<DAY*.02) target=0;
+  kick();
+}
+tape.addEventListener('pointerup',endDrag);
+tape.addEventListener('pointercancel',endDrag);
+tape.addEventListener('lostpointercapture',endDrag);
+tape.addEventListener('wheel',function(e){
+  var d=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;
+  if(!d) return; e.preventDefault();
+  nudge(clamp(d,-120,120)/pitch*DAY*.6);
+},{passive:false});
+
+document.addEventListener('keydown',function(e){
+  if(e.metaKey||e.ctrlKey||e.altKey) return;
+  var k=e.key, onButton=e.target&&e.target.tagName==='BUTTON';
+  if(document.body.classList.contains('moonlight')&&(k==='Escape'||k==='m'||k==='M')){ setMoonlight(false); e.preventDefault(); return; }
+  if(k==='ArrowRight'||k==='ArrowLeft'){ nudge((k==='ArrowRight'?1:-1)*(e.shiftKey?DAY/4:DAY)); e.preventDefault(); }
+  else if(k==='ArrowUp'||k==='ArrowDown'){ if(e.target===tape){ nudge((k==='ArrowUp'?1:-1)*DAY); e.preventDefault(); } }
+  else if(k==='Home'||k==='t'||k==='T'||k==='Escape'){ goTonight(); }
+  else if(k===' '&&!onButton){ togglePlay(); e.preventDefault(); }
+  else if(k==='m'||k==='M'){ setMoonlight(true); }
+  else if(k==='h'||k==='H'){ setSouth(!south); }
+});
+elBack.addEventListener('click',goTonight);
+$('play').addEventListener('click',togglePlay);
+
+/* ---------- hemisphere, moonlight ---------- */
+function setSouth(s){
+  south=s; $('hemi').classList.toggle('south',s); box.classList.toggle('south',s);
+  $('hN').setAttribute('aria-pressed',s?'false':'true'); $('hS').setAttribute('aria-pressed',s?'true':'false');
+  try{ localStorage.setItem('moon-hemisphere',s?'S':'N'); }catch(e){}
+  favFrac=-1; kick(); if(probeAt) probeUpdate();
+}
+$('hN').addEventListener('click',function(){ setSouth(false); });
+$('hS').addEventListener('click',function(){ setSouth(true); });
+var mlArmed=0;
+function setMoonlight(on){
+  if(on&&!document.body.classList.contains('moonlight')){ var b=box.getBoundingClientRect(); box.style.setProperty('--ml',(window.innerHeight/2-(b.top+b.height/2))+'px'); }
+  document.body.classList.toggle('moonlight',on); $('ml').setAttribute('aria-pressed',on?'true':'false');
+  mlArmed=on?performance.now():0;
+  if(on){ probeAt=null; probe.classList.remove('on'); }
+}
+$('ml').addEventListener('click',function(e){ e.stopPropagation(); setMoonlight(true); });
+document.addEventListener('pointerdown',function(){
+  if(mlArmed&&performance.now()-mlArmed>350) setMoonlight(false);
+},true);
+
+/* ---------- sizing ---------- */
+function wantN(){ var d=Math.min(2,window.devicePixelRatio||1); return clamp(Math.round(box.clientWidth*d),120,1100); }
+var resizeTimer=0;
+function onResize(){
+  drawSky(); sizeTape(); kick();
+  clearTimeout(resizeTimer);
+  resizeTimer=setTimeout(function(){ var n=wantN(); if(Math.abs(n-N)>2){ bake(n); shadedAt=NaN; kick(); } },220);
+}
+window.addEventListener('resize',onResize);
+document.addEventListener('visibilitychange',function(){ if(!document.hidden){ last=0; kick(); } });
+setInterval(function(){ if(!document.hidden) kick(); },15000);
+
+/* ---------- begin ---------- */
+if(south) setSouth(true);
+drawSky(); sizeTape();
+requestAnimationFrame(function(){ setTimeout(function(){
+  bake(wantN()); baked=true;
+  var phi=ageAt(Date.now())/SYN*TAU;
+  if(reduced.matches){ appear=1; }
+  else{
+    var from=phi<Math.PI?Math.min(phi,.11):Math.max(phi,TAU-.11);
+    intro={from:from,t0:0};
+  }
+  document.body.classList.remove('pre'); document.body.classList.add('ready');
+  kick();
+},30); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Combination</title>
+<style>
+:root{
+  --bg:#101412; --enamel:#1F3A2E; --brass:#C9A24B; --hi:#E8CF8A; --sh:#7A5F22;
+  --ivory:#E7E0CF; --red:#8C2F23;
+  --didone:Didot,"Bodoni MT","Bodoni 72","Playfair Display",Baskerville,Georgia,"Times New Roman",serif;
+  --sans:"Gill Sans","Gill Sans MT","Trebuchet MS",Futura,"Century Gothic",sans-serif;
+  --type:"Courier New",Courier,"Nimbus Mono PS",monospace;
+  --pencil:"Palatino Linotype",Palatino,"Book Antiqua",Baskerville,Georgia,serif;
+  --heavy:cubic-bezier(.62,.03,.22,1);
+  --spring:cubic-bezier(.3,1.5,.5,1);
+  --swing:-112deg;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  background:var(--bg);color:var(--ivory);font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+button{font:inherit;color:inherit}
+.defs{position:absolute;width:0;height:0;overflow:hidden}
+
+/* ---------- the room ---------- */
+.room{
+  position:relative;min-height:100vh;min-height:100svh;overflow:hidden;overflow:clip;
+  display:grid;grid-template-columns:minmax(240px,1fr) auto minmax(240px,1fr);
+  align-items:center;column-gap:clamp(18px,3vw,54px);padding:0 clamp(14px,2.4vw,40px);
+  background:
+    radial-gradient(ellipse 50% 66% at 50% 42%,rgba(232,207,138,.26),rgba(232,207,138,.09) 46%,transparent 76%),
+    repeating-linear-gradient(90deg,rgba(231,224,207,.016) 0 2px,transparent 2px 46px,rgba(0,0,0,.14) 46px 48px,transparent 48px 92px),
+    var(--bg);
+}
+.vignette,.grain,.dark{position:fixed;inset:0;pointer-events:none}
+.vignette{z-index:40;background:radial-gradient(ellipse 72% 78% at 50% 44%,transparent 38%,rgba(4,6,5,.5) 70%,rgba(3,4,4,.9) 100%)}
+.grain{z-index:41;opacity:.11;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E")}
+.dark{z-index:50;background:#030404;animation:lamp 1.7s .45s steps(1,end) forwards}
+@keyframes lamp{0%{opacity:1}22%{opacity:.52}26%{opacity:.97}34%{opacity:.3}38%{opacity:.88}47%{opacity:.16}52%{opacity:.5}58%{opacity:.07}66%{opacity:.2}74%,100%{opacity:0}}
+
+.col{display:flex;flex-direction:column;gap:26px;position:relative;z-index:2;width:calc(100% / var(--k,1));transform:scale(var(--k,1))}
+.left{align-items:flex-end;justify-self:end;transform-origin:100% 50%}
+.right{align-items:flex-start;justify-self:start;transform-origin:0 50%}
+.centre{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center}
+
+/* ---------- title ---------- */
+.title{margin:0;line-height:0;position:relative;z-index:4}
+.title svg{display:block;overflow:visible}
+.title text.t{font-family:var(--didone);font-weight:700;font-size:54px}
+.title text.s{font-family:var(--sans);font-size:10.5px;letter-spacing:.42em;fill:var(--ivory);opacity:.62}
+
+/* ---------- stage, door, 3D ---------- */
+.stagewrap{position:relative;flex:none}
+.stage{
+  position:absolute;left:50%;top:0;width:680px;height:840px;margin-left:-340px;
+  transform-origin:50% 0;perspective:2400px;perspective-origin:50% 44%;
+  transition:transform .95s cubic-bezier(.5,0,.2,1);
+}
+.stage>*{position:absolute}
+.floor,.spill{pointer-events:none}
+.floor{left:-70px;right:-70px;bottom:-52px;height:110px;background:radial-gradient(ellipse 50% 50%,rgba(0,0,0,.8),transparent 70%)}
+.spill{inset:-38% -60%;opacity:0;transition:opacity 3.2s .5s ease;mix-blend-mode:screen;
+  background:radial-gradient(ellipse 42% 46% at 50% 54%,rgba(232,207,138,.36),rgba(232,207,138,.1) 45%,transparent 72%)}
+.stage.lit .spill{opacity:1}
+.frame{inset:0}
+.frame svg,.face svg.art,.vault svg.walls{display:block;width:100%;height:100%}
+.vault{left:40px;top:40px;width:600px;height:760px;background:#070a08;overflow:hidden;transition:box-shadow 3s .6s}
+.stage.lit .vault{box-shadow:0 0 70px 6px rgba(232,207,138,.3)}
+.vault>*{position:absolute}
+.vault .walls{inset:0}
+.vault .thing{left:120px;top:300px;width:360px;height:230px;overflow:visible}
+.vault .gloom{inset:0;background:#040605;opacity:.96;transition:opacity 2.8s .5s ease;pointer-events:none}
+.stage.lit .gloom{opacity:0}
+.caption{
+  left:50px;top:566px;width:500px;margin:0;text-align:center;
+  font:italic 25px/1.26 var(--pencil);color:var(--ivory);text-shadow:0 2px 8px #000;
+  opacity:0;transform:translateY(10px);transition:opacity 1.4s ease,transform 1.4s cubic-bezier(.2,.7,.2,1);
+}
+.stage.done .caption{opacity:1;transform:none}
+.relock{
+  left:50%;top:680px;height:60px;padding:0 34px;margin-left:-150px;width:300px;cursor:pointer;
+  border:1px solid var(--sh);border-radius:3px;
+  background:linear-gradient(180deg,#dcbb66,var(--brass) 42%,#a98538);
+  color:#2a2008;font:600 19px/1 var(--sans);letter-spacing:.3em;text-transform:uppercase;text-shadow:0 1px 0 rgba(232,207,138,.8);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -2px 0 rgba(0,0,0,.25),0 6px 14px rgba(0,0,0,.6);
+  opacity:0;visibility:hidden;transform:translateY(14px);
+  transition:opacity .9s .5s,transform .9s .5s cubic-bezier(.2,.7,.2,1),visibility 0s 1.4s,filter .25s;
+}
+.stage.done .relock{opacity:1;visibility:visible;transform:none;transition:opacity .9s .5s,transform .9s .5s cubic-bezier(.2,.7,.2,1),visibility 0s,filter .25s}
+.relock:hover{filter:brightness(1.1)}
+.relock:active{transform:translateY(2px)}
+
+.door{left:40px;top:40px;width:600px;height:760px;transform-style:preserve-3d;transform-origin:0 50%;
+  transition:transform 4s var(--heavy)}
+.door.open{transform:rotateY(var(--swing));pointer-events:none}
+.door.closing{transition-duration:2.1s;transition-timing-function:cubic-bezier(.5,0,.3,1)}
+.slab{position:absolute;inset:0;transform-style:preserve-3d}
+.slab.shudder{animation:shudder .46s .09s cubic-bezier(.3,.6,.4,1)}
+@keyframes shudder{0%{transform:translate3d(0,0,0)}14%{transform:translate3d(3px,0,0)}30%{transform:translate3d(-2.4px,.8px,0)}48%{transform:translate3d(1.6px,-.5px,0)}66%{transform:translate3d(-.9px,0,0)}84%{transform:translate3d(.4px,0,0)}100%{transform:none}}
+.face{position:absolute;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.front{inset:0}
+.front .art{overflow:visible}
+.back{inset:0;transform:translateZ(-64px) rotateY(180deg)}
+.edge{left:600px;top:0;width:64px;height:760px;transform-origin:0 50%;transform:rotateY(90deg)}
+.shade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity 3.4s ease}
+.door.open .shade{opacity:.55}
+.rod{transition:transform .22s cubic-bezier(.5,0,.1,1)}
+.rod.in{transform:translateX(-37px)}
+
+/* dial */
+.dial{position:absolute;left:80px;top:80px;width:440px;height:440px;border-radius:50%;cursor:grab;touch-action:none;outline:none;
+  -webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+.dial.grab{cursor:grabbing}
+.dial svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible;pointer-events:none}
+.dial .rot{position:absolute;inset:0;will-change:transform}
+.dial text{font-family:var(--sans);font-weight:600;font-size:22px;fill:var(--ivory);text-anchor:middle}
+.dial .eng{font-size:8.4px;font-weight:400;fill:#3d2f0e;letter-spacing:.34em}
+.dial:focus-visible .focusring{opacity:1}
+.focusring{opacity:0;transition:opacity .2s}
+.index.tremble{animation:tremble .17s linear}
+@keyframes tremble{0%{transform:translate(0,0)}20%{transform:translate(1.5px,.5px)}40%{transform:translate(-1.4px,0)}60%{transform:translate(1px,-.4px)}80%{transform:translate(-.6px,.2px)}100%{transform:none}}
+
+/* handle */
+.handle{position:absolute;left:210px;top:535px;width:180px;height:180px;padding:0;border:0;border-radius:50%;background:none;cursor:pointer;
+  touch-action:none;-webkit-tap-highlight-color:transparent;filter:drop-shadow(5px 9px 6px rgba(0,0,0,.6));outline:none}
+.handle svg{display:block;width:100%;height:100%;overflow:visible}
+.hrot{transform-origin:0 0;transition:transform .5s var(--spring)}
+.handle:hover .hrot{transform:rotate(5deg)}
+.handle:focus-visible{outline:2px solid var(--hi);outline-offset:4px}
+.handle.clunk .hrot{animation:clunk .68s both}
+@keyframes clunk{0%{transform:rotate(0);animation-timing-function:cubic-bezier(.1,.8,.2,1)}17%{transform:rotate(13deg)}30%{transform:rotate(13deg);animation-timing-function:cubic-bezier(.4,0,.3,1)}60%{transform:rotate(-3.4deg)}80%{transform:rotate(1.3deg)}100%{transform:rotate(0)}}
+
+/* ---------- typed card ---------- */
+.card{
+  position:relative;width:min(100%,286px);padding:36px 20px 18px;transform:rotate(-1.7deg);
+  background:linear-gradient(175deg,#efe9d9,var(--ivory) 30%,#d6cfbb);color:#26231d;
+  font:13px/1.52 var(--type);box-shadow:0 14px 26px rgba(0,0,0,.6),0 1px 0 rgba(255,255,255,.4) inset;
+}
+.card h2{margin:0 0 9px;font:700 11.5px/1.4 var(--type);letter-spacing:.14em;border-bottom:1px solid rgba(38,35,29,.5);padding-bottom:7px}
+.card ol{margin:0;padding:0 0 0 22px}
+.card li{margin:0 0 5px;text-shadow:.3px 0 0 rgba(38,35,29,.55)}
+.card li::marker{font-weight:700}
+.card p{margin:10px 0 0;padding-top:8px;border-top:1px dashed rgba(38,35,29,.4);font-size:11.5px;line-height:1.5;color:#3c382f}
+.card kbd{font:inherit;font-weight:700;border:1px solid rgba(38,35,29,.55);border-radius:2px;padding:0 3px}
+.clip{position:absolute;left:50%;top:-13px;width:74px;height:34px;margin-left:-37px;border-radius:5px 5px 2px 2px;
+  background:linear-gradient(180deg,var(--hi),var(--brass) 38%,var(--sh));border:1px solid #5d4718;
+  box-shadow:0 5px 7px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.5)}
+.clip::before{content:"";position:absolute;left:50%;top:-12px;width:26px;height:20px;margin-left:-13px;border:3px solid var(--brass);border-bottom:0;border-radius:13px 13px 0 0}
+.clip::after{content:"";position:absolute;left:8px;right:8px;bottom:5px;height:2px;background:rgba(0,0,0,.28)}
+
+/* ---------- gauge + listen ---------- */
+.tray{display:flex;align-items:center;gap:22px}
+.gauge{width:176px;height:176px;flex:none;filter:drop-shadow(0 12px 12px rgba(0,0,0,.6))}
+.gauge svg{display:block;width:100%;height:100%}
+.gauge text{font-family:var(--sans);fill:#2b2820}
+.listen{
+  position:relative;width:78px;height:124px;flex:none;padding:0;cursor:pointer;border:1px solid #5d4718;border-radius:5px;
+  background:linear-gradient(180deg,#dcbb66,var(--brass) 45%,#a48035);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -2px 0 rgba(0,0,0,.25),0 10px 14px rgba(0,0,0,.55);
+  color:#2a2008;text-shadow:0 1px 0 rgba(232,207,138,.8);-webkit-tap-highlight-color:transparent;
+}
+.listen:focus-visible,.relock:focus-visible,.num:focus-visible{outline:2px solid var(--hi);outline-offset:3px}
+.listen b{position:absolute;left:0;right:0;top:11px;font:700 10.5px/1 var(--sans);letter-spacing:.26em;text-indent:.26em}
+.listen i{position:absolute;left:0;right:0;font:400 8px/1 var(--sans);letter-spacing:.2em;text-indent:.2em;font-style:normal;opacity:.75}
+.listen i.on{top:30px}.listen i.off{bottom:9px}
+.listen .slot{position:absolute;left:50%;top:44px;width:22px;height:54px;margin-left:-11px;border-radius:11px;background:#0b0f0d;box-shadow:inset 0 2px 5px #000,0 1px 0 rgba(255,255,255,.4)}
+.listen .lever{position:absolute;left:50%;top:44px;width:26px;height:26px;margin-left:-13px;border-radius:50%;
+  background:radial-gradient(circle at 36% 30%,#fff3c9,var(--hi) 22%,var(--brass) 58%,var(--sh));
+  box-shadow:0 4px 5px rgba(0,0,0,.6);transform:translateY(28px);transition:transform .34s var(--spring)}
+.listen[aria-checked="true"] .lever{transform:translateY(0)}
+.listen .lamp{position:absolute;right:8px;bottom:8px;width:7px;height:7px;border-radius:50%;background:#3a1611;box-shadow:inset 0 1px 1px #000;transition:background .3s,box-shadow .3s}
+.listen[aria-checked="true"] .lamp{background:#d2493a;box-shadow:0 0 7px 1px rgba(210,73,58,.8)}
+
+/* ---------- notepad ---------- */
+.pad{
+  position:relative;width:min(100%,250px);padding:30px 22px 14px 40px;transform:rotate(1.4deg);
+  color:#4a4740;font:italic 21px/37px var(--pencil);
+  background:
+    linear-gradient(90deg,transparent 29px,rgba(140,47,35,.4) 29px 30px,transparent 30px),
+    repeating-linear-gradient(180deg,transparent 0 36px,rgba(31,58,46,.24) 36px 37px) 0 30px/100% 100% no-repeat,
+    linear-gradient(170deg,#f1ecdd,#e9e2d0 40%,#d9d2be);
+  box-shadow:0 14px 26px rgba(0,0,0,.6);
+}
+.pad::before{content:"";position:absolute;left:0;right:0;top:0;height:13px;
+  background:radial-gradient(circle at 50% 0,var(--bg) 4.2px,transparent 4.8px) 0 -1px/16px 13px repeat-x,linear-gradient(#cfc7b2,#e4dccb)}
+.pad h2{margin:0;font:inherit;font-size:14px;letter-spacing:.06em;color:#6b675c}
+.pad ol{list-style:none;margin:0;padding:0}
+.pad li{display:flex;align-items:baseline;gap:9px;height:37px;white-space:nowrap}
+.pad .k{opacity:.86}
+.num{position:relative;min-width:66px;height:34px;padding:0 4px;border:0;background:none;cursor:pointer;text-align:left;
+  font:italic 25px/34px var(--pencil);color:#3b3832;text-shadow:.4px .3px 0 rgba(59,56,50,.5)}
+.num:disabled{cursor:default}
+.num:empty::after{content:"\2026";opacity:.32}
+.num.write{animation:write .55s cubic-bezier(.3,.6,.3,1) both}
+@keyframes write{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 -4px 0 0)}}
+.num.rub{animation:rub .55s linear both}
+@keyframes rub{0%{opacity:1;filter:blur(0);transform:none}25%{transform:translateX(3px);filter:blur(.8px)}50%{transform:translateX(-3px);opacity:.5;filter:blur(1.6px)}75%{transform:translateX(2px);opacity:.25;filter:blur(2.4px)}100%{opacity:0;filter:blur(3px);transform:none}}
+.num:not(:empty):not(:disabled):hover{text-decoration:line-through;text-decoration-thickness:1px}
+.pad .last{height:37px;font-size:16px;line-height:37px;white-space:nowrap;opacity:0;transition:opacity .9s}
+.pad .last.show{opacity:.9}
+.pad .hint{margin:2px 0 0;font:italic 11.5px/1.4 var(--pencil);color:#7a7568}
+.pencil{position:absolute;right:-17px;top:20px;width:11px;height:150px;transform:rotate(7deg);border-radius:2px 2px 0 0;
+  background:linear-gradient(90deg,#16291f,var(--enamel) 40%,#2f5744 60%,#16291f);box-shadow:5px 7px 8px rgba(0,0,0,.5)}
+.pencil::before{content:"";position:absolute;left:0;top:0;width:100%;height:13px;background:linear-gradient(90deg,var(--sh),var(--hi),var(--sh));border-radius:2px 2px 0 0}
+.pencil::after{content:"";position:absolute;left:0;bottom:-15px;border:5.5px solid transparent;border-top:15px solid #c9b58a;border-bottom:0}
+
+/* ---------- brass plates ---------- */
+.plate,.grade{
+  position:relative;width:min(100%,250px);border:1px solid #5d4718;border-radius:3px;
+  background:linear-gradient(180deg,#dcbb66,var(--brass) 45%,#a48035);
+  color:#2a2008;text-shadow:0 1px 0 rgba(232,207,138,.8);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -2px 0 rgba(0,0,0,.25),0 10px 16px rgba(0,0,0,.55);
+}
+.plate::before,.plate::after,.grade::before,.grade::after{content:"";position:absolute;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;
+  background:linear-gradient(135deg,transparent 44%,#4a3912 44% 56%,transparent 56%),radial-gradient(circle at 35% 30%,var(--hi),var(--sh));box-shadow:0 1px 1px rgba(0,0,0,.5)}
+.plate::before,.grade::before{left:7px}.plate::after,.grade::after{right:7px}
+.plate{display:flex;justify-content:center;gap:16px;padding:11px 24px;font:600 10px/1.2 var(--sans);letter-spacing:.2em;text-transform:uppercase}
+.plate span{display:flex;flex-direction:column;align-items:center;gap:4px;white-space:nowrap}
+.plate b{font:700 19px/1 var(--didone);letter-spacing:.06em;font-variant-numeric:tabular-nums}
+.plate .bar{width:1px;background:rgba(42,32,8,.5);box-shadow:1px 0 0 rgba(232,207,138,.6)}
+.grade{margin:0;padding:9px 22px 10px;min-inline-size:0}
+.grade legend{float:left;width:100%;padding:0;margin:0 0 6px;text-align:center;font:600 9px/1 var(--sans);letter-spacing:.34em;text-indent:.34em;text-transform:uppercase;opacity:.8}
+.grade .opts{clear:both;display:flex;flex-direction:column;gap:3px}
+.grade label{position:relative;display:block;cursor:pointer}
+.grade input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.grade label span{display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:2px;font:600 12px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;transition:background .25s,box-shadow .25s}
+.grade label span::before{content:"";width:9px;height:9px;border-radius:50%;flex:none;background:#3d2f0e;box-shadow:inset 0 1px 2px #000,0 1px 0 rgba(255,255,255,.4);transition:background .25s}
+.grade label span small{margin-left:auto;font:400 9px/1 var(--sans);letter-spacing:.08em;text-transform:none;opacity:.75}
+.grade label:hover span{background:rgba(42,32,8,.1)}
+.grade input:checked+span{background:rgba(42,32,8,.16);box-shadow:inset 0 1px 3px rgba(0,0,0,.45),0 1px 0 rgba(255,255,255,.35)}
+.grade input:checked+span::before{background:#b83b2c;box-shadow:inset 0 1px 1px rgba(255,255,255,.4),0 0 5px rgba(184,59,44,.7)}
+.grade input:focus-visible+span{outline:2px solid #2a2008;outline-offset:1px}
+
+/* contents animation */
+.eye{transform-box:fill-box;transform-origin:50% 50%;transform:scaleY(0);transition:transform .55s var(--spring)}
+.awake .eye{transform:scaleY(1)}
+.lid{transition:opacity .2s}
+.awake .lid{opacity:0}
+.breath{transform-box:fill-box;transform-origin:50% 100%;animation:breath 4.2s ease-in-out infinite}
+@keyframes breath{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.035)}}
+.glint{animation:glint 3.6s ease-in-out infinite}
+@keyframes glint{0%,100%{opacity:.9}50%{opacity:.55}}
+
+/* ---------- stacked layouts ---------- */
+@media (max-width:999px){
+  .room{display:flex;flex-direction:column;align-items:center;padding:0 0 46px;row-gap:0;
+    background:
+      radial-gradient(ellipse 120% 48vh at 50% 40vh,rgba(232,207,138,.26),rgba(232,207,138,.08) 50%,transparent 80%),
+      repeating-linear-gradient(90deg,rgba(231,224,207,.016) 0 2px,transparent 2px 46px,rgba(0,0,0,.14) 46px 48px,transparent 48px 92px),
+      var(--bg)}
+  .col,.centre{display:contents}
+  .title{order:1}.stagewrap{order:2;overflow:hidden;overflow:clip;width:100%}
+  .tray{order:3;width:100%;justify-content:center;gap:26px;padding:6px 16px 4px;position:relative;z-index:5}
+  .pad{order:4;margin-top:38px}.plate{order:5;margin-top:30px}.grade{order:6;margin-top:18px}.card{order:7;margin-top:44px}
+  .gauge{width:96px;height:96px}
+  .listen{width:150px;height:62px}
+  .listen b{top:10px;left:10px;right:auto}
+  .listen i.on{top:auto;bottom:10px;left:auto;right:12px;width:auto}.listen i.off{bottom:10px;left:66px;right:auto;width:auto}
+  .listen .slot{left:auto;right:12px;top:10px;width:54px;height:22px;margin:0}
+  .listen .lever{left:auto;right:38px;top:8px;margin:0;transform:none}
+  .listen[aria-checked="true"] .lever{transform:translateX(28px)}
+  .listen .lamp{right:auto;left:12px;bottom:11px}
+  .vignette{background:radial-gradient(ellipse 120% 70% at 50% 42%,transparent 40%,rgba(4,6,5,.45) 75%,rgba(3,4,4,.85) 100%)}
+  .pad,.plate,.grade,.card{width:min(84vw,300px)}
+}
+@media (max-width:619px){:root{--swing:-88deg}.caption{left:96px;width:460px}}
+
+@media (prefers-reduced-motion:reduce){
+  .dark{animation:lampcalm 1.2s .2s ease forwards}
+  @keyframes lampcalm{to{opacity:0}}
+  .door,.door.closing{transition:opacity 1.3s ease}
+  .door.open{transform:none;opacity:0}
+  .stage{transition:none}
+  .index.tremble,.slab.shudder,.breath,.glint{animation:none}
+  .num.write,.num.rub{animation-duration:.01s}
+  .hrot,.listen .lever{transition-duration:.01s}
+}
+</style>
+</head>
+<body>
+
+<svg class="defs" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="brassV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E8CF8A"/><stop offset=".4" stop-color="#C9A24B"/><stop offset="1" stop-color="#7A5F22"/></linearGradient>
+    <linearGradient id="brassH" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7A5F22"/><stop offset=".3" stop-color="#E8CF8A"/><stop offset=".58" stop-color="#C9A24B"/><stop offset="1" stop-color="#7A5F22"/></linearGradient>
+    <radialGradient id="brassR" cx=".36" cy=".3" r=".8"><stop offset="0" stop-color="#f6e8b8"/><stop offset=".18" stop-color="#E8CF8A"/><stop offset=".55" stop-color="#C9A24B"/><stop offset="1" stop-color="#7A5F22"/></radialGradient>
+    <linearGradient id="steelH" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9d3c2"/><stop offset=".35" stop-color="#9a9686"/><stop offset="1" stop-color="#3c3b34"/></linearGradient>
+    <radialGradient id="lampD" cx=".5" cy=".3" r=".8"><stop offset="0" stop-color="#E7E0CF" stop-opacity=".2"/><stop offset=".42" stop-color="#E7E0CF" stop-opacity=".04"/><stop offset="1" stop-color="#000" stop-opacity=".5"/></radialGradient>
+    <radialGradient id="pearlG" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#fffaf0"/><stop offset=".35" stop-color="#E7E0CF"/><stop offset=".8" stop-color="#a9a08c"/><stop offset="1" stop-color="#6d6658"/></radialGradient>
+    <linearGradient id="shadeTL" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E7E0CF" stop-opacity=".16"/><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".62"/></linearGradient>
+    <linearGradient id="sheenTL" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3c9" stop-opacity=".7"/><stop offset=".4" stop-color="#E8CF8A" stop-opacity="0"/><stop offset="1" stop-color="#1a1204" stop-opacity=".66"/></linearGradient>
+    <radialGradient id="domeG" cx=".36" cy=".3" r=".85"><stop offset="0" stop-color="#f3e2a8"/><stop offset=".3" stop-color="#d9b65e"/><stop offset=".62" stop-color="#b8923f"/><stop offset="1" stop-color="#5e4818"/></radialGradient>
+    <radialGradient id="glowG" cx=".5" cy=".56" r=".62"><stop offset="0" stop-color="#E8CF8A" stop-opacity=".34"/><stop offset=".5" stop-color="#E8CF8A" stop-opacity=".08"/><stop offset="1" stop-color="#000" stop-opacity=".5"/></radialGradient>
+    <linearGradient id="feltG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5c1e16"/><stop offset="1" stop-color="#8C2F23"/></linearGradient>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
+    <filter id="soft2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.6"/></filter>
+    <filter id="soft3" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="9"/></filter>
+  </defs>
+</svg>
+
+<div class="room" id="room">
+
+  <aside class="col left">
+    <section class="card" aria-label="Instructions">
+      <span class="clip" aria-hidden="true"></span>
+      <h2>HOLLOWAY &amp; STERN No. 4417<br>THREE WHEELS. NO KEY.</h2>
+      <ol>
+        <li>Left three turns. Listen for the one that sounds tired. Stop on it.</li>
+        <li>Right, past it once, then on to the second tired number.</li>
+        <li>Left, straight to the third.</li>
+        <li>Try the handle.</li>
+      </ol>
+      <p>Drag the dial round, roll the wheel over it, or use <kbd>&larr;</kbd> <kbd>&rarr;</kbd> (Shift for five). Hard of hearing? Watch the needle: it kicks back when a wheel is picked up and leaps at a gate.</p>
+    </section>
+
+    <div class="tray">
+      <div class="gauge" role="img" aria-label="Stethoscope gauge: the needle flicks with every click and swings further at a gate">
+        <svg viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="96" fill="url(#brassV)" stroke="#5d4718"/>
+          <circle cx="100" cy="100" r="87" fill="#7A5F22"/>
+          <circle cx="100" cy="100" r="83" fill="#E7E0CF"/>
+          <circle cx="100" cy="100" r="83" fill="url(#shadeTL)" opacity=".5"/>
+          <text x="100" y="45" text-anchor="middle" font-size="9" font-weight="600" letter-spacing="3">STETHOSCOPE</text>
+          <path id="gred" fill="none" stroke="#8C2F23" stroke-width="5"/>
+          <g id="gticks" stroke="#2b2820" stroke-linecap="butt"></g>
+          <text x="38" y="112" text-anchor="middle" font-size="6.6" letter-spacing="1">LIFT</text>
+          <text x="163" y="112" text-anchor="middle" font-size="6.6" letter-spacing="1" fill="#8C2F23" style="fill:#8C2F23">GATE</text>
+          <text x="100" y="163" text-anchor="middle" font-size="6.4" letter-spacing="2.4" opacity=".7">H &amp; S PATENT</text>
+          <g id="needle"><path d="M98.6 132 L99.5 78 L100 62 L100.5 78 L101.4 132Z" fill="#1c1b17"/><path d="M99.5 78 L100 62 L100.5 78Z" fill="#8C2F23" stroke="#8C2F23" stroke-width="1"/><rect x="97" y="132" width="6" height="12" fill="#1c1b17"/></g>
+          <circle cx="100" cy="132" r="7.5" fill="url(#brassR)" stroke="#5d4718"/>
+          <path d="M38 78 Q60 34 112 26 Q72 44 52 86Z" fill="#fff" opacity=".28"/>
+        </svg>
+      </div>
+      <button class="listen" id="listen" type="button" role="switch" aria-checked="false" aria-label="Listen: sound">
+        <b>LISTEN</b><i class="on">ON</i><span class="slot"></span><span class="lever"></span><i class="off">OFF</i><span class="lamp"></span>
+      </button>
+    </div>
+  </aside>
+
+  <main class="centre">
+    <h1 class="title" aria-label="The Combination">
+      <svg id="titleSvg" viewBox="0 0 760 132" aria-hidden="true">
+        <path id="arcT" d="M40 126 A900 900 0 0 1 720 126" fill="none"/>
+        <text class="t" fill="#3d2f0e" transform="translate(2.6 3.2)"><textPath href="#arcT" startOffset="50%" text-anchor="middle" textLength="640" lengthAdjust="spacing">THE COMBINATION</textPath></text>
+        <text class="t" fill="#7A5F22" transform="translate(1.3 1.6)"><textPath href="#arcT" startOffset="50%" text-anchor="middle" textLength="640" lengthAdjust="spacing">THE COMBINATION</textPath></text>
+        <text class="t" fill="#C9A24B" stroke="#1a1305" stroke-width=".9" paint-order="stroke"><textPath href="#arcT" startOffset="50%" text-anchor="middle" textLength="640" lengthAdjust="spacing">THE COMBINATION</textPath></text>
+        <text class="s" x="380" y="122" text-anchor="middle">A SAFE &#183; A STETHOSCOPE &#183; ALL NIGHT</text>
+      </svg>
+    </h1>
+
+    <div class="stagewrap" id="wrap">
+      <div class="stage" id="stage">
+        <div class="spill"></div>
+        <div class="floor"></div>
+
+        <div class="frame" aria-hidden="true">
+          <svg viewBox="0 0 680 840">
+            <rect width="680" height="840" rx="12" fill="#16291f"/>
+            <path d="M0 12 Q0 0 12 0 H668 Q680 0 680 12 L662 18 H18Z" fill="#24443591"/>
+            <path d="M0 12 L18 18 V822 L0 828Z" fill="#1d382b"/>
+            <path d="M680 12 L662 18 V822 L680 828Z" fill="#0d1a13"/>
+            <path d="M0 828 L18 822 H662 L680 828 Q680 840 668 840 H12 Q0 840 0 828Z" fill="#0a140f"/>
+            <rect width="680" height="840" rx="12" fill="url(#lampD)"/>
+            <rect x="21" y="21" width="638" height="798" fill="none" stroke="#08100c" stroke-width="9" stroke-linecap="round" stroke-dasharray="0 57"/>
+            <rect x="20" y="20" width="638" height="798" fill="none" stroke="#35604b" stroke-width="5" stroke-linecap="round" stroke-dasharray="0 57" opacity=".7"/>
+            <rect x="36" y="36" width="608" height="768" fill="#050706"/>
+            <!-- keepers on the lock-side jamb -->
+            <g id="keepers">
+              <g transform="translate(640 240)"><rect x="0" y="-17" width="34" height="34" rx="3" fill="url(#brassV)" stroke="#5d4718"/><rect x="0" y="-10" width="28" height="20" rx="2" fill="#050706"/></g>
+              <g transform="translate(640 420)"><rect x="0" y="-17" width="34" height="34" rx="3" fill="url(#brassV)" stroke="#5d4718"/><rect x="0" y="-10" width="28" height="20" rx="2" fill="#050706"/></g>
+              <g transform="translate(640 600)"><rect x="0" y="-17" width="34" height="34" rx="3" fill="url(#brassV)" stroke="#5d4718"/><rect x="0" y="-10" width="28" height="20" rx="2" fill="#050706"/></g>
+            </g>
+            <!-- hinge knuckles -->
+            <g id="knuckles">
+              <g transform="translate(14 170)"><circle cx="14" cy="-52" r="8" fill="url(#brassR)"/><circle cx="14" cy="52" r="8" fill="url(#brassR)"/><rect x="1" y="-48" width="26" height="96" rx="6" fill="url(#brassH)" stroke="#5d4718"/><path d="M1 -16 H27 M1 16 H27" stroke="#5d4718" stroke-width="1.6"/></g>
+              <g transform="translate(14 420)"><circle cx="14" cy="-52" r="8" fill="url(#brassR)"/><circle cx="14" cy="52" r="8" fill="url(#brassR)"/><rect x="1" y="-48" width="26" height="96" rx="6" fill="url(#brassH)" stroke="#5d4718"/><path d="M1 -16 H27 M1 16 H27" stroke="#5d4718" stroke-width="1.6"/></g>
+              <g transform="translate(14 670)"><circle cx="14" cy="-52" r="8" fill="url(#brassR)"/><circle cx="14" cy="52" r="8" fill="url(#brassR)"/><rect x="1" y="-48" width="26" height="96" rx="6" fill="url(#brassH)" stroke="#5d4718"/><path d="M1 -16 H27 M1 16 H27" stroke="#5d4718" stroke-width="1.6"/></g>
+            </g>
+          </svg>
+        </div>
+
+        <div class="vault" id="vault">
+          <svg class="walls" viewBox="0 0 600 760" aria-hidden="true">
+            <rect width="600" height="760" fill="#070a08"/>
+            <rect x="80" y="101" width="440" height="558" fill="#1a2c23"/>
+            <path d="M0 0 L80 101 V659 L0 760Z" fill="#13231b"/>
+            <path d="M600 0 L520 101 V659 L600 760Z" fill="#0e1a14"/>
+            <path d="M0 0 H600 L520 101 H80Z" fill="#0b1510"/>
+            <path d="M0 760 H600 L520 659 H80Z" fill="url(#feltG)"/>
+            <!-- pinstripe panel on the back wall -->
+            <rect x="100" y="121" width="400" height="518" fill="none" stroke="#C9A24B" stroke-opacity=".28" stroke-width="1.2"/>
+            <!-- top shelf, seen from below -->
+            <path d="M0 262 H600 L520 293 H80Z" fill="#060a08"/>
+            <!-- things on the top shelf -->
+            <g>
+              <rect x="96" y="150" width="164" height="100" fill="#0f1c15" stroke="#C9A24B" stroke-opacity=".5"/>
+              <rect x="96" y="150" width="164" height="16" fill="#0a140f" stroke="#C9A24B" stroke-opacity=".5"/>
+              <path d="M160 184 q18 -16 36 0" fill="none" stroke="#C9A24B" stroke-width="3" stroke-linecap="round"/>
+              <rect x="140" y="204" width="76" height="26" fill="#E7E0CF" opacity=".86"/>
+              <text x="178" y="222" text-anchor="middle" font-family="Courier New,Courier,monospace" font-size="13" font-weight="700" fill="#26231d" letter-spacing="2">DEEDS</text>
+              <rect x="300" y="118" width="34" height="132" fill="#5c1e16"/><path d="M300 140 h34 M300 148 h34 M300 226 h34" stroke="#C9A24B" stroke-opacity=".7" stroke-width="1.5"/>
+              <rect x="336" y="130" width="28" height="120" fill="#1F3A2E"/><path d="M336 150 h28 M336 228 h28" stroke="#C9A24B" stroke-opacity=".7" stroke-width="1.5"/>
+              <rect x="366" y="110" width="40" height="140" fill="#2a1c0c"/><path d="M366 134 h40 M366 142 h40 M366 222 h40" stroke="#C9A24B" stroke-opacity=".7" stroke-width="1.5"/>
+              <path d="M410 250 L436 126 L466 132 L440 250Z" fill="#40140f"/><path d="M431 150 l30 6" stroke="#C9A24B" stroke-opacity=".7" stroke-width="1.5"/>
+            </g>
+            <rect x="0" y="250" width="600" height="13" fill="#2a1c0c"/><rect x="0" y="250" width="600" height="2" fill="#C9A24B" opacity=".75"/>
+            <!-- middle shelf, felt -->
+            <path d="M0 540 H600 L520 497 H80Z" fill="url(#feltG)"/>
+            <rect x="0" y="540" width="600" height="13" fill="#2a1c0c"/><rect x="0" y="540" width="600" height="2" fill="#C9A24B" opacity=".75"/>
+            <path d="M0 553 H600 L520 572 H80Z" fill="#000" opacity=".45"/>
+            <rect width="600" height="760" fill="url(#glowG)"/>
+          </svg>
+          <svg class="thing" id="thing" viewBox="0 0 360 230" role="img" aria-label=""></svg>
+          <p class="caption" id="caption"></p>
+          <button class="relock" id="relock" type="button">Lock it again</button>
+          <div class="gloom"></div>
+        </div>
+
+        <div class="door" id="door">
+          <div class="slab" id="slab">
+            <div class="face front">
+              <svg class="art" viewBox="0 0 600 760" aria-hidden="true">
+                <defs><clipPath id="rodclip"><rect x="-70" y="-11" width="100" height="22"/></clipPath></defs>
+                <rect width="600" height="760" rx="5" fill="#1F3A2E"/>
+                <path d="M0 0 H600 L584 16 H16Z" fill="#32594663"/>
+                <path d="M0 0 H600 L584 16 H16Z" fill="#3a6a53" opacity=".55"/>
+                <path d="M0 0 L16 16 V744 L0 760Z" fill="#2a4d3d"/>
+                <path d="M0 760 L16 744 H584 L600 760Z" fill="#0f2018"/>
+                <path d="M600 0 L584 16 V744 L600 760Z" fill="#152a20"/>
+                <rect width="600" height="760" fill="url(#lampD)"/>
+                <!-- pinstriping -->
+                <path d="M58 34 H542 A24 24 0 0 0 566 58 V702 A24 24 0 0 0 542 726 H58 A24 24 0 0 0 34 702 V58 A24 24 0 0 0 58 34Z" fill="none" stroke="#C9A24B" stroke-width="1.8"/>
+                <rect x="44" y="44" width="512" height="672" fill="none" stroke="#7A5F22" stroke-width="1"/>
+                <g fill="#C9A24B"><circle cx="34" cy="34" r="3.6"/><circle cx="566" cy="34" r="3.6"/><circle cx="34" cy="726" r="3.6"/><circle cx="566" cy="726" r="3.6"/></g>
+                <!-- maker's name -->
+                <path id="arcM" d="M79.2 380.4 A235 235 0 1 1 520.8 380.4" fill="none"/>
+                <text font-family="Didot,'Bodoni MT','Bodoni 72',Baskerville,Georgia,serif" font-weight="700" font-size="15.5" fill="#3d2f0e" transform="translate(1 1.4)"><textPath href="#arcM" startOffset="50%" text-anchor="middle" textLength="700" lengthAdjust="spacing">HOLLOWAY &amp; STERN &#183; FIRE &amp; THIEF RESISTING &#183; LONDON</textPath></text>
+                <text font-family="Didot,'Bodoni MT','Bodoni 72',Baskerville,Georgia,serif" font-weight="700" font-size="15.5" fill="#C9A24B"><textPath href="#arcM" startOffset="50%" text-anchor="middle" textLength="700" lengthAdjust="spacing">HOLLOWAY &amp; STERN &#183; FIRE &amp; THIEF RESISTING &#183; LONDON</textPath></text>
+                <g font-family="Gill Sans,'Gill Sans MT','Trebuchet MS',sans-serif" font-size="11.5" fill="#C9A24B" letter-spacing="4.5" text-anchor="middle">
+                  <text x="136" y="622">PATENT</text><path d="M104 632 h64" stroke="#7A5F22"/><text x="136" y="648" font-size="9.5" letter-spacing="3">EST. 1871</text>
+                  <text x="466" y="622">No. 4417</text><path d="M434 632 h64" stroke="#7A5F22"/><text x="466" y="648" font-size="9.5" letter-spacing="3">3 WHEEL</text>
+                </g>
+                <!-- hinge leaves -->
+                <g id="leaves">
+                  <g transform="translate(0 130)"><path d="M0 -27 H66 Q86 0 66 27 H0Z" fill="url(#brassV)" stroke="#5d4718"/><g fill="#7A5F22" stroke="#3d2f0e" stroke-width=".8"><circle cx="24" cy="-11" r="4.6"/><circle cx="24" cy="11" r="4.6"/><circle cx="56" cy="0" r="4.6"/></g><path d="M21 -13 l6 4 M21 9 l6 4 M53 -2 l6 4" stroke="#3d2f0e" stroke-width="1.1"/></g>
+                  <g transform="translate(0 380)"><path d="M0 -27 H66 Q86 0 66 27 H0Z" fill="url(#brassV)" stroke="#5d4718"/><g fill="#7A5F22" stroke="#3d2f0e" stroke-width=".8"><circle cx="24" cy="-11" r="4.6"/><circle cx="24" cy="11" r="4.6"/><circle cx="56" cy="0" r="4.6"/></g><path d="M21 -9 l6 -4 M21 11 l6 0 M53 2 l6 -4" stroke="#3d2f0e" stroke-width="1.1"/></g>
+                  <g transform="translate(0 630)"><path d="M0 -27 H66 Q86 0 66 27 H0Z" fill="url(#brassV)" stroke="#5d4718"/><g fill="#7A5F22" stroke="#3d2f0e" stroke-width=".8"><circle cx="24" cy="-11" r="4.6"/><circle cx="24" cy="11" r="4.6"/><circle cx="56" cy="0" r="4.6"/></g><path d="M21 -11 l6 0 M22 8 l4 6 M53 -2 l6 4" stroke="#3d2f0e" stroke-width="1.1"/></g>
+                </g>
+                <!-- bolt ports -->
+                <g id="ports">
+                  <g transform="translate(600 200)"><rect x="-78" y="-18" width="78" height="36" rx="4" fill="url(#brassV)" stroke="#5d4718"/><rect x="-71" y="-11" width="71" height="22" rx="2" fill="#050706"/><g clip-path="url(#rodclip)"><g class="rod"><rect x="-67" y="-8" width="97" height="16" rx="2" fill="url(#steelH)"/><path d="M-50 -8 v16 M-44 -8 v16" stroke="#2b2a25" stroke-width="1"/></g></g></g>
+                  <g transform="translate(600 380)"><rect x="-78" y="-18" width="78" height="36" rx="4" fill="url(#brassV)" stroke="#5d4718"/><rect x="-71" y="-11" width="71" height="22" rx="2" fill="#050706"/><g clip-path="url(#rodclip)"><g class="rod"><rect x="-67" y="-8" width="97" height="16" rx="2" fill="url(#steelH)"/><path d="M-50 -8 v16 M-44 -8 v16" stroke="#2b2a25" stroke-width="1"/></g></g></g>
+                  <g transform="translate(600 560)"><rect x="-78" y="-18" width="78" height="36" rx="4" fill="url(#brassV)" stroke="#5d4718"/><rect x="-71" y="-11" width="71" height="22" rx="2" fill="#050706"/><g clip-path="url(#rodclip)"><g class="rod"><rect x="-67" y="-8" width="97" height="16" rx="2" fill="url(#steelH)"/><path d="M-50 -8 v16 M-44 -8 v16" stroke="#2b2a25" stroke-width="1"/></g></g></g>
+                </g>
+              </svg>
+
+              <div class="dial" id="dial" role="slider" tabindex="0" aria-label="Combination dial. Left arrow turns left, right arrow turns right." aria-valuemin="0" aria-valuemax="99" aria-valuenow="0">
+                <svg viewBox="-220 -220 440 440" aria-hidden="true">
+                  <circle cx="7" cy="12" r="200" fill="#000" opacity=".55" filter="url(#soft3)"/>
+                  <circle r="197" fill="#070b09"/>
+                  <circle r="193" fill="none" stroke="url(#brassV)" stroke-width="6"/>
+                  <circle r="189.4" fill="none" stroke="#3d2f0e" stroke-width="1"/>
+                  <circle r="99" fill="url(#domeG)"/>
+                  <circle class="focusring" r="205" fill="none" stroke="#E8CF8A" stroke-width="2" stroke-dasharray="3 5"/>
+                </svg>
+                <div class="rot" id="rot">
+                  <svg viewBox="-220 -220 440 440" aria-hidden="true">
+                    <circle r="157" fill="none" stroke="#0c1410" stroke-width="58"/>
+                    <g id="ticks" stroke="#E7E0CF"></g>
+                    <g id="nums"></g>
+                    <circle r="114.5" fill="none" stroke="#C9A24B" stroke-width="27"/>
+                    <circle r="114.5" fill="none" stroke="#6b521b" stroke-width="27" stroke-dasharray="1.7 2.3"/>
+                    <circle r="127.6" fill="none" stroke="#E8CF8A" stroke-width="1.4"/>
+                    <circle r="101.4" fill="none" stroke="#5d4718" stroke-width="1.6"/>
+                    <g fill="none" stroke="#5d4718" stroke-opacity=".5"><circle r="90" stroke-width=".8"/><circle r="86" stroke-width=".5"/><circle r="52" stroke-width=".8"/><circle r="20" stroke-width=".8"/></g>
+                    <path d="M0 -96 L-5 -83 H5Z" fill="#3d2f0e"/>
+                    <path id="arcK" d="M0 -68 A68 68 0 1 1 -0.1 -68" fill="none"/>
+                    <text class="eng"><textPath href="#arcK" startOffset="0" textLength="420" lengthAdjust="spacing">HOLLOWAY &amp; STERN &#183; CLERKENWELL &#183; LONDON &#183;</textPath></text>
+                    <g stroke="#fff3c9" stroke-opacity=".2" stroke-width=".7"><path d="M12 30 L60 64"/><path d="M-40 10 L-72 38"/><path d="M-10 -40 L-22 -60"/><path d="M34 -22 L70 -44"/></g>
+                  </svg>
+                </div>
+                <svg viewBox="-220 -220 440 440" aria-hidden="true">
+                  <circle r="157" fill="none" stroke="url(#shadeTL)" stroke-width="58"/>
+                  <circle r="114.5" fill="none" stroke="url(#sheenTL)" stroke-width="27"/>
+                  <g id="streaks" opacity=".5" filter="url(#soft)">
+                    <path d="M0 0 L-17 -95 A96 96 0 0 1 17 -95Z" fill="#fff3c9" opacity=".55"/>
+                    <path d="M0 0 L-12 95 A96 96 0 0 0 12 95Z" fill="#fff3c9" opacity=".32"/>
+                    <path d="M0 0 L95 -10 A96 96 0 0 1 95 10Z" fill="#fff3c9" opacity=".2"/>
+                  </g>
+                  <circle r="99" fill="none" stroke="#3d2f0e" stroke-width="2" opacity=".7"/>
+                  <ellipse id="spec1" cx="-30" cy="-38" rx="30" ry="17" fill="#fff8dc" opacity=".72" filter="url(#soft)" transform="rotate(-35 -30 -38)"/>
+                  <circle id="spec2" cx="-34" cy="-42" r="5.5" fill="#fff" opacity=".9" filter="url(#soft2)"/>
+                  <g class="index" id="index">
+                    <rect x="-17" y="-216" width="34" height="19" rx="3" fill="url(#brassV)" stroke="#5d4718"/>
+                    <path d="M-10 -203 H10 L0 -178Z" fill="#8C2F23" stroke="#E8CF8A" stroke-width="1.1" stroke-linejoin="round"/>
+                    <path d="M-10 -203 H10 L0 -178Z" fill="#b83b2c" opacity=".55"/>
+                  </g>
+                </svg>
+              </div>
+
+              <button class="handle" id="handle" type="button" aria-label="Try the handle">
+                <svg viewBox="-90 -90 180 180" aria-hidden="true">
+                  <circle r="44" fill="#16291f" stroke="#7A5F22" stroke-width="2"/>
+                  <g class="hrot" id="hrot">
+                    <circle r="38" fill="url(#brassR)" stroke="#5d4718" stroke-width="1.4"/>
+                    <g id="spokes"></g>
+                  </g>
+                  <circle r="23" fill="url(#brassR)" stroke="#5d4718" stroke-width="1.2"/>
+                  <circle r="10" fill="#7A5F22"/><circle r="7.6" fill="url(#brassR)"/>
+                  <ellipse cx="-8" cy="-10" rx="7" ry="4" fill="#fff" opacity=".5" transform="rotate(-35 -8 -10)"/>
+                </svg>
+              </button>
+              <div class="shade"></div>
+            </div>
+
+            <div class="face back" aria-hidden="true">
+              <svg class="art" viewBox="0 0 600 760">
+                <rect width="600" height="760" fill="#13231b"/>
+                <rect x="14" y="14" width="572" height="732" fill="#182c22" stroke="#0a140f" stroke-width="3"/>
+                <rect x="30" y="30" width="540" height="700" fill="none" stroke="#08100c" stroke-width="8" stroke-linecap="round" stroke-dasharray="0 60"/>
+                <!-- bolts and carriage bar: x = 0 is the free edge -->
+                <g fill="url(#steelH)" stroke="#23221d" stroke-width="1.5">
+                  <rect x="0" y="186" width="130" height="28" rx="3"/><rect x="0" y="366" width="130" height="28" rx="3"/><rect x="0" y="546" width="130" height="28" rx="3"/>
+                </g>
+                <rect x="112" y="140" width="34" height="480" rx="4" fill="url(#brassH)" stroke="#3d2f0e" stroke-width="1.5"/>
+                <g fill="#3d2f0e"><circle cx="129" cy="200" r="6"/><circle cx="129" cy="380" r="6"/><circle cx="129" cy="560" r="6"/></g>
+                <g fill="none" stroke="#7A5F22" stroke-width="3"><rect x="56" y="178" width="26" height="44" rx="3"/><rect x="56" y="358" width="26" height="44" rx="3"/><rect x="56" y="538" width="26" height="44" rx="3"/></g>
+                <!-- link from handle cam to carriage -->
+                <path d="M146 600 L290 628 L290 646 L146 618Z" fill="url(#steelH)" stroke="#23221d" stroke-width="1.5"/>
+                <circle cx="300" cy="635" r="46" fill="url(#brassR)" stroke="#3d2f0e" stroke-width="2"/>
+                <circle cx="300" cy="635" r="14" fill="#3d2f0e"/>
+                <path d="M300 589 L312 560 H288Z" fill="url(#brassV)" stroke="#3d2f0e"/>
+                <!-- lock case and wheel pack -->
+                <rect x="206" y="212" width="188" height="176" rx="6" fill="#0e1a14" stroke="#7A5F22" stroke-width="2.4"/>
+                <circle cx="300" cy="300" r="66" fill="url(#brassR)" stroke="#3d2f0e" stroke-width="2"/>
+                <circle cx="300" cy="300" r="50" fill="none" stroke="#5d4718" stroke-width="1.2"/><circle cx="300" cy="300" r="36" fill="none" stroke="#5d4718" stroke-width="1.2"/><circle cx="300" cy="300" r="22" fill="none" stroke="#5d4718" stroke-width="1.2"/>
+                <circle cx="300" cy="300" r="7" fill="#3d2f0e"/>
+                <g fill="#3d2f0e"><circle cx="220" cy="226" r="5"/><circle cx="380" cy="226" r="5"/><circle cx="220" cy="374" r="5"/><circle cx="380" cy="374" r="5"/></g>
+                <path d="M146 290 H206 V310 H146Z" fill="url(#steelH)" stroke="#23221d" stroke-width="1.5"/>
+                <!-- service label -->
+                <g transform="rotate(-2 440 480)"><rect x="350" y="440" width="190" height="84" fill="#E7E0CF"/><g font-family="Courier New,Courier,monospace" font-size="11" fill="#26231d"><text x="362" y="462" font-weight="700">HOLLOWAY &amp; STERN</text><text x="362" y="480">No. 4417  Clerkenwell</text><text x="362" y="498">Serviced Mar. 1924.</text><text x="362" y="514">Oil sparingly.</text></g></g>
+                <rect width="600" height="760" fill="#000" opacity=".28"/>
+              </svg>
+            </div>
+
+            <div class="face edge" aria-hidden="true">
+              <svg class="art" viewBox="0 0 64 760" preserveAspectRatio="none">
+                <rect width="64" height="760" fill="#284a3a"/>
+                <rect x="0" y="0" width="20" height="760" fill="#335c49"/>
+                <rect x="44" y="0" width="20" height="760" fill="#1b3327"/>
+                <path d="M20 0 V760 M44 0 V760" stroke="#0f2018" stroke-width="1.5"/>
+                <g><circle cx="32" cy="200" r="14" fill="url(#steelH)" stroke="#23221d" stroke-width="2"/><circle cx="32" cy="380" r="14" fill="url(#steelH)" stroke="#23221d" stroke-width="2"/><circle cx="32" cy="560" r="14" fill="url(#steelH)" stroke="#23221d" stroke-width="2"/></g>
+                <g fill="none" stroke="#C9A24B" stroke-width="2"><circle cx="32" cy="200" r="19"/><circle cx="32" cy="380" r="19"/><circle cx="32" cy="560" r="19"/></g>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <aside class="col right">
+    <section class="pad" aria-label="Notepad">
+      <span class="pencil" aria-hidden="true"></span>
+      <h2>Found so far</h2>
+      <ol>
+        <li><span class="k">First:</span><button class="num" type="button" data-i="0" disabled aria-label="First number: nothing yet"></button></li>
+        <li><span class="k">Second:</span><button class="num" type="button" data-i="1" disabled aria-label="Second number: nothing yet"></button></li>
+        <li><span class="k">Third:</span><button class="num" type="button" data-i="2" disabled aria-label="Third number: nothing yet"></button></li>
+      </ol>
+      <div class="last" id="last" aria-live="polite"></div>
+      <p class="hint">Rest on a tired number and it pencils itself in. Touch a number to rub it out.</p>
+    </section>
+
+    <div class="plate" aria-live="off">
+      <span>Time<b id="time">0:00</b></span><i class="bar"></i><span>Handle tried<b id="tries">0</b></span>
+    </div>
+
+    <fieldset class="grade">
+      <legend>Grade of lock</legend>
+      <div class="opts">
+        <label><input type="radio" name="grade" value="apprentice" checked><span>Apprentice<small>plain tells</small></span></label>
+        <label><input type="radio" name="grade" value="journeyman"><span>Journeyman<small>narrow gates</small></span></label>
+        <label><input type="radio" name="grade" value="master"><span>Master<small>one gate lies</small></span></label>
+      </div>
+    </fieldset>
+  </aside>
+</div>
+
+<div class="vignette"></div>
+<div class="grain"></div>
+<div class="dark"></div>
+
+<script>
+(function(){
+'use strict';
+var $=function(s,r){return (r||document).querySelector(s)};
+var NS='http://www.w3.org/2000/svg';
+function el(n,a,p){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+var RM=window.matchMedia('(prefers-reduced-motion: reduce)');
+
+/* ---------- build repeated artwork ---------- */
+(function(){
+  var ticks=$('#ticks'),nums=$('#nums'),i;
+  for(i=0;i<100;i++){
+    var ten=i%10===0,five=i%5===0;
+    el('line',{x1:0,y1:-184,x2:0,y2:-184+(ten?17:five?12:7),'stroke-width':ten?2.4:five?1.6:1,'stroke-opacity':ten?1:five?.9:.7,transform:'rotate('+(i*3.6)+')'},ticks);
+    if(ten){var t=el('text',{x:0,y:-141,transform:'rotate('+(i*3.6)+')'},nums);t.textContent=i}
+  }
+  var sp=$('#spokes');
+  for(i=0;i<5;i++){
+    var g=el('g',{transform:'rotate('+(i*72)+')'},sp);
+    el('path',{d:'M-8 -22 L-5.5 -64 A5.5 5.5 0 0 1 5.5 -64 L8 -22Z',fill:'url(#brassH)',stroke:'#5d4718','stroke-width':1},g);
+    el('circle',{cy:-72,r:12,fill:'url(#brassR)',stroke:'#5d4718','stroke-width':1},g);
+  }
+  var gt=$('#gticks');
+  for(i=-6;i<=6;i++){
+    var a=i*10*Math.PI/180,big=i%3===0,r1=66,r2=big?56:60;
+    el('line',{x1:100+r1*Math.sin(a),y1:132-r1*Math.cos(a),x2:100+r2*Math.sin(a),y2:132-r2*Math.cos(a),'stroke-width':big?1.8:1},gt);
+  }
+  var a1=36*Math.PI/180,a2=60*Math.PI/180,R=69.5;
+  $('#gred').setAttribute('d','M'+(100+R*Math.sin(a1))+' '+(132-R*Math.cos(a1))+' A'+R+' '+R+' 0 0 1 '+(100+R*Math.sin(a2))+' '+(132-R*Math.cos(a2)));
+})();
+
+/* ---------- what the vault may hold ---------- */
+var CONTENTS=[
+ {name:'A single pearl on a velvet cushion',
+  line:'One pearl on green velvet. Nobody locks up a single bead; somebody sold the other fifty-nine.',
+  art:'<ellipse cx="180" cy="214" rx="150" ry="9" fill="#000" opacity=".4"/>'+
+  '<path d="M38 186 Q26 150 66 144 Q180 126 294 144 Q334 150 322 186 Q334 208 292 211 Q180 220 68 211 Q26 208 38 186Z" fill="#2b5241" stroke="#0e1f18" stroke-width="2"/>'+
+  '<path d="M52 186 Q42 160 72 155 Q180 139 288 155 Q318 160 308 186" fill="none" stroke="#C9A24B" stroke-width="1.6" opacity=".85"/>'+
+  '<path d="M60 196 Q180 208 300 196" fill="none" stroke="#0e1f18" stroke-width="2" opacity=".6"/>'+
+  '<g stroke="#C9A24B" stroke-width="2.2" stroke-linecap="round"><path d="M36 192 l-13 13 M36 192 l-6 18 M36 192 l-17 6"/><path d="M324 192 l13 13 M324 192 l6 18 M324 192 l17 6"/></g>'+
+  '<ellipse cx="180" cy="160" rx="50" ry="11" fill="#0e1f18" opacity=".7"/>'+
+  '<circle cx="180" cy="135" r="26" fill="url(#pearlG)"/>'+
+  '<path d="M160 148 A26 26 0 0 0 200 148" stroke="#E8CF8A" opacity=".4" fill="none" stroke-width="2.4"/>'+
+  '<ellipse class="glint" cx="170" cy="124" rx="8.5" ry="5" fill="#fff" transform="rotate(-30 170 124)"/>'},
+ {name:'A stack of love letters tied with ribbon',
+  line:'Eleven letters, tied twice in red. Pencilled on the top one: To be burned unread. — H.',
+  art:'<ellipse cx="180" cy="216" rx="140" ry="8" fill="#000" opacity=".4"/>'+
+  '<g transform="rotate(-4 180 150)">'+
+  '<rect x="62" y="98" width="232" height="114" fill="#a39b87" transform="rotate(6 180 150)"/>'+
+  '<rect x="66" y="94" width="228" height="114" fill="#c4bca7" transform="rotate(-3 180 150)"/>'+
+  '<rect x="68" y="90" width="226" height="114" fill="#d6cfbb" transform="rotate(2 180 150)"/>'+
+  '<rect x="70" y="84" width="224" height="114" fill="#E7E0CF" stroke="#9c947f"/>'+
+  '<path d="M70 84 L182 152 L294 84" fill="none" stroke="#9c947f" stroke-width="1.2"/>'+
+  '<rect x="254" y="92" width="30" height="36" fill="#1F3A2E"/><rect x="258" y="96" width="22" height="28" fill="none" stroke="#E7E0CF" stroke-opacity=".6"/>'+
+  '<g font-family="Palatino Linotype,Palatino,Georgia,serif" font-style="italic" font-size="13.5" fill="#4b4840"><text x="82" y="172">To be burned</text><text x="82" y="189">unread. — H.</text></g>'+
+  '<rect x="186" y="84" width="20" height="114" fill="#8C2F23"/><rect x="70" y="132" width="224" height="18" fill="#8C2F23"/>'+
+  '<path d="M186 84 v114 M206 84 v114 M70 132 h224 M70 150 h224" stroke="#5e1d15" stroke-width="1"/>'+
+  '<path d="M196 141 C158 96 126 118 150 142 C128 168 164 178 196 141Z" fill="#a8392b" stroke="#5e1d15"/>'+
+  '<path d="M196 141 C234 96 266 118 242 142 C264 168 228 178 196 141Z" fill="#a8392b" stroke="#5e1d15"/>'+
+  '<path d="M190 146 q-14 26 -26 44 l12 -2 l4 10 q10 -26 16 -48Z" fill="#8C2F23" stroke="#5e1d15"/>'+
+  '<path d="M202 146 q14 24 30 40 l-12 0 l-2 10 q-14 -24 -22 -46Z" fill="#8C2F23" stroke="#5e1d15"/>'+
+  '<rect x="187" y="132" width="18" height="18" rx="4" fill="#b84434" stroke="#5e1d15"/></g>'},
+ {name:'A model ship in a bottle',
+  line:'The Margaret Ellen, full-rigged, in a gin bottle. Somebody valued this above money.',
+  art:'<ellipse cx="186" cy="218" rx="160" ry="8" fill="#000" opacity=".4"/>'+
+  '<path d="M76 216 l12 -30 h22 l12 30z M214 216 l12 -30 h22 l12 30z" fill="#3a2a12" stroke="#7A5F22"/>'+
+  '<path d="M48 166 q12 -8 24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 q12 -6 22 2 Q262 190 238 190 H72 Q52 190 48 166Z" fill="#24463a"/>'+
+  '<path d="M48 166 q12 -8 24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0 t24 0" fill="none" stroke="#E7E0CF" stroke-opacity=".5"/>'+
+  '<path d="M96 158 H218 l-14 16 H108Z" fill="#2a1c0c" stroke="#C9A24B" stroke-width=".8"/>'+
+  '<path d="M218 158 L244 148 M126 158 V112 M158 158 V104 M190 158 V114" stroke="#C9A24B" stroke-width="1.5" fill="none"/>'+
+  '<path d="M244 148 L190 114 L158 104 L126 112 L98 156" stroke="#E7E0CF" stroke-opacity=".45" stroke-width=".7" fill="none"/>'+
+  '<g fill="#E7E0CF" stroke="#9c947f" stroke-width=".6"><path d="M114 118 H138 Q143 126 138 134 H114 Q119 126 114 118Z"/><path d="M112 138 H140 Q146 146 140 154 H112 Q118 146 112 138Z"/><path d="M146 110 H170 Q175 119 170 128 H146 Q151 119 146 110Z"/><path d="M144 132 H172 Q178 143 172 154 H144 Q150 143 144 132Z"/><path d="M178 120 H202 Q207 128 202 136 H178 Q183 128 178 120Z"/><path d="M176 140 H204 Q209 147 204 154 H176 Q181 147 176 140Z"/><path d="M212 156 L240 149 L214 132Z"/></g>'+
+  '<path d="M158 104 l15 4 l-15 4z" fill="#8C2F23"/>'+
+  '<path d="M72 100 H238 Q264 100 278 124 L334 128 V162 L278 166 Q264 190 238 190 H72 Q36 190 36 145 Q36 100 72 100Z" fill="#E7E0CF" fill-opacity=".07" stroke="#E7E0CF" stroke-opacity=".6" stroke-width="2"/>'+
+  '<rect x="326" y="122" width="9" height="46" rx="3" fill="none" stroke="#E7E0CF" stroke-opacity=".7" stroke-width="2"/>'+
+  '<rect x="334" y="129" width="19" height="32" rx="3" fill="#7A5F22" stroke="#3d2f0e"/>'+
+  '<path class="glint" d="M70 110 H232" stroke="#fff" stroke-opacity=".55" stroke-width="3.4" stroke-linecap="round"/>'+
+  '<path d="M48 128 Q43 145 48 162" stroke="#fff" stroke-opacity=".3" stroke-width="2.4" fill="none" stroke-linecap="round"/>'},
+ {name:'A sleeping cat that opens one eye',
+  line:'A cat, asleep. He was not on the inventory, and he would like the door shut: there is a draught.',
+  art:'<ellipse cx="186" cy="216" rx="150" ry="9" fill="#000" opacity=".45"/>'+
+  '<g class="breath"><path d="M72 198 Q40 152 98 128 Q172 100 252 122 Q322 142 310 186 Q304 212 252 214 H112 Q86 214 72 198Z" fill="#C9A24B"/>'+
+  '<g stroke="#7A5F22" stroke-width="5.5" stroke-linecap="round" fill="none" opacity=".85"><path d="M172 114 q9 15 2 32"/><path d="M202 112 q11 17 4 36"/><path d="M232 118 q11 15 6 34"/><path d="M260 128 q9 13 6 28"/><path d="M284 142 q7 10 5 20"/></g>'+
+  '<path d="M238 214 Q226 172 264 160 Q302 160 308 192" fill="none" stroke="#7A5F22" stroke-width="2.6" opacity=".75"/></g>'+
+  '<path d="M302 198 Q304 224 240 218 Q170 216 132 208" fill="none" stroke="#C9A24B" stroke-width="16" stroke-linecap="round"/>'+
+  '<path d="M302 198 Q304 224 240 218 Q170 216 132 208" fill="none" stroke="#7A5F22" stroke-width="16" stroke-dasharray="6 22" opacity=".8"/>'+
+  '<circle cx="132" cy="208" r="8" fill="#7A5F22"/>'+
+  '<g id="cathead" style="cursor:pointer"><path d="M70 148 L64 108 L96 132Z M116 132 L144 104 L142 148Z" fill="#C9A24B" stroke="#7A5F22" stroke-width="1.5" stroke-linejoin="round"/>'+
+  '<path d="M73 138 L70 118 L86 132Z M122 132 L138 116 L137 140Z" fill="#8C2F23" opacity=".55"/>'+
+  '<ellipse cx="104" cy="166" rx="43" ry="35" fill="#d4af59"/>'+
+  '<g stroke="#7A5F22" stroke-width="3.5" stroke-linecap="round" opacity=".8"><path d="M96 134 v12 M106 133 v13 M116 135 v11"/></g>'+
+  '<path d="M80 166 q8 6 17 0" stroke="#3a2a12" stroke-width="2.4" fill="none" stroke-linecap="round"/>'+
+  '<path class="lid" d="M114 166 q8 6 17 0" stroke="#3a2a12" stroke-width="2.4" fill="none" stroke-linecap="round"/>'+
+  '<g class="eye"><ellipse cx="122.5" cy="165" rx="9.5" ry="7.5" fill="#E8CF8A" stroke="#3a2a12" stroke-width="1.6"/><ellipse cx="122.5" cy="165" rx="2.3" ry="6.4" fill="#101412"/><circle cx="120" cy="162" r="1.3" fill="#fff"/></g>'+
+  '<path d="M100 178 h8 l-4 5z" fill="#8C2F23"/><path d="M104 183 q-5 6 -11 3 M104 183 q5 6 11 3" stroke="#3a2a12" stroke-width="1.4" fill="none" stroke-linecap="round"/>'+
+  '<g stroke="#E7E0CF" stroke-opacity=".8" stroke-width=".9"><path d="M88 182 L52 176 M88 186 L54 190 M120 182 L156 176 M120 186 L154 190"/></g></g>'+
+  '<ellipse cx="92" cy="206" rx="20" ry="9" fill="#d4af59" stroke="#7A5F22" stroke-width="1.2"/>'},
+ {name:'Nothing but a note',
+  line:'Nothing but a card, and a clean rectangle in the dust where something stood. Too late. — M.',
+  art:'<path d="M58 228 L92 200 H268 L302 228Z" fill="#b84434" opacity=".42"/>'+
+  '<path d="M58 228 L92 200 H268 L302 228" fill="none" stroke="#E7E0CF" stroke-opacity=".2" stroke-dasharray="1 5"/>'+
+  '<ellipse cx="184" cy="212" rx="74" ry="6" fill="#000" opacity=".4"/>'+
+  '<g transform="rotate(-5 180 160)"><rect x="106" y="112" width="150" height="96" fill="#E7E0CF"/><rect x="112" y="118" width="138" height="84" fill="none" stroke="#9c947f" stroke-width=".8"/>'+
+  '<g font-family="Palatino Linotype,Palatino,Georgia,serif" font-style="italic" fill="#33302a"><text x="181" y="160" text-anchor="middle" font-size="25">Too late.</text><text x="238" y="190" text-anchor="end" font-size="18">— M.</text></g></g>'+
+  '<path d="M286 214 q10 -8 20 -2 q-8 4 -6 10z" fill="#E7E0CF" opacity=".5"/>'}
+];
+
+/* ---------- elements ---------- */
+var room=$('#room'),wrap=$('#wrap'),stage=$('#stage'),door=$('#door'),slab=$('#slab'),dial=$('#dial'),rot=$('#rot'),
+    indexEl=$('#index'),needle=$('#needle'),spec1=$('#spec1'),spec2=$('#spec2'),streaks=$('#streaks'),
+    handle=$('#handle'),hrot=$('#hrot'),listen=$('#listen'),thing=$('#thing'),caption=$('#caption'),relock=$('#relock'),
+    timeEl=$('#time'),triesEl=$('#tries'),lastEl=$('#last'),titleSvg=$('#titleSvg'),tray=$('.tray'),
+    numEls=[].slice.call(document.querySelectorAll('.num')),rods=[].slice.call(document.querySelectorAll('.rod'));
+var NAMES=['First','Second','Third'];
+
+/* ---------- lock model ---------- */
+var GRADES={apprentice:{w:2,cue:1,stick:45,fg:false},journeyman:{w:1,cue:.62,stick:30,fg:false},master:{w:0,cue:.36,stick:30,fg:true}};
+var G=GRADES.apprentice,combo=[0,0,0],falseGate=null;
+var W=[0,0,0],wasMoved=[false,false],active=2;
+var pos=0,target=0,stepPos=0,stickUntil=0,lastMove=0,restDone=true,dragging=false;
+var notes=[null,null,null],attempts=0,tStart=null,tStop=null,busy=false,isOpen=false,lastContent=-1;
+function mod(n){return ((n%100)+100)%100}
+function cdist(a,b){var d=mod(a-b);return Math.min(d,100-d)}
+function rnd(a,b){return a+Math.floor(Math.random()*(b-a+1))}
+function inGate(i){return cdist(W[i],combo[i])<=G.w}
+function cueFor(i){
+  if(i>0&&!inGate(0))return null;
+  if(i>1&&!inGate(1))return null;
+  var r=mod(W[i]),d=cdist(r,combo[i]);
+  if(d<=G.w)return {s:G.cue*(1-.5*d/(G.w+1)),real:true};
+  if(falseGate&&falseGate.wheel===i&&r===falseGate.n)return {s:G.cue*.82,real:false};
+  return null;
+}
+function newCombination(){
+  var a=rnd(6,94),b,c,f;
+  do{b=rnd(6,94)}while(cdist(a,b)<12);
+  do{c=rnd(6,94)}while(cdist(b,c)<12||cdist(a,c)<6);
+  combo=[a,b,c];falseGate=null;
+  if(G.fg){var w=rnd(0,2);do{f=rnd(0,99)}while(cdist(f,combo[w])<10);falseGate={wheel:w,n:f}}
+  W=[stepPos,stepPos,stepPos];wasMoved=[false,false];active=2;
+}
+function step(dir,now,nth){
+  W[2]+=dir;
+  var m1=false,m0=false,d=W[2]-W[1];
+  if(d>100){W[1]=W[2]-100;m1=true}else if(d<0){W[1]=W[2];m1=true}
+  d=W[1]-W[0];
+  if(d>100){W[0]=W[1]-100;m0=true}else if(d<0){W[0]=W[1];m0=true}
+  var pickup=(m1&&!wasMoved[1])||(m0&&!wasMoved[0]);
+  wasMoved=[m0,m1];
+  active=m0?0:m1?1:2;
+  lastMove=now;restDone=false;
+  if(tStart===null){tStart=now;tStop=null}
+  var cue=cueFor(active);
+  if(cue){
+    kick(5+17*cue.s);
+    if(cue.real)setTimeout(function(){kick(2.5+7*cue.s)},70);
+    stickUntil=now+G.stick;
+    if(!RM.matches){indexEl.classList.remove('tremble');void indexEl.getBoundingClientRect();indexEl.classList.add('tremble')}
+    sndGate(dir,cue);
+  }else if(pickup){
+    kick(-11);sndPickup(dir);
+  }else{
+    kick(2.1);
+    if(nth<3)sndClick(dir,nth);
+  }
+}
+
+/* ---------- gauge needle (spring) ---------- */
+var nx=0,nv=0,nShown=null;
+function kick(v){nv+=v}
+function needleStep(dt){
+  var n=Math.max(1,Math.ceil(dt/6)),h=dt/n/1000,i;
+  for(i=0;i<n;i++){nv+=(-240*nx-15*nv)*h;nx+=nv*h;if(nx>1.06){nx=1.06;nv*=-.3}if(nx<-1.06){nx=-1.06;nv*=-.3}}
+  if(Math.abs(nx)<.0004&&Math.abs(nv)<.004){nx=0;nv=0}
+  var a=Math.round(nx*5800)/100;
+  if(a!==nShown){nShown=a;needle.setAttribute('transform','rotate('+a+' 100 132)')}
+}
+
+/* ---------- sound ---------- */
+var AC=null,out=null,noise=null,soundOn=false,suspendT=0;
+function audioInit(){
+  var C=window.AudioContext||window.webkitAudioContext;if(!C)return false;
+  AC=new C();out=AC.createGain();out.gain.value=0;
+  var comp=AC.createDynamicsCompressor();out.connect(comp);comp.connect(AC.destination);
+  var len=AC.sampleRate*2,b=AC.createBuffer(1,len,AC.sampleRate),d=b.getChannelData(0),i;
+  for(i=0;i<len;i++)d[i]=Math.random()*2-1;
+  noise=b;
+  var s=AC.createBufferSource();s.buffer=b;s.loop=true;
+  var lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=130;lp.Q.value=.6;
+  var g=AC.createGain();g.gain.value=.5;s.connect(lp);lp.connect(g);g.connect(out);s.start();
+  var o=AC.createOscillator();o.frequency.value=50;var og=AC.createGain();og.gain.value=.012;o.connect(og);og.connect(out);o.start();
+  return true;
+}
+function chain(node,pan){
+  if(pan&&AC.createStereoPanner){var p=AC.createStereoPanner();p.pan.value=pan;node.connect(p);p.connect(out)}else node.connect(out);
+}
+function tick(freq,q,gain,dur,pan,delay){
+  if(!soundOn)return;
+  var t=AC.currentTime+(delay||0),s=AC.createBufferSource();s.buffer=noise;
+  var f=AC.createBiquadFilter();f.type='bandpass';f.frequency.value=freq;f.Q.value=q;
+  var g=AC.createGain();g.gain.setValueAtTime(gain,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  s.connect(f);f.connect(g);chain(g,pan);s.start(t,Math.random()*1.7,dur+.03);
+}
+function thud(f0,f1,dur,gain,delay){
+  if(!soundOn)return;
+  var t=AC.currentTime+(delay||0),o=AC.createOscillator(),g=AC.createGain();
+  o.type='sine';o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+dur);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(gain,t+.008);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(out);o.start(t);o.stop(t+dur+.05);
+}
+function sndClick(dir,nth){tick(3000+Math.random()*420,2.4,.5,.013,-dir*.3,nth*.007)}
+function sndGate(dir,cue){
+  var k=.3+.7*cue.s;
+  tick(3100-1750*k,2.8,.5*(1-.4*cue.s),.024,-dir*.3);
+  if(cue.real)tick(1050,3.2,.14+.26*cue.s,.034,-dir*.3,.06);
+}
+function sndPickup(dir){thud(190,120,.07,.5);tick(900,1.4,.3,.03,-dir*.3)}
+function sndClunk(){thud(130,62,.17,.9);tick(640,1,.7,.07);tick(1900,2,.3,.02,0,.24);thud(90,60,.1,.4,.25)}
+function sndThunk(d){thud(62,33,.55,1,d);tick(240,.8,1,.1,0,d);tick(1700,2,.25,.02,0,d)}
+function sndCreak(dur){
+  if(!soundOn)return;
+  var t=AC.currentTime;
+  [1,1.52].forEach(function(m,j){
+    var s=AC.createBufferSource();s.buffer=noise;s.loop=true;
+    var f=AC.createBiquadFilter();f.type='bandpass';f.Q.value=16;
+    f.frequency.setValueAtTime(210*m,t);f.frequency.linearRampToValueAtTime(520*m,t+dur*.4);f.frequency.linearRampToValueAtTime(300*m,t+dur*.7);f.frequency.linearRampToValueAtTime(430*m,t+dur);
+    var g=AC.createGain();g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(j?.5:1.1,t+dur*.25);g.gain.linearRampToValueAtTime(j?.3:.7,t+dur*.6);g.gain.linearRampToValueAtTime(.0001,t+dur);
+    s.connect(f);f.connect(g);g.connect(out);s.start(t);s.stop(t+dur+.1);
+  });
+}
+listen.addEventListener('click',function(){
+  if(!soundOn){
+    if(!AC&&!audioInit())return;
+    clearTimeout(suspendT);AC.resume();soundOn=true;
+    out.gain.cancelScheduledValues(AC.currentTime);out.gain.setTargetAtTime(1,AC.currentTime,.12);
+    tick(2600,2,.5,.02);
+  }else{
+    soundOn=false;out.gain.cancelScheduledValues(AC.currentTime);out.gain.setTargetAtTime(0,AC.currentTime,.08);
+    suspendT=setTimeout(function(){if(!soundOn)AC.suspend()},600);
+  }
+  listen.setAttribute('aria-checked',soundOn?'true':'false');
+});
+
+/* ---------- notepad ---------- */
+function writeNote(i,n){
+  if(notes[i]===n)return;
+  notes[i]=n;var b=numEls[i];
+  b.textContent=n+'?';b.disabled=false;b.setAttribute('aria-label',NAMES[i]+' number: '+n+'. Rub it out');
+  b.classList.remove('rub','write');void b.offsetWidth;b.classList.add('write');
+}
+function clearNote(i,quiet){
+  var b=numEls[i];if(notes[i]===null)return;
+  notes[i]=null;b.disabled=true;b.setAttribute('aria-label',NAMES[i]+' number: nothing yet');
+  if(quiet){b.textContent='';b.classList.remove('rub','write');return}
+  b.classList.remove('write');b.classList.add('rub');
+  setTimeout(function(){if(notes[i]===null){b.textContent='';b.classList.remove('rub')}},560);
+}
+numEls.forEach(function(b,i){b.addEventListener('click',function(){clearNote(i)})});
+
+/* ---------- plate ---------- */
+function fmt(ms){var s=Math.floor(ms/1000);return Math.floor(s/60)+':'+('0'+s%60).slice(-2)}
+function plate(){
+  var ms=tStart===null?0:((tStop===null?performance.now():tStop)-tStart);
+  var t=fmt(ms);if(timeEl.textContent!==t)timeEl.textContent=t;
+  if(triesEl.textContent!==String(attempts))triesEl.textContent=attempts;
+}
+setInterval(plate,400);
+
+/* ---------- dial input ---------- */
+var cx=0,cy=0,lastA=0;
+dial.addEventListener('pointerdown',function(e){
+  if(busy||isOpen||(e.pointerType==='mouse'&&e.button!==0))return;
+  var r=dial.getBoundingClientRect();cx=r.left+r.width/2;cy=r.top+r.height/2;
+  lastA=Math.atan2(e.clientY-cy,e.clientX-cx);dragging=true;
+  try{dial.setPointerCapture(e.pointerId)}catch(_){}
+  dial.classList.add('grab');dial.focus({preventScroll:true});e.preventDefault();
+});
+dial.addEventListener('pointermove',function(e){
+  if(!dragging)return;
+  var dx=e.clientX-cx,dy=e.clientY-cy;if(dx*dx+dy*dy<144)return;
+  var a=Math.atan2(dy,dx),d=a-lastA;
+  if(d>Math.PI)d-=2*Math.PI;if(d<-Math.PI)d+=2*Math.PI;
+  lastA=a;
+  if(performance.now()<stickUntil)d*=.12;
+  target-=d*180/Math.PI/3.6;
+});
+function endDrag(){if(!dragging)return;dragging=false;dial.classList.remove('grab');target=Math.round(target)}
+dial.addEventListener('pointerup',endDrag);dial.addEventListener('pointercancel',endDrag);dial.addEventListener('lostpointercapture',endDrag);
+dial.addEventListener('keydown',function(e){
+  if(busy||isOpen)return;
+  var n=0;
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')n=1;else if(e.key==='ArrowRight'||e.key==='ArrowDown')n=-1;else return;
+  e.preventDefault();target=Math.round(target)+n*(e.shiftKey?5:1);
+});
+var wheelAcc=0;
+dial.addEventListener('wheel',function(e){
+  if(busy||isOpen)return;
+  e.preventDefault();
+  wheelAcc+=e.deltaMode===1?e.deltaY*30:e.deltaY;
+  var n=wheelAcc/34;n=n<0?Math.ceil(n):Math.floor(n);
+  if(n){wheelAcc-=n*34;target=Math.round(target)-Math.max(-6,Math.min(6,n))}
+},{passive:false});
+
+/* ---------- handle ---------- */
+var hAnim=null;
+function turnHandle(to,ms,ease){
+  if(hAnim)hAnim.cancel();
+  hrot.style.transition='none';
+  var from=hrot.dataset.a||0;
+  if(!hrot.animate){hrot.style.transform='rotate('+to+'deg)';hrot.dataset.a=to;return}
+  hAnim=hrot.animate([{transform:'rotate('+from+'deg)'},{transform:'rotate('+to+'deg)'}],{duration:RM.matches?Math.min(ms,200):ms,easing:ease,fill:'forwards'});
+  hrot.dataset.a=to;
+}
+function tryHandle(){
+  if(busy||isOpen)return;
+  var now=performance.now();
+  if(tStart===null){tStart=now;tStop=null}
+  attempts++;plate();
+  target=Math.round(target);
+  if(inGate(0)&&inGate(1)&&inGate(2)){openSafe();return}
+  busy=true;
+  handle.classList.remove('clunk');slab.classList.remove('shudder');void handle.offsetWidth;
+  handle.classList.add('clunk');if(!RM.matches)slab.classList.add('shudder');
+  kick(-16);setTimeout(function(){kick(9)},250);
+  sndClunk();
+  setTimeout(function(){handle.classList.remove('clunk');slab.classList.remove('shudder');busy=false},720);
+}
+handle.addEventListener('click',tryHandle);
+
+var wide=false;
+function openSafe(){
+  busy=true;tStop=performance.now();plate();
+  wide=true;fit();
+  var T=RM.matches?.45:1,t=wide&&phone()?900:150;
+  setTimeout(function(){turnHandle(38,420,'cubic-bezier(.2,.7,.2,1)')},t);
+  [0,1,2].forEach(function(i){
+    setTimeout(function(){rods[i].classList.add('in');sndThunk(0);kick(-14+i*2);if(!RM.matches){slab.classList.remove('shudder');void slab.offsetWidth;slab.classList.add('shudder')}},t+520+i*470*T);
+  });
+  var t2=t+520+3*470*T+120;
+  setTimeout(function(){turnHandle(38+648,1700*T,'cubic-bezier(.25,.1,.15,1)')},t2);
+  var t3=t2+1500*T;
+  setTimeout(function(){
+    slab.classList.remove('shudder');
+    door.classList.remove('closing');door.classList.add('open');stage.classList.add('lit');isOpen=true;
+    dial.setAttribute('tabindex','-1');handle.setAttribute('tabindex','-1');
+    sndCreak(RM.matches?1.2:3.7);
+  },t3);
+  var t4=t3+(RM.matches?1300:4000);
+  setTimeout(function(){
+    thud(52,30,.6,.8);
+    stage.classList.add('done');busy=false;
+    lastEl.textContent='Opened in '+fmt(tStop-tStart)+', '+attempts+(attempts===1?' try.':' tries.');lastEl.classList.add('show');
+    setTimeout(function(){thing.classList.add('awake')},1500);
+  },t4);
+}
+function lockAgain(){
+  if(busy||!isOpen)return;
+  busy=true;
+  stage.classList.remove('done');thing.classList.remove('awake');
+  door.classList.add('closing');door.classList.remove('open');stage.classList.remove('lit');
+  sndCreak(RM.matches?1:2);
+  var t=RM.matches?1300:2150;
+  setTimeout(function(){
+    thud(55,30,.5,1);tick(300,.8,.9,.09);
+    if(!RM.matches){slab.classList.remove('shudder');void slab.offsetWidth;slab.classList.add('shudder')}
+    turnHandle(0,700,'cubic-bezier(.4,0,.2,1)');
+    [0,1,2].forEach(function(i){setTimeout(function(){rods[i].classList.remove('in');sndThunk(0);kick(-10)},260+i*190)});
+  },t);
+  setTimeout(function(){
+    door.classList.remove('closing');isOpen=false;busy=false;wide=false;fit();
+    dial.setAttribute('tabindex','0');handle.setAttribute('tabindex','0');
+    newGame();dial.focus({preventScroll:true});
+  },t+1000);
+}
+relock.addEventListener('click',lockAgain);
+
+/* ---------- game ---------- */
+function setContent(){
+  var i;do{i=rnd(0,CONTENTS.length-1)}while(i===lastContent);lastContent=i;
+  var c=CONTENTS[i];thing.innerHTML=c.art;thing.setAttribute('aria-label',c.name);caption.textContent=c.line;
+  var head=thing.querySelector('#cathead');
+  if(head)head.addEventListener('pointerdown',function(){thing.classList.remove('awake');setTimeout(function(){thing.classList.add('awake')},420)});
+}
+function newGame(){
+  target=pos=stepPos=mod(Math.round(pos));
+  newCombination();
+  attempts=0;tStart=null;tStop=null;restDone=true;
+  [0,1,2].forEach(function(i){clearNote(i,false)});
+  lastEl.classList.remove('show');
+  setContent();plate();
+}
+[].forEach.call(document.querySelectorAll('input[name=grade]'),function(r){
+  r.addEventListener('change',function(){
+    if(!r.checked)return;G=GRADES[r.value];
+    if(isOpen){if(!busy)lockAgain()}else if(!busy)newGame();else newCombination();
+  });
+});
+
+/* ---------- layout ---------- */
+function phone(){return document.documentElement.clientWidth<620}
+function fit(){
+  var vw=document.documentElement.clientWidth,vh=window.innerHeight,stacked=vw<1000,s,sClosed,tw;
+  if(!stacked){
+    sClosed=Math.max(.5,Math.min((vh-34)/972,(vw-2*270-80)/680,1.12));
+    tw=760*sClosed;s=sClosed;
+    room.style.setProperty('--k',Math.min(1.22,Math.max(.62,vh/900)).toFixed(3));
+    titleSvg.style.width=tw+'px';titleSvg.style.height=(tw*132/760)+'px';
+    wrap.style.width=680*s+'px';wrap.style.height=(840*s+10)+'px';
+    stage.style.transform='scale('+s+')';
+  }else{
+    tw=Math.min(vw*.95,560);
+    titleSvg.style.width=tw+'px';titleSvg.style.height=(tw*132/760)+'px';
+    var th=tw*132/760,trayH=tray.offsetHeight||110,availH=Math.max(430,vh-th-trayH-4);
+    sClosed=Math.min(availH/840,vw<620?vw*1.17/600:(vw-20)/680);
+    var wrapH=840*sClosed;
+    var zoom=wide&&vw<620;
+    s=zoom?Math.min(sClosed,vw/640):sClosed;
+    wrap.style.width='100%';wrap.style.height=wrapH+'px';
+    stage.style.transform='translate('+(zoom?30:0)+'px,'+((wrapH-840*s)/2)+'px) scale('+s+')';
+  }
+}
+window.addEventListener('resize',fit);
+
+/* ---------- main loop ---------- */
+var raf=0,last=0,shownRot=null,spinT0=null,SPIN=2500,spinLast=0;
+function frame(t){
+  raf=requestAnimationFrame(frame);
+  var dt=Math.min(50,t-last||16);last=t;
+  if(t>=stickUntil){
+    var k=1-Math.exp(-dt/(dragging?40:58));
+    pos+=(target-pos)*k;
+    if(Math.abs(target-pos)<.004)pos=target;
+  }
+  var r=Math.round(pos),n=0;
+  while(r!==stepPos&&n<300){var dir=r>stepPos?1:-1;stepPos+=dir;step(dir,t,n++)}
+  /* pencil a number when resting on a gate */
+  if(!restDone&&!dragging&&pos===target&&t-lastMove>640){
+    restDone=true;
+    if(!busy&&!isOpen&&cueFor(active))writeNote(active,mod(W[active]));
+  }else if(!restDone&&dragging&&t-lastMove>900){
+    restDone=true;
+    if(!busy&&!isOpen&&Math.abs(pos-Math.round(pos))<.3&&cueFor(active))writeNote(active,mod(W[active]));
+  }
+  /* idle entrance spin */
+  var spin=0;
+  if(spinT0!==null){
+    var p=(t-spinT0)/SPIN;
+    if(p>=1)spinT0=null;
+    else if(p>0){var e=1-Math.pow(1-p,4);spin=360*(1-e);var c=Math.floor(spin/3.6);if(c!==spinLast){spinLast=c;kick(1.2)}}
+  }
+  var deg=Math.round((-pos*3.6+spin)*100)/100;
+  if(deg!==shownRot){
+    shownRot=deg;
+    rot.style.transform='rotate('+deg+'deg)';
+    var a=deg*Math.PI/180;
+    streaks.setAttribute('transform','rotate('+(deg*.5)+')');
+    var sx=7*Math.cos(a*1.0),sy=5*Math.sin(a*2.0);
+    spec1.setAttribute('transform','translate('+sx.toFixed(2)+' '+sy.toFixed(2)+') rotate(-35 -30 -38)');
+    spec2.setAttribute('transform','translate('+(sx*1.5).toFixed(2)+' '+(sy*1.5).toFixed(2)+')');
+    var v=mod(Math.round(pos));
+    if(dial.getAttribute('aria-valuenow')!==String(v))dial.setAttribute('aria-valuenow',v);
+  }
+  needleStep(dt);
+}
+document.addEventListener('visibilitychange',function(){
+  if(document.hidden){cancelAnimationFrame(raf);raf=0}
+  else if(!raf){last=0;raf=requestAnimationFrame(frame)}
+});
+
+/* ---------- begin ---------- */
+fit();newGame();
+if(!RM.matches)spinT0=performance.now()+1750;
+raf=requestAnimationFrame(frame);
+window.addEventListener('load',fit);
+})();
+</script>
+</body>
+</html>

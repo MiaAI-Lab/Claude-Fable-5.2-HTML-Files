@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Five Calligrams — poems that do what they say</title>
+<style>
+:root{
+  --paper:#FBFAF5; --ink:#14213D; --red:#C1121F; --ghost:#C9D1DB;
+  --serif:Baskerville,"Baskerville Old Face","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+  --sans:"Gill Sans","Gill Sans MT","Trebuchet MS","Century Gothic",system-ui,Helvetica,Arial,sans-serif;
+  --ease:cubic-bezier(.2,.7,.1,1);
+  --spring:cubic-bezier(.3,1.5,.5,1);
+}
+*{box-sizing:border-box}
+html{background:var(--paper);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+::selection{background:var(--ghost);color:var(--ink)}
+a{color:inherit;text-decoration:none}
+:focus{outline:none}
+:focus-visible{outline:1.5px solid var(--ink);outline-offset:5px;border-radius:2px}
+
+.vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+
+/* paper grain */
+.grain{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50;opacity:.38;mix-blend-mode:multiply}
+.meas{position:absolute;left:-9999px;top:0;width:10px;height:10px;overflow:hidden;visibility:hidden}
+
+/* ───────── cover ───────── */
+.cover{position:relative;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;
+  padding:clamp(22px,5.5vh,54px) clamp(18px,6vw,84px) clamp(18px,4vh,40px)}
+.eyebrow,.hint,.note{font-family:var(--sans);font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:rgba(20,33,61,.66)}
+.eyebrow{display:flex;justify-content:space-between;gap:16px;margin:0}
+.eyebrow span:last-child{text-align:right}
+.cover-mid{flex:1;display:flex;flex-direction:column;justify-content:center;padding:28px 0 12px;min-width:0}
+h1{margin:0;font-weight:400;line-height:.86;letter-spacing:-.022em}
+h1 .five{display:block;font-style:italic;font-size:clamp(30px,6.4vw,92px);letter-spacing:0;margin:0 0 .12em .06em}
+h1 .big{display:inline-block;font-size:var(--fs,clamp(56px,15.4vw,236px));white-space:nowrap}
+h1 .stop{color:var(--red)}
+h1 .ch{display:inline-block;opacity:0;transform:translateY(.05em);animation:ink .5s var(--ease) both}
+@keyframes ink{to{opacity:1;transform:none}}
+.sub{display:block;width:100%;height:74px;margin:clamp(4px,1.6vh,18px) 0 0;overflow:visible}
+.sub path{fill:none;stroke:var(--ghost);stroke-width:1}
+.sub text{font-family:var(--serif);font-style:italic;font-size:26px;fill:var(--ink)}
+.sub .aside{font-size:15px;fill:rgba(20,33,61,.62);letter-spacing:.04em}
+.toc{list-style:none;margin:clamp(22px,5vh,54px) 0 0;padding:0;width:min(100%,372px)}
+.toc li{opacity:0;animation:ink .7s var(--ease) both}
+.toc a{display:flex;align-items:baseline;gap:12px;padding:8px 0;font-size:19px;position:relative}
+.toc .n{width:2.2em;font-family:var(--sans);font-size:10.5px;letter-spacing:.24em;color:rgba(20,33,61,.66)}
+.toc .name{transition:letter-spacing .5s var(--ease)}
+.toc .dots{flex:1;height:1px;align-self:center;margin-top:.5em;
+  background:linear-gradient(90deg,rgba(20,33,61,.42) 1px,transparent 1px) 0 0/7px 1px repeat-x;
+  transform-origin:0 50%;transition:transform .6s var(--ease)}
+.toc .verb{font-style:italic;font-size:17px;color:rgba(20,33,61,.74);transition:transform .5s var(--spring)}
+.toc a:hover .name,.toc a:focus-visible .name{letter-spacing:.08em}
+.toc a:hover .dots,.toc a:focus-visible .dots{transform:scaleX(.9)}
+.toc a:hover .verb,.toc a:focus-visible .verb{transform:translateX(-5px)}
+.hint{display:flex;align-items:center;gap:12px;margin:0;flex-wrap:wrap;line-height:1.9}
+.keys{display:inline-flex;gap:4px}
+.keys svg{width:19px;height:19px;display:block}
+.keys rect{fill:none;stroke:rgba(20,33,61,.55);stroke-width:1}
+.keys path{fill:none;stroke:var(--ink);stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round}
+.keys svg:first-child{animation:nudge 3.2s var(--ease) infinite}
+@keyframes nudge{0%,70%,100%{transform:none}80%{transform:translateY(3px)}}
+
+/* ───────── poem pages ───────── */
+.poem{position:relative;height:100vh;height:100svh;min-height:580px}
+.poem.tall{height:270vh;min-height:1500px}
+.sheet{position:sticky;top:0;height:100vh;height:100svh;min-height:580px;display:flex;flex-direction:column;
+  padding:0 clamp(16px,5vw,72px);
+  border-top:1px solid rgba(20,33,61,.09);
+  background:linear-gradient(rgba(20,33,61,.035),rgba(20,33,61,0) 30px) no-repeat}
+.head{flex:none;text-align:center;padding-top:clamp(20px,5vh,50px)}
+.title{appearance:none;border:0;background:none;color:inherit;font:inherit;cursor:pointer;
+  display:inline-flex;flex-direction:column;align-items:center;gap:9px;padding:6px 16px;-webkit-tap-highlight-color:transparent}
+.title .t{font-family:var(--serif);font-size:13px;letter-spacing:.38em;text-transform:uppercase;padding-left:.38em;display:flex;gap:1.4em;align-items:baseline}
+.title .fo{font-size:12px;letter-spacing:.2em}
+.title .t i{font-style:normal;width:14px;height:1px;background:rgba(20,33,61,.5);align-self:center}
+.mode{display:inline-flex;align-items:center;gap:9px;font-style:italic;font-size:13.5px;color:rgba(20,33,61,.68);transition:color .4s}
+.title:hover .mode{color:var(--ink)}
+.mode svg{width:26px;height:12px;overflow:visible}
+.mode path{fill:none;stroke:currentColor;stroke-width:1.1;stroke-linecap:round;transition:opacity .5s var(--ease),transform .7s var(--ease),stroke-dashoffset .8s var(--ease);stroke-dasharray:30;transform-origin:13px 6px}
+.mode .straight{opacity:0;stroke-dashoffset:30}
+.title[aria-pressed="true"] .mode .wave{opacity:0;transform:scaleY(.1)}
+.title[aria-pressed="true"] .mode .straight{opacity:1;stroke-dashoffset:0}
+.stage{flex:1;min-height:0;position:relative;touch-action:pan-y}
+.stage svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:hidden}
+.stage svg text{font-family:var(--serif);fill:var(--ink);white-space:pre;-webkit-user-select:text;user-select:text}
+svg .it{font-style:italic}
+svg .ro{font-style:normal}
+.stage svg .red{fill:var(--red)}
+.stage svg .gh{fill:var(--ghost)}
+.stage svg .hid{fill-opacity:0}
+.stage svg .sc{font-family:var(--sans);font-size:10.5px;letter-spacing:.24em;text-anchor:middle;fill:rgba(20,33,61,.72);transition:opacity .9s var(--ease)}
+.ghosts path,.ghosts ellipse,.ghosts circle,.ghosts line,.fxg ellipse.rp{fill:none;stroke:var(--ghost);stroke-width:1}
+.foot{flex:none;text-align:center;padding-bottom:clamp(16px,3.6vh,38px)}
+.foot hr{border:0;height:1px;background:rgba(20,33,61,.34);width:min(100%,520px);margin:0 auto 13px;transform-origin:50% 50%}
+.note{margin:0;line-height:1.7}
+#river .stage{cursor:default}
+#heron .stage,#breath .stage{cursor:pointer}
+
+/* side ticks */
+.ticks{position:fixed;right:clamp(0px,1.2vw,18px);top:50%;transform:translateY(-50%);z-index:20;display:flex;flex-direction:column}
+.ticks a{display:flex;align-items:center;justify-content:flex-end;gap:8px;height:28px;padding:0 6px 0 10px;
+  font-family:var(--sans);font-size:9.5px;letter-spacing:.2em;color:rgba(20,33,61,.7)}
+.ticks a span{opacity:0;transform:translateX(6px);transition:opacity .4s var(--ease),transform .5s var(--ease)}
+.ticks a::after{content:"";width:9px;height:1px;background:var(--ink);opacity:.4;transition:width .5s var(--spring),opacity .4s}
+.ticks a:hover span,.ticks a:focus-visible span,.ticks a[aria-current] span{opacity:1;transform:none}
+.ticks a:hover::after,.ticks a[aria-current]::after{width:20px;opacity:1}
+@media (max-width:700px){
+  .ticks a{padding:0 2px 0 8px;height:26px}
+  .ticks a span{display:none}
+  .ticks a::after{width:5px}
+  .ticks a:hover::after,.ticks a[aria-current]::after{width:11px}
+  .eyebrow,.hint,.note{font-size:9.5px;letter-spacing:.2em}
+  .toc a{font-size:18px}
+}
+@media (prefers-reduced-motion:reduce){
+  h1 .ch,.toc li{animation:none;opacity:1;transform:none}
+  .keys svg:first-child{animation:none}
+  .toc .name,.toc .dots,.toc .verb,.mode path,.ticks a span,.ticks a::after,.stage svg .sc{transition:none}
+}
+</style>
+</head>
+<body>
+
+<svg class="grain" aria-hidden="true" focusable="false">
+  <filter id="gr" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="11"/>
+    <feColorMatrix values="0 0 0 0 .08  0 0 0 0 .13  0 0 0 0 .24  0 0 0 .55 -.2"/>
+  </filter>
+  <rect width="100%" height="100%" filter="url(#gr)"/>
+</svg>
+<svg class="meas" aria-hidden="true" focusable="false"><text id="meas" style="white-space:pre"></text></svg>
+
+<nav class="ticks" aria-label="Pages">
+  <a href="#cover"><span>Cover</span></a>
+  <a href="#rain"><span>I</span></a>
+  <a href="#river"><span>II</span></a>
+  <a href="#heron"><span>III</span></a>
+  <a href="#stair"><span>IV</span></a>
+  <a href="#breath"><span>V</span></a>
+</nav>
+
+<main>
+<section class="cover" id="cover">
+  <p class="eyebrow"><span>A small anthology</span><span>Five pages, set in ink</span></p>
+  <div class="cover-mid">
+    <h1 id="h1" aria-label="Five Calligrams."><span class="five" aria-hidden="true">Five</span><span class="big" aria-hidden="true">Calligrams<span class="stop">.</span></span></h1>
+    <svg class="sub" id="sub" viewBox="0 0 440 74" preserveAspectRatio="xMinYMid meet" role="img" aria-label="poems that do what they say">
+      <path id="subp" d="M0 48 C 70 18, 130 18, 200 38 S 340 62, 440 26"/>
+      <text id="subT" dy="-7"><textPath href="#subp" startOffset="8"><tspan id="subA">poems that do what they say</tspan><tspan id="subB" fill-opacity="0"></tspan></textPath></text>
+      <text class="aside" id="subS" dy="-7"><textPath href="#subp" id="subSp" startOffset="62%"><tspan id="subC"></tspan><tspan id="subD" fill-opacity="0"></tspan></textPath></text>
+    </svg>
+    <ol class="toc">
+      <li><a href="#rain"><span class="n">I</span><span class="name">Rain</span><span class="dots"></span><span class="verb">falls</span></a></li>
+      <li><a href="#river"><span class="n">II</span><span class="name">River</span><span class="dots"></span><span class="verb">forgets</span></a></li>
+      <li><a href="#heron"><span class="n">III</span><span class="name">Heron</span><span class="dots"></span><span class="verb">waits</span></a></li>
+      <li><a href="#stair"><span class="n">IV</span><span class="name">Stair</span><span class="dots"></span><span class="verb">goes down</span></a></li>
+      <li><a href="#breath"><span class="n">V</span><span class="name">Breath</span><span class="dots"></span><span class="verb">comes back</span></a></li>
+    </ol>
+  </div>
+  <p class="hint">
+    <span class="keys" aria-hidden="true">
+      <svg viewBox="0 0 19 19"><rect x=".5" y=".5" width="18" height="18" rx="3"/><path d="M9.5 5.5v8M6.3 10.4l3.2 3.1 3.2-3.1"/></svg>
+      <svg viewBox="0 0 19 19"><rect x=".5" y=".5" width="18" height="18" rx="3"/><path d="M9.5 13.5v-8M6.3 8.6l3.2-3.1 3.2 3.1"/></svg>
+    </span>
+    <span>Arrow keys turn the page. A title, pressed, reads plainly.</span>
+  </p>
+</section>
+
+<section class="poem" id="rain" aria-labelledby="t-rain">
+  <div class="sheet">
+    <header class="head">
+      <button class="title" type="button" aria-pressed="false" id="t-rain">
+        <span class="t"><span class="fo">I</span><i></i><span>Rain</span></span>
+        <span class="mode"><svg viewBox="0 0 26 12" aria-hidden="true"><path class="wave" d="M1 6c4-6 8-6 12 0s8 6 12 0"/><path class="straight" d="M1 2h24M1 6h24M1 10h15"/></svg><span class="ml">read plainly</span></span>
+      </button>
+    </header>
+    <div class="stage"></div>
+    <footer class="foot"><hr><p class="note">The wind follows your hand. One word stays dry.</p></footer>
+    <p class="vh">Rain. It has been raining since the word for it. It rains on the just and on the bus stop, on the roofers, who have all gone home, on the washing, which was nearly dry, on the sea, which has no use for more. It rains on everything except one umbrella.</p>
+  </div>
+</section>
+
+<section class="poem" id="river" aria-labelledby="t-river">
+  <div class="sheet">
+    <header class="head">
+      <button class="title" type="button" aria-pressed="false" id="t-river">
+        <span class="t"><span class="fo">II</span><i></i><span>River</span></span>
+        <span class="mode"><svg viewBox="0 0 26 12" aria-hidden="true"><path class="wave" d="M1 6c4-6 8-6 12 0s8 6 12 0"/><path class="straight" d="M1 2h24M1 6h24M1 10h15"/></svg><span class="ml">read plainly</span></span>
+      </button>
+    </header>
+    <div class="stage"></div>
+    <footer class="foot"><hr><p class="note">Rest on the water and the current slows to be read.</p></footer>
+    <p class="vh">River. The river left the hill so long ago it tells the story wrong, says it began as rain, as a rumour, as somebody's well, and where the others join it takes their names and their silt and goes on, wider, slower, sure of everything except the place it calls upstream and the sea, which it has not met yet. First tributary: a brook that had a name and local opinions came down the hill and lost both. Second tributary: a ditch the farmers straightened arrived on time and brought the fields with it.</p>
+  </div>
+</section>
+
+<section class="poem" id="heron" aria-labelledby="t-heron">
+  <div class="sheet">
+    <header class="head">
+      <button class="title" type="button" aria-pressed="false" id="t-heron">
+        <span class="t"><span class="fo">III</span><i></i><span>Heron</span></span>
+        <span class="mode"><svg viewBox="0 0 26 12" aria-hidden="true"><path class="wave" d="M1 6c4-6 8-6 12 0s8 6 12 0"/><path class="straight" d="M1 2h24M1 6h24M1 10h15"/></svg><span class="ml">read plainly</span></span>
+      </button>
+    </header>
+    <div class="stage"></div>
+    <footer class="foot"><hr><p class="note">It strikes when it is ready, or when touched.</p></footer>
+    <p class="vh">Heron. One grey afternoon it stands in the shallows like a question the pond has stopped expecting an answer to, and waits on one leg, then the other. It has outwaited better fish. Not yet. Not yet. Now.</p>
+  </div>
+</section>
+
+<section class="poem tall" id="stair" aria-labelledby="t-stair">
+  <div class="sheet">
+    <header class="head">
+      <button class="title" type="button" aria-pressed="false" id="t-stair">
+        <span class="t"><span class="fo">IV</span><i></i><span>Stair</span></span>
+        <span class="mode"><svg viewBox="0 0 26 12" aria-hidden="true"><path class="wave" d="M1 6c4-6 8-6 12 0s8 6 12 0"/><path class="straight" d="M1 2h24M1 6h24M1 10h15"/></svg><span class="ml">read plainly</span></span>
+      </button>
+    </header>
+    <div class="stage"></div>
+    <footer class="foot"><hr><p class="note">Keep scrolling. The full stop goes down with you.</p></footer>
+    <p class="vh">Stair. A sentence is a staircase you go down carrying one full stop until you find the floor.</p>
+  </div>
+</section>
+
+<section class="poem" id="breath" aria-labelledby="t-breath">
+  <div class="sheet">
+    <header class="head">
+      <button class="title" type="button" aria-pressed="false" id="t-breath">
+        <span class="t"><span class="fo">V</span><i></i><span>Breath</span></span>
+        <span class="mode"><svg viewBox="0 0 26 12" aria-hidden="true"><path class="wave" d="M1 6c4-6 8-6 12 0s8 6 12 0"/><path class="straight" d="M1 2h24M1 6h24M1 10h15"/></svg><span class="ml">read plainly</span></span>
+      </button>
+    </header>
+    <div class="stage"></div>
+    <footer class="foot"><hr><p class="note">Four seconds in, six out. Press and hold to hold it.</p></footer>
+    <p class="vh">Breath. You borrow about a pint of air, keep it for as long as a thought and give it back warm, and do this until you don't. In. Out.</p>
+  </div>
+</section>
+</main>
+
+<script>
+(() => {
+'use strict';
+const NS = 'http://www.w3.org/2000/svg';
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const TAU = Math.PI * 2;
+const clamp = (v, a = 0, b = 1) => v < a ? a : v > b ? b : v;
+const lerp = (a, b, t) => a + (b - a) * t;
+const sstep = t => { t = clamp(t); return t * t * (3 - 2 * t); };
+const eio = t => { t = clamp(t); return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
+const sine = t => .5 - .5 * Math.cos(Math.PI * clamp(t));
+const f2 = v => Math.round(v * 100) / 100;
+const mod = (a, n) => ((a % n) + n) % n;
+function el(name, attrs, parent) {
+  const e = document.createElementNS(NS, name);
+  if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+
+/* ── text measurement (per pixel of font-size) ── */
+const measEl = document.getElementById('meas');
+const twCache = new Map();
+function tw(str, cls) {
+  const key = cls + '|' + str;
+  let v = twCache.get(key);
+  if (v === undefined) {
+    measEl.setAttribute('class', cls);
+    measEl.setAttribute('font-size', '100');
+    measEl.style.fontFamily = 'var(--serif)';
+    measEl.textContent = str;
+    v = measEl.getComputedTextLength() / 100;
+    twCache.set(key, v);
+  }
+  return v;
+}
+
+/* ── a smooth path through points, with a straight run-off so text never falls off the end ── */
+function pathD(p, ext) {
+  const n = p.length;
+  let d = 'M' + f2(p[0][0]) + ' ' + f2(p[0][1]);
+  if (n === 2) d += 'L' + f2(p[1][0]) + ' ' + f2(p[1][1]);
+  else for (let i = 0; i < n - 1; i++) {
+    const a = p[i - 1] || p[i], b = p[i], c = p[i + 1], e = p[i + 2] || c;
+    d += 'C' + f2(b[0] + (c[0] - a[0]) / 6) + ' ' + f2(b[1] + (c[1] - a[1]) / 6) + ' ' +
+      f2(c[0] - (e[0] - b[0]) / 6) + ' ' + f2(c[1] - (e[1] - b[1]) / 6) + ' ' + f2(c[0]) + ' ' + f2(c[1]);
+  }
+  if (ext) {
+    const a = p[n - 2], b = p[n - 1], dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1;
+    d += 'L' + f2(b[0] + dx / l * ext) + ' ' + f2(b[1] + dy / l * ext);
+  }
+  return d;
+}
+
+/* ── arclength table for a sampled curve ── */
+function curve(pts) {
+  const S = [0];
+  for (let i = 1; i < pts.length; i++) S[i] = S[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+  const len = S[S.length - 1], L = pts.length - 1;
+  return {
+    pts, S, len,
+    at(s) {
+      if (s <= 0) { const a = pts[0], b = pts[1], l = S[1]; return [a[0] + (b[0] - a[0]) * s / l, a[1] + (b[1] - a[1]) * s / l]; }
+      if (s >= len) { const a = pts[L - 1], b = pts[L], l = S[L] - S[L - 1], q = (s - len) / l; return [b[0] + (b[0] - a[0]) * q, b[1] + (b[1] - a[1]) * q]; }
+      let lo = 0, hi = L;
+      while (hi - lo > 1) { const m = (lo + hi) >> 1; if (S[m] <= s) lo = m; else hi = m; }
+      const t = (s - S[lo]) / (S[hi] - S[lo]);
+      return [lerp(pts[lo][0], pts[hi][0], t), lerp(pts[lo][1], pts[hi][1], t)];
+    }
+  };
+}
+
+/* ── one line of type on its own path ── */
+let uid = 0;
+class Line {
+  constructor(P, o) {
+    this.P = P; this.str = o.t; this.cls = o.cls || 'it'; this.size = o.size || 16;
+    this.red = o.red || null; this.row = o.row == null ? null : o.row; this.tail = o.tail || 0;
+    this.ls = o.ls || 0; this.alpha = o.alpha == null ? 1 : o.alpha; this.pts = o.pts || [[0, 0], [10, 0]];
+    this.noExt = !!o.noExt; this.so = 0; this._so = 0; this._ls = 0;
+    this.id = 'lp' + (uid++);
+    this.path = el('path', { id: this.id }, P.defs);
+    this.text = el('text', { class: this.cls }, P.gL);
+    this.tp = el('textPath', { href: '#' + this.id }, this.text);
+    this.w1 = tw(this.str, this.cls);
+    this.n = -1; this.delay = 0; this.cps = 40; this.plain = null; this.mi = 0;
+    this.setReveal(0);
+    P.lines.push(this);
+  }
+  get w() { return this.w1 * this.size; }
+  setText(s) { this.str = s; this.w1 = tw(s, this.cls); this.n = -1; this.setReveal(this.raw); }
+  setReveal(n) {
+    const s = this.str;
+    this.raw = n;
+    n = n > s.length ? s.length : n < 0 ? 0 : n | 0;
+    if (n === this.n) return;
+    this.n = n;
+    const cuts = [0, n, s.length];
+    if (this.red) cuts.push(this.red[0], this.red[1]);
+    const c = [...new Set(cuts)].sort((a, b) => a - b), tp = this.tp;
+    tp.textContent = '';
+    for (let i = 0; i < c.length - 1; i++) {
+      const a = c[i], b = c[i + 1], ts = el('tspan', null, tp);
+      ts.textContent = s.slice(a, b);
+      let k = '';
+      if (this.red && a >= this.red[0] && b <= this.red[1]) k = 'red';
+      if (a >= n) k += ' hid';
+      if (k) ts.setAttribute('class', k.trim());
+    }
+  }
+  draw(m) {
+    let pts = this.pts, size = this.size, ls = this.ls, a = this.alpha, so = this.so;
+    const pl = this.plain;
+    if (m > 0) {
+      if (pl) {
+        const N = pts.length, L = this.w1 * pl.size * 1.08 + 8, q = new Array(N);
+        for (let i = 0; i < N; i++) { const p = pts[i]; q[i] = [lerp(p[0], pl.x + L * i / (N - 1), m), lerp(p[1], pl.y, m)]; }
+        pts = q; size = lerp(size, pl.size, m); ls *= 1 - m; a = lerp(a, 1, m); so *= 1 - m;
+      } else a *= 1 - m;
+    }
+    const w = this.w1 * size;
+    this.path.setAttribute('d', pathD(pts, this.noExt && m === 0 ? 0 : (this.noExt ? w + 30 : w * .5 + 30)));
+    this.text.setAttribute('font-size', f2(size));
+    so = f2(so); if (so !== this._so) { this.tp.setAttribute('startOffset', so); this._so = so; }
+    ls = f2(ls); if (ls !== this._ls) { this.text.style.letterSpacing = ls ? ls + 'px' : ''; this._ls = ls; }
+    a = f2(a); if (a !== this._a) { this.text.style.opacity = a; this._a = a; }
+  }
+}
+
+/* ── a poem: stage, svg, lines, reveal, and the morph to plain reading ── */
+let T = 0;
+const poems = [];
+class Poem {
+  constructor(id, impl) {
+    this.sec = document.getElementById(id);
+    this.stage = this.sec.querySelector('.stage');
+    this.btn = this.sec.querySelector('.title');
+    this.ml = this.sec.querySelector('.ml');
+    this.svg = el('svg', { 'aria-hidden': 'true', focusable: 'false' }, this.stage);
+    this.impl = impl; impl.P = this;
+    this.lines = []; this.revealT = RM ? 1e9 : 0; this.revealEnd = 0; this.started = RM; this.visible = false;
+    this.mt = 0; this.mTarget = 0; this.me = 0; this.dirty = true; this.W = 0; this.H = 0;
+    this.btn.addEventListener('click', () => {
+      this.mTarget = 1 - this.mTarget;
+      this.btn.setAttribute('aria-pressed', this.mTarget ? 'true' : 'false');
+      this.ml.textContent = this.mTarget ? 'return it to its shape' : 'read plainly';
+    });
+    new ResizeObserver(() => this.layout()).observe(this.stage);
+    poems.push(this);
+  }
+  layout() {
+    const r = this.stage.getBoundingClientRect(), W = Math.round(r.width), H = Math.round(r.height);
+    if (!W || !H || (W === this.W && H === this.H)) return;
+    this.W = W; this.H = H; this.phone = W < 560;
+    const svg = this.svg;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    svg.textContent = ''; this.lines = [];
+    this.defs = el('defs', null, svg);
+    this.gG = el('g', { class: 'ghosts' }, svg);
+    this.gL = el('g', null, svg);
+    this.gF = el('g', { class: 'fxg' }, svg);
+    this.impl.layout(W, H, this.phone);
+    this.layoutPlain();
+    this.revealEnd = 0;
+    for (const l of this.lines) this.revealEnd = Math.max(this.revealEnd, l.delay + l.str.length / l.cps);
+    this.applyReveal();
+    this.dirty = true;
+    this.tick(T, 0);
+  }
+  sched(lines, start, cps, overlap) {
+    let t = start;
+    for (const l of lines) { l.delay = t; l.cps = cps; t += l.str.length / cps * overlap; }
+    return t;
+  }
+  layoutPlain() {
+    const W = this.W, H = this.H, ls = this.lines.filter(l => l.row != null), rows = new Map(), sp = .3;
+    for (const l of ls) { if (!rows.has(l.row)) rows.set(l.row, []); rows.get(l.row).push(l); }
+    let maxW = 0, maxRow = 0;
+    rows.forEach((arr, r) => { let w = 0; arr.forEach((l, i) => { w += l.w1 + l.tail + (i ? sp : 0); }); maxW = Math.max(maxW, w); maxRow = Math.max(maxRow, r); });
+    const K = 1.72;
+    let size = Math.min(this.phone ? 17 : 23, (W - 40) / maxW, (H - 16) / ((maxRow + 1) * K));
+    const lh = size * K, x0 = (W - maxW * size) / 2, y0 = (H - maxRow * lh) / 2 + size * .32;
+    rows.forEach((arr, r) => { let x = x0; arr.forEach(l => { l.plain = { x, y: y0 + r * lh, size }; x += (l.w1 + l.tail + sp) * size; }); });
+    ls.forEach((l, i) => { l.mi = ls.length > 1 ? i / (ls.length - 1) : 0; });
+    if (this.impl.afterPlain) this.impl.afterPlain();
+  }
+  applyReveal() {
+    const t = this.revealT;
+    for (const l of this.lines) l.setReveal(t >= 1e6 ? 1e9 : (t - l.delay) * l.cps);
+  }
+  tick(T, dt) {
+    if (!this.W) return;
+    if (this.started && this.revealT < this.revealEnd + .2) { this.revealT += dt; this.applyReveal(); }
+    const mt0 = this.mt, step = RM ? 1 : dt / 1.5;
+    this.mt = this.mt < this.mTarget ? Math.min(this.mTarget, this.mt + step) : Math.max(this.mTarget, this.mt - step);
+    const morphing = this.mt !== mt0;
+    this.me = eio(this.mt);
+    const changed = this.impl.frame(T, dt, morphing);
+    if (changed || morphing || this.dirty) {
+      const g = this.mt, S = .5;
+      for (const l of this.lines) l.draw(g === 0 ? 0 : g === 1 ? 1 : eio(g * (1 + S) - S * l.mi));
+      if (morphing || this.dirty) { const o = f2(1 - this.me); this.gG.style.opacity = o; }
+      this.dirty = false;
+    }
+  }
+}
+
+/* ══════════════ I · RAIN ══════════════ */
+const rain = {
+  texts: [
+    ['it has been raining since the word for', 'it'],
+    ['it rains on the just and on the bus', 'stop'],
+    ['on the roofers, who have all gone', 'home'],
+    ['on the washing, which was nearly', 'dry'],
+    ['on the sea, which has no use for', 'more'],
+    ['it rains on everything except', 'one']
+  ],
+  ghosts: ['and it rains', 'it rains still', 'rain upon rain', 'so it rains', 'and rains', 'it rains'],
+  px: null,
+  layout(W, H, ph) {
+    const P = this.P, size = ph ? 14 : 18;
+    this.size = size; this.W = W; this.H = H;
+    this.ground = H - 12; this.cx = W / 2; this.cy = H * .47;
+    const cid = 'rc' + (uid++);
+    el('rect', { x: -50, y: -50, width: W + 100, height: this.ground + 50 }, el('clipPath', { id: cid }, P.defs));
+    P.gL.setAttribute('clip-path', 'url(#' + cid + ')');
+    const us = ph ? 23 : 34, uw = tw('umbrella', 'it red') * us, cx = this.cx, cy = this.cy;
+    this.us = us; this.R0 = uw / 2 + (ph ? 9 : 20);
+    const sp = clamp(W * .15, 50, 150), speeds = [46, 62, 40, 66, 52, 43], fr = [.62, .1, .9, .34, 1, .2];
+    this.cols = [];
+    const phs = [.6, .12, .88, .36, .74, .24];
+    for (let cp = 0; cp < 2; cp++) this.texts.forEach((tx, i) => {
+      const line = new Line(P, cp ? { t: tx[0], size } : { t: tx[0], size, row: i, tail: tw(' ' + tx[1], 'it') });
+      line.delay = .15 + i * .28; line.cps = 30;
+      const len = line.w, gap = size * .3, lw = tw(tx[1], 'it') * size, total = len + gap + lw;
+      const letters = [...tx[1]].map((ch, j) => {
+        const e = el('text', { class: 'it' }, P.gF); e.textContent = ch;
+        return { e, o1: tw(tx[1].slice(0, j), 'it'), st: null };
+      });
+      const C = this.ground + 14 + total;
+      this.cols.push({ line, clone: cp, C, x: cx + (i - 2.5) * sp, side: i < 3 ? -1 : 1, v: speeds[i] * (ph ? .85 : 1), y: -total + ((phs[i] + cp * .5) % 1) * C,
+        len, gap, lw, total, letters, last: tx[1], rip: null, re: el('path', { opacity: 0 }, P.gG), done: line.delay + tx[0].length / 30 });
+    });
+    this.gcols = [];
+    if (!ph) {
+      [-3.5, -2, -1, 1, 2, 3.5].forEach((q, i) => {
+        const x = cx + q * sp;
+        if (x < 14 || x > W - 14) return;
+        const line = new Line(P, { t: this.ghosts[i], cls: 'it gh', size: 13 });
+        line.delay = .1 + i * .2; line.cps = 30;
+        this.gcols.push({ line, x, side: q < 0 ? -1 : 1, v: 118 + i * 13, y: (H - 120) * ((i * .37 + .2) % 1), len: line.w, total: line.w, letters: null });
+      });
+    }
+    this.umb = new Line(P, { t: 'umbrella', cls: 'it red', size: us, row: 5, pts: [[cx - uw / 2, cy + us * .3], [cx + uw / 2, cy + us * .3]] });
+    this.umb.delay = 2.3; this.umb.cps = 14;
+    // ghost paths: canopy, handle, ground
+    const R = this.R0, ty = cy - us * .62;
+    el('path', { d: `M${f2(cx - R)} ${f2(ty)}Q${f2(cx)} ${f2(ty - R * 1.05)} ${f2(cx + R)} ${f2(ty)}` }, P.gG);
+    el('path', { d: `M${f2(cx)} ${f2(ty - R * .53)}v-9M${f2(cx)} ${f2(cy + us * .66)}v${f2(us * .9)}q0 9 -9 9` }, P.gG);
+    el('path', { d: `M0 ${this.ground + .5}H${W}` }, P.gG);
+    // ghost rain: fast hairline streaks between the lines
+    this.streaks = [];
+    const ns = ph ? 11 : Math.min(46, Math.round(W / 30));
+    for (let i = 0; i < ns; i++) {
+      const x = W * (i + .5 + (((i * 7919) % 13) / 13 - .5) * .8) / ns;
+      this.streaks.push({ x, side: x < cx ? -1 : 1, y: ((i * 137.5) % 100) / 100 * H, v: 330 + ((i * 53) % 9) * 34, l: 26 + ((i * 31) % 7) * 11 });
+    }
+    this.sp = el('path', { 'stroke-linecap': 'round' }, P.gG);
+    this.slant = .1;
+  },
+  point(c, s) {
+    const y = c.y + s, cx = this.cx;
+    let x = c.x + this.slant * (y - this.cy);
+    const u = y - (this.cy - this.us * 1.7);
+    const b = u < 0 ? Math.exp(-(u * u) / 1300) : Math.exp(-(u * u) / Math.pow(this.H * .27, 2));
+    const d = Math.max(0, (x - cx) * c.side), R = this.R0 * b;
+    x = cx + c.side * Math.sqrt(d * d + R * R);
+    return [x, y];
+  },
+  frame(T, dt) {
+    const P = this.P, ground = this.ground, me = P.me, go = !RM && P.started;
+    const target = this.px == null ? .1 + .06 * Math.sin(T * .45) : (this.px - .5) * .62;
+    this.slant += (target - this.slant) * (1 - Math.exp(-dt * 2.6));
+    const N = 12;
+    for (const c of this.cols.concat(this.gcols)) {
+      if (go) c.y += c.v * dt;
+      if (c.y > ground + 12) {
+        c.y = c.letters ? c.y - c.C : -c.total - 6 - Math.random() * 260;
+        if (c.letters) for (const L of c.letters) L.st = null;
+      }
+      const pts = new Array(N);
+      for (let k = 0; k < N; k++) pts[k] = this.point(c, k / (N - 1) * c.len * 1.04);
+      c.line.pts = pts;
+      if (!c.letters) continue;
+      const pl = c.line.plain, size = this.size;
+      c.letters.forEach((L, j) => {
+        const s = c.len + c.gap + L.o1 * size;
+        let x, y, rot, a;
+        if (!L.st) {
+          const p = this.point(c, s), q = this.point(c, s + 5);
+          x = p[0]; y = p[1]; rot = Math.atan2(q[1] - p[1], q[0] - p[0]) * 180 / Math.PI; a = 1;
+          if (go && y >= ground - 2) {
+            L.st = { t: 0, x, vx: (Math.random() - .5) * 120 + this.slant * 90, vy: -(150 + Math.random() * 120), sp: (Math.random() - .5) * 520, r0: rot };
+            if (j === 0) c.rip = { t: 0, x };
+          } else if (y > ground) a = 0;
+        }
+        if (L.st) {
+          const st = L.st; st.t += dt; const t = st.t;
+          x = st.x + st.vx * t; y = ground - 3 + st.vy * t + 310 * t * t; rot = st.r0 + st.sp * t;
+          a = y > ground ? 0 : clamp(1.15 - t / .7);
+        }
+        if (P.revealT < c.done + j / 30) a = 0;
+        let fs = size;
+        if (me > 0 && c.clone) a *= 1 - me;
+        else if (me > 0 && pl) {
+          x = lerp(x, pl.x + (c.line.w1 + .3 + L.o1) * pl.size, me); y = lerp(y, pl.y, me);
+          rot = lerp(((rot % 360) + 540) % 360 - 180, 0, me); a = lerp(a, 1, me); fs = lerp(size, pl.size, me);
+        }
+        L.e.setAttribute('transform', 'translate(' + f2(x) + ' ' + f2(y) + ') rotate(' + f2(rot) + ')');
+        L.e.setAttribute('font-size', f2(fs));
+        L.e.style.opacity = f2(a);
+      });
+      if (c.rip) {
+        const r = c.rip; r.t += dt;
+        const k = r.t / 1.0, rr = 5 + 44 * (1 - Math.pow(1 - clamp(k), 3)), g = ground;
+        c.re.setAttribute('d', `M${f2(r.x - rr)} ${g}A${f2(rr)} ${f2(rr * .34)} 0 0 1 ${f2(r.x + rr)} ${g}M${f2(r.x - rr * .5)} ${g}A${f2(rr * .5)} ${f2(rr * .2)} 0 0 1 ${f2(r.x + rr * .5)} ${g}`);
+        c.re.setAttribute('opacity', f2(1 - k));
+        if (k >= 1) { c.rip = null; c.re.setAttribute('opacity', 0); }
+      }
+    }
+    let sd = '';
+    for (const s of this.streaks) {
+      if (go) s.y += s.v * dt;
+      if (s.y > ground) s.y = -s.l - Math.random() * 120;
+      const a = this.point(s, 0), m = this.point(s, s.l * .5), b = this.point(s, Math.min(s.l, ground - s.y));
+      if (b[1] > a[1]) sd += 'M' + f2(a[0]) + ' ' + f2(a[1]) + 'Q' + f2(m[0]) + ' ' + f2(m[1]) + ' ' + f2(b[0]) + ' ' + f2(b[1]);
+    }
+    this.sp.setAttribute('d', sd);
+    return true;
+  }
+};
+
+/* ══════════════ II · RIVER ══════════════ */
+const river = {
+  main: [
+    'the river left the hill so long ago',
+    'it tells the story wrong, says it began',
+    'as rain, as a rumour, as somebody’s well,',
+    'and where the others join it takes',
+    'their names and their silt and goes on,',
+    'wider, slower, sure of everything',
+    'except the place it calls upstream',
+    'and the sea, which it has not met yet,'
+  ],
+  tA: ['a brook that had a name', 'and local opinions', 'came down the hill and lost both'],
+  tB: ['a ditch the farmers straightened', 'arrived on time', 'and brought the fields with it'],
+  ph: 0, k: 1, hover: false,
+  layout(W, H, ph) {
+    const P = this.P;
+    const base = ph ? 14 : (W < 900 ? 16 : 18), n = ph ? 1.5 : (W < 900 ? 2 : 2.5);
+    this.base = base;
+    const x0 = ph ? 4 : W * .015, x1 = ph ? W - 8 : W * .98, y0 = H * (ph ? .13 : .2), y1 = H * (ph ? .88 : .76), A = H * (ph ? .12 : .165);
+    const M = 420, pts = [];
+    for (let i = 0; i <= M; i++) {
+      const t = i / M, env = sstep(t * 5) * sstep((1 - t) * 5);
+      pts.push([lerp(x0, x1, t), lerp(y0, y1, t) - A * Math.sin(TAU * n * t) * env]);
+    }
+    const C = this.C = curve(pts);
+    // confluences: a trough for the tributary from below, then a crest for the one from above
+    let iB = -1, iA = -1;
+    for (let i = Math.round(M * .2); i < M * .92; i++) {
+      const y = pts[i][1];
+      if (iB < 0) { if (y > pts[i - 1][1] && y >= pts[i + 1][1]) iB = i; }
+      else if (y < pts[i - 1][1] && y <= pts[i + 1][1]) { iA = i; break; }
+    }
+    if (iB < 0) iB = Math.round(M * .35);
+    if (iA < 0) iA = Math.round(M * .7);
+    const sB = C.S[iB], sA = C.S[iA], cB = pts[iB], cA = pts[iA];
+    const scale = this.scale = s => 1 + .3 * sstep((s - sB + 50) / 100) + .44 * sstep((s - sA + 50) / 100);
+    const U = [0];
+    for (let i = 1; i <= M; i++) U[i] = U[i - 1] + (C.S[i] - C.S[i - 1]) / scale((C.S[i] + C.S[i - 1]) / 2);
+    const Utot = U[M];
+    this.sOfU = u => {
+      if (u <= 0) return u;
+      if (u >= Utot) return C.len + (u - Utot) * 1.74;
+      let lo = 0, hi = M;
+      while (hi - lo > 1) { const m = (lo + hi) >> 1; if (U[m] <= u) lo = m; else hi = m; }
+      return lerp(C.S[lo], C.S[hi], (u - U[lo]) / (U[hi] - U[lo]));
+    };
+    // tributaries (quadratic curves that arrive alongside the main line)
+    const quad = (a, c, b) => { const q = []; for (let i = 0; i <= 70; i++) { const t = i / 70, m = 1 - t; q.push([m * m * a[0] + 2 * m * t * c[0] + t * t * b[0], m * m * a[1] + 2 * m * t * c[1] + t * t * b[1]]); } return curve(q); };
+    const tb = ph ? 13 : 15; this.tb = tb;
+    const eBy = cB[1] + base * 1.3, hB = Math.min(ph ? 150 : 210, H - eBy - 12), dB = Math.min(W * .42, ph ? 170 : 380, cB[0] - 6);
+    const TB = quad([cB[0] - dB, eBy + hB], [cB[0] - dB * .32, eBy + 2], [cB[0] + 18, eBy]);
+    const eAy = cA[1] - base * 1.3 * 1.05 - 5, hA = Math.min(ph ? 150 : 230, eAy - 10), dA = hA * (ph ? .5 : .62);
+    const TA = quad([cA[0] - dA, eAy - hA], [cA[0] - dA * .82, eAy - 2], [cA[0] + 18, eAy]);
+    // ghost paths: the water line, widening after each confluence
+    const off = (cv, s0, o) => { const q = []; const stp = 6; for (let s = s0; s <= cv.len; s += stp) { const a = cv.at(s), b = cv.at(s + 2), dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1; q.push(f2(a[0] - dy / l * o) + ' ' + f2(a[1] + dx / l * o)); } return 'M' + q.join('L'); };
+    el('path', { d: off(C, 0, 4) }, P.gG);
+    el('path', { d: off(C, sB + 6, 9) }, P.gG);
+    el('path', { d: off(C, sA + 6, 14) }, P.gG);
+    el('path', { d: off(TB, 0, 4) }, P.gG);
+    el('path', { d: off(TA, 0, 4) }, P.gG);
+    el('circle', { cx: f2(pts[0][0] + 3), cy: f2(pts[0][1] + 4), r: 2.2 }, P.gG);
+    // lines
+    const mk = (arr, size, row0, alpha, redAt) => {
+      const gap = size * 1.15; let off = 0, maxW = 0;
+      const items = arr.map((t, i) => {
+        const o = { t, size, row: row0 + i, alpha, noExt: true };
+        if (redAt && i === redAt[0]) { const a = t.indexOf(redAt[1]); o.red = [a, a + redAt[1].length]; }
+        const line = new Line(P, o), w = line.w, it = { line, off, w };
+        off += w + gap; maxW = Math.max(maxW, w); return it;
+      });
+      return { items, sum: off, maxW };
+    };
+    const m = this.M = mk(this.main, base, 0, 1, [6, 'upstream']);
+    m.cyc = Math.max(m.sum, Utot + m.maxW + 70);
+    const a = this.A = mk(this.tA, tb, 8.7, .9), b = this.B = mk(this.tB, tb, 12.4, .9);
+    a.cv = TA; b.cv = TB;
+    a.cyc = Math.max(a.sum, TA.len + a.maxW + 40); b.cyc = Math.max(b.sum, TB.len + b.maxW + 40);
+    const t1 = P.sched(m.items.map(i => i.line), .2, 52, .92);
+    P.sched(b.items.map(i => i.line), 1.4, 36, 1);
+    P.sched(a.items.map(i => i.line), 2.8, 36, 1);
+    this.t1 = t1;
+  },
+  place(line, cv, s0, s1) {
+    const lo = Math.max(0, s0), hi = Math.min(cv.len, s1);
+    if (hi - lo < 3) { line.pts = [[-200, -200], [-190, -200]]; line.so = 0; line.hide = true; return; }
+    const N = Math.max(3, Math.min(12, Math.ceil((hi - lo) / 22) + 1)), pts = new Array(N);
+    for (let k = 0; k < N; k++) pts[k] = cv.at(lerp(lo, hi, k / (N - 1)));
+    line.pts = pts; line.so = Math.min(0, s0); line.hide = false;
+  },
+  frame(T, dt) {
+    const P = this.P;
+    this.k += ((this.hover ? .14 : 1) - this.k) * (1 - Math.exp(-dt * 4.5));
+    if (!RM && P.started) this.ph += dt * this.k;
+    const M = this.M, C = this.C;
+    for (const it of M.items) {
+      const u = mod(this.ph * 30 + it.off + M.maxW + 40, M.cyc) - M.maxW - 30;
+      const s0 = this.sOfU(u), s1 = this.sOfU(u + it.w);
+      it.line.size = this.base * (s1 - s0) / it.w;
+      this.place(it.line, C, s0, s1);
+      it.line.alpha = it.line.hide ? 0 : 1;
+    }
+    for (const G of [this.A, this.B]) for (const it of G.items) {
+      const u = mod(this.ph * 22 + it.off + G.maxW + 24, G.cyc) - G.maxW - 20;
+      this.place(it.line, G.cv, u, u + it.w);
+      it.line.alpha = it.line.hide ? 0 : .9;
+    }
+    return true;
+  }
+};
+
+/* ══════════════ III · HERON ══════════════ */
+const heron = {
+  body: [['one grey', 78, 44, 0], ['afternoon it', 132, 30, 0], ['stands in the shallows', 212, 10, 1], ['like a question the pond', 230, -4, 2],
+    ['has stopped expecting', 204, -20, 3], ['an answer to, and', 150, -44, 4], ['waits', 58, -74, 4]],
+  neckU: [[0, 0], [22, -42], [27, -88], [11, -130], [-2, -172], [8, -212], [36, -236]],
+  sk: null, next: 0,
+  layout(W, H, ph) {
+    const P = this.P;
+    let k = Math.min((W - 8) / 446, H / 548, 1.4), above = 0, total = 0;
+    for (let it = 0; it < 4; it++) {
+      let h5 = 0;
+      this.body.forEach((b, i) => { if (i < 5) h5 += clamp(b[1] * k / tw(b[0], 'it'), 12.5, 36) * .97; });
+      above = 232 * k + 40 * k; total = above + h5 + 150 * k + 30;
+      if (total > H - 6) k *= (H - 6) / total; else break;
+    }
+    const ox = W / 2 - 94 * k, yTop = (H - total) / 2 + above;
+    this.k = k;
+    let y = yTop, y5 = 0;
+    const bodyLines = [];
+    this.body.forEach((b, i) => {
+      const w1 = tw(b[0], 'it'), size = clamp(b[1] * k / w1, 12.5, 36);
+      y += size * .97;
+      const w = w1 * size, x = ox + b[2] * k - w / 2;
+      bodyLines.push(new Line(P, { t: b[0], size, row: b[3], pts: [[x, y], [x + w, y]] }));
+      if (i === 4) y5 = y;
+    });
+    const water = this.water = y5 + 150 * k;
+    // legs: two thin lines of spaced letters
+    const lsz = ph ? 13 : 15, legTop = y5 + 10 * k;
+    const leg = (t, pts) => {
+      let len = 0; for (let i = 1; i < pts.length; i++) len += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+      const l = new Line(P, { t, cls: 'ro', size: lsz, row: 5, pts });
+      l.ls = Math.max(0, (len * .97 - l.w) / t.length); return l;
+    };
+    const mid = (legTop + water) / 2;
+    const l1 = leg('on one leg', [[ox + 58 * k, legTop], [ox + 55 * k, mid], [ox + 52 * k, water - 2]]);
+    const l2 = leg('then the other', [[ox + 82 * k, legTop], [ox + 98 * k, mid - 8 * k], [ox + 86 * k, water - 2]]);
+    // neck
+    const B = [ox + 86 * k, yTop + 6 * k];
+    this.rest = this.neckU.map(p => [B[0] + p[0] * k, B[1] + p[1] * k]);
+    const N = this.rest.length;
+    let rl = 0; for (let i = 1; i < N; i++) rl += Math.hypot(this.rest[i][0] - this.rest[i - 1][0], this.rest[i][1] - this.rest[i - 1][1]);
+    const nt = 'it has outwaited better fish', nsz = clamp(rl * 1.0 / tw(nt, 'it'), 12.5, 24);
+    const tip = this.tip = [B[0] + 178 * k, water + 1], tl = Math.hypot(tip[0] - B[0], tip[1] - B[1]);
+    const back = tw('now', 'ro') * nsz * 1.18 + nsz * .6 + 4;
+    const Tg = this.Tg = [tip[0] - (tip[0] - B[0]) / tl * back, tip[1] - (tip[1] - B[1]) / tl * back];
+    this.strike = this.rest.map((p, i) => [lerp(B[0], Tg[0], i / (N - 1)), lerp(B[1], Tg[1], i / (N - 1))]);
+    // swing about the shoulder: each point keeps a radius and an angle, so the neck lunges in an arc
+    this.B = B;
+    this.pol = this.rest.map((p, i) => {
+      const s = this.strike[i];
+      return [Math.hypot(p[0] - B[0], p[1] - B[1]), Math.atan2(p[1] - B[1], p[0] - B[0]), Math.hypot(s[0] - B[0], s[1] - B[1]), Math.atan2(s[1] - B[1], s[0] - B[0])];
+    });
+    this.neck = new Line(P, { t: nt, size: nsz, row: 6, pts: this.rest });
+    this.head = new Line(P, { t: 'not yet', cls: 'ro', size: nsz * 1.18, red: [1, 2], row: 7 });
+    this.sAng = Math.atan2(Tg[1] - B[1], Tg[0] - B[0]);
+    // ghost paths: water, feet, a far bank
+    const g = P.gG, wy = f2(water + 3);
+    el('path', { d: `M${f2(ox - 150 * k)} ${wy}H${f2(ox + 30 * k)}M${f2(ox + 112 * k)} ${wy}H${f2(Math.min(W - 4, ox + 380 * k))}` }, g);
+    el('path', { d: `M${f2(ox - 90 * k)} ${f2(water + 13)}h${f2(60 * k)}M${f2(ox + 150 * k)} ${f2(water + 15)}h${f2(110 * k)}M${f2(ox + 10 * k)} ${f2(water + 24)}h${f2(90 * k)}` }, g);
+    el('ellipse', { cx: f2(ox + 52 * k), cy: wy, rx: f2(13 * k), ry: f2(3.4 * k) }, g);
+    el('ellipse', { cx: f2(ox + 86 * k), cy: wy, rx: f2(15 * k), ry: f2(3.8 * k) }, g);
+    this.rings = [0, 1, 2].map(() => el('ellipse', { class: 'rp', cx: f2(tip[0] + 4 * k), cy: wy, rx: 0, ry: 0, opacity: 0 }, P.gF));
+    // write-in order: body, legs, neck, head
+    let t = P.sched(bodyLines, .2, 34, .8);
+    t = P.sched([l1, l2], t, 26, .7);
+    t = P.sched([this.neck], t + .1, 26, 1);
+    P.sched([this.head], t + .25, 9, 1);
+    this.sk = null; this.next = 0; this.htxt = 'not yet';
+    this.apply(0);
+  },
+  apply(e) {
+    const R = this.rest, S = this.strike, N = R.length, pts = new Array(N);
+    let len = 0;
+    for (let i = 0; i < N; i++) {
+      const q = this.pol[i], rr = q[0] + (q[2] - q[0]) * e, th = i ? q[1] + (q[3] - q[1]) * e : 0;
+      pts[i] = [this.B[0] + Math.cos(th) * rr, this.B[1] + Math.sin(th) * rr];
+      if (i) len += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+    }
+    const nk = this.neck, hd = this.head;
+    nk.pts = pts; nk.ls = Math.max(0, (len * 1.02 - nk.w) / nk.str.length);
+    const E = pts[N - 1], ang = lerp(.14, this.sAng, clamp(e)), dx = Math.cos(ang), dy = Math.sin(ang), g = hd.size * .5;
+    hd.pts = [[E[0] + dx * g, E[1] + dy * g + hd.size * .12 * (1 - clamp(e))], [E[0] + dx * (g + hd.w + 10), E[1] + dy * (g + hd.w + 10) + hd.size * .12 * (1 - clamp(e))]];
+    hd.ls = 1;
+  },
+  go() { if (!RM && !this.sk && this.P.mTarget === 0 && this.P.revealT > this.P.revealEnd) this.sk = { t: 0, hit: false }; },
+  frame(T, dt) {
+    const P = this.P;
+    if (RM) return false;
+    if (!this.next && P.revealT > P.revealEnd) this.next = T + 2.6;
+    if (!this.sk && this.next && T > this.next && P.mTarget === 0 && P.revealT > P.revealEnd) this.sk = { t: 0, hit: false };
+    const sk = this.sk;
+    let moved = false;
+    if (sk) {
+      const t = sk.t += dt; let e;
+      if (t < .55) e = -.13 * sine(t / .55);
+      else if (t < .7) { const q = (t - .55) / .15; e = -.13 + 1.13 * q * q * q; }
+      else if (t < 1.15) e = 1 + .012 * Math.sin((t - .7) * 40) * Math.exp(-(t - .7) * 9);
+      else if (t < 2.9) { const p = (t - 1.15) / 1.75; e = 1 - eio(p) - .05 * Math.sin(Math.PI * sstep((p - .55) / .45)); }
+      else { e = 0; this.sk = null; this.next = T + 8 + Math.random() * 6; }
+      const want = (t > .66 && t < 1.5) ? 'now' : 'not yet';
+      if (want !== this.htxt) { this.htxt = want; this.head.setText(want); }
+      if (t >= .7 && !sk.hit) { sk.hit = true; this.rt = 0; }
+      this.apply(e); moved = true;
+    }
+    if (this.rt != null) {
+      this.rt += dt;
+      const k = this.k;
+      this.rings.forEach((r, i) => {
+        const q = clamp((this.rt - i * .22) / 1.5), ez = 1 - Math.pow(1 - q, 3);
+        r.setAttribute('rx', f2((4 + 44 * ez) * k)); r.setAttribute('ry', f2((1 + 11 * ez) * k));
+        r.setAttribute('opacity', q <= 0 ? 0 : f2((1 - q) * (1 - P.me)));
+      });
+      if (this.rt > 2.2) this.rt = null;
+    }
+    return moved;
+  }
+};
+
+/* ══════════════ IV · STAIR ══════════════ */
+const stair = {
+  words: 'a sentence is a staircase you go down carrying one full stop until you find the floor'.split(' '),
+  rows: [0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 3],
+  pd: 0, last: -1,
+  layout(W, H, ph) {
+    const P = this.P, ws = this.words, n = ws.length, margin = ph ? 8 : 34, gk = .34;
+    const w1 = ws.map(w => tw(w, 'ro')), tot1 = w1.reduce((a, b) => a + b, 0) + gk * (n - 1);
+    let size = Math.min(38, (W - 2 * margin) / tot1);
+    const single = size >= 17;
+    if (!single) size = ph ? 21 : 26;
+    const gap = gk * size;
+    const dy = clamp((H - 20 - size * 2.1) / (n - 1), size * .9, size * 1.5);
+    const top = (H - (size + (n - 1) * dy)) / 2 + size * .82 + size * .5;
+    this.size = size; this.dy = dy; this.n = n;
+    let dir = 1, cur = single ? (W - tot1 * size) / 2 : margin, prev = null;
+    const st = this.steps = [];
+    for (let i = 0; i < n; i++) {
+      const w = w1[i] * size; let L;
+      if (dir > 0) { if (cur + w > W - margin && prev) { dir = -1; cur = prev.L - gap; L = cur - w; } else L = cur; }
+      else { if (cur - w < margin && prev) { dir = 1; cur = prev.R + gap; L = cur; } else L = cur - w; }
+      const R = L + w; cur = dir > 0 ? R + gap : L - gap;
+      const y = top + i * dy;
+      const line = new Line(P, { t: ws[i], cls: 'ro', size, row: this.rows[i], pts: [[L, y], [R, y]] });
+      prev = { L, R, y, dir, line }; st.push(prev);
+    }
+    P.sched(st.map(s => s.line), .2, 22, 1);
+    // ghost stair profile
+    const yb = s => f2(s.y + size * .3), g2 = gap / 2;
+    let d = 'M' + f2(st[0].L - g2) + ' ' + yb(st[0]);
+    st.forEach((s, i) => {
+      const far = s.dir > 0 ? s.R + g2 : s.L - g2;
+      d += 'L' + f2(far) + ' ' + yb(s);
+      if (i < n - 1) d += 'L' + f2(far) + ' ' + yb(st[i + 1]);
+    });
+    el('path', { d, 'stroke-linejoin': 'miter' }, P.gG);
+    // landing spots for the full stop
+    const r = this.r = Math.max(2.9, size * .115);
+    const sp = this.spots = st.map(s => [(s.L + s.R) / 2, s.y - size * .7]);
+    const lastS = st[n - 1];
+    sp.push([lastS.R + r + size * .07, lastS.y]);
+    this.hgt = dy * .72;
+    this.arcs = [];
+    for (let i = 0; i < n; i++) {
+      const a = sp[i], b = sp[i + 1], mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2 - 2 * this.hgt;
+      this.arcs.push(el('path', { d: `M${f2(a[0])} ${f2(a[1] - r)}Q${f2(mx)} ${f2(my - r)} ${f2(b[0])} ${f2(b[1] - r)}`, pathLength: 1, 'stroke-dasharray': '0 1' }, P.gG));
+    }
+    this.ball = el('ellipse', { class: 'red', rx: r, ry: r }, P.gF);
+    this.last = -1;
+  },
+  afterPlain() {
+    const l = this.steps[this.n - 1].line, pl = l.plain;
+    this.plainPos = [pl.x + l.w1 * pl.size + this.r + pl.size * .06, pl.y];
+  },
+  frame(T, dt, morphing) {
+    const P = this.P, n = this.n;
+    const rect = P.sec.getBoundingClientRect(), range = Math.max(1, P.sec.offsetHeight - innerHeight);
+    const pr = clamp(-rect.top / range), pt = n * clamp((pr - .03) / .9);
+    if (RM) this.pd = Math.round(pt);
+    else { this.pd += (pt - this.pd) * (1 - Math.exp(-dt * 9)); if (Math.abs(pt - this.pd) < .0006) this.pd = pt; }
+    const pd = this.pd;
+    if (pd === this.last && !morphing && !P.dirty) return false;
+    this.last = pd;
+    const k = Math.min(n - 1, Math.floor(pd)), f = pd - k, sp = this.spots, a = sp[k], b = sp[k + 1], r = this.r, size = this.size;
+    let x = lerp(a[0], b[0], f), y = lerp(a[1], b[1], f) - this.hgt * 4 * f * (1 - f);
+    const c0 = Math.exp(-Math.pow(f / .11, 2)) * (k === 0 ? clamp(pd / .03) : 1), c1 = Math.exp(-Math.pow((1 - f) / .11, 2)) * clamp((n - pd) / .03), c = RM ? 0 : Math.max(c0, c1);
+    let sy = (1 - .42 * c) * (1 + (RM ? 0 : .28 * Math.sin(Math.PI * f))), sx = 1 + .36 * c - (RM ? 0 : .1 * Math.sin(Math.PI * f));
+    this.steps.forEach((s, i) => {
+      const dip = RM ? 0 : (i === k ? c0 : i === k + 1 ? c1 : 0) * size * .11;
+      s.line.pts = [[s.L, s.y + dip], [s.R, s.y + dip]];
+      s.line.alpha = i === 0 ? 1 : lerp(.34, 1, sstep((pd - (i - 1) - .72) / .28));
+    });
+    this.arcs.forEach((p, i) => p.setAttribute('stroke-dasharray', (i < k ? 1 : i === k ? f2(f) : 0) + ' 1'));
+    const me = P.me;
+    if (me > 0) { x = lerp(x, this.plainPos[0], me); y = lerp(y, this.plainPos[1], me); sx = lerp(sx, 1, me); sy = lerp(sy, 1, me); }
+    const br = lerp(r, Math.max(2, P.lines[0].plain.size * .1), me);
+    this.ball.setAttribute('cx', f2(x)); this.ball.setAttribute('cy', f2(y - br * sy));
+    this.ball.setAttribute('rx', f2(br * sx)); this.ball.setAttribute('ry', f2(br * sy));
+    return true;
+  }
+};
+
+/* ══════════════ V · BREATH ══════════════ */
+const breath = {
+  texts: ['you borrow about a pint of air', 'keep it for as long as a thought', 'and give it back warm,', 'and do this until you don’t'],
+  bt: 0, hold: false,
+  layout(W, H, ph) {
+    const P = this.P, gap1 = .95;
+    const w1 = this.texts.map(t => tw(t, 'it')), tot1 = w1.reduce((a, b) => a + b, 0) + gap1 * 4;
+    const half = Math.min(W, H) / 2 - 6;
+    const size = clamp(TAU * .8 * half / (tot1 + TAU * .8 * 1.1), 13, 27);
+    this.Rmin = tot1 * size / TAU; this.Rmax = Math.min(this.Rmin / .8, half - size * 1.05);
+    this.cx = W / 2; this.cy = H / 2; this.tot1 = tot1; this.gap1 = gap1;
+    this.ls = this.texts.map((t, i) => new Line(P, { t, size, row: i, red: i === 2 ? [t.length - 1, t.length] : null }));
+    P.sched(this.ls, .3, 24, 1);
+    const g = P.gG, cx = f2(this.cx), cy = f2(this.cy);
+    el('circle', { cx, cy, r: f2(this.Rmin - 7) }, g);
+    el('circle', { cx, cy, r: f2(this.Rmax - 7), 'stroke-dasharray': '1 7' }, g);
+    // a ten-second dial: four ticks in, six ticks out
+    let d = '';
+    for (let i = 0; i < 10; i++) {
+      const a = -Math.PI / 2 + i / 10 * TAU, r0 = i < 4 ? 33 : 36, r1 = 41;
+      d += `M${f2(this.cx + Math.cos(a) * r0)} ${f2(this.cy + Math.sin(a) * r0)}L${f2(this.cx + Math.cos(a) * r1)} ${f2(this.cy + Math.sin(a) * r1)}`;
+    }
+    el('path', { d, style: 'stroke:rgba(20,33,61,.45)' }, g);
+    this.dot = el('circle', { r: 1.9, style: 'fill:#14213D;stroke:none' }, g);
+    this.tIn = el('text', { class: 'sc', x: cx, y: f2(this.cy + 4) }, P.gF); this.tIn.textContent = 'in';
+    this.tOut = el('text', { class: 'sc', x: cx, y: f2(this.cy + 4) }, P.gF); this.tOut.textContent = 'out';
+    this.tHold = el('text', { class: 'sc', x: cx, y: f2(this.cy + 4) }, P.gF); this.tHold.textContent = 'held';
+    if (RM) { this.tIn.setAttribute('y', f2(this.cy - 3)); this.tOut.setAttribute('y', f2(this.cy + 11)); }
+    this.lab = '';
+  },
+  frame(T, dt) {
+    const P = this.P;
+    if (!RM && !this.hold && P.started) this.bt += dt;
+    const c = this.bt % 10, e = RM ? .5 : (c < 4 ? sine(c / 4) : 1 - sine((c - 4) / 6));
+    const R = lerp(this.Rmin, this.Rmax, e), cx = this.cx, cy = this.cy;
+    let a = -Math.PI / 2 + .04;
+    const N = 16;
+    this.ls.forEach(l => {
+      const ang = TAU * (l.w1 + this.gap1) / this.tot1, pts = new Array(N);
+      for (let k = 0; k < N; k++) { const q = a + ang * k / (N - 1); pts[k] = [cx + Math.cos(q) * R, cy + Math.sin(q) * R]; }
+      l.pts = pts; l.ls = l.w * (R / this.Rmin - 1) / l.str.length;
+      a += ang;
+    });
+    const da = -Math.PI / 2 + c / 10 * TAU;
+    this.dot.setAttribute('cx', f2(cx + Math.cos(da) * 47)); this.dot.setAttribute('cy', f2(cy + Math.sin(da) * 47));
+    const lab = RM ? 'both' : this.hold ? 'hold' : c < 4 ? 'in' : 'out';
+    if (lab !== this.lab || P.mt !== this._mt) {
+      this.lab = lab; this._mt = P.mt;
+      const v = 1 - P.me;
+      this.tIn.style.opacity = (lab === 'in' || lab === 'both') ? v : 0;
+      this.tOut.style.opacity = (lab === 'out' || lab === 'both') ? v : 0;
+      this.tHold.style.opacity = lab === 'hold' ? v : 0;
+    }
+    return true;
+  }
+};
+
+new Poem('rain', rain); new Poem('river', river); new Poem('heron', heron); new Poem('stair', stair); new Poem('breath', breath);
+
+/* ── per-poem pointer behaviour ── */
+{
+  const rs = rain.P.stage;
+  const mv = e => { const r = rs.getBoundingClientRect(); rain.px = clamp((e.clientX - r.left) / r.width); };
+  rs.addEventListener('pointermove', mv); rs.addEventListener('pointerdown', mv);
+  rs.addEventListener('pointerleave', () => { rain.px = null; });
+  const vs = river.P.stage;
+  vs.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') river.hover = true; });
+  vs.addEventListener('pointerleave', () => { river.hover = false; });
+  vs.addEventListener('pointerdown', () => { river.hover = true; });
+  vs.addEventListener('pointerup', e => { if (e.pointerType !== 'mouse') river.hover = false; });
+  vs.addEventListener('pointercancel', () => { river.hover = false; });
+  heron.P.stage.addEventListener('click', () => heron.go());
+  const bs = breath.P.stage, rel = () => { breath.hold = false; };
+  bs.addEventListener('pointerdown', () => { breath.hold = true; });
+  bs.addEventListener('pointerup', rel); bs.addEventListener('pointerleave', rel); bs.addEventListener('pointercancel', rel);
+  bs.addEventListener('contextmenu', e => e.preventDefault());
+}
+
+/* ── start a poem's writing-in when its page arrives ── */
+const io = new IntersectionObserver(es => {
+  for (const e of es) {
+    const p = poems.find(p => p.stage === e.target);
+    p.visible = e.isIntersecting;
+    if (e.intersectionRatio >= .5) p.started = true;
+  }
+}, { threshold: [0, .5] });
+poems.forEach(p => io.observe(p.stage));
+
+/* ── cover: fit the title, write it in ── */
+{
+  const big = document.querySelector('h1 .big'), h1 = document.getElementById('h1');
+  const fit = () => {
+    h1.style.removeProperty('--fs');
+    const avail = h1.parentNode.clientWidth, w = big.getBoundingClientRect().width;
+    if (w > avail) h1.style.setProperty('--fs', Math.floor(parseFloat(getComputedStyle(big).fontSize) * avail / w * .985) + 'px');
+  };
+  fit(); addEventListener('resize', fit);
+  let i = 0;
+  const split = node => {
+    [...node.childNodes].forEach(c => {
+      if (c.nodeType === 3) {
+        const fr = document.createDocumentFragment();
+        for (const ch of c.textContent) { const s = document.createElement('span'); s.className = 'ch'; s.textContent = ch; s.style.animationDelay = (.15 + i++ * .065) + 's'; fr.appendChild(s); }
+        c.replaceWith(fr);
+      } else split(c);
+    });
+  };
+  split(document.querySelector('h1 .five')); split(big);
+  document.querySelectorAll('.toc li').forEach((li, k) => { li.style.animationDelay = (2.5 + k * .13) + 's'; });
+  const sub = document.getElementById('sub'), subp = document.getElementById('subp');
+  const wave = () => {
+    const W = sub.parentNode.clientWidth, phn = W < 560, fs = phn ? 21 : 27, pts = [];
+    sub.setAttribute('viewBox', '0 0 ' + W + ' 74');
+    const L = phn ? 300 : 430;
+    for (let x = 0; x <= W + 60; x += 20) pts.push([x - 4, 44 - (phn ? 9 : 13) * Math.sin(x / L * TAU + .5) * (1 + .25 * Math.sin(x / 700))]);
+    subp.setAttribute('d', pathD(pts, 0));
+    document.getElementById('subT').style.fontSize = fs + 'px';
+    document.getElementById('subS').style.display = W < 820 ? 'none' : '';
+  };
+  wave(); addEventListener('resize', wave);
+  const type = (A, B, full, t0, ms) => {
+    if (RM) { A.textContent = full; B.textContent = ''; return; }
+    A.textContent = ''; B.textContent = full;
+    let n = 0;
+    setTimeout(function step() { n++; A.textContent = full.slice(0, n); B.textContent = full.slice(n); if (n < full.length) setTimeout(step, ms); }, t0);
+  };
+  type(document.getElementById('subA'), document.getElementById('subB'), 'poems that do what they say', 1250, 46);
+  type(document.getElementById('subC'), document.getElementById('subD'), 'the shape of the words is the meaning', 2900, 40);
+}
+
+/* ── page turning: arrow keys, ticks, contents ── */
+const secs = [...document.querySelectorAll('.cover,.poem')];
+let tween = null;
+function scrollToY(y, dur) {
+  y = clamp(y, 0, document.documentElement.scrollHeight - innerHeight);
+  if (RM) { scrollTo(0, y); return; }
+  tween = { y0: scrollY, y1: y, t: 0, d: dur };
+}
+function stops() {
+  const a = [];
+  for (const s of secs) { a.push(s.offsetTop); if (s.classList.contains('tall')) a.push(s.offsetTop + s.offsetHeight - innerHeight); }
+  return a;
+}
+function turn(dir) {
+  const y = tween ? tween.y1 : scrollY, a = stops();
+  let t = null;
+  if (dir > 0) t = a.find(v => v > y + 4); else for (const v of a) if (v < y - 4) t = v;
+  if (t == null) return;
+  scrollToY(t, Math.abs(t - y) > innerHeight * 1.25 ? 3600 : 950);
+}
+addEventListener('keydown', e => {
+  if (e.altKey || e.ctrlKey || e.metaKey) return;
+  if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); turn(1); }
+  else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); turn(-1); }
+});
+const stopTween = () => { tween = null; };
+addEventListener('wheel', stopTween, { passive: true });
+addEventListener('touchstart', stopTween, { passive: true });
+document.querySelectorAll('.ticks a,.toc a').forEach(a => a.addEventListener('click', e => {
+  const s = document.querySelector(a.getAttribute('href'));
+  if (!s) return;
+  e.preventDefault();
+  scrollToY(s.offsetTop, 1100);
+}));
+const ticks = [...document.querySelectorAll('.ticks a')];
+function mark() {
+  const y = scrollY + innerHeight * .5; let k = 0;
+  secs.forEach((s, i) => { if (s.offsetTop <= y) k = i; });
+  ticks.forEach((t, i) => { if (i === k) t.setAttribute('aria-current', 'true'); else t.removeAttribute('aria-current'); });
+}
+addEventListener('scroll', mark, { passive: true }); mark();
+
+/* ── one loop for everything ── */
+let lastNow = 0, raf = 0;
+function loop(now) {
+  raf = requestAnimationFrame(loop);
+  const dt = Math.min(.05, (now - lastNow) / 1000 || 0); lastNow = now; T += dt;
+  if (tween) {
+    tween.t += dt * 1000;
+    const p = clamp(tween.t / tween.d);
+    scrollTo(0, lerp(tween.y0, tween.y1, eio(p)));
+    if (p >= 1) tween = null;
+  }
+  for (const p of poems) if (p.visible) p.tick(T, dt);
+}
+document.addEventListener('visibilitychange', () => {
+  cancelAnimationFrame(raf);
+  if (!document.hidden) { lastNow = performance.now(); raf = requestAnimationFrame(loop); }
+});
+lastNow = performance.now(); raf = requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

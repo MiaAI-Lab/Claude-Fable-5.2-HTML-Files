@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cabinet of Impossible Minerals — Gallery VII, Case III</title>
+<style>
+:root{
+  --wall:#0E0B10; --case:#2A1E2E; --brass:#C9A45C; --ivory:#E8E2D6; --ink:#1B1518;
+  --gem:#5FD08A; --fluo:#BFE4FF;
+  --card:#E8E2D6; --card-ink:#1B1518; --card-rule:#C9A45C; --card-brass:#8C6A26;
+  --serif-display:Didot,"Bodoni 72","Bodoni MT","Bodoni MT Std","Playfair Display",Baskerville,"Times New Roman",serif;
+  --serif:Baskerville,"Baskerville Old Face","Hoefler Text",Palatino,"Palatino Linotype",Georgia,serif;
+  --caps:"Gill Sans","Gill Sans MT","Gill Sans Nova",Optima,"Trebuchet MS",Verdana,sans-serif;
+  --ease-lamp:cubic-bezier(.16,.84,.24,1);
+  --ease-set:cubic-bezier(.2,.9,.25,1);
+  --ease-brass:cubic-bezier(.65,.02,.2,1);
+}
+*{box-sizing:border-box}
+html{background:var(--wall);-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;min-height:100svh;background:var(--wall);color:var(--ivory);
+  font-family:var(--serif);overflow-x:hidden;transition:background 900ms var(--ease-lamp)}
+body.uv{--card:#19132B;--card-ink:#B4A6E2;--card-rule:#5B4A9A;--card-brass:#8B79D0;--brass:#9A86C9;background:#09070F}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+:focus-visible{outline:1.5px solid var(--ivory);outline-offset:4px;border-radius:2px}
+
+.wallglow{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0;
+  background:
+    radial-gradient(60vmax 46vmax at 38% 44%,rgba(86,58,92,.50),rgba(42,30,46,.30) 38%,rgba(14,11,16,0) 72%),
+    radial-gradient(30vmax 22vmax at 70% 30%,rgba(201,164,92,.07),rgba(14,11,16,0) 70%);
+  transition:opacity 2200ms var(--ease-lamp),filter 900ms var(--ease-lamp)}
+body.lit .wallglow{opacity:1}
+body.uv .wallglow{filter:hue-rotate(-38deg) saturate(1.5) brightness(.62)}
+.grain{position:fixed;inset:0;pointer-events:none;z-index:5;opacity:.11;mix-blend-mode:overlay}
+
+.gallery{position:relative;z-index:1;--v:clamp(280px,min(calc(100vh - 262px),50vw),800px);
+  min-height:100vh;min-height:100svh;display:grid;
+  grid-template-columns:var(--v) minmax(320px,452px);
+  grid-template-rows:auto 1fr auto;
+  grid-template-areas:"head head" "case label" "rail rail";
+  justify-content:center;align-items:start;
+  column-gap:clamp(28px,4.6vw,84px);row-gap:18px;
+  padding:22px clamp(16px,4vw,56px) 18px}
+
+/* ---------- header ---------- */
+.head{grid-area:head;display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+  padding-bottom:12px;border-bottom:1px solid rgba(201,164,92,.42);position:relative;
+  opacity:0;transition:opacity 1800ms var(--ease-lamp) 500ms,border-color 900ms}
+.head::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:1px;background:rgba(201,164,92,.16)}
+body.lit .head{opacity:1}
+.head h1{margin:0;font:400 12px/1.2 var(--caps);letter-spacing:.34em;text-transform:uppercase;color:var(--brass);transition:color 900ms}
+.head h1 i{font:italic 400 17px/1 var(--serif-display);letter-spacing:.02em;text-transform:none;margin:0 .35em 0 .3em;color:var(--ivory)}
+.head p{margin:0;font:400 11px/1.2 var(--caps);letter-spacing:.28em;text-transform:uppercase;color:rgba(232,226,214,.62);white-space:nowrap}
+.head p b{font-weight:400;color:var(--brass);transition:color 900ms}
+
+/* ---------- vitrine ---------- */
+.case{grid-area:case;width:var(--v);opacity:0;transition:opacity 700ms linear 150ms}
+body.lit .case{opacity:1}
+.vitrine{position:relative;width:var(--v);height:var(--v);padding:9px;border-radius:3px;
+  box-shadow:0 0 0 1px #2c2110,0 40px 90px -30px rgba(0,0,0,.95),0 0 120px -20px rgba(120,84,130,.25)}
+.vitrine::before{content:"";position:absolute;inset:0;border-radius:3px;
+  background:linear-gradient(138deg,#ecd49a 0%,#a98643 9%,#C9A45C 22%,#6f5425 41%,#b8944d 58%,#7a5d2a 76%,#e3c684 92%,#8c6c33 100%);
+  transition:filter 900ms var(--ease-lamp)}
+.screw{transition:filter 900ms var(--ease-lamp)}
+body.uv .vitrine::before,body.uv .screw{filter:saturate(.5) brightness(.5) hue-rotate(-150deg)}
+.well{position:relative;width:100%;height:100%;overflow:hidden;background:#0b080d;border-radius:1px;
+  box-shadow:inset 0 0 0 1px #1a130d;cursor:grab;touch-action:pan-y;-webkit-user-select:none;user-select:none}
+.well.dragging{cursor:grabbing}
+.well canvas{position:absolute;inset:0;width:100%;height:100%;display:block;transition:opacity 320ms ease}
+.well.fade canvas,.well.fade .svgstage{opacity:0}
+.glass{position:absolute;inset:0;pointer-events:none;overflow:hidden;
+  box-shadow:inset 0 0 0 1px rgba(255,240,205,.10),inset 0 22px 50px -24px rgba(0,0,0,.9),inset 0 -30px 60px -30px rgba(0,0,0,.8),inset 0 0 90px rgba(0,0,0,.55)}
+.glass::before{content:"";position:absolute;inset:0;
+  background:
+    linear-gradient(112deg,rgba(255,255,255,0) 8%,rgba(255,246,224,.045) 9%,rgba(255,246,224,.02) 17%,rgba(255,255,255,0) 17.3%),
+    linear-gradient(112deg,rgba(255,255,255,0) 71%,rgba(255,246,224,.03) 71.3%,rgba(255,246,224,.012) 76%,rgba(255,255,255,0) 76.2%)}
+.glass::after{content:"";position:absolute;top:-10%;bottom:-10%;left:-70%;width:70%;
+  background:linear-gradient(104deg,rgba(255,255,255,0) 18%,rgba(255,236,196,.07) 34%,rgba(255,244,220,.30) 47%,rgba(255,255,255,.52) 50%,rgba(255,240,208,.16) 55%,rgba(255,236,196,.05) 68%,rgba(255,255,255,0) 82%);
+  transform:translateX(0) skewX(-8deg);opacity:0}
+.glass.sweep::after{animation:sweep 1350ms var(--ease-brass) both}
+@keyframes sweep{0%{transform:translateX(0) skewX(-8deg);opacity:0}12%{opacity:1}85%{opacity:1}100%{transform:translateX(345%) skewX(-8deg);opacity:0}}
+.screw{position:absolute;width:5px;height:5px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff1c4,#8a6a2c 60%,#3d2c10);box-shadow:0 0 0 .5px #2b1f0c}
+.screw:nth-of-type(1){left:2px;top:2px}.screw:nth-of-type(2){right:2px;top:2px}
+.screw:nth-of-type(3){left:2px;bottom:2px}.screw:nth-of-type(4){right:2px;bottom:2px}
+
+.svgstage{position:absolute;inset:0;display:none;transition:opacity 320ms ease;
+  background:radial-gradient(70% 55% at 50% 30%,#3a2a40 0%,#2A1E2E 30%,#150f18 70%,#0b080d 100%)}
+.nogl .svgstage{display:block}.nogl canvas{display:none}
+.svgstage .plinth{position:absolute;left:-10%;right:-10%;bottom:-34%;height:66%;border-radius:50%;
+  background:radial-gradient(60% 50% at 50% 30%,#4a2c50,#2a1830 45%,#120b15 80%);box-shadow:0 -1px 0 rgba(201,164,92,.5)}
+.svgstage .shade{position:absolute;left:28%;right:28%;bottom:13%;height:9%;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.8),rgba(0,0,0,0))}
+.svgstage .gem{position:absolute;left:19%;top:10%;width:62%;height:62%;transform-style:preserve-3d;will-change:transform;
+  filter:drop-shadow(0 0 26px rgba(255,236,190,.18))}
+.svgstage .gem svg{width:100%;height:100%;display:block;overflow:visible}
+body.uv .svgstage{background:radial-gradient(70% 55% at 50% 30%,#241a4a 0%,#150f2c 40%,#08060f 100%)}
+body.uv .svgstage .gem{filter:drop-shadow(0 0 30px var(--fluo))}
+
+.plate{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;min-height:34px}
+.hint{margin:0;font:400 10.5px/1.5 var(--caps);letter-spacing:.24em;text-transform:uppercase;color:rgba(232,226,214,.6)}
+.hint svg{width:22px;height:12px;vertical-align:-2px;margin-right:8px;color:var(--brass);transition:color 900ms}
+.hint .keys{white-space:nowrap}
+.lamp{display:flex;align-items:center;gap:11px;font:400 10.5px/1 var(--caps);letter-spacing:.24em;text-transform:uppercase;
+  color:rgba(232,226,214,.62);padding:6px 2px;white-space:nowrap}
+.lamp .lab{transition:color 500ms}
+.lamp[aria-checked="false"] .lab-g,.lamp[aria-checked="true"] .lab-u{color:var(--brass)}
+.lamp[aria-checked="true"] .lab-u{color:#B79CFF;text-shadow:0 0 12px rgba(150,110,255,.9)}
+.lamp .track{position:relative;width:46px;height:22px;border-radius:12px;border:1px solid var(--brass);
+  background:linear-gradient(#0a080c,#1b141e);box-shadow:inset 0 2px 5px rgba(0,0,0,.9);transition:border-color 900ms}
+.lamp .knob{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;
+  background:radial-gradient(circle at 35% 28%,#fff3cc,#C9A45C 45%,#6a4f1f 100%);
+  box-shadow:0 1px 3px rgba(0,0,0,.8),0 0 10px rgba(255,214,140,.55);
+  transition:transform 520ms cubic-bezier(.5,1.7,.4,.9),background 500ms,box-shadow 500ms}
+.lamp[aria-checked="true"] .knob{transform:translateX(24px);
+  background:radial-gradient(circle at 35% 28%,#efe6ff,#8a63ff 45%,#2c1a70 100%);box-shadow:0 1px 3px rgba(0,0,0,.8),0 0 14px rgba(140,100,255,.95)}
+.lamp:hover .track{border-color:var(--ivory)}
+
+/* ---------- label card ---------- */
+.label{grid-area:label;position:relative;align-self:center;margin-bottom:48px;background:var(--card);color:var(--card-ink);
+  padding:clamp(22px,2.3vw,34px) clamp(22px,2.5vw,38px) clamp(20px,2vw,28px);border-radius:1.5px;
+  box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 30px 60px -28px rgba(0,0,0,.9),0 2px 0 rgba(0,0,0,.5),-14px 0 60px -30px rgba(255,214,150,.22);
+  opacity:0;filter:brightness(.25);transform:translateY(6px);
+  transition:opacity 1500ms var(--ease-lamp) 700ms,filter 1900ms var(--ease-lamp) 700ms,transform 1900ms var(--ease-lamp) 700ms,background 900ms var(--ease-lamp),color 900ms var(--ease-lamp),box-shadow 900ms}
+body.lit .label{opacity:1;filter:none;transform:none}
+body.uv .label{box-shadow:0 1px 0 rgba(160,140,255,.12) inset,0 30px 60px -28px rgba(0,0,0,.9),-14px 0 70px -30px rgba(120,80,255,.4)}
+.label .paper{position:absolute;inset:0;width:100%;height:100%;opacity:.5;mix-blend-mode:multiply;pointer-events:none;transition:opacity 900ms}
+body.uv .label .paper{opacity:.12}
+.label::before{content:"";position:absolute;inset:7px;border:1px solid var(--card-rule);opacity:.55;pointer-events:none;transition:border-color 900ms}
+.label.fadeout .inner{opacity:0}
+.inner{position:relative;transition:opacity 260ms ease}
+.acc{margin:0 0 14px;display:flex;justify-content:space-between;gap:10px;font:400 10.5px/1.3 var(--caps);letter-spacing:.3em;text-transform:uppercase;color:var(--card-brass);transition:color 900ms}
+.name{margin:0 0 4px -2px;font:italic 400 clamp(40px,4.3vw,66px)/.98 var(--serif-display);letter-spacing:-.012em;font-feature-settings:"liga","dlig","swsh";text-wrap:balance}
+.epithet{margin:8px 0 0;font:italic 400 clamp(14.5px,1.15vw,17px)/1.35 var(--serif);color:var(--card-ink);opacity:.82;text-wrap:balance}
+.rule{height:5px;margin:18px 0 14px;border:0;border-top:1px solid var(--card-rule);border-bottom:1px solid var(--card-rule);opacity:.9;transition:border-color 900ms}
+.props{margin:0;display:grid;grid-template-columns:max-content 1fr;column-gap:20px;row-gap:5px;align-items:baseline}
+.props dt{font:400 9.5px/1.5 var(--caps);letter-spacing:.24em;text-transform:uppercase;color:var(--card-brass);transition:color 900ms}
+.props dd{margin:0;font:400 13.5px/1.4 var(--serif)}
+.prose{margin:16px 0 0;font:400 clamp(14px,1.02vw,15.5px)/1.56 var(--serif);hyphens:auto;-webkit-hyphens:auto}
+.prose::first-letter{font:400 3.05em/.8 var(--serif-display);float:left;padding:.07em .08em 0 0;color:var(--card-brass)}
+.inkline{margin:12px 0 0;font:italic 400 14.5px/1.4 var(--serif);color:var(--fluo);opacity:0;letter-spacing:.01em;
+  transition:opacity 500ms ease,text-shadow 900ms ease;-webkit-user-select:none;user-select:none}
+body.uv .inkline{opacity:1;text-shadow:0 0 9px var(--fluo),0 0 26px var(--fluo);transition:opacity 1100ms ease 350ms,text-shadow 900ms ease}
+.credit{margin:12px 0 0;padding-top:10px;border-top:1px solid var(--card-rule);font:400 9.5px/1.5 var(--caps);letter-spacing:.2em;text-transform:uppercase;opacity:.74;transition:border-color 900ms}
+
+.w{display:inline-block;white-space:nowrap}
+.c{display:inline-block;white-space:pre;animation:set 620ms var(--ease-set) both;animation-delay:calc(var(--d)*1ms)}
+.prose .w:first-child,.prose .w:first-child .c:first-child{display:inline}
+@keyframes set{
+  0%{opacity:0;color:#C9A45C;text-shadow:0 0 14px rgba(255,214,130,.0);transform:translateY(.22em) scaleY(.7)}
+  30%{opacity:1;color:#F6D98E;text-shadow:0 0 12px rgba(255,208,110,.95),0 0 2px #fff6d8;transform:translateY(-.03em) scaleY(1.04)}
+  62%{color:#B8893A;text-shadow:0 0 6px rgba(255,208,110,.35)}
+  100%{opacity:1;text-shadow:0 0 0 rgba(255,208,110,0);transform:none}}
+
+/* ---------- rail ---------- */
+.rail{grid-area:rail;position:relative;margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(7,1fr);
+  width:100%;max-width:calc(var(--v) + 452px + clamp(28px,4.6vw,84px));justify-self:center;
+  border-top:1px solid var(--brass);opacity:0;transition:opacity 1800ms var(--ease-lamp) 1000ms,border-color 900ms}
+body.lit .rail{opacity:1}
+.rail::before{content:"";position:absolute;left:0;right:0;top:3px;height:1px;background:var(--brass);opacity:.32}
+.rail li{display:block;min-width:0}
+.thumb{position:relative;width:100%;display:grid;grid-template-columns:auto auto 1fr;align-items:center;column-gap:10px;
+  padding:16px 8px 8px 2px;text-align:left;color:rgba(201,164,92,.62);transition:color 420ms var(--ease-set)}
+.thumb::before{content:"";position:absolute;top:-1px;left:0;right:100%;height:3px;background:var(--brass);transition:right 620ms var(--ease-brass),background 900ms}
+.thumb[aria-current="true"]::before{right:0}
+.thumb .num{font:italic 400 24px/1 var(--serif-display);color:var(--brass);min-width:.7em;transition:color 900ms}
+.thumb svg{width:40px;height:40px;display:block;overflow:visible;transition:transform 620ms cubic-bezier(.3,1.6,.4,1),filter 500ms}
+.thumb svg .f{fill:currentColor;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round;transition:fill 500ms,stroke 500ms}
+.thumb .nm{font:400 9.5px/1.35 var(--caps);letter-spacing:.2em;text-transform:uppercase;color:rgba(232,226,214,.6);min-width:0;transition:color 420ms}
+.thumb:hover{color:var(--brass)}
+.thumb:hover svg{transform:translateY(-4px) rotate(-5deg)}
+.thumb:hover .nm{color:var(--ivory)}
+.thumb[aria-current="true"]{color:var(--tg)}
+.thumb[aria-current="true"] svg{filter:drop-shadow(0 0 7px var(--tg));transform:translateY(-2px)}
+.thumb[aria-current="true"] .nm{color:var(--ivory)}
+body.uv .thumb{color:rgba(154,134,201,.55)}
+body.uv .thumb[aria-current="true"]{color:var(--tf)}
+body.uv .thumb[aria-current="true"] svg{filter:drop-shadow(0 0 9px var(--tf))}
+
+/* ---------- narrow ---------- */
+@media (max-width:900px){
+  .gallery{--v:min(calc(100vw - 32px),560px);grid-template-columns:var(--v);grid-template-rows:none;
+    grid-template-areas:"head" "case" "rail" "label";row-gap:16px;padding:16px 16px 34px}
+  .head{flex-direction:column;align-items:flex-start;gap:7px;padding-bottom:11px}
+  .head h1{font-size:10.5px;letter-spacing:.26em}.head h1 i{font-size:16px}
+  .head p{font-size:9.5px;letter-spacing:.22em}
+  .label{align-self:start;margin:8px 0 0}
+  .rail{max-width:var(--v)}
+  .thumb{grid-template-columns:1fr;justify-content:stretch;justify-items:center;row-gap:6px;padding:13px 0 6px;text-align:center}
+  .thumb .nm{display:none}
+  .thumb .num{font-size:19px;order:2}
+  .thumb svg{width:34px;height:34px}
+  .hint .keys{display:none}
+  .name{font-size:clamp(40px,13vw,62px)}
+}
+@media (max-width:400px){.hint{letter-spacing:.16em;font-size:9.5px}.lamp{letter-spacing:.16em;font-size:9.5px;gap:8px}.hint svg{margin-right:5px}}
+@media (min-width:901px) and (max-width:1280px){.thumb .nm{display:none}.thumb{grid-template-columns:auto auto;justify-content:start;column-gap:14px}.hint .keys{display:none}}
+@media (min-width:901px) and (max-height:720px){.gallery{--v:clamp(280px,min(calc(100vh - 250px),50vw),780px)}.prose{font-size:14px}}
+
+@media (prefers-reduced-motion:reduce){
+  .c{animation:none}
+  .glass.sweep::after{animation:none}
+  .thumb svg,.lamp .knob,.thumb::before{transition-duration:1ms}
+  .label{transform:none}
+}
+</style>
+</head>
+<body>
+<div class="wallglow" aria-hidden="true"></div>
+<svg class="grain" aria-hidden="true" width="100%" height="100%"><filter id="gr"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7"/><feColorMatrix values="0 0 0 0 .5  0 0 0 0 .5  0 0 0 0 .5  0 0 0 .9 0"/></filter><rect width="100%" height="100%" filter="url(#gr)"/></svg>
+
+<main class="gallery">
+  <header class="head">
+    <h1>Cabinet <i>of</i> Impossible Minerals</h1>
+    <p>Gallery VII &middot; Case III &middot; <b id="count">1 / 7</b></p>
+  </header>
+
+  <section class="case" aria-label="Display case">
+    <div class="vitrine">
+      <i class="screw"></i><i class="screw"></i><i class="screw"></i><i class="screw"></i>
+      <div class="well" id="well">
+        <canvas id="gl" role="img" aria-label="A crystal specimen on a velvet plinth under a single lamp"></canvas>
+        <div class="svgstage" id="stage" aria-hidden="true"><div class="plinth"></div><div class="shade"></div><div class="gem" id="gem"></div></div>
+        <div class="glass" id="glass"></div>
+      </div>
+    </div>
+    <div class="plate">
+      <p class="hint"><svg viewBox="0 0 22 12" aria-hidden="true"><path d="M1 6h20M5 2 1 6l4 4M17 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>Drag to turn<span class="keys"> &middot; arrow keys change specimen</span></p>
+      <button class="lamp" id="lamp" type="button" role="switch" aria-checked="false" aria-label="Lamp: ultraviolet">
+        <span class="lab lab-g" aria-hidden="true">Lamp</span>
+        <span class="track" aria-hidden="true"><span class="knob"></span></span>
+        <span class="lab lab-u" aria-hidden="true">UV</span>
+      </button>
+    </div>
+  </section>
+
+  <article class="label" id="label" aria-live="polite">
+    <svg class="paper" aria-hidden="true"><filter id="pp"><feTurbulence type="fractalNoise" baseFrequency=".035 .9" numOctaves="3" seed="3"/><feColorMatrix values="0 0 0 0 .62  0 0 0 0 .56  0 0 0 0 .46  0 0 0 .5 0"/></filter><rect width="100%" height="100%" filter="url(#pp)"/></svg>
+    <div class="inner">
+      <p class="acc"><span id="l-acc"></span><span id="l-no"></span></p>
+      <h2 class="name" id="l-name"></h2>
+      <p class="epithet" id="l-epi"></p>
+      <div class="rule"></div>
+      <dl class="props">
+        <dt>Crystal system</dt><dd id="l-sys"></dd>
+        <dt>Hardness</dt><dd id="l-hard"></dd>
+        <dt>Lustre</dt><dd id="l-lus"></dd>
+        <dt>Locality</dt><dd id="l-loc"></dd>
+        <dt>Habit</dt><dd id="l-hab"></dd>
+      </dl>
+      <p class="prose" id="l-prose"></p>
+      <p class="inkline" id="l-ink" aria-hidden="true"></p>
+      <p class="credit" id="l-cred"></p>
+    </div>
+  </article>
+
+  <ol class="rail" id="rail" aria-label="Specimens"></ol>
+</main>
+
+<script id="fs" type="x-shader/x-fragment">
+precision highp float;
+uniform vec2 uRes;
+uniform float uTime,uShape,uIor,uF0,uDis,uUV,uWarm,uSeed;
+uniform mat3 uRot;
+uniform vec3 uLamp,uCol,uFluo;
+uniform vec4 uMat;
+
+float hash(vec3 p){p=fract(p*.3183099+.1);p*=17.;return fract(p.x*p.y*p.z*(p.x+p.y+p.z));}
+float noise(vec3 x){vec3 i=floor(x),f=fract(x);f=f*f*(3.-2.*f);
+  return mix(mix(mix(hash(i),hash(i+vec3(1.,0.,0.)),f.x),mix(hash(i+vec3(0.,1.,0.)),hash(i+vec3(1.,1.,0.)),f.x),f.y),
+             mix(mix(hash(i+vec3(0.,0.,1.)),hash(i+vec3(1.,0.,1.)),f.x),mix(hash(i+vec3(0.,1.,1.)),hash(i+vec3(1.,1.,1.)),f.x),f.y),f.z);}
+vec3 spectrum(float t){return .5+.5*cos(6.2832*(t+vec3(0.,.33,.67)));}
+mat2 rot(float a){float c=cos(a),s=sin(a);return mat2(c,-s,s,c);}
+float smin(float a,float b,float k){float h=clamp(.5+.5*(b-a)/k,0.,1.);return mix(b,a,h)-k*h*(1.-h);}
+
+float hexR(vec3 p){p=abs(p);return max(p.x*.866025+p.z*.5,p.z);}
+float hexCrystal(vec3 p,float r,float h,float sl){
+  float hr=hexR(p);
+  return max(hr-r,(hr*sl+abs(p.y)-h-r*sl)*inversesqrt(1.+sl*sl));}
+float cube(vec3 p,float s){p=abs(p);return max(max(p.x,max(p.y,p.z))-s,(p.x+p.y+p.z-s*2.62)*.57735);}
+float blade(vec3 p,float w,float h,float t){
+  vec3 q=abs(p);
+  float d=max(q.z*.94+q.x*.34-t,q.x-w);
+  return max(d,(q.y+q.x*.9-h)*.743);}
+
+float sdNoct(vec3 p){
+  vec3 q=abs(p);
+  float d=(q.x+q.y+q.z-1.06)*.57735;
+  d=max(d,max(q.x,max(q.y,q.z))-.69);
+  return d;}
+float sdHalide(vec3 p){
+  float d=hexCrystal(p-vec3(.02,.06,0.),.31,.58,1.25);
+  vec3 q=p-vec3(.33,-.36,.1);q.xy=rot(-.62)*q.xy;q.yz=rot(.3)*q.yz;
+  d=min(d,hexCrystal(q,.2,.4,1.4));
+  q=p-vec3(-.31,-.44,-.12);q.xy=rot(.78)*q.xy;q.xz=rot(.5)*q.xz;
+  d=min(d,hexCrystal(q,.155,.33,1.2));
+  q=p-vec3(-.06,-.56,.3);q.yz=rot(-.9)*q.yz;q.xz=rot(.26)*q.xz;
+  d=min(d,hexCrystal(q,.11,.2,1.5));
+  return d;}
+float sdChorus(vec3 p){
+  p.y+=.86;
+  float d=1e3;
+  for(int i=0;i<6;i++){
+    float fi=float(i);
+    vec3 q=p;
+    q.xz=rot(fi*1.26+.3)*q.xz;
+    float tilt=i==0?0.:.36+.13*sin(fi*5.3);
+    q.xy=rot(tilt)*q.xy;
+    float h=i==0?.98:.86-.085*fi;
+    q.y-=h;
+    q.xz=rot(fi*.7)*q.xz;
+    d=min(d,blade(q,.15-.012*fi,h,.062));
+  }
+  return d;}
+float sdSlow(vec3 p){
+  vec3 q=p;q.x+=q.y*.42;q.z+=q.y*.2;
+  q=abs(q);
+  float d=max((q.x-.74)*.922,max(q.y-.56,(q.z-.6)*.98));
+  d=max(d,(q.x+q.z-1.16)*.63);
+  d=max(d,(q.x+q.y*.8-1.12)*.62);
+  return d;}
+float sdPyrite(vec3 p){
+  vec3 q=p-vec3(-.12,-.16,0.);q.xz=rot(.5)*q.xz;q.xy=rot(.12)*q.xy;
+  float d=cube(q,.5);
+  q=p-vec3(.36,.3,.1);q.xz=rot(-.35)*q.xz;q.yz=rot(.55)*q.yz;
+  d=min(d,cube(q,.36));
+  q=p-vec3(-.42,.38,-.22);q.xy=rot(.7)*q.xy;q.xz=rot(.9)*q.xz;
+  d=min(d,cube(q,.24));
+  q=p-vec3(.2,-.42,.44);q.xy=rot(-.4)*q.xy;q.yz=rot(.3)*q.yz;
+  d=min(d,cube(q,.19));
+  return d;}
+float sdSalt(vec3 p){
+  float d=(hexR(p)*1.55+abs(p.y)-1.02)*.542;
+  d=max(d,abs(p.y)-.9);
+  vec3 q=p-vec3(.4,-.34,.2);q.xy=rot(-.85)*q.xy;q.yz=rot(.4)*q.yz;
+  float e=(hexR(q)*1.55+abs(q.y)-.56)*.542;
+  return min(d,e);}
+float sdLacr(vec3 p){
+  float d=length(p-vec3(0.,-.12,0.))-.55;
+  d=smin(d,length(p-vec3(.42,.2,.15))-.36,.12);
+  d=smin(d,length(p-vec3(-.38,.24,-.12))-.4,.12);
+  d=smin(d,length(p-vec3(.05,.55,-.18))-.33,.12);
+  d=smin(d,length(p-vec3(-.15,-.02,.47))-.32,.12);
+  d=smin(d,length(p-vec3(.32,-.42,-.3))-.34,.12);
+  d=smin(d,length(p-vec3(-.44,-.44,.2))-.3,.12);
+  d=smin(d,length(p-vec3(.3,-.3,.42))-.22,.1);
+  return d;}
+float mapO(vec3 q){
+  if(uShape<.5)return sdNoct(q);
+  if(uShape<1.5)return sdHalide(q);
+  if(uShape<2.5)return sdChorus(q);
+  if(uShape<3.5)return sdSlow(q);
+  if(uShape<4.5)return sdPyrite(q);
+  if(uShape<5.5)return sdSalt(q);
+  return sdLacr(q);}
+float map(vec3 p){return mapO(uRot*p);}
+vec3 nrm(vec3 p){vec2 e=vec2(.0016,-.0016);
+  return normalize(e.xyy*map(p+e.xyy)+e.yyx*map(p+e.yyx)+e.yxy*map(p+e.yxy)+e.xxx*map(p+e.xxx));}
+vec2 sph(vec3 ro,vec3 rd,float r){float b=dot(ro,rd),c=dot(ro,ro)-r*r,h=b*b-c;if(h<0.)return vec2(-1.);h=sqrt(h);return vec2(-b-h,-b+h);}
+
+vec3 lampCol(){
+  vec3 g=mix(vec3(1.,.4,.12),vec3(1.,.87,.66),uWarm)*uWarm*uWarm;
+  return mix(g,vec3(.36,.17,1.)*uWarm,uUV);}
+float softbox(vec3 d,vec3 a,vec2 s,float b){
+  float k=dot(d,a);if(k<.08)return 0.;
+  vec3 u=normalize(cross(a,vec3(0.,1.,0.))),v=cross(u,a);
+  vec2 q=abs(vec2(dot(d,u),dot(d,v))/k);
+  vec2 e=smoothstep(s+b,s-b,q);
+  return e.x*e.y;}
+vec3 env(vec3 d,float b){
+  float k=(1.-.9*uUV)*uWarm;
+  vec3 tint=mix(vec3(1.),vec3(.5,.34,1.),uUV);
+  vec3 c=mix(vec3(.075,.04,.085),vec3(.012,.009,.016),smoothstep(-.45,.7,d.y))*k;
+  b=.035+b*.6;
+  c+=vec3(.6,.7,1.)*1.5*softbox(d,normalize(vec3(-.82,.22,.5)),vec2(.2,.7),b)*k*tint;
+  c+=vec3(1.,.72,.4)*1.25*softbox(d,normalize(vec3(.74,.12,-.66)),vec2(.6,.13),b)*k*tint;
+  c+=vec3(.95,.9,1.)*.75*softbox(d,normalize(vec3(.25,.55,.8)),vec2(.5,.2),b)*k*tint;
+  c+=vec3(.7,.5,.9)*.35*softbox(d,normalize(vec3(.1,-.2,-1.)),vec2(.9,.12),b)*k*tint;
+  float l=dot(d,uLamp);
+  c+=lampCol()*(smoothstep(.95-b*.4,.962+b*.4,l)*7.+pow(max(l,0.),9.)*.45);
+  return c;}
+float shadow(vec3 ro,vec3 rd){
+  vec2 s=sph(ro,rd,1.4);if(s.y<0.)return 1.;
+  float t=max(s.x,.02),res=1.;
+  for(int i=0;i<20;i++){
+    float d=map(ro+rd*t);
+    if(d<.003){res=0.;break;}
+    res=min(res,7.*d/t);
+    t+=clamp(d,.03,.28);
+    if(t>s.y)break;}
+  return clamp(res,0.,1.);}
+
+void main(){
+  vec2 uv=(gl_FragCoord.xy*2.-uRes)/uRes.y;
+  vec3 ro=vec3(0.,.62,5.5),ta=vec3(0.,-.13,0.);
+  vec3 ww=normalize(ta-ro),uu=normalize(cross(ww,vec3(0.,1.,0.))),vv=cross(uu,ww);
+  vec3 rd=normalize(uv.x*uu+uv.y*vv+3.55*ww);
+  vec3 lc=lampCol();
+  float gone=uDis;
+
+  float glow=exp(-1.5*length(uv-vec2(uLamp.x*.6,.2+uLamp.y*.35)));
+  vec3 col=vec3(.026,.014,.031)*(.07+2.3*glow*glow)*(lc+.06*uWarm);
+
+  if(rd.y<0.){
+    float tp=(-1.32-ro.y)/rd.y;
+    vec3 pp=ro+rd*tp;float rr=length(pp.xz);
+    if(rr<2.64){
+      float sh=mix(shadow(pp+vec3(0.,.012,0.),uLamp),1.,gone);
+      float ao=mix(.4+.6*clamp(map(pp+vec3(0.,.5,0.))/.5,0.,1.),1.,gone);
+      float nap=noise(pp*vec3(120.,1.,120.))*.55+noise(pp*24.)*.45;
+      float spot=exp(-dot(pp.xz-uLamp.xz*.5,pp.xz-uLamp.xz*.5)*.42);
+      vec3 vel=vec3(.075,.034,.092)*(.7+.6*nap);
+      vec3 trn=mix(uCol*.75+uFluo*uUV*.2,vec3(1.),sh);
+      float sheen=pow(1.-max(-rd.y,0.),3.)*(.25+.75*nap);
+      vec3 pc=vel*lc*(max(uLamp.y,0.)*spot*2.4*trn+.05)*ao+vec3(.2,.11,.25)*sheen*lc*.3*spot*ao;
+      pc+=uFluo*uUV*(1.-gone)*.2*ao/(1.+dot(pp.xz,pp.xz)*1.5);
+      float rim=smoothstep(2.4,2.47,rr)*smoothstep(2.64,2.57,rr);
+      pc=mix(pc,vec3(.79,.64,.36)*(.06+.55*glow)*(lc+.03),rim);
+      col=mix(pc,col,smoothstep(2.57,2.64,rr));
+    }
+  }
+
+  vec2 s=sph(ro,rd,1.4);
+  if(s.y>0.&&gone<.999){
+    float t=s.x;bool hit=false;
+    for(int i=0;i<76;i++){float d=map(ro+rd*t);if(d<.0015){hit=true;break;}t+=d;if(t>s.y)break;}
+    if(hit){
+      vec3 p=ro+rd*t,n=nrm(p),q=uRot*p,no=uRot*n;
+      float ndv=max(dot(n,-rd),0.);
+      float fr=uF0+(1.-uF0)*pow(1.-ndv,5.);
+      vec3 r=reflect(rd,n);
+      vec3 refl=env(r,uMat.x);
+      float eh=.03;
+      float edge=smoothstep(0.,.5,clamp((map(p-n*eh)+eh)/eh,0.,1.));
+
+      vec3 rdi=refract(rd,n,1./uIor);
+      vec3 pi=p-n*.012;float ti=0.;
+      for(int i=0;i<24;i++){float d=-map(pi+rdi*ti);if(d<.002)break;ti+=max(d,.012);if(ti>3.)break;}
+      vec3 pe=pi+rdi*ti,ne=-nrm(pe);
+      vec3 dir=rdi,rf=reflect(rdi,ne);
+      float back=pow(max(dot(rf,uLamp),0.),18.)*2.2+pow(max(dot(ne,-uLamp),0.),3.)*.35;
+      vec3 d2=refract(dir,ne,uIor);
+      if(dot(d2,d2)<.01&&uMat.w<.5){
+        vec3 pj=pe+ne*.012;float tj=0.;
+        for(int i=0;i<20;i++){float d=-map(pj+rf*tj);if(d<.002)break;tj+=max(d,.012);if(tj>3.)break;}
+        ti+=tj;dir=rf;ne=-nrm(pj+rf*tj);rf=reflect(dir,ne);
+        back+=pow(max(dot(rf,uLamp),0.),14.)*1.6;
+        d2=refract(dir,ne,uIor);
+      }
+      vec3 d1=refract(dir,ne,uIor*.984),d3=refract(dir,ne,uIor*1.02);
+      if(dot(d1,d1)<.01)d1=rf;if(dot(d2,d2)<.01)d2=rf;if(dot(d3,d3)<.01)d3=rf;
+      vec3 tr=vec3(env(d1,uMat.x).r,env(d2,uMat.x).g,env(d3,uMat.x).b);
+      vec3 ab=pow(max(uCol,vec3(.002)),vec3(ti*uMat.y+.3));
+      float wrap=dot(n,uLamp)*.5+.5;
+      vec3 deep=pow(max(uCol,vec3(.002)),vec3(1.5));
+      vec3 inner=tr*ab*1.55+ab*lc*back+deep*lc*(.05+.26*wrap*wrap)*(1.-exp(-ti*1.3))*(1.-.75*uUV);
+      float nz=noise(q*2.6);
+      vec3 poc=spectrum(nz*1.7+ndv*.9)*pow(noise(q*5.3+4.),2.)*1.5;
+      vec3 milk=(vec3(.62,.66,.78)*(.1+.9*wrap*wrap)+poc*(.35+.65*wrap)*1.3)*lc;
+      inner=mix(inner,milk,uMat.w);
+
+      vec3 film=mix(vec3(1.),pow(spectrum(ndv*1.3+nz*.6+dot(no,vec3(.31,.17,.09))),vec3(1.6))*.95,uMat.z);
+      vec3 cc=mix(inner,refl*film,fr);
+      float rl=max(dot(r,uLamp),0.);
+      cc+=edge*(lc*.16*(.35+.65*wrap)+spectrum(rl*5.+dot(q,vec3(1.7,2.3,1.1)))*pow(rl,2.5)*lc*1.5);
+      float zone=.55+.45*noise(q*3.1+2.);
+      vec3 fl3=uFluo*uFluo*1.15;
+      cc*=1.-.35*uUV;
+      cc+=fl3*uUV*uWarm*((.05+.5*(1.-exp(-ti*1.1)))*zone*zone*(.3+.7*wrap)+edge*.5+.3*pow(1.-ndv,3.)+.6*ab*back);
+
+      float h=hash(floor(no*2.4+.5)*7.3+floor(q*2.6)+uSeed);
+      float tf=h*.68;
+      float vis=1.-smoothstep(tf,tf+.09,uDis);
+      float fl=exp(-pow((uDis-tf-.03)/.075,2.))*smoothstep(0.,.06,uDis);
+      vec3 gl=mix(vec3(1.,.9,.68),mix(uCol,uFluo,uUV)*1.6+.3,.45)*(lc+.15);
+      col=mix(col,cc,vis)+gl*fl*(.42+.5*noise(q*9.)+3.*edge+2.*pow(rl,3.));
+    }
+  }
+
+  if(uDis>.002&&uDis<.998){
+    vec2 g=uv*6.5+uSeed;vec2 id=floor(g),f=fract(g)-.5;
+    float h1=hash(vec3(id,uSeed)),h2=hash(vec3(id.yx+3.,uSeed+1.7));
+    vec2 o=f-(vec2(h1,h2)-.5)*.62;
+    float tw=exp(-pow((uDis-(.22+h1*.56))/.15,2.));
+    float st=exp(-dot(o,o)*46.)/(1.+abs(o.x*o.y)*5200.)+exp(-dot(o,o)*900.);
+    float m=smoothstep(.78,.25,length(uv-vec2(0.,-.03)));
+    col+=mix(vec3(1.,.88,.62),spectrum(h2),.4)*st*tw*m*2.6*(lc+.1);
+  }
+
+  col*=1.-.3*dot(uv,uv);
+  col*=1.5;
+  col=(col*(2.51*col+.03))/(col*(2.43*col+.59)+.14);
+  col=pow(clamp(col,0.,1.),vec3(.4545));
+  col+=(hash(vec3(gl_FragCoord.xy,uTime))-.5)/160.;
+  gl_FragColor=vec4(col,1.);
+}
+</script>
+
+<script>
+(function(){
+'use strict';
+var SPEC=[
+ {name:'Noctilite',epi:'found only in wells that have never reflected the moon',acc:'Acc. No. 1911.44.7',
+  sys:'Isometric, reluctantly',hard:'6½, 7 on Tuesdays',lus:'Sub-metallic; absorbs compliments',loc:'Unlit wells, Upper Carrow, parish of St Odran',hab:'Octahedral, truncated',
+  prose:'Raised in 1909 by a diviner who lowered her bucket at noon, eyes shut, on the advice of the well. The faces return every colour except the one you are looking for. It has been kept under a lamp since accession; exposed to moonlight, the specimen is understood to resign.',
+  ink:'Under ultraviolet it shows the moon it never saw.',cred:'Presented by Miss A. Tolland, diviner, 1911',
+  col:'#17131F',disp:'#6F63A8',fluo:'#BFE4FF',mat:[.08,3.2,1,0],ior:1.9,f0:.11,pose:[.62,.3],
+  facets:[[.95,'50,6 10,50 40,60'],[.6,'50,6 40,60 90,50'],[.42,'10,50 40,60 50,94'],[.22,'40,60 90,50 50,94']]},
+ {name:'Verdant Halide of Mourne',epi:'a halide of no known halogen',acc:'Acc. No. 1887.3.12',
+  sys:'Hexagonal',hard:'4, softer when spoken to kindly',lus:'Vitreous to envious',loc:'Mourne foothills, beneath one particular hedge',hab:'Prismatic, with pyramidal terminations',
+  prose:'The crystals grow only downward and only in spring, and for decades were sold to visitors as bottled absinthe that had “gone off”. Analysis in 1931 returned the single result green, with a confidence of ninety-eight per cent. Do not lick the specimen. Several curators have, and each described a different year.',
+  ink:'It was never green. Green is what it does to the lamp.',cred:'Purchased from the hedge, 1887',
+  col:'#5FD08A',disp:'#5FD08A',fluo:'#FF4FA3',mat:[.03,1.6,0,0],ior:1.6,f0:.05,pose:[.4,.12],
+  facets:[[.55,'64,62 82,40 88,47 70,80'],[.85,'82,40 92,34 88,47'],[.5,'36,66 18,52 14,60 32,84'],[.85,'18,52 9,48 14,60'],
+   [.95,'50,4 34,24 44,30'],[.7,'50,4 44,30 60,30'],[.45,'50,4 60,30 66,24'],[.7,'34,24 44,30 44,88 34,82'],[.5,'44,30 60,30 60,88 44,88'],[.28,'60,30 66,24 66,82 60,88']]},
+ {name:'Chorusite',epi:'which rings at 440 Hz when the room is empty',acc:'Acc. No. 1924.17.2',
+  sys:'Orthorhombic',hard:'5, and tuned',lus:'Glassy; audible',loc:'Organ loft, deconsecrated chapel at Ystrad Fawr',hab:'Bladed, divergent',
+  prose:'The note has been confirmed by leaving a microphone in the gallery and going home. In company the specimen is silent, a behaviour three successive keepers have recorded as “sulking”. The blades lengthen by roughly a semitone each century. Visitors with perfect pitch are asked not to hum.',
+  ink:'It is ringing now. You are not counted as company.',cred:'Transferred from the Diocese, 1924',
+  col:'#7FD6F2',disp:'#7FD6F2',fluo:'#FFB347',mat:[.02,2.2,0,0],ior:1.52,f0:.045,pose:[.3,.1],
+  facets:[[.6,'8,44 8,54 40,90 45,90'],[.35,'8,44 16,47 48,88 45,90'],[.6,'92,50 84,52 53,89 57,92'],[.3,'92,50 92,60 60,92 57,92'],
+   [.75,'24,16 21,28 42,88 47,90'],[.45,'24,16 31,24 51,88 47,90'],[.7,'78,20 70,27 50,88 54,91'],[.4,'78,20 81,31 58,89 54,91'],
+   [.95,'50,4 43,16 45,90 50,92'],[.55,'50,4 57,16 55,90 50,92']]},
+ {name:'Slow Glass',epi:'through which light is eleven years late',acc:'Acc. No. 1952.8.1',
+  sys:'Trigonal, eventually',hard:'5½ at the time of writing',lus:'Vitreous, delayed',loc:'East window of a closed observatory, Kessock',hab:'Rhombohedral',
+  prose:'What you see through this specimen is the gallery as it stood in an earlier decade. The wallpaper is older, and a guard who has since retired can occasionally be made out, eating a sandwich. The donor asked that it never be turned to face a clock. The request arrived after the crystal did.',
+  ink:'This glow is from the last inspection. Yours will arrive in eleven years.',cred:'Gift of the Kessock Trust, 1952; received 1963',
+  col:'#7A5CC2',disp:'#7A5CC2',fluo:'#9CFF6B',mat:[.07,1.7,0,0],ior:1.56,f0:.05,pose:[.75,.3],
+  facets:[[.92,'18,36 54,22 86,36 50,50'],[.55,'18,36 50,50 44,88 12,72'],[.3,'50,50 86,36 80,74 44,88']]},
+ {name:'Widow’s Pyrite',epi:'the twin that remains',acc:'Acc. No. 1899.21.5',
+  sys:'Isometric; interpenetrant twins',hard:'6, harder in mourning',lus:'Metallic, unconsoled',loc:'Wheal Constance, Cornwall, fourth level',hab:'Cubic, twinned',
+  prose:'Fool’s gold fools the hopeful; widow’s pyrite takes no interest in them. It forms in pairs, and when one twin is removed the other darkens to this arterial red within the year. The mine’s ledgers enter it under “losses”. It is the only object in the case to have been insured against itself.',
+  ink:'Two crystals are recorded on the accession slip.',cred:'Bequest of Mrs C. Penhale, 1899',
+  col:'#A3122B',disp:'#A3122B',fluo:'#3FE0D0',mat:[.05,1.5,0,0],ior:1.82,f0:.13,pose:[.45,.36],
+  facets:[[.9,'22,18 32,23 22,28 12,23'],[.55,'12,23 22,28 22,40 12,35'],[.3,'22,28 32,23 32,35 22,40'],
+   [.9,'68,12 86,21 68,30 50,21'],[.55,'50,21 68,30 68,52 50,43'],[.3,'68,30 86,21 86,43 68,52'],
+   [.95,'42,28 70,42 42,56 14,42'],[.6,'14,42 42,56 42,90 14,76'],[.32,'42,56 70,42 70,76 42,90']]},
+ {name:'Meridian Salt',epi:'crystallises only along agreed lines of longitude',acc:'Acc. No. 1936.2.9',
+  sys:'Hexagonal, dipyramidal',hard:'2½ before noon, 3 after',lus:'Resinous to solar',loc:'A salt pan on the 0° line; exact position disputed',hab:'Dipyramidal',
+  prose:'It will not form on any meridian that lacks a treaty. The specimen keeps Greenwich time to within four minutes and tastes, according to the 1936 expedition, “of noon”. When the case is rotated, it turns itself back overnight. The museum no longer rotates the case.',
+  ink:'It is 11:56 inside the crystal.',cred:'Collected by the Meridian Expedition, 1936',
+  col:'#E6E04A',disp:'#E6E04A',fluo:'#6A7BFF',mat:[.03,1.3,0,0],ior:1.55,f0:.05,pose:[.35,.22],
+  facets:[[.95,'50,4 14,48 34,56'],[.72,'50,4 34,56 70,56'],[.48,'50,4 70,56 86,48'],[.55,'50,96 14,48 34,56'],[.36,'50,96 34,56 70,56'],[.2,'50,96 70,56 86,48']]},
+ {name:'Lacrimite',epi:'Tear-stone; precipitated from tears shed for no stated reason',acc:'Acc. No. 1903.30.4',
+  sys:'Amorphous. It declined',hard:'3, or 2 if you are unkind',lus:'Pearly to consoling',loc:'A handkerchief drawer, private house, Leith',hab:'Botryoidal',
+  prose:'Tears with a reason yield only common salt. Each lobe represents one evening. The specimen is still growing, slowly, which the conservation department attributes to humidity and the night staff attribute to the conservation department. Please do not tap the glass. It has had enough.',
+  ink:'The largest lobe is dated the day the museum opened.',cred:'Anonymous gift, left at the cloakroom, 1903',
+  col:'#DDD6EA',disp:'#E4DDEE',fluo:'#FF5A3C',mat:[.3,.5,0,.86],ior:1.45,f0:.06,pose:[.2,.15],
+  facets:[['c',.4,26,72,14],['c',.45,68,72,16],['c',.5,50,54,30],['c',.7,72,38,18],['c',.6,28,36,20],['c',.8,52,24,16],['c',.9,40,62,17]]}
+];
+var N=SPEC.length;
+var $=function(id){return document.getElementById(id);};
+var body=document.body,well=$('well'),canvas=$('gl'),glass=$('glass'),label=$('label'),rail=$('rail'),lampBtn=$('lamp'),gem=$('gem');
+var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
+var cur=0,target=0,uvOn=false;
+
+function rgb(h){return [parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
+function lin(h){return rgb(h).map(function(v){return Math.pow(v/255,2.2);});}
+function mixc(a,b,t){var A=rgb(a),B=rgb(b);return 'rgb('+A.map(function(v,i){return Math.round(v+(B[i]-v)*t);}).join(',')+')';}
+
+/* ---------- drawn crystals (rail + fallback stage) ---------- */
+function thumbSVG(s){
+  var o='<svg viewBox="0 0 100 100" aria-hidden="true">';
+  s.facets.forEach(function(f){
+    if(f[0]==='c')o+='<circle class="f" cx="'+f[2]+'" cy="'+f[3]+'" r="'+f[4]+'" fill-opacity="'+(.12+f[1]*.5).toFixed(2)+'"/>';
+    else o+='<polygon class="f" points="'+f[1]+'" fill-opacity="'+(.1+f[0]*.62).toFixed(2)+'"/>';
+  });
+  return o+'</svg>';
+}
+function bigSVG(i,uv){
+  var s=SPEC[i],c=uv?s.fluo:s.disp,defs='',out='';
+  s.facets.forEach(function(f,k){
+    var sh=f[0]==='c'?f[1]:f[0],id='f'+i+'_'+k+(uv?'u':'');
+    var hi=mixc(c,'#FFFFFF',sh*.72),mid=mixc(c,'#0E0B10',.12+(1-sh)*.38),lo=mixc(c,'#0E0B10',.5+(1-sh)*.42);
+    if(f[0]==='c'){
+      defs+='<radialGradient id="'+id+'" cx=".36" cy=".3" r=".8"><stop offset="0" stop-color="'+hi+'"/><stop offset=".45" stop-color="'+mid+'"/><stop offset="1" stop-color="'+lo+'"/></radialGradient>';
+      out+='<circle cx="'+f[2]+'" cy="'+f[3]+'" r="'+f[4]+'" fill="url(#'+id+')" stroke="rgba(255,255,255,.22)" stroke-width=".3"/>';
+    }else{
+      defs+='<linearGradient id="'+id+'" x1="'+(.1+sh*.3).toFixed(2)+'" y1="0" x2="'+(.9-sh*.3).toFixed(2)+'" y2="1"><stop offset="0" stop-color="'+hi+'"/><stop offset=".5" stop-color="'+mid+'"/><stop offset="1" stop-color="'+lo+'"/></linearGradient>';
+      out+='<polygon points="'+f[1]+'" fill="url(#'+id+')" stroke="rgba(255,255,255,.38)" stroke-width=".35" stroke-linejoin="round"/>';
+    }
+  });
+  var star='<path d="M0-7C.5-1.6 1.6-.5 7 0 1.6.5.5 1.6 0 7-.5 1.6-1.6.5-7 0-1.6-.5-.5-1.6 0-7Z" fill="#FFF8E6"/>';
+  out+='<g transform="translate(38 30) scale(.9)" opacity=".95">'+star+'</g><g transform="translate(63 52) scale(.5)" opacity=".8">'+star+'</g>';
+  return '<svg viewBox="0 0 100 100"><defs>'+defs+'</defs>'+out+'</svg>';
+}
+
+/* ---------- rail ---------- */
+var thumbs=[];
+SPEC.forEach(function(s,i){
+  var li=document.createElement('li'),b=document.createElement('button');
+  b.type='button';b.className='thumb';b.style.setProperty('--tg',s.disp);b.style.setProperty('--tf',s.fluo);
+  b.setAttribute('aria-label','Specimen '+(i+1)+': '+s.name);
+  b.innerHTML='<span class="num">'+(i+1)+'</span>'+thumbSVG(s)+'<span class="nm">'+s.name.replace(' of Mourne','')+'</span>';
+  b.addEventListener('click',function(){select(i);});
+  li.appendChild(b);rail.appendChild(li);thumbs.push(b);
+});
+function markRail(){
+  thumbs.forEach(function(b,i){b.setAttribute('aria-current',i===target?'true':'false');});
+  $('count').textContent=(target+1)+' / '+N;
+}
+
+/* ---------- label typesetting ---------- */
+function typeset(el,text,st,step){
+  el.textContent='';
+  var words=text.split(' ');
+  words.forEach(function(w,wi){
+    var ws=document.createElement('span');ws.className='w';
+    for(var k=0;k<w.length;k++){
+      var c=document.createElement('span');c.className='c';c.textContent=w[k];
+      c.style.setProperty('--d',Math.round(st.t));st.t+=step;ws.appendChild(c);
+    }
+    el.appendChild(ws);
+    if(wi<words.length-1){el.appendChild(document.createTextNode(' '));st.t+=step;}
+  });
+}
+function setLabel(i,delay){
+  var s=SPEC[i],st={t:delay||0};
+  document.documentElement.style.setProperty('--gem',s.disp);
+  document.documentElement.style.setProperty('--fluo',s.fluo);
+  typeset($('l-acc'),s.acc,st,16);
+  typeset($('l-no'),'No. '+(i+1),st,16);
+  st.t=(delay||0)+90;typeset($('l-name'),s.name,st,s.name.length>14?24:38);
+  var after=st.t;
+  st.t=after-80;typeset($('l-epi'),s.epi,st,7);
+  var base=st.t;
+  ['sys','hard','lus','loc','hab'].forEach(function(k,j){st.t=base+j*70;typeset($('l-'+k),s[k],st,7);});
+  st.t=base+260;typeset($('l-prose'),s.prose,st,2.6);
+  typeset($('l-cred'),s.cred,st,6);
+  $('l-ink').textContent=s.ink;
+  canvas.setAttribute('aria-label',s.name+', '+s.hab.toLowerCase()+' crystal, on a velvet plinth under a single lamp');
+}
+
+/* ---------- WebGL ---------- */
+var gl=null,U={},prog=null;
+function initGL(){
+  try{gl=canvas.getContext('webgl',{antialias:false,alpha:false,powerPreference:'high-performance'})||canvas.getContext('experimental-webgl');}catch(e){gl=null;}
+  if(!gl)return false;
+  var hp=gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER,gl.HIGH_FLOAT);
+  var src=$('fs').textContent;
+  if(!hp||hp.precision===0)src=src.replace('precision highp float','precision mediump float');
+  function sh(type,s){var o=gl.createShader(type);gl.shaderSource(o,s);gl.compileShader(o);return gl.getShaderParameter(o,gl.COMPILE_STATUS)?o:null;}
+  var vs=sh(gl.VERTEX_SHADER,'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}'),fs=sh(gl.FRAGMENT_SHADER,src);
+  if(!vs||!fs)return false;
+  prog=gl.createProgram();gl.attachShader(prog,vs);gl.attachShader(prog,fs);gl.linkProgram(prog);
+  if(!gl.getProgramParameter(prog,gl.LINK_STATUS))return false;
+  gl.useProgram(prog);
+  var buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+  var loc=gl.getAttribLocation(prog,'a');gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+  ['uRes','uTime','uShape','uIor','uF0','uDis','uUV','uWarm','uSeed','uRot','uLamp','uCol','uFluo','uMat'].forEach(function(n){U[n]=gl.getUniformLocation(prog,n);});
+  return true;
+}
+var hasGL=initGL();
+function toFallback(){hasGL=false;well.classList.add('nogl');drawFallback();cancelAnimationFrame(raf);}
+canvas.addEventListener('webglcontextlost',function(e){e.preventDefault();toFallback();});
+
+function applySpec(i){
+  var s=SPEC[i];
+  if(hasGL){
+    gl.uniform1f(U.uShape,i);gl.uniform1f(U.uIor,s.ior);gl.uniform1f(U.uF0,s.f0);
+    gl.uniform3fv(U.uCol,lin(s.col));gl.uniform3fv(U.uFluo,lin(s.fluo));gl.uniform4fv(U.uMat,s.mat);
+  }else drawFallback();
+}
+function drawFallback(){gem.innerHTML=bigSVG(cur,uvOn);tiltFallback();}
+function tiltFallback(){
+  gem.style.transform='perspective(700px) rotateY('+(Math.sin(yaw)*32).toFixed(2)+'deg) rotateX('+(-pitch*18).toFixed(2)+'deg)';
+}
+
+/* ---------- state ---------- */
+var yaw=SPEC[0].pose[0],pitch=SPEC[0].pose[1],vyaw=0,vpitch=0,dragging=false,lastX=0,lastY=0,lastMoveT=0,idle=1;
+var lamp=[.45,.78,.5],lampT=null,hovering=false;
+var dis=0,trans=null,seed=1.3,uvVal=0,warm=0,t0=0,started=false;
+var scale=1,ema=17,frames=0,cool=0,coolLen=3,raf=0,last=0,cssW=0,visible=true;
+
+function resize(force){
+  var r=well.getBoundingClientRect();
+  if(!r.width)return;
+  var dpr=Math.min(Math.max(window.devicePixelRatio||1,1.5),2);
+  var w=Math.max(2,Math.round(r.width*dpr*scale)),h=Math.max(2,Math.round(r.height*dpr*scale));
+  if(force||canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;if(hasGL){gl.viewport(0,0,w,h);gl.uniform2f(U.uRes,w,h);}}
+}
+function easeIO(x){return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;}
+function easeOut(x){return 1-Math.pow(1-x,3);}
+
+function frame(now){
+  raf=requestAnimationFrame(frame);
+  var ms=now-last;last=now;
+  var dt=Math.min(.08,ms/1000);
+  if(!started){started=true;t0=now;ms=17;}
+
+  var x=Math.max(0,Math.min(1,(now-t0-420)/1500));
+  warm=easeOut(x)*(1-.22*Math.exp(-x*7)*Math.pow(Math.sin(x*26),2));
+  if(x>=1)warm=1;
+
+  if(!dragging){
+    yaw+=vyaw*dt;pitch+=vpitch*dt;
+    var k=Math.exp(-dt*2.4);vyaw*=k;vpitch*=k;
+    idle=Math.min(1,idle+dt*.35);
+    if(!reduce.matches)yaw+=.16*dt*idle*idle;
+    if(pitch>1.15){pitch=1.15;vpitch=0;}if(pitch<-.9){pitch=-.9;vpitch=0;}
+  }
+  var lt;
+  if(hovering&&lampT)lt=lampT;
+  else if(reduce.matches)lt=[.45,.78,.5];
+  else{var a=now*.00022;lt=[Math.sin(a)*.78,.74+.14*Math.sin(a*1.7),.5+.34*Math.cos(a)];}
+  var lk=1-Math.exp(-dt*(hovering?7:2.2));
+  lamp[0]+=(lt[0]-lamp[0])*lk;lamp[1]+=(lt[1]-lamp[1])*lk;lamp[2]+=(lt[2]-lamp[2])*lk;
+  var ll=Math.hypot(lamp[0],lamp[1],lamp[2]);
+  uvVal+=((uvOn?1:0)-uvVal)*(1-Math.exp(-dt*4.2));
+
+  if(trans){
+    if(trans.phase==='out'){
+      trans.t+=dt/.62;dis=easeIO(Math.min(1,trans.t));
+      if(trans.t>=1){cur=target;applySpec(cur);setLabel(cur,40);seed+=3.71;trans={phase:'in',t:0};
+        vyaw+=1.6;}
+    }else{
+      trans.t+=dt/.95;dis=1-easeIO(Math.min(1,trans.t));
+      if(trans.t>=1){dis=0;trans=null;if(target!==cur)startOut();}
+    }
+  }
+
+  var ca=Math.cos(-yaw),sa=Math.sin(-yaw),cb=Math.cos(-pitch),sb=Math.sin(-pitch);
+  gl.uniformMatrix3fv(U.uRot,false,[ca,sb*sa,-cb*sa, 0,cb,sb, sa,-sb*ca,cb*ca]);
+  gl.uniform3f(U.uLamp,lamp[0]/ll,lamp[1]/ll,lamp[2]/ll);
+  gl.uniform1f(U.uTime,(now*.001)%97);
+  gl.uniform1f(U.uDis,dis);gl.uniform1f(U.uUV,uvVal);gl.uniform1f(U.uWarm,warm);gl.uniform1f(U.uSeed,seed);
+  gl.drawArrays(gl.TRIANGLES,0,3);
+
+  ema=ema*.82+Math.min(ms,400)*.18;frames++;cool-=dt;
+  if(frames>8){
+    if(ema>27&&scale>.3){scale=Math.max(.3,scale*Math.max(.55,Math.sqrt(19/ema)));frames=0;cool=coolLen;coolLen=Math.min(40,coolLen*1.7);resize();ema=19;}
+    else if(ema<19.5&&scale<1&&cool<=0&&frames>50){scale=Math.min(1,scale*1.12);frames=0;resize();}
+  }
+}
+function play(){if(hasGL&&!raf&&!document.hidden&&visible){last=performance.now();raf=requestAnimationFrame(frame);}}
+function pause(){cancelAnimationFrame(raf);raf=0;}
+document.addEventListener('visibilitychange',function(){document.hidden?pause():play();});
+if('IntersectionObserver' in window){
+  new IntersectionObserver(function(en){visible=en[0].isIntersecting;visible?play():pause();},{threshold:0}).observe(well);
+}
+
+/* ---------- selection ---------- */
+function startOut(){
+  trans={phase:'out',t:0};
+  glass.classList.remove('sweep');void glass.offsetWidth;glass.classList.add('sweep');
+}
+function select(i){
+  i=(i%N+N)%N;
+  if(i===target)return;
+  target=i;markRail();
+  if(!hasGL||reduce.matches){
+    well.classList.add('fade');label.classList.add('fadeout');
+    clearTimeout(select.tm);
+    select.tm=setTimeout(function(){cur=target;applySpec(cur);setLabel(cur,0);well.classList.remove('fade');label.classList.remove('fadeout');},300);
+    return;
+  }
+  if(!trans)startOut();
+  else if(trans.phase==='in'){trans={phase:'out',t:Math.max(0,1-trans.t)};}
+}
+window.addEventListener('keydown',function(e){
+  if(e.altKey||e.ctrlKey||e.metaKey)return;
+  var k=e.key;
+  if(k==='ArrowRight'||k==='ArrowDown'&&e.target.closest&&e.target.closest('.rail')){select(target+1);e.preventDefault();}
+  else if(k==='ArrowLeft'||k==='ArrowUp'&&e.target.closest&&e.target.closest('.rail')){select(target-1);e.preventDefault();}
+  else if(k==='Home'){select(0);}
+  else if(k==='End'){select(N-1);}
+  else if(k>='1'&&k<='7'){select(+k-1);}
+  else if(k==='u'||k==='U'){toggleLamp();}
+  else return;
+  if(document.activeElement&&document.activeElement.classList.contains('thumb'))thumbs[target].focus();
+});
+
+/* ---------- lamp ---------- */
+function toggleLamp(){
+  uvOn=!uvOn;
+  lampBtn.setAttribute('aria-checked',uvOn?'true':'false');
+  body.classList.toggle('uv',uvOn);
+  $('l-ink').setAttribute('aria-hidden',uvOn?'false':'true');
+  if(!hasGL)drawFallback();
+}
+lampBtn.addEventListener('click',toggleLamp);
+
+/* ---------- pointer ---------- */
+function lampFrom(e){
+  var r=well.getBoundingClientRect();
+  var x=((e.clientX-r.left)/r.width-.5)*2,y=(.5-(e.clientY-r.top)/r.height)*2;
+  lampT=[x*1.05,.62+y*.5,.72-.2*Math.abs(x)];
+}
+well.addEventListener('pointerdown',function(e){
+  if(e.button>0)return;
+  dragging=true;idle=0;lastX=e.clientX;lastY=e.clientY;lastMoveT=performance.now();vyaw=vpitch=0;
+  well.classList.add('dragging');
+  try{well.setPointerCapture(e.pointerId);}catch(_){}
+});
+well.addEventListener('pointermove',function(e){
+  if(e.pointerType==='mouse'&&!dragging){hovering=true;lampFrom(e);}
+  if(!dragging)return;
+  var now=performance.now(),dx=e.clientX-lastX,dy=e.clientY-lastY,d=Math.max(8,now-lastMoveT)/1000;
+  lastX=e.clientX;lastY=e.clientY;lastMoveT=now;
+  var r=well.getBoundingClientRect(),g=3.4/r.width;
+  yaw+=dx*g;pitch=Math.max(-.9,Math.min(1.15,pitch+dy*g));
+  vyaw=vyaw*.5+(dx*g/d)*.5;vpitch=vpitch*.5+(dy*g/d)*.5;
+  if(!hasGL)tiltFallback();
+});
+function endDrag(){
+  if(!dragging)return;
+  dragging=false;well.classList.remove('dragging');
+  if(performance.now()-lastMoveT>90){vyaw=0;vpitch=0;}
+  vyaw=Math.max(-9,Math.min(9,vyaw));vpitch=Math.max(-6,Math.min(6,vpitch));
+}
+well.addEventListener('pointerup',endDrag);
+well.addEventListener('pointercancel',endDrag);
+well.addEventListener('pointerleave',function(){hovering=false;});
+well.addEventListener('dragstart',function(e){e.preventDefault();});
+
+/* ---------- begin ---------- */
+var rz=0;
+window.addEventListener('resize',function(){cancelAnimationFrame(rz);rz=requestAnimationFrame(function(){resize();});});
+markRail();
+if(!hasGL)well.classList.add('nogl');
+applySpec(0);
+resize(true);
+setLabel(0,reduce.matches?0:1250);
+requestAnimationFrame(function(){requestAnimationFrame(function(){body.classList.add('lit');});});
+play();
+})();
+</script>
+</body>
+</html>

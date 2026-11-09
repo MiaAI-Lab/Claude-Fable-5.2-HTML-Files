@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Seven Sisters — A Nest of Dolls</title>
+<style>
+/* ───────────── palette & measures ───────────── */
+:root{
+  --cream:#F8EFD9; --red:#C8102E; --gold:#F2A900; --green:#0B6E4F; --soot:#1D1D1B;
+  --face:#FFF6E6; --pink:#F4A6A0; --wood:#D9A55B;
+  --spring:cubic-bezier(.34,1.56,.64,1);
+  --sineIn:cubic-bezier(.12,0,.39,0); --sineOut:cubic-bezier(.61,1,.88,1);
+  --none:linear-gradient(#0000,#0000);
+  /* E = one "em" of the largest doll; every distance on the shelf derives from it */
+  --E:max(8px,min(1.52vw,calc((100vh - 290px)/(var(--rowb) + 22.7))));
+  --bh:calc(2.2*var(--E));
+  --rowb:5.6;                 /* shelf top, in E above the stage floor */
+  --gap:5em; --lx:-6.4em;
+  --c1:5; --c2:7.75; --c3:12.55; --c4:16.39; --c5:19.46; --c6:21.92; --c7:23.56;
+  --zx:52.3; --zy:.83; --bdx:-1.3; --bdy:-15.7; --A:17; --Bv:1.8;
+}
+@media (max-width:720px),(max-aspect-ratio:5/6){
+  :root{
+    --E:max(6px,min(2.95vw,calc((100vh - 3.1*min(9.6vw,6.2vh,52px) - 5.5vh - 48px - clamp(50px,8.2vh,78px))/(var(--rowb) + 22.4))));
+    --rowb:23.2;--rmin:9.5px; --gap:4em; --lx:-5em;
+    --c1:5; --c2:8; --c3:8; --c4:8; --c5:8; --c6:8; --c7:8;
+    --zx:22.02; --zy:-14.17; --bdx:-3.5; --bdy:-32.7; --A:10.5; --Bv:1.2;
+  }
+}
+*{box-sizing:border-box}
+html{background:var(--cream)}
+body{margin:0;color:var(--soot);-webkit-text-size-adjust:100%;
+  font-family:Georgia,Palatino,"Palatino Linotype","Book Antiqua","Times New Roman",serif}
+.page{position:relative;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;overflow:hidden;
+  counter-reset:out 1;
+  background:
+    radial-gradient(circle at 20% 30%,rgba(29,29,27,.07) 0 1px,#0000 1.6px) 0 0/37px 41px,
+    radial-gradient(circle at 70% 60%,rgba(200,16,46,.06) 0 1px,#0000 1.6px) 0 0/53px 47px,
+    radial-gradient(circle at 40% 80%,rgba(255,255,255,.7) 0 1px,#0000 1.7px) 0 0/29px 31px,
+    repeating-linear-gradient(92deg,rgba(29,29,27,.012) 0 2px,#0000 2px 7px),
+    radial-gradient(120% 95% at 50% 38%,#FCF6E6 0,#F8EFD9 52%,#EDDFBC 100%)}
+i,b{font-style:normal;font-weight:inherit}
+
+/* ───────────── the seven checkboxes ───────────── */
+.nest{position:fixed;left:50%;top:50%;width:1px;height:1px;margin:0;opacity:0;pointer-events:none;appearance:none;-webkit-appearance:none}
+.nest:not(#c1){visibility:hidden}
+#c1:checked~#c2,
+#c1:checked~#c2:checked~#c3,
+#c1:checked~#c2:checked~#c3:checked~#c4,
+#c1:checked~#c2:checked~#c3:checked~#c4:checked~#c5,
+#c1:checked~#c2:checked~#c3:checked~#c4:checked~#c5:checked~#c6,
+#c1:checked~#c2:checked~#c3:checked~#c4:checked~#c5:checked~#c6:checked~#c7{visibility:visible}
+#c1:checked,
+#c1:checked~#c2:checked,
+#c1:checked~#c2:checked~#c3:checked,
+#c1:checked~#c2:checked~#c3:checked~#c4:checked,
+#c1:checked~#c2:checked~#c3:checked~#c4:checked~#c5:checked,
+#c1:checked~#c2:checked~#c3:checked~#c4:checked~#c5:checked~#c6:checked{counter-increment:out}
+
+/* ───────────── title ───────────── */
+header{position:relative;z-index:3;text-align:center;padding:clamp(14px,3.4vh,34px) 16px 0;--verb:"is out";--hint:"tap Vasilisa at the waist";--awake:0}
+h1{margin:0;font:700 clamp(30px,4.5vw,70px)/1 Georgia,Palatino,"Palatino Linotype","Book Antiqua",serif;color:var(--red);
+  text-transform:uppercase;text-shadow:.04em .05em 0 var(--gold)}
+h1 .w{display:inline-flex;align-items:baseline;margin:0 .26em}
+h1 b{display:inline-block;animation:letter .9s var(--spring) both;animation-delay:calc(var(--n)*55ms + 120ms)}
+h1 b.cap{font-size:1.42em}
+h1 i{align-self:center;flex:none;width:.14em;height:.14em;margin:0 .17em;border-radius:50%;background:var(--gold);
+  box-shadow:0 0 0 .025em var(--soot);animation:dot .5s var(--spring) both;animation-delay:calc(var(--n)*55ms + 420ms)}
+h1 i:nth-of-type(even){background:var(--green)}
+@keyframes letter{from{opacity:0;transform:translateY(-.55em) rotate(-9deg)}to{opacity:1;transform:none}}
+@keyframes dot{from{transform:scale(0)}to{transform:none}}
+.sub{margin:clamp(8px,1.5vh,16px) 0 0;font:600 clamp(9.5px,1vw,13px)/1 "Gill Sans","Gill Sans MT","Trebuchet MS",system-ui,sans-serif;
+  letter-spacing:.44em;text-indent:.44em;text-transform:uppercase;animation:rise .9s cubic-bezier(.2,.7,.2,1) .95s both}
+.sub::before,.sub::after{content:"";display:inline-block;vertical-align:middle;width:clamp(18px,4vw,54px);height:1px;margin:0 1.2em;
+  background:linear-gradient(90deg,var(--soot) 0 55%,#0000 55% 70%,var(--red) 70% 82%,#0000 82% 90%,var(--soot) 90%)}
+.sub::after{scale:-1 1}
+.count{margin:clamp(7px,1.3vh,14px) 0 0;font:italic 400 clamp(14px,1.3vw,19px)/1.35 Georgia,Palatino,serif;animation:rise .9s cubic-bezier(.2,.7,.2,1) 1.15s both}
+.count .n::before{content:counter(out) " of 7 sisters " var(--verb)}
+.count .n::after{content:"";display:inline-block;width:.42em;height:.42em;margin:0 .85em .12em;rotate:45deg;background:var(--gold);box-shadow:0 0 0 1px var(--soot)}
+.count .hint{color:var(--red)}
+.count .hint::before{content:var(--hint)}
+@keyframes rise{from{opacity:0;transform:translateY(.8em)}to{opacity:1;transform:none}}
+#c1:checked~header{--verb:"are out";--hint:"Marfa is hiding someone"}
+#c1:checked~#c2:checked~header{--hint:"Darya crows: one more!"}
+#c1:checked~#c2:checked~#c3:checked~header{--hint:"Olena has put the kettle on"}
+#c1:checked~#c2:checked~#c3:checked~#c4:checked~header{--hint:"Yeva is not the last"}
+#c1:checked~#c2:checked~#c3:checked~#c4:checked~#c5:checked~header{--hint:"Nina hums. Open her gently"}
+#c1:checked~#c2:checked~#c3:checked~#c4:checked~#c5:checked~#c6:checked~header{--hint:"hush, Little Zoya is asleep. Tap her"}
+#c1:checked~#c2:checked~#c3:checked~#c4:checked~#c5:checked~#c6:checked~#c7:checked~header{--hint:"Zoya is awake, and so is the garden"}
+
+/* ───────────── stage, rosette, shelf ───────────── */
+.stage{position:relative;flex:1 0 auto;min-height:calc((var(--rowb) + 22.6)*var(--E));
+  --c:var(--c1);--awake:0;--b1:none;--b2:none;--b3:none;--b4:none;--b5:none;--b6:none;--wk:none}
+#c1:checked~.stage{--c:var(--c2)}
+#c1:checked~#c2:checked~.stage{--c:var(--c3)}
+#c1:checked~#c2:checked~#c3:checked~.stage{--c:var(--c4)}
+#c1:checked~#c2:checked~#c3:checked~#c4:checked~.stage{--c:var(--c5)}
+#c1:checked~#c2:checked~#c3:checked~#c4:checked~#c5:checked~.stage{--c:var(--c6)}
+#c1:checked~#c2:checked~#c3:checked~#c4:checked~#c5:checked~#c6:checked~.stage{--c:var(--c7)}
+#c1:checked~#c2:checked~#c3:checked~#c4:checked~#c5:checked~#c6:checked~#c7:checked~.stage{--awake:1;--b1:bx;--b2:by;--b3:ox;--b4:oy;--b5:flip;--b6:flap;--wk:wake}
+.foot{--awake:0}
+#c1:checked~#c2:checked~#c3:checked~#c4:checked~#c5:checked~#c6:checked~#c7:checked~.foot{--awake:1}
+
+.rosette{position:absolute;left:50%;bottom:calc((var(--rowb) + 8.6)*var(--E));width:min(calc(47*var(--E)),170vw);aspect-ratio:1;
+  translate:-50% 50%;border-radius:50%;pointer-events:none;border:calc(1.5*var(--E)) dotted rgba(242,169,0,.3);
+  animation:turn 360s linear infinite;opacity:calc(.8 + var(--awake)*.2);transition:opacity 2s}
+.rosette::before{content:"";position:absolute;inset:2.5%;border-radius:50%;
+  background:repeating-conic-gradient(from -7.5deg,rgba(200,16,46,0) 0deg,rgba(200,16,46,.14) 7.5deg,rgba(200,16,46,0) 15deg);
+  -webkit-mask:radial-gradient(closest-side,#0000 56%,#000 57% 99%,#0000 100%);mask:radial-gradient(closest-side,#0000 56%,#000 57% 99%,#0000 100%)}
+.rosette::after{content:"";position:absolute;inset:23.5%;border-radius:50%;border:calc(.95*var(--E)) dotted rgba(11,110,79,.25);
+  background:repeating-conic-gradient(from 0deg,rgba(242,169,0,0) 0deg,rgba(242,169,0,.3) 15deg,rgba(242,169,0,0) 30deg)}
+.rosette i{position:absolute;inset:39%;border-radius:50%;border:calc(.5*var(--E)) dotted rgba(200,16,46,.3);
+  background:repeating-conic-gradient(from 22.5deg,rgba(11,110,79,0) 0deg,rgba(11,110,79,.2) 22.5deg,rgba(11,110,79,0) 45deg),
+    radial-gradient(closest-side,rgba(248,239,217,.9) 0 30%,#0000 31%)}
+@keyframes turn{to{transform:rotate(360deg)}}
+
+.shelf{position:absolute;left:0;right:0;bottom:calc((var(--rowb) - 2.2)*var(--E));height:var(--bh);--s:var(--bh);
+  border-top:max(2px,calc(.12*var(--E))) solid var(--soot);border-bottom:max(2px,calc(.12*var(--E))) solid var(--soot);
+  background:
+    linear-gradient(var(--red),var(--red)) 0 0/100% 11% no-repeat,
+    linear-gradient(var(--red),var(--red)) 0 100%/100% 11% no-repeat,
+    radial-gradient(circle,var(--soot) 0 calc(var(--s)*.085),#0000 calc(var(--s)*.1)) 50% 50%/calc(var(--s)*2) 100%,
+    radial-gradient(ellipse calc(var(--s)*.2) calc(var(--s)*.095) at 50% 50%,var(--green) 96%,#0000) calc(50% - var(--s)*.42) 50%/calc(var(--s)*2) 100%,
+    radial-gradient(ellipse calc(var(--s)*.2) calc(var(--s)*.095) at 50% 50%,var(--green) 96%,#0000) calc(50% + var(--s)*.42) 50%/calc(var(--s)*2) 100%,
+    linear-gradient(45deg,var(--red) 11%,#0000 11.4%) calc(50% + var(--s)) 50%/calc(var(--s)*2) var(--s),
+    linear-gradient(135deg,var(--red) 11%,#0000 11.4%) calc(50% + var(--s)) 50%/calc(var(--s)*2) var(--s),
+    linear-gradient(225deg,var(--red) 11%,#0000 11.4%) calc(50% + var(--s)) 50%/calc(var(--s)*2) var(--s),
+    linear-gradient(315deg,var(--red) 11%,#0000 11.4%) calc(50% + var(--s)) 50%/calc(var(--s)*2) var(--s),
+    linear-gradient(#F7B92B,var(--gold) 55%,#DE9700);
+  background-position-y:0,100%,50%,50%,50%,calc(var(--s)*.5 - 1px),calc(var(--s)*.5 - 1px),calc(var(--s)*.5 - 1px),calc(var(--s)*.5 - 1px),0;
+  animation:shelf 1.1s cubic-bezier(.2,.7,.2,1) both}
+.shelf::after{content:"";position:absolute;left:0;right:0;top:calc(100% + max(2px,calc(.12*var(--E))));height:calc(.62*var(--E));
+  background:radial-gradient(circle at 50% 0,var(--red) 0 calc(.44*var(--E)),var(--soot) calc(.46*var(--E)) calc(.54*var(--E)),#0000 calc(.58*var(--E))) 50% 0/calc(1.1*var(--E)) 100% repeat-x}
+.shelf::before{content:"";position:absolute;left:0;right:0;top:calc(100% + .6*var(--E));height:calc(2.2*var(--E));
+  background:linear-gradient(rgba(29,29,27,.13),#0000)}
+.shelf.two{bottom:calc((var(--rowb) - 18.2)*var(--E));display:none}
+@keyframes shelf{from{clip-path:inset(0 50% -200% 50%)}to{clip-path:inset(0 0 -200% 0)}}
+
+.row{position:absolute;left:50%;bottom:calc(var(--rowb)*var(--E));width:0;height:0;font-size:var(--E);z-index:2;
+  translate:calc(var(--c)*-1em) 0;transition:translate 1.1s cubic-bezier(.55,0,.2,1) .3s}
+
+/* ───────────── a doll (every length in her own em) ───────────── */
+.doll{position:absolute;bottom:0;left:calc(12.5em + var(--gap));width:10em;height:17em;font-size:.8em;z-index:2;
+  --open:0;--oan:hopIn;--oad:.8s;--odl:0s;--ovis:hidden;--sway:sway;--sp:var(--none);--dp:var(--none);
+  --k:var(--kid,1);--an:var(--kan,enter);--ad:var(--kad,1.9s);--adl:var(--kdl,.35s);
+  --hx:calc(-11.25em - var(--gap));--hy:0em;
+  visibility:var(--kvis,visible);
+  transform:translate(calc((1 - var(--k))*var(--hx)),calc((1 - var(--k))*var(--hy)));
+  transition:transform .45s cubic-bezier(.45,.05,.35,1) calc(var(--k)*.61s + (1 - var(--k))*.12s),visibility 0s calc((1 - var(--k))*.85s)}
+.d1{left:0;font-size:1em;--scarf:var(--red);--dress:var(--green);--trim:var(--gold);--rbn:var(--red);--rtx:var(--face);--bt:5.3s;--ph:0s;
+  --dp:radial-gradient(circle,rgba(242,169,0,.85) 0 .1em,#0000 .12em) .3em 0/1.5em 1.5em}
+.d2{--scarf:var(--green);--dress:var(--red);--trim:var(--gold);--rbn:var(--green);--rtx:var(--face);--bt:6.1s;--ph:-2s}
+.d3{--scarf:var(--gold);--dress:#262623;--trim:var(--red);--rbn:var(--gold);--rtx:var(--soot);--bt:4.7s;--ph:-4.1s;
+  --dp:radial-gradient(circle,rgba(200,16,46,.9) 0 .1em,#0000 .12em) 0 .4em/1.4em 1.4em}
+.d4{--scarf:#262623;--dress:var(--red);--trim:var(--gold);--rbn:var(--soot);--rtx:var(--gold);--bt:6.7s;--ph:-1.2s;
+  --sp:radial-gradient(circle,var(--gold) 0 .13em,#0000 .15em) 0 0/1.1em 1.1em,radial-gradient(circle,var(--gold) 0 .13em,#0000 .15em) .55em .55em/1.1em 1.1em}
+.d5{--scarf:var(--red);--dress:var(--gold);--trim:var(--green);--rbn:var(--red);--rtx:var(--face);--bt:5.9s;--ph:-3.3s;
+  --sp:radial-gradient(circle,var(--face) 0 .16em,#0000 .18em) 0 0/1.2em 1.2em,radial-gradient(circle,var(--face) 0 .16em,#0000 .18em) .6em .6em/1.2em 1.2em}
+.d6{--scarf:var(--green);--dress:var(--gold);--trim:var(--red);--rbn:var(--green);--rtx:var(--face);--bt:5.1s;--ph:-5s}
+.d7{--gap:2.5em;--scarf:var(--red);--dress:var(--red);--trim:var(--gold);--rbn:var(--red);--rtx:var(--face);--ph:-2.6s}
+
+/* a doll is open when she and all her elders are checked */
+#c1:checked~.stage .d1,
+#c1:checked~#c2:checked~.stage .d2,
+#c1:checked~#c2:checked~#c3:checked~.stage .d3,
+#c1:checked~#c2:checked~#c3:checked~#c4:checked~.stage .d4,
+#c1:checked~#c2:checked~#c3:checked~#c4:checked~#c5:checked~.stage .d5,
+#c1:checked~#c2:checked~#c3:checked~#c4:checked~#c5:checked~#c6:checked~.stage .d6{
+  --open:1;--oan:hopOut;--oad:2.1s;--odl:.25s;--ovis:visible;--sway:none}
+
+.hop{position:absolute;inset:0;transform-origin:50% 100%;
+  --kid:var(--open);--kvis:var(--ovis);--kan:var(--oan);--kad:var(--oad);--kdl:var(--odl);
+  animation:var(--an) var(--ad) var(--adl) both}
+.shade,.lsh{position:absolute;left:.2em;right:.2em;bottom:-.5em;height:1.1em;border-radius:50%;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(29,29,27,.5),rgba(29,29,27,.18) 60%,#0000)}
+.shade{opacity:var(--k);transition:opacity .25s calc(var(--k)*1.02s)}
+.lsh{left:1em;right:2.2em;opacity:var(--open);transition:opacity .2s calc(var(--open)*.85s)}
+
+/* halves */
+.bot{position:absolute;inset:0;z-index:3;transform-origin:50% 100%;transition:rotate .6s var(--spring)}
+.top{position:absolute;inset:0;z-index:calc(4 - 4*var(--open));transform-origin:50% 100%;
+  transform:translateX(calc(var(--open)*var(--lx)));
+  transition:transform .6s cubic-bezier(.3,.1,.3,1) calc(var(--open)*.32s + (1 - var(--open))*.5s),
+    z-index 0s calc(var(--open)*.2s + (1 - var(--open))*1.05s),rotate .6s var(--spring)}
+.tl,.td,.tr{position:absolute;inset:0}
+.tl{transform:translateY(calc(var(--open)*-2.6em));
+  transition:transform calc(var(--open)*.45s + (1 - var(--open))*.38s) var(--spring) calc((1 - var(--open))*1s)}
+.td{transform:translateY(calc(var(--open)*9.55em));
+  transition:transform .55s cubic-bezier(.55,0,.8,.45) calc(var(--open)*.38s + (1 - var(--open))*.5s)}
+.tr{transform-origin:50% 58.2%;transform:rotate(calc(var(--open)*-13deg));
+  transition:transform .85s var(--spring) calc(var(--open)*.3s + (1 - var(--open))*.45s)}
+.cut{position:absolute;inset:0;transform-origin:50% 100%;animation:var(--sway) 6.4s ease-in-out var(--ph,0s) infinite alternate}
+.top .cut{clip-path:polygon(-10% -10%,110% -10%,110% 52.94%,97.6% 52.94%,95.98% 54.31%,91.2% 55.59%,83.65% 56.68%,73.8% 57.52%,62.3% 58.05%,50% 58.23%,37.7% 58.05%,26.2% 57.52%,16.35% 56.68%,8.8% 55.59%,4.02% 54.31%,2.4% 52.94%,-10% 52.94%)}
+.bot .cut{clip-path:polygon(110% 52.94%,97.6% 52.94%,95.98% 54.31%,91.2% 55.59%,83.65% 56.68%,73.8% 57.52%,62.3% 58.05%,50% 58.23%,37.7% 58.05%,26.2% 57.52%,16.35% 56.68%,8.8% 55.59%,4.02% 54.31%,2.4% 52.94%,-10% 52.94%,-10% 110%,110% 110%)}
+@keyframes sway{from{transform:rotate(-.9deg)}to{transform:rotate(.9deg)}}
+
+.body{position:absolute;left:0;top:3.6em;width:10em;height:13.4em;overflow:hidden;
+  border-radius:50% 50% 36% 36%/58% 58% 22% 22%;box-shadow:0 0 0 .13em var(--soot)}
+.top .body{background:radial-gradient(120% 85% at 26% 38%,rgba(255,255,255,.1) 0,#0000 40%,rgba(29,29,27,.3) 100%),var(--sp),var(--scarf)}
+.bot .body{background:
+  linear-gradient(to top,#0000 .5em,var(--trim) .5em .78em,#0000 .78em),
+  radial-gradient(120% 85% at 26% 30%,rgba(255,255,255,.1) 0,#0000 42%,rgba(29,29,27,.34) 100%),var(--dp),var(--dress)}
+.body::after,.head::after{content:"";position:absolute;border-radius:50%;pointer-events:none;opacity:.62;transition:opacity .35s;
+  background:radial-gradient(closest-side,rgba(255,255,255,.95),rgba(255,255,255,.5) 45%,rgba(255,255,255,0))}
+.body::after{left:.75em;top:2.2em;width:1.5em;height:9.6em;rotate:5deg}
+.head::after{left:.55em;top:1.1em;width:1em;height:3.1em;rotate:22deg}
+.seam{position:absolute;left:-.1em;width:10.2em;top:4.4em;height:1.9em;border-radius:0 0 50% 50%/0 0 .9em .9em;
+  border-bottom:.34em solid var(--trim);box-shadow:0 .1em 0 var(--soot),0 -.11em 0 var(--soot) inset}
+.band{position:absolute;left:-.1em;width:10.2em;top:5.4em;height:2.1em;border-radius:0 0 50% 50%/0 0 .9em .9em;
+  background:var(--trim);box-shadow:0 .12em 0 var(--soot),0 .34em 0 var(--face),0 .44em 0 var(--soot)}
+.band::after{content:"";position:absolute;inset:0 0 .42em;border-radius:inherit;border-bottom:.3em dotted var(--soot)}
+.lip{position:absolute;left:-.1em;width:10.2em;top:5.4em;height:1.3em;border-radius:0 0 50% 50%/0 0 .9em .9em;
+  background:linear-gradient(#EBC07E,var(--wood));box-shadow:0 .08em 0 var(--soot);opacity:var(--open);transition:opacity .15s calc(var(--open)*.12s + (1 - var(--open))*1.2s)}
+.hollow{position:absolute;left:.24em;top:8.1em;width:9.52em;height:1.8em;border-radius:50%;z-index:1;
+  border:.24em solid var(--wood);box-shadow:0 0 0 .12em var(--soot),inset 0 .5em .6em rgba(0,0,0,.75);
+  background:radial-gradient(ellipse at 50% 130%,#6B3F22 0,#2A1A12 55%,var(--soot) 100%)}
+
+.head{position:absolute;left:1.5em;top:0;width:7em;height:7em;border-radius:50%;overflow:hidden;box-shadow:0 0 0 .13em var(--soot);
+  background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.12) 0,#0000 45%,rgba(29,29,27,.3) 100%),var(--sp),var(--scarf)}
+.face{position:absolute;left:1.1em;top:1.3em;width:4.8em;height:4.8em;border-radius:50%;overflow:hidden;background:var(--face);
+  box-shadow:0 0 0 .12em var(--soot),0 0 0 .36em var(--trim),0 0 0 .46em var(--soot)}
+.face::before,.face::after{content:"";position:absolute;top:-1.75em;width:3.6em;height:3.2em;border-radius:50%;background:var(--soot)}
+.face::before{left:-.75em}.face::after{right:-.75em}
+.eye{position:absolute;top:2.28em;width:.54em;height:.54em;border-radius:50%;z-index:1;
+  background:radial-gradient(circle at 34% 30%,#fff 0 15%,#0000 19%),var(--soot);
+  animation:blink var(--bt,5.3s) var(--ph,0s) infinite}
+.eye.l{left:1.14em}.eye.r{left:3.12em;scale:-1 1}
+.eye::before{content:"";position:absolute;left:-.24em;top:-.32em;width:1.02em;height:.7em;border-radius:50%;border-top:.11em solid var(--soot)}
+.eye::after{content:"";position:absolute;left:-.42em;top:-.12em;width:.34em;height:.1em;border-radius:.1em;background:var(--soot);rotate:28deg}
+@keyframes blink{0%,93.5%,100%{transform:scaleY(1)}96.5%{transform:scaleY(.08)}}
+.chk{position:absolute;top:3.02em;width:1.05em;height:.82em;border-radius:50%;background:var(--pink);z-index:1}
+.chk.l{left:.3em}.chk.r{right:.3em}
+.mouth{position:absolute;left:50%;top:3.42em;width:var(--mw,1em);height:.46em;margin-left:calc(var(--mw,1em)/-2);z-index:1;
+  border-bottom:.15em solid var(--red);border-radius:0 0 50% 50%/0 0 100% 100%}
+/* expressions */
+.f2 .mouth{--mw:.7em}
+.f2 .eye{background:radial-gradient(circle at 66% 34%,#fff 0 15%,#0000 19%),var(--soot)}
+.f3 .mouth{--mw:.46em;height:.56em;top:3.36em;border:0;border-radius:50%;background:var(--red)}
+.f3 .eye::before{top:-.5em}
+.f4 .mouth{--mw:.8em;rotate:-9deg;top:3.36em}
+.f4 .eye::before{top:-.16em;border-top-width:.2em}
+.f5 .mouth{--mw:1.3em;height:.62em;top:3.3em;border:0;border-radius:.1em .1em 1em 1em;background:linear-gradient(var(--face) 0 28%,var(--red) 28%);box-shadow:0 0 0 .08em var(--red)}
+.f5 .chk{width:1.15em;height:.95em}
+.f6 .mouth{--mw:.5em;top:3.36em}
+.f6 .chk{width:1.2em;height:1em;top:2.95em}
+.f7 .eye{animation:none;top:calc(2.5em - var(--awake)*.22em);height:calc(.3em + var(--awake)*.24em);
+  background:radial-gradient(circle at 34% 30%,rgba(255,255,255,var(--awake)) 0 15%,#0000 19%),rgba(29,29,27,var(--awake));
+  border-bottom:calc((1 - var(--awake))*.13em) solid var(--soot);transition:all .35s var(--spring) calc(var(--awake)*.1s)}
+.f7 .eye::before,.f7 .eye::after{opacity:var(--awake);transition:opacity .2s calc(var(--awake)*.3s)}
+.f7 .chk{scale:calc(1 + var(--awake)*.42);background:color-mix(in srgb,var(--pink),var(--red) calc(var(--awake)*26%));transition:scale .6s var(--spring) .15s,background .6s .15s}
+.f7 .mouth{--mw:calc(.3em + var(--awake)*.62em);top:3.5em;transition:width .4s var(--spring) .2s,margin .4s var(--spring) .2s}
+
+.knot{position:absolute;left:4.4em;top:6.5em;width:1.2em;height:1em;border-radius:42%;background:var(--scarf);box-shadow:0 0 0 .12em var(--soot),inset -.12em -.12em 0 rgba(29,29,27,.25)}
+.knot::before,.knot::after{content:"";position:absolute;top:.4em;width:1.6em;height:.95em;background:linear-gradient(rgba(29,29,27,.14),rgba(29,29,27,.14)),var(--scarf);box-shadow:0 0 0 .12em var(--soot)}
+.knot::before{left:-1.55em;border-radius:100% 0 100% 0}
+.knot::after{left:1.15em;border-radius:0 100% 0 100%}
+
+.apron{position:absolute;left:2.1em;top:11.3em;width:5.8em;height:5.05em;background:var(--face);
+  border-radius:46% 46% 50% 50%/36% 36% 64% 64%;box-shadow:0 0 0 .12em var(--soot),0 0 0 .36em var(--trim),0 0 0 .46em var(--soot)}
+.apron i,.apron i::before,.apron i::after{position:absolute}
+.apron i::before,.apron i::after{content:""}
+
+/* hit areas, focus ring, lean */
+.hit{position:absolute;z-index:5;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.top .hit{left:.3em;right:.3em;top:0;height:9.9em;border-radius:46% 46% 30% 30%/50% 50% 12% 12%}
+.bot .hit{left:0;right:0;top:9em;bottom:0;border-radius:0 0 36% 36%/0 0 38% 38%}
+.hit i{position:absolute;top:0;bottom:0;width:50%}
+.zl{left:0}.zr{right:0}
+.ring{position:absolute;inset:-1em -.8em -.7em;border-radius:3.2em;border:3px solid var(--gold);opacity:0;pointer-events:none;z-index:7}
+.ring::before{content:"";position:absolute;inset:-3px;border-radius:inherit;border:3px dashed var(--soot)}
+#c1:focus-visible~.stage .d1>.hop>.ring,#c2:focus-visible~.stage .d2>.hop>.ring,#c3:focus-visible~.stage .d3>.hop>.ring,
+#c4:focus-visible~.stage .d4>.hop>.ring,#c5:focus-visible~.stage .d5>.hop>.ring,#c6:focus-visible~.stage .d6>.hop>.ring,
+#c7:focus-visible~.stage .d7>.hop>.ring{opacity:1}
+@media (hover:hover){
+  .hop:has(>.bot .zl:hover,>.top .zl:hover)>:is(.top,.bot){rotate:calc((1 - var(--open))*-2.6deg)}
+  .hop:has(>.bot .zr:hover,>.top .zr:hover)>:is(.top,.bot){rotate:calc((1 - var(--open))*2.6deg)}
+  .hop:has(>.top .zl:hover)>.top .tr{transform:rotate(calc(var(--open)*-17deg))}
+  .hop:has(>.top .zr:hover)>.top .tr{transform:rotate(calc(var(--open)*-9deg))}
+  .hop:has(>.bot .hit:hover,>.top .hit:hover)>:is(.top,.bot) :is(.body,.head)::after{opacity:1}
+}
+
+/* name ribbons */
+.ribbon{position:absolute;left:50%;top:calc(100% + var(--bh) + .75*var(--E));translate:-50% 0;white-space:nowrap;
+  font:italic 700 clamp(var(--rmin,11.5px),.8em,17px)/1 Georgia,Palatino,serif;letter-spacing:.03em;padding:.4em 1.25em .46em;
+  background:linear-gradient(rgba(255,255,255,.14),#0000 45%,rgba(29,29,27,.16)),var(--rbn);color:var(--rtx);
+  clip-path:polygon(0 0,100% 0,calc(100% - .55em) 50%,100% 100%,0 100%,.55em 50%);
+  scale:var(--k) 1;opacity:var(--k);transition:scale .55s var(--spring) calc(var(--k)*1.1s),opacity .15s calc(var(--k)*1.1s)}
+
+/* ───────────── choreography ───────────── */
+@keyframes enter{
+  0%{transform:translateY(-7em) scale(.92,1.08);opacity:0;rotate:0deg;animation-timing-function:cubic-bezier(.55,0,.9,.5)}
+  8%{opacity:1}
+  30%{transform:translateY(0) scale(1);animation-timing-function:ease-out}
+  36%{transform:translateY(0) scale(1.08,.9);animation-timing-function:cubic-bezier(.2,.7,.4,1)}
+  45%{transform:translateY(-.8em) scale(.98,1.03);animation-timing-function:ease-in}
+  53%{transform:translateY(0) scale(1.03,.97)}
+  59%{transform:translateY(0) scale(1);rotate:0deg}
+  68%{rotate:3deg}77%{rotate:-2.3deg}86%{rotate:1.4deg}93%{rotate:-.6deg}
+  100%{transform:translateY(0) scale(1);rotate:0deg;opacity:1}}
+@keyframes hopOut{
+  0%{transform:translateY(0) scale(.5);rotate:0deg;animation-timing-function:cubic-bezier(.2,.8,.3,1)}
+  14%{transform:translateY(-11.4em) scale(.95,1.07);animation-timing-function:ease-in-out}
+  19%{transform:translateY(-10.8em) scale(1.03,.98);animation-timing-function:ease-in-out}
+  28.5%{transform:translateY(-11.1em) scale(1);animation-timing-function:cubic-bezier(.55,0,.9,.5)}
+  39.5%{transform:translateY(0) scale(1);animation-timing-function:ease-out}
+  43.5%{transform:translateY(0) scale(1.11,.86);animation-timing-function:cubic-bezier(.2,.7,.4,1)}
+  49.5%{transform:translateY(-.95em) scale(.97,1.04);animation-timing-function:ease-in}
+  55%{transform:translateY(0) scale(1.04,.96)}
+  60%{transform:translateY(0) scale(1);rotate:0deg}
+  68%{rotate:3.8deg}77%{rotate:-2.9deg}86%{rotate:1.7deg}93%{rotate:-.7deg}
+  100%{transform:translateY(0) scale(1);rotate:0deg}}
+@keyframes hopIn{
+  0%{transform:translateY(0) scale(1)}
+  10%{transform:translateY(0) scale(1.07,.9);animation-timing-function:cubic-bezier(.2,.8,.3,1)}
+  48%{transform:translateY(-11.7em) scale(.97,1.04)}
+  64%{transform:translateY(-11.3em) scale(1);animation-timing-function:cubic-bezier(.6,0,.9,.6)}
+  100%{transform:translateY(0) scale(.5)}}
+
+/* ───────────── apron motifs ───────────── */
+/* 1 sunflower */
+.sun .st{left:2.81em;top:2.5em;width:.18em;height:2.35em;background:var(--green)}
+.sun .st::before{left:-1.15em;top:1em;width:1.15em;height:.62em;background:var(--green);border-radius:100% 0 100% 0}
+.sun .st::after{left:.18em;top:.72em;width:1.15em;height:.62em;background:var(--green);border-radius:0 100% 0 100%}
+.sun .p{left:2.9em;top:2.05em;width:.66em;height:1.5em;margin:-1.5em 0 0 -.33em;transform-origin:50% 100%;rotate:calc(var(--n)*30deg);
+  background:var(--gold);border-radius:50%/62% 62% 38% 38%;box-shadow:inset 0 0 0 .05em rgba(29,29,27,.5)}
+.sun .p:nth-of-type(odd){background:linear-gradient(rgba(200,16,46,.3),rgba(200,16,46,.3)),var(--gold);height:1.36em;margin-top:-1.36em}
+.sun .c{left:2.9em;top:2.05em;width:1.36em;height:1.36em;margin:-.68em;border-radius:50%;
+  background:radial-gradient(circle,var(--gold) 0 .06em,#0000 .08em) .02em .02em/.27em .27em,var(--soot);box-shadow:0 0 0 .07em var(--soot),0 0 0 .15em #B77A00}
+/* 2 strawberries */
+.berry{width:1.5em;height:1.7em;border-radius:48% 48% 50% 50%/34% 34% 66% 66%;box-shadow:inset 0 0 0 .06em rgba(29,29,27,.55);
+  background:radial-gradient(circle,var(--gold) 0 .06em,#0000 .08em) .08em .3em/.42em .42em,radial-gradient(circle,var(--gold) 0 .06em,#0000 .08em) .29em .51em/.42em .42em,
+    radial-gradient(circle at 32% 28%,rgba(255,255,255,.35),#0000 45%),var(--red)}
+.berry::before{left:.2em;top:-.12em;width:1.1em;height:.5em;background:var(--green);clip-path:polygon(0 0,100% 0,86% 62%,68% 30%,50% 100%,32% 30%,14% 62%)}
+.berry::after{left:.7em;top:-.5em;width:.1em;height:.42em;background:var(--green)}
+.straw .b1{left:.75em;top:1.05em;rotate:-13deg}
+.straw .b2{left:3.5em;top:1.15em;rotate:14deg}
+.straw .b3{left:2.15em;top:2.75em;rotate:3deg}
+.straw .lf{width:1.5em;height:.95em;background:linear-gradient(135deg,#0000 47%,rgba(248,239,217,.6) 47% 53%,#0000 53%),var(--green)}
+.straw .l1{left:1.5em;top:.2em;border-radius:100% 0 100% 0;rotate:8deg}
+.straw .l2{left:2.85em;top:.15em;border-radius:0 100% 0 100%;rotate:-6deg;background:linear-gradient(45deg,#0000 47%,rgba(248,239,217,.6) 47% 53%,#0000 53%),var(--green)}
+/* 3 rooster */
+.roo .tf{left:.35em;top:2.2em;width:2em;height:.72em;border-radius:50%;transform-origin:100% 50%}
+.roo .t1{background:var(--green);rotate:12deg}
+.roo .t2{background:var(--red);rotate:40deg}
+.roo .t3{background:var(--soot);rotate:68deg;width:1.8em;left:.55em}
+.roo .lg{top:3.45em;width:.11em;height:.85em;background:var(--soot)}
+.roo .lg::after{left:-.12em;bottom:0;width:.5em;height:.11em;background:var(--soot)}
+.roo .g1{left:2.7em}.roo .g2{left:3.2em}
+.roo .nk{left:3.35em;top:1.35em;width:1em;height:1.6em;border-radius:50%;background:var(--gold);rotate:14deg}
+.roo .bd{left:1.85em;top:2em;width:2.4em;height:1.65em;border-radius:42% 58% 55% 45%/55% 60% 40% 45%;background:var(--gold);rotate:-10deg;box-shadow:inset -.1em -.14em 0 rgba(200,16,46,.3)}
+.roo .wg{left:2.2em;top:2.35em;width:1.35em;height:.85em;border-radius:0 100% 0 100%;background:var(--red);box-shadow:inset 0 0 0 .06em rgba(29,29,27,.4)}
+.roo .hd{left:3.5em;top:.95em;width:1em;height:1em;border-radius:50%;background:var(--gold)}
+.roo .hd::before{left:.52em;top:.3em;width:.17em;height:.17em;border-radius:50%;background:var(--soot)}
+.roo .hd::after{left:.9em;top:.36em;width:.5em;height:.34em;background:var(--soot);clip-path:polygon(0 0,100% 50%,0 100%)}
+.roo .cb{left:3.55em;top:.62em;width:.34em;height:.34em;border-radius:50%;background:var(--red);box-shadow:.3em -.14em 0 var(--red),.6em .02em 0 var(--red)}
+.roo .wt{left:4.2em;top:1.75em;width:.3em;height:.48em;border-radius:50%/40% 40% 60% 60%;background:var(--red)}
+.roo .gr{left:1.6em;top:4.32em;width:2.8em;height:.12em;border-radius:.1em;background:var(--green)}
+/* 4 samovar */
+.sam .hn{top:2.05em;width:.8em;height:.8em;border-radius:50%;border:.15em solid var(--soot)}
+.sam .h1{left:1.1em}.sam .h2{left:3.9em}
+.sam .bd{left:1.72em;top:1.72em;width:2.36em;height:1.95em;border-radius:46% 46% 50% 50%/30% 30% 70% 70%;
+  background:linear-gradient(100deg,#0000 18%,rgba(255,255,255,.75) 24% 33%,#0000 40%),linear-gradient(#0000 44%,var(--red) 44% 54%,#0000 54%),var(--gold);
+  box-shadow:inset 0 0 0 .08em var(--soot)}
+.sam .cl{left:2.15em;top:1.42em;width:1.5em;height:.38em;border-radius:.12em;background:var(--gold);box-shadow:inset 0 0 0 .07em var(--soot)}
+.sam .ch{left:2.5em;top:.98em;width:.8em;height:.5em;border-radius:.16em .16em 0 0;background:var(--gold);box-shadow:inset 0 0 0 .07em var(--soot)}
+.sam .tp{left:2.42em;top:.4em;width:.96em;height:.66em;border-radius:50% 50% 44% 44%;background:var(--red);box-shadow:inset 0 0 0 .07em var(--soot)}
+.sam .tp::before{left:.36em;top:-.2em;width:.24em;height:.24em;border-radius:50%;background:var(--soot)}
+.sam .tp::after{left:.9em;top:.16em;width:.34em;height:.16em;border-radius:0 .1em .1em 0;background:var(--red);box-shadow:inset 0 0 0 .05em var(--soot);rotate:-24deg}
+.sam .sp{left:2.78em;top:2.95em;width:.24em;height:.6em;background:var(--soot);border-radius:0 0 .08em .08em}
+.sam .sp::before{left:-.2em;top:.08em;width:.64em;height:.13em;border-radius:.1em;background:var(--soot)}
+.sam .ft{left:2.52em;top:3.62em;width:.76em;height:.3em;background:var(--gold);box-shadow:inset 0 0 0 .07em var(--soot)}
+.sam .ft::after{left:-.6em;top:.28em;width:1.96em;height:.42em;background:var(--soot);clip-path:polygon(14% 0,86% 0,100% 100%,0 100%)}
+.sam .sm{width:.34em;height:.7em;border-left:.09em solid rgba(29,29,27,.55);border-radius:50%;animation:steam 3.2s ease-in-out infinite}
+.sam .s1{left:1.35em;top:.75em}.sam .s2{left:4.2em;top:.55em;animation-delay:-1.6s}
+@keyframes steam{0%{transform:translateY(.3em);opacity:0}40%{opacity:1}100%{transform:translateY(-.35em) scaleX(-1);opacity:0}}
+/* 5 rowan */
+.row5 .sp{left:2.9em;top:.42em;width:2.1em;height:1em;transform-origin:0 50%;rotate:-16deg}
+.row5 .sp.m{scale:-1 1;rotate:16deg}
+.row5 .sp::before{left:0;top:.46em;width:100%;height:.08em;background:var(--green)}
+.row5 .sp i{left:.22em;width:.54em;height:.42em;background:var(--green);box-shadow:.56em 0 0 var(--green),1.12em 0 0 var(--green)}
+.row5 .sp .u{top:.06em;border-radius:100% 0 100% 0}
+.row5 .sp .d{top:.52em;border-radius:0 100% 0 100%}
+.row5 .stm{left:2.86em;top:.85em;width:.09em;height:1.5em;background:var(--soot)}
+.row5 .br{left:1.72em;top:2.02em;width:.6em;height:.6em;border-radius:50%;background:var(--red);
+  box-shadow:.58em -.08em 0 var(--red),1.16em 0 0 #A30D25,1.72em .1em 0 var(--red),.28em .52em 0 #A30D25,.86em .5em 0 var(--red),1.44em .54em 0 var(--red),
+    .56em 1.04em 0 var(--red),1.14em 1.06em 0 #A30D25,.86em 1.58em 0 var(--red),-.3em .3em 0 var(--red)}
+.row5 .dt{left:1.96em;top:2.34em;width:.13em;height:.13em;border-radius:50%;background:var(--soot);
+  box-shadow:.58em -.08em 0 var(--soot),1.16em 0 0 var(--soot),1.72em .1em 0 var(--soot),.28em .52em 0 var(--soot),.86em .5em 0 var(--soot),1.44em .54em 0 var(--soot),
+    .56em 1.04em 0 var(--soot),1.14em 1.06em 0 var(--soot),.86em 1.58em 0 var(--soot),-.3em .3em 0 var(--soot)}
+/* 6 tulip */
+.tul .st{left:2.81em;top:2.2em;width:.18em;height:2.6em;background:var(--green)}
+.tul .lf{top:2.35em;width:1.3em;height:2.35em;background:var(--green)}
+.tul .l1{left:1.52em;border-radius:0 100% 0 100%}
+.tul .l2{left:2.98em;top:2.6em;height:2.1em;border-radius:100% 0 100% 0}
+.tul .tu{left:1.95em;top:.38em;width:1.9em;height:2.1em;border-radius:50%/30% 30% 70% 70%;background:var(--red);
+  clip-path:polygon(0 0,24% 24%,50% 0,76% 24%,100% 0,100% 100%,0 100%)}
+.tul .tu::before{left:29%;top:6%;width:42%;height:82%;border-radius:50%/30% 30% 70% 70%;background:var(--gold)}
+.tul .tu::after{left:6%;top:30%;width:16%;height:45%;border-radius:50%;background:rgba(255,255,255,.5)}
+/* 7 bird (shared by the apron and the sky) */
+.birdie{position:absolute;width:3.2em;height:2.4em}
+.birdie i{position:absolute}
+.birdie i::before,.birdie i::after{content:"";position:absolute}
+.birdie .tl1,.birdie .tl2{left:0;top:1.05em;width:1.3em;height:.36em;border-radius:.2em 0 0 .2em;background:var(--green);transform-origin:100% 50%;rotate:-16deg}
+.birdie .tl2{rotate:12deg;background:var(--soot)}
+.birdie .bb{left:.7em;top:.7em;width:1.95em;height:1.3em;border-radius:55% 45% 50% 50%/55% 60% 40% 45%;
+  background:radial-gradient(circle,var(--face) 0 .07em,#0000 .09em) .1em .55em/.4em .36em,var(--red);box-shadow:inset 0 0 0 .06em var(--soot)}
+.birdie .bh{left:2.05em;top:.28em;width:1em;height:1em;border-radius:50%;background:var(--red);box-shadow:inset 0 0 0 .06em var(--soot)}
+.birdie .bh::before{left:.52em;top:.3em;width:.18em;height:.18em;border-radius:50%;background:var(--soot)}
+.birdie .bh::after{left:.93em;top:.36em;width:.42em;height:.3em;background:var(--gold);clip-path:polygon(0 0,100% 50%,0 100%)}
+.birdie .bw{left:.75em;top:.2em;width:1.3em;height:.95em;border-radius:0 100% 0 100%;background:var(--gold);box-shadow:inset 0 0 0 .06em var(--soot);
+  transform-origin:100% 100%;rotate:8deg;animation:var(--b6,none) .15s ease-in-out infinite alternate}
+.apron .birdie{font-size:1.3em;left:.6em;top:.72em;scale:-1 1;opacity:calc(1 - var(--awake));transition:opacity calc((1 - var(--awake))*.5s) calc((1 - var(--awake))*.3s)}
+.apron .birdie .bw{animation:none}
+.bird{font-size:calc(1.5*var(--E));left:calc(var(--zx)*var(--E) - 1.6em);bottom:calc(var(--zy)*var(--E) - 1.2em);width:3.2em;height:2.4em;position:absolute;z-index:20;pointer-events:none;
+  opacity:var(--awake);visibility:hidden;animation:var(--b1) 1.7s cubic-bezier(.45,0,.4,1) both}
+#c1:checked~#c2:checked~#c3:checked~#c4:checked~#c5:checked~#c6:checked~#c7:checked~.stage .bird{visibility:visible}
+.bird div{position:absolute;inset:0}
+.bird .b2{animation:var(--b2) 1.7s cubic-bezier(.2,.75,.3,1) both}
+.bird .b3{animation:var(--b3) 11s linear 1.7s infinite}
+.bird .b4{animation:var(--b4) 11s linear 1.7s infinite}
+.bird .b5{animation:var(--b5) 11s linear 1.7s infinite both}
+@keyframes bx{to{transform:translateX(calc(var(--bdx)*var(--E)))}}
+@keyframes by{from{transform:translateY(0) scale(.227)}to{transform:translateY(calc(var(--bdy)*var(--E))) scale(1)}}
+@keyframes ox{
+  0%{transform:translateX(0);animation-timing-function:var(--sineIn)}
+  25%{transform:translateX(calc(var(--A)*-1*var(--E)));animation-timing-function:var(--sineOut)}
+  50%{transform:translateX(calc(var(--A)*-2*var(--E)));animation-timing-function:var(--sineIn)}
+  75%{transform:translateX(calc(var(--A)*-1*var(--E)));animation-timing-function:var(--sineOut)}
+  100%{transform:translateX(0)}}
+@keyframes oy{
+  0%{transform:translateY(0) scale(1) rotate(0deg);animation-timing-function:var(--sineOut)}
+  25%{transform:translateY(calc(var(--Bv)*-1*var(--E))) scale(.8) rotate(0deg);animation-timing-function:var(--sineIn)}
+  50%{transform:translateY(0) scale(1) rotate(0deg);animation-timing-function:var(--sineOut)}
+  75%{transform:translateY(calc(var(--Bv)*1*var(--E))) scale(1.2) rotate(0deg);animation-timing-function:var(--sineIn)}
+  100%{transform:translateY(0) scale(1) rotate(0deg)}}
+@keyframes flip{0%,47%{transform:scaleX(-1)}53%,97%{transform:scaleX(1)}100%{transform:scaleX(-1)}}
+@keyframes flap{from{rotate:-38deg}to{rotate:44deg}}
+/* Zoya */
+.d7 .cut{clip-path:none}
+.d7 .top,.d7 .bot{animation:var(--wk) .75s cubic-bezier(.3,.7,.4,1)}
+@keyframes wake{0%,100%{translate:0 0}35%{translate:0 -2.6em}62%{translate:0 0}78%{translate:0 -.7em}}
+.zz{position:absolute;left:2.7em;top:-.75em;z-index:6;font:italic 700 2.6em/1 Georgia,serif;color:var(--soot);opacity:calc(1 - var(--awake));transition:opacity .3s;pointer-events:none}
+.zz b{display:inline-block;animation:zz 3.2s ease-in-out infinite}
+.zz b+b{font-size:.7em;animation-delay:-1.6s;margin-left:.1em}
+@keyframes zz{0%{transform:translate(-.3em,.6em) scale(.5);opacity:0}35%{opacity:1}100%{transform:translate(.5em,-.9em) scale(1.1);opacity:0}}
+
+/* ───────────── the garden border ───────────── */
+.foot{position:relative;z-index:1;flex:none;height:clamp(50px,8.2vh,78px);display:flex;justify-content:space-around;align-items:flex-end;
+  padding:0 2vw 13px;font-size:clamp(10.5px,1.75vh,15.5px)}
+.foot::after{content:"";position:absolute;left:0;right:0;bottom:0;height:13px;border-top:2px solid var(--soot);
+  background:radial-gradient(circle,var(--gold) 0 2.2px,#0000 2.8px) 0 50%/22px 100%,
+    linear-gradient(45deg,var(--red) 25%,#0000 25.5%) 11px 5px/22px 11px,linear-gradient(135deg,var(--red) 25%,#0000 25.5%) 11px 5px/22px 11px,
+    linear-gradient(225deg,var(--red) 25%,#0000 25.5%) 11px 5px/22px 11px,linear-gradient(315deg,var(--red) 25%,#0000 25.5%) 11px 5px/22px 11px,var(--green)}
+.fs{position:relative;width:2.2em;height:3.4em;flex:none}
+.fs::before{content:"";position:absolute;left:50%;bottom:0;width:1em;height:.5em;margin-left:-.5em;
+  background:radial-gradient(ellipse at 100% 100%,var(--green) 0 68%,#0000 70%) 0 0/50% 100% no-repeat,radial-gradient(ellipse at 0 100%,var(--green) 0 68%,#0000 70%) 100% 0/50% 100% no-repeat}
+.fl{position:absolute;inset:0;transform-origin:50% 100%;scale:calc(var(--awake)*var(--s,1));rotate:calc((1 - var(--awake))*-30deg);
+  transition:scale calc(.35s + var(--awake)*.55s) var(--spring),rotate calc(.35s + var(--awake)*.8s) var(--spring);
+  transition-delay:calc(var(--awake)*(1.5s + var(--i)*.13s) + (1 - var(--awake))*var(--i)*.02s);
+  animation:nod 4.4s ease-in-out calc(var(--i)*-.61s) infinite alternate;
+  background:linear-gradient(var(--green),var(--green)) 50% 100%/.14em 64% no-repeat,
+    radial-gradient(ellipse at 100% 100%,var(--green) 0 68%,#0000 70%) calc(50% - .42em) 78%/.8em .5em no-repeat,
+    radial-gradient(ellipse at 0 100%,var(--green) 0 68%,#0000 70%) calc(50% + .42em) 62%/.8em .5em no-repeat}
+@keyframes nod{from{transform:rotate(-3.5deg)}to{transform:rotate(3.5deg)}}
+.fl::after{content:"";position:absolute;left:50%;top:0;width:1.6em;height:1.6em;margin-left:-.8em}
+.fl.a::after,.fl.c::after{background:
+  radial-gradient(circle .27em at 50% 50%,var(--pc,var(--gold)) 94%,#0000),
+  radial-gradient(circle .31em at 50% 18%,var(--pp,var(--red)) 94%,#0000),radial-gradient(circle .31em at 77.7% 34%,var(--pp,var(--red)) 94%,#0000),
+  radial-gradient(circle .31em at 77.7% 66%,var(--pp,var(--red)) 94%,#0000),radial-gradient(circle .31em at 50% 82%,var(--pp,var(--red)) 94%,#0000),
+  radial-gradient(circle .31em at 22.3% 66%,var(--pp,var(--red)) 94%,#0000),radial-gradient(circle .31em at 22.3% 34%,var(--pp,var(--red)) 94%,#0000)}
+.fl.c{--pc:var(--soot);--pp:var(--gold)}
+.fl.b::after{width:1.2em;height:1.4em;margin-left:-.6em;top:.1em;border-radius:50%/30% 30% 70% 70%;
+  background:radial-gradient(ellipse 22% 42% at 50% 46%,var(--gold) 96%,#0000),var(--red);clip-path:polygon(0 0,24% 26%,50% 0,76% 26%,100% 0,100% 100%,0 100%)}
+
+/* narrower single rows: Zoya's ribbon drops to a second tier */
+@media (max-width:1560px),(max-height:700px){
+  :root{--rowb:6.7}
+  .d7>.ribbon{top:calc(100% + var(--bh) + .75*var(--E) + 25px)}
+}
+@media (max-height:600px){
+  :root{--rmin:9.5px}
+  .d5>.ribbon{top:calc(100% + var(--bh) + .75*var(--E) + 25px)}
+}
+/* ───────────── phones: two shelves ───────────── */
+@media (max-width:720px),(max-aspect-ratio:5/6){
+  :root{--rowb:23.2;--rmin:9.5px}
+  h1{font-size:min(9.6vw,6.2vh,52px)}
+  h1 .w{display:flex;justify-content:center;margin:0 0 .12em}
+  .sub{letter-spacing:.3em;text-indent:.3em}
+  .sub::before,.sub::after{display:none}
+  .count .n::after{display:none}
+  .count .hint{display:block}
+  .stage{min-height:calc((var(--rowb) + 21.8)*var(--E))}
+  .shelf.two{display:block}
+  .d3{left:-26.89em;bottom:-25em;--hx:28.14em;--hy:-25em}
+  .d7{--gap:3.2em}
+  .d5>.ribbon,.d7>.ribbon{top:calc(100% + var(--bh) + .75*var(--E) + 23px)}
+  .d7>.ribbon{left:auto;right:-1.1em;translate:0 0;transform-origin:100% 50%}
+  .fs:nth-child(n+10){display:none}
+  .ring{border-width:2px}.ring::before{inset:-2px;border-width:2px}
+}
+
+/* ───────────── calm version ───────────── */
+@media (prefers-reduced-motion:reduce){
+  .rosette,.cut,.eye,h1 b,h1 i,.sub,.count,.shelf,.fl,.zz b,.sam .sm,.birdie .bw,.bird,.bird div,.d7 .top,.d7 .bot{animation:none!important}
+  .stage{--c:var(--c7)!important}
+  .row{transition:none}
+  .doll{transform:none;transition:visibility 0s calc((1 - var(--k))*.3s)}
+  .hop{animation:none;opacity:var(--k);transition:opacity .3s ease}
+  .top,.tl,.td,.tr,.bot{transition:none}
+  .shade,.lsh,.lip{transition:opacity .3s}
+  .ribbon{scale:1;transition:opacity .3s}
+  .f7 .eye,.f7 .chk,.f7 .mouth{transition:none}
+  .bird{transform:translate(calc(var(--bdx)*var(--E)),calc(var(--bdy)*var(--E)));transition:opacity .4s}
+  .bird .b5{transform:scaleX(-1)}
+  .fl{rotate:0deg;scale:var(--s,1);opacity:var(--awake);transition:opacity .4s ease;transition-delay:calc(var(--awake)*var(--i)*.05s)}
+}
+</style>
+</head>
+<body>
+<div class="page">
+<input class="nest" type="checkbox" id="c1" aria-label="Vasilisa, the first sister. Open her">
+<input class="nest" type="checkbox" id="c2" aria-label="Marfa, the second sister. Open her">
+<input class="nest" type="checkbox" id="c3" aria-label="Darya, the third sister. Open her">
+<input class="nest" type="checkbox" id="c4" aria-label="Olena, the fourth sister. Open her">
+<input class="nest" type="checkbox" id="c5" aria-label="Yeva, the fifth sister. Open her">
+<input class="nest" type="checkbox" id="c6" aria-label="Nina, the sixth sister. Open her">
+<input class="nest" type="checkbox" id="c7" aria-label="Little Zoya, the seventh sister. Wake her">
+
+<header>
+  <h1 aria-label="Seven Sisters"><span class="w" aria-hidden="true"><b class="cap" style="--n:0">S</b><i style="--n:0"></i><b style="--n:1">e</b><i style="--n:1"></i><b style="--n:2">v</b><i style="--n:2"></i><b style="--n:3">e</b><i style="--n:3"></i><b style="--n:4">n</b></span><span class="w" aria-hidden="true"><b class="cap" style="--n:6">S</b><i style="--n:6"></i><b style="--n:7">i</b><i style="--n:7"></i><b style="--n:8">s</b><i style="--n:8"></i><b style="--n:9">t</b><i style="--n:9"></i><b style="--n:10">e</b><i style="--n:10"></i><b style="--n:11">r</b><i style="--n:11"></i><b style="--n:12">s</b></span></h1>
+  <p class="sub">a nest of dolls · open gently</p>
+  <p class="count"><span class="n"></span><span class="hint"></span></p>
+</header>
+
+<main class="stage">
+  <div class="rosette" aria-hidden="true"><i></i></div>
+  <div class="shelf" aria-hidden="true"></div>
+  <div class="shelf two" aria-hidden="true"></div>
+  <div class="row">
+
+  <!-- 1 · Vasilisa -->
+  <div class="doll d1"><i class="shade"></i><div class="hop"><i class="ring"></i><i class="hollow"></i>
+
+    <!-- 2 · Marfa -->
+    <div class="doll d2"><i class="shade"></i><div class="hop"><i class="ring"></i><i class="hollow"></i>
+
+      <!-- 3 · Darya -->
+      <div class="doll d3"><i class="shade"></i><div class="hop"><i class="ring"></i><i class="hollow"></i>
+
+        <!-- 4 · Olena -->
+        <div class="doll d4"><i class="shade"></i><div class="hop"><i class="ring"></i><i class="hollow"></i>
+
+          <!-- 5 · Yeva -->
+          <div class="doll d5"><i class="shade"></i><div class="hop"><i class="ring"></i><i class="hollow"></i>
+
+            <!-- 6 · Nina -->
+            <div class="doll d6"><i class="shade"></i><div class="hop"><i class="ring"></i><i class="hollow"></i>
+
+              <!-- 7 · Little Zoya -->
+              <div class="doll d7"><i class="shade"></i><div class="hop"><i class="ring"></i>
+                <div class="bot"><div class="cut"><i class="body"></i>
+                  <div class="apron"><i class="birdie"><i class="tl1"></i><i class="tl2"></i><i class="bb"></i><i class="bh"></i><i class="bw"></i></i></div>
+                </div><label class="hit" for="c7"><i class="zl"></i><i class="zr"></i></label></div>
+                <div class="top"><div class="tl"><div class="td"><div class="tr"><div class="cut">
+                  <i class="head"><i class="face f7"><i class="eye l"></i><i class="eye r"></i><i class="chk l"></i><i class="chk r"></i><i class="mouth"></i></i></i><i class="knot"></i>
+                </div><label class="hit" for="c7"><i class="zl"></i><i class="zr"></i></label></div></div></div></div>
+                <span class="zz" aria-hidden="true"><b>z</b><b>z</b></span>
+              </div><b class="ribbon">Little Zoya</b></div>
+
+              <div class="bot"><div class="cut"><i class="body"><i class="band"></i><i class="lip"></i></i>
+                <div class="apron tul"><i class="st"></i><i class="lf l1"></i><i class="lf l2"></i><i class="tu"></i></div>
+              </div><label class="hit" for="c6"><i class="zl"></i><i class="zr"></i></label></div>
+              <div class="top"><i class="lsh"></i><div class="tl"><div class="td"><div class="tr"><div class="cut"><i class="body"><i class="seam"></i></i>
+                <i class="head"><i class="face f6"><i class="eye l"></i><i class="eye r"></i><i class="chk l"></i><i class="chk r"></i><i class="mouth"></i></i></i><i class="knot"></i>
+              </div><label class="hit" for="c6"><i class="zl"></i><i class="zr"></i></label></div></div></div></div>
+            </div><b class="ribbon">Nina</b></div>
+
+            <div class="bot"><div class="cut"><i class="body"><i class="band"></i><i class="lip"></i></i>
+              <div class="apron row5"><i class="sp"><i class="u"></i><i class="d"></i></i><i class="sp m"><i class="u"></i><i class="d"></i></i><i class="stm"></i><i class="br"></i><i class="dt"></i></div>
+            </div><label class="hit" for="c5"><i class="zl"></i><i class="zr"></i></label></div>
+            <div class="top"><i class="lsh"></i><div class="tl"><div class="td"><div class="tr"><div class="cut"><i class="body"><i class="seam"></i></i>
+              <i class="head"><i class="face f5"><i class="eye l"></i><i class="eye r"></i><i class="chk l"></i><i class="chk r"></i><i class="mouth"></i></i></i><i class="knot"></i>
+            </div><label class="hit" for="c5"><i class="zl"></i><i class="zr"></i></label></div></div></div></div>
+          </div><b class="ribbon">Yeva</b></div>
+
+          <div class="bot"><div class="cut"><i class="body"><i class="band"></i><i class="lip"></i></i>
+            <div class="apron sam"><i class="hn h1"></i><i class="hn h2"></i><i class="bd"></i><i class="cl"></i><i class="ch"></i><i class="tp"></i><i class="sp"></i><i class="ft"></i><i class="sm s1"></i><i class="sm s2"></i></div>
+          </div><label class="hit" for="c4"><i class="zl"></i><i class="zr"></i></label></div>
+          <div class="top"><i class="lsh"></i><div class="tl"><div class="td"><div class="tr"><div class="cut"><i class="body"><i class="seam"></i></i>
+            <i class="head"><i class="face f4"><i class="eye l"></i><i class="eye r"></i><i class="chk l"></i><i class="chk r"></i><i class="mouth"></i></i></i><i class="knot"></i>
+          </div><label class="hit" for="c4"><i class="zl"></i><i class="zr"></i></label></div></div></div></div>
+        </div><b class="ribbon">Olena</b></div>
+
+        <div class="bot"><div class="cut"><i class="body"><i class="band"></i><i class="lip"></i></i>
+          <div class="apron roo"><i class="tf t3"></i><i class="tf t2"></i><i class="tf t1"></i><i class="lg g1"></i><i class="lg g2"></i><i class="nk"></i><i class="bd"></i><i class="wg"></i><i class="cb"></i><i class="hd"></i><i class="wt"></i><i class="gr"></i></div>
+        </div><label class="hit" for="c3"><i class="zl"></i><i class="zr"></i></label></div>
+        <div class="top"><i class="lsh"></i><div class="tl"><div class="td"><div class="tr"><div class="cut"><i class="body"><i class="seam"></i></i>
+          <i class="head"><i class="face f3"><i class="eye l"></i><i class="eye r"></i><i class="chk l"></i><i class="chk r"></i><i class="mouth"></i></i></i><i class="knot"></i>
+        </div><label class="hit" for="c3"><i class="zl"></i><i class="zr"></i></label></div></div></div></div>
+      </div><b class="ribbon">Darya</b></div>
+
+      <div class="bot"><div class="cut"><i class="body"><i class="band"></i><i class="lip"></i></i>
+        <div class="apron straw"><i class="lf l1"></i><i class="lf l2"></i><i class="berry b1"></i><i class="berry b2"></i><i class="berry b3"></i></div>
+      </div><label class="hit" for="c2"><i class="zl"></i><i class="zr"></i></label></div>
+      <div class="top"><i class="lsh"></i><div class="tl"><div class="td"><div class="tr"><div class="cut"><i class="body"><i class="seam"></i></i>
+        <i class="head"><i class="face f2"><i class="eye l"></i><i class="eye r"></i><i class="chk l"></i><i class="chk r"></i><i class="mouth"></i></i></i><i class="knot"></i>
+      </div><label class="hit" for="c2"><i class="zl"></i><i class="zr"></i></label></div></div></div></div>
+    </div><b class="ribbon">Marfa</b></div>
+
+    <div class="bot"><div class="cut"><i class="body"><i class="band"></i><i class="lip"></i></i>
+      <div class="apron sun"><i class="st"></i><i class="p" style="--n:0"></i><i class="p" style="--n:1"></i><i class="p" style="--n:2"></i><i class="p" style="--n:3"></i><i class="p" style="--n:4"></i><i class="p" style="--n:5"></i><i class="p" style="--n:6"></i><i class="p" style="--n:7"></i><i class="p" style="--n:8"></i><i class="p" style="--n:9"></i><i class="p" style="--n:10"></i><i class="p" style="--n:11"></i><i class="c"></i></div>
+    </div><label class="hit" for="c1"><i class="zl"></i><i class="zr"></i></label></div>
+    <div class="top"><i class="lsh"></i><div class="tl"><div class="td"><div class="tr"><div class="cut"><i class="body"><i class="seam"></i></i>
+      <i class="head"><i class="face f1"><i class="eye l"></i><i class="eye r"></i><i class="chk l"></i><i class="chk r"></i><i class="mouth"></i></i></i><i class="knot"></i>
+    </div><label class="hit" for="c1"><i class="zl"></i><i class="zr"></i></label></div></div></div></div>
+  </div><b class="ribbon">Vasilisa</b></div>
+
+  <div class="bird" aria-hidden="true"><div class="b2"><div class="b3"><div class="b4"><div class="b5"><i class="birdie"><i class="tl1"></i><i class="tl2"></i><i class="bb"></i><i class="bh"></i><i class="bw"></i></i></div></div></div></div></div>
+  </div>
+</main>
+
+<footer class="foot" aria-hidden="true">
+  <span class="fs" style="--i:0;--s:.9"><i class="fl a"></i></span>
+  <span class="fs" style="--i:1;--s:1.1"><i class="fl b"></i></span>
+  <span class="fs" style="--i:2;--s:.8"><i class="fl c"></i></span>
+  <span class="fs" style="--i:3;--s:1.05"><i class="fl a"></i></span>
+  <span class="fs" style="--i:4;--s:.95"><i class="fl b"></i></span>
+  <span class="fs" style="--i:5;--s:1.15"><i class="fl c"></i></span>
+  <span class="fs" style="--i:6;--s:.85"><i class="fl a"></i></span>
+  <span class="fs" style="--i:7;--s:1.1"><i class="fl b"></i></span>
+  <span class="fs" style="--i:8;--s:.9"><i class="fl c"></i></span>
+  <span class="fs" style="--i:9;--s:1.1"><i class="fl a"></i></span>
+  <span class="fs" style="--i:10;--s:.85"><i class="fl b"></i></span>
+  <span class="fs" style="--i:11;--s:1.05"><i class="fl c"></i></span>
+  <span class="fs" style="--i:12;--s:.9"><i class="fl a"></i></span>
+  <span class="fs" style="--i:13;--s:1.15"><i class="fl b"></i></span>
+  <span class="fs" style="--i:14;--s:.8"><i class="fl c"></i></span>
+  <span class="fs" style="--i:15;--s:1.05"><i class="fl a"></i></span>
+  <span class="fs" style="--i:16;--s:.95"><i class="fl b"></i></span>
+</footer>
+</div>
+</body>
+</html>

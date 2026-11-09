@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Anatomy of a Croissant · Crumb Quarterly, No. 14</title>
+<style>
+:root{
+  --paper:#FBF3E0; --butter:#F7D98B; --gold:#E9B44C; --crust:#8A4B14; --ink:#3A2412;
+  --display:Didot,"Bodoni MT","Bodoni 72","Bodoni 72 Oldstyle","Times New Roman",Times,serif;
+  --body:Georgia,Palatino,"Palatino Linotype","Book Antiqua",serif;
+  --mono:"SF Mono",Menlo,Consolas,"Liberation Mono","Courier New",monospace;
+  --pad:clamp(20px,6vw,104px);
+  --gut:clamp(32px,5vw,90px);
+  --wipe:cubic-bezier(.77,0,.18,1);
+  --settle:cubic-bezier(.16,1,.3,1);
+  --spring:cubic-bezier(.34,1.56,.64,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.62 var(--body);overflow-x:clip;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+::selection{background:var(--gold);color:var(--ink)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--crust);outline-offset:4px;border-radius:2px}
+.grain{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60;opacity:.3;mix-blend-mode:multiply}
+.sc{font:500 .68rem/1.3 var(--mono);letter-spacing:.14em;text-transform:uppercase}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.dust{position:absolute;pointer-events:none;overflow:visible;z-index:0}
+
+/* ---------- wipe reveal ---------- */
+.wipe{display:block;clip-path:inset(-12% 100% -25% -6%);transform:translateX(-34px);
+  transition:clip-path 1.15s var(--wipe),transform 1.3s var(--settle);transition-delay:var(--d,0s)}
+.in .wipe,.wipe.in{clip-path:inset(-12% -6% -25% -6%);transform:none}
+
+/* ---------- title spread ---------- */
+.spread{position:relative;min-height:100vh;min-height:100svh;padding:0 var(--pad) 4vh;display:flex;flex-direction:column;overflow:clip}
+.mast{display:flex;justify-content:space-between;gap:16px;align-items:baseline;padding:20px 0 11px;border-bottom:1px solid var(--ink);position:relative}
+.mast::after{content:"";position:absolute;left:0;right:0;bottom:-4px;border-bottom:1px solid var(--ink);opacity:.35}
+.mast b{font:italic 400 1.18rem/1 var(--display);letter-spacing:.01em;text-transform:none}
+.mast span:nth-child(2){color:var(--crust)}
+h1{font:400 clamp(3rem,11.3vw,13.6rem)/.88 var(--display);letter-spacing:-.035em;margin:clamp(22px,5.5vh,64px) 0 0;position:relative;z-index:2}
+h1 .l2{padding-left:.95em;--d:.16s}
+h1 em{font-style:italic;font-size:.6em;color:var(--crust);letter-spacing:-.01em;margin-right:.18em;position:relative;display:inline-block}
+h1 em svg{position:absolute;left:-.5em;bottom:-.34em;width:2.9em;height:.8em;overflow:visible}
+h1 em path{fill:none;stroke:var(--gold);stroke-width:1.6;stroke-linecap:round;stroke-dasharray:420;stroke-dashoffset:420;transition:stroke-dashoffset 1.6s var(--settle) .9s}
+.on h1 em path{stroke-dashoffset:0}
+.sp-low{flex:1;display:grid;grid-template-columns:minmax(0,7fr) minmax(0,15fr);gap:var(--gut);align-items:end;position:relative}
+.dek{font:italic 400 clamp(1.1rem,1.55vw,1.5rem)/1.36 var(--body);max-width:21em;margin:0 0 1.1em}
+.by{margin:0 0 1.6em;color:var(--crust)}
+.by b{color:var(--ink);font-weight:500}
+.toc{list-style:none;margin:0;padding:12px 0 0;border-top:1px solid rgba(58,36,18,.3);display:flex;flex-wrap:wrap;gap:6px 20px;max-width:30em}
+.toc a{text-decoration:none;display:inline-block;padding:3px 0;background:linear-gradient(var(--gold),var(--gold)) left bottom/0 2px no-repeat;transition:background-size .5s var(--settle),color .3s}
+.toc a:hover,.toc a:focus-visible{background-size:100% 2px;color:var(--crust)}
+.toc i{font:italic 400 1.1em var(--display);text-transform:none;letter-spacing:0;color:var(--crust);margin-right:.4em}
+.specimen{margin:0;position:relative;align-self:end;margin-top:-13.5vw}
+#cro{display:block;width:100%;height:auto;overflow:visible;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;outline:none}
+#cro:focus-visible .focusring{opacity:1}
+.focusring{opacity:0;fill:none;stroke:var(--crust);stroke-width:1.5;stroke-dasharray:3 5}
+.seg{transform-box:fill-box;transform-origin:50% 60%;animation:rise 1s var(--spring) both;animation-delay:calc(.35s + var(--i) * .07s)}
+@keyframes rise{from{opacity:0;transform:scale(.55) translateY(26px)}to{opacity:1;transform:none}}
+.draft{fill:none;stroke:var(--ink);stroke-width:.8;opacity:.55}
+.draw{stroke-dasharray:var(--len,900);stroke-dashoffset:var(--len,900);animation:draw 1.8s var(--settle) 1.1s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.lb{font:500 calc(10.5px / var(--s,1)) var(--mono);letter-spacing:.1em;fill:var(--ink)}
+.lb.c{fill:var(--crust)}
+.hint{animation:fadein .8s 1.9s both}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.hint circle{animation:pulse 2.2s cubic-bezier(.4,0,.2,1) 2.6s infinite;transform-box:fill-box;transform-origin:center}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(2.3);opacity:.25}}
+.specimen figcaption{display:flex;justify-content:space-between;gap:12px;color:var(--crust);border-top:1px solid rgba(58,36,18,.3);padding-top:8px;margin-top:6px}
+.cue{position:absolute;left:50%;bottom:14px;display:none}
+
+/* ---------- intro ---------- */
+.intro{position:relative;display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:var(--gut);padding:14vh var(--pad) 6vh}
+.card{align-self:start;border-top:3px double var(--ink);border-bottom:1px solid var(--ink);padding:14px 0 6px;max-width:23em}
+.card h3{margin:0 0 10px;font:italic 400 1.35rem/1.1 var(--display)}
+.card dl{margin:0}
+.card div{display:flex;align-items:baseline;gap:8px;padding:5px 0;border-top:1px dotted rgba(58,36,18,.4)}
+.card dt{flex:1;color:var(--crust)}
+.card dd{margin:0;font:500 .86rem/1.3 var(--mono);font-variant-numeric:tabular-nums}
+.prose p{max-width:33em;margin:0 0 1.15em}
+.lead p:first-of-type::first-letter{float:left;font:400 5.75em/.76 var(--display);padding:.07em .09em 0 0;color:var(--crust)}
+.lead p:first-of-type::first-line{font-variant-caps:small-caps;letter-spacing:.05em}
+
+/* ---------- chapters ---------- */
+.chap{position:relative;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:var(--gut);padding:0 var(--pad) 9vh;align-items:start}
+.head{grid-column:1;padding-top:17vh;position:relative}
+.head .sc{color:var(--crust);display:flex;align-items:center;gap:12px}
+.head .sc::after{content:"";height:1px;flex:1;background:currentColor;opacity:.5;max-width:120px}
+h2{font:400 clamp(2.7rem,5.7vw,6rem)/.95 var(--display);letter-spacing:-.025em;margin:.16em 0 .1em}
+h2 i{font-size:.62em;color:var(--crust);margin-right:.08em}
+.beats{grid-column:1;position:relative;z-index:1}
+.beat{min-height:68vh;padding-top:3vh}
+.beat p:not(.note){font-size:clamp(1.06rem,1.3vw,1.24rem)}
+.beat:last-child{min-height:88vh}
+.beat h4{margin:0 0 .7em;color:var(--crust);display:flex;gap:14px;align-items:baseline}
+.beat h4 b{color:var(--ink);font-weight:500}
+.note{display:flex;align-items:center;gap:12px;color:var(--crust);margin:1.7em 0;white-space:nowrap}
+.note::after{content:"";flex:1;min-width:30px;height:7px;margin-right:calc(var(--gut) * -1 - 1.5vw);
+  background:radial-gradient(circle at calc(100% - 3.5px) 50%,currentColor 2.6px,transparent 3.2px),linear-gradient(currentColor,currentColor) 0 50%/calc(100% - 3px) 1px no-repeat;opacity:.75}
+.fig{grid-column:2;grid-row:1 / span 2;position:sticky;top:4vh;height:92vh;margin:0;display:flex;flex-direction:column;z-index:2}
+.fig-top{display:flex;justify-content:space-between;gap:12px;color:var(--crust);border-bottom:1px solid rgba(58,36,18,.3);padding-bottom:7px}
+.stage{flex:1;min-height:0;position:relative}
+.stage::before,.stage::after{content:"";position:absolute;width:12px;height:12px;border:1px solid var(--ink);opacity:.45}
+.stage::before{left:0;top:8px;border-right:0;border-bottom:0}
+.stage::after{right:0;bottom:8px;border-left:0;border-top:0}
+.stage svg{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:pan-y;overflow:visible}
+.fig-foot{border-top:1px solid rgba(58,36,18,.3);padding-top:8px;color:var(--crust)}
+.fig-foot p{margin:0}
+.fig-foot .cap{font:italic 400 .92rem/1.4 var(--body);color:var(--ink)}
+.read{display:flex;flex-wrap:wrap;gap:4px 22px;margin-bottom:8px}
+.read b{color:var(--ink);font-weight:500;font-variant-numeric:tabular-nums}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 8px}
+.chip{appearance:none;border:1px solid rgba(58,36,18,.45);background:transparent;color:var(--ink);padding:6px 11px 6px 8px;border-radius:99px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:8px;transition:background .35s var(--settle),border-color .35s,transform .35s var(--spring)}
+.chip i{width:12px;height:12px;border-radius:50%;border:1px solid var(--ink);display:block}
+.chip:hover{background:rgba(247,217,139,.5);transform:translateY(-1px)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.chip[aria-pressed="true"] i{border-color:var(--paper)}
+.named{font:italic 400 .95rem/1.4 var(--body);color:var(--ink);min-height:2.8em}
+.named b{font:500 .7rem var(--mono);letter-spacing:.14em;text-transform:uppercase;font-style:normal;color:var(--crust);margin-right:.5em}
+.stepper{display:none;align-items:center;gap:12px;margin-top:8px;color:var(--ink)}
+.rm .stepper{display:flex}
+.stepper button{appearance:none;width:34px;height:34px;border-radius:50%;border:1px solid var(--ink);background:transparent;cursor:pointer;display:grid;place-items:center;color:var(--ink);transition:background .2s}
+.stepper button:hover{background:var(--butter)}
+.stepper button:disabled{opacity:.3;cursor:default;background:transparent}
+.stepper svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.6}
+
+/* figure drawing classes */
+.ln{fill:none;stroke:var(--ink);stroke-width:.9}
+.ln.f{stroke-width:.7;opacity:.6}
+.dash{stroke-dasharray:4 4}
+.dough{fill:#F5E8C9;stroke:var(--crust);stroke-width:1.1;stroke-linejoin:round}
+.btr{fill:none;stroke:#E2A535;stroke-linecap:butt}
+.count{font:400 132px/1 var(--display);fill:var(--ink);letter-spacing:-.04em;transform-box:fill-box;transform-origin:20% 90%}
+.count.pop{animation:pop .7s var(--spring)}
+@keyframes pop{0%{transform:scale(.6) translateY(18px);opacity:0}100%{transform:none;opacity:1}}
+.fx{font:400 30px var(--mono);fill:var(--ink);opacity:.16;transition:opacity .5s var(--settle)}
+.fx.lit{opacity:1}
+.cell{stroke:rgba(138,75,20,0);stroke-width:.8;transition:stroke .25s}
+.cell.hi,#ovCells.all .cell{stroke:var(--ink);stroke-width:1.5}
+#ovCells.all .cell{stroke-width:1}
+#ovCrustHi{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-dasharray:6 4;opacity:0;transition:opacity .25s}
+#ovCrustHi.hi{opacity:1}
+#ovMem{fill:none;stroke:var(--ink);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+#ovSvg{cursor:crosshair}
+.wisp{fill:none;stroke:var(--crust);stroke-width:1.5;stroke-linecap:round;stroke-dasharray:26 14 8 22;animation:steam 2.6s linear infinite}
+.wisp:nth-child(2n){animation-duration:3.4s;stroke-dasharray:18 12 30 10}
+.wisp:nth-child(3n){animation-duration:4.1s}
+@keyframes steam{to{stroke-dashoffset:-70}}
+
+/* ---------- pull quote ---------- */
+.pull{position:relative;margin:0;padding:20vh var(--pad) 12vh;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,10fr);gap:0 3vw}
+.pull .q{font:italic 400 clamp(5rem,13vw,13rem)/.7 var(--display);color:var(--gold)}
+.pull p{margin:0;font:italic 400 clamp(2.1rem,6.1vw,6.6rem)/1.02 var(--display);letter-spacing:-.02em;max-width:13em}
+.pull p span:nth-child(2){--d:.12s;padding-left:1.2em}
+.pull p span:nth-child(3){--d:.24s}
+.pull footer{grid-column:2;margin-top:2.2em;color:var(--crust);display:flex;align-items:center;gap:14px}
+.pull footer::before{content:"";width:64px;height:1px;background:currentColor}
+
+/* ---------- shatter ---------- */
+.shatter{position:relative;padding:8vh var(--pad) 10vh;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:6vh var(--gut);align-items:start}
+.shatter .head{padding-top:10vh}
+.tasting{margin:1.6em 0 0;max-width:33em}
+.tasting div{display:grid;grid-template-columns:6.5em 1fr;gap:14px;padding:11px 0;border-top:1px solid rgba(58,36,18,.3)}
+.tasting dt{color:var(--crust);padding-top:.35em}
+.tasting dd{margin:0}
+.fix{padding-top:10vh}
+.fix h3{font:italic 400 clamp(1.7rem,2.6vw,2.5rem)/1.1 var(--display);margin:0 0 .2em}
+.fix>p{margin:0 0 1.2em;color:var(--crust)}
+table{width:100%;border-collapse:collapse;border-top:3px double var(--ink);border-bottom:1px solid var(--ink)}
+th{text-align:left;padding:10px 14px 8px 0;color:var(--crust);font-weight:500}
+td{padding:11px 14px 11px 0;border-top:1px solid rgba(58,36,18,.3);vertical-align:top;font-size:.95rem;line-height:1.4;transition:background .4s var(--settle)}
+td:first-child{font-style:italic;font-size:1.02rem;padding-left:8px}
+th:first-child{padding-left:8px}
+td:last-child{font:500 .8rem/1.5 var(--mono);padding-right:8px}
+tbody tr:hover td{background:rgba(247,217,139,.38)}
+.end{grid-column:1 / -1;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:20px;border-top:1px solid var(--ink);padding-top:16px;margin-top:6vh}
+.end p{margin:0;font:italic 400 clamp(1.3rem,2.2vw,2rem)/1.2 var(--display);max-width:20em}
+.end .sc{color:var(--crust);text-align:right}
+.end a{text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:1px}
+.end a:hover{color:var(--ink)}
+
+/* ---------- phone ---------- */
+@media (max-width:860px){
+  body{font-size:16px}
+  .mast span:nth-child(3){display:none}
+  .dust{left:auto !important;right:3% !important;transform:scale(.78);transform-origin:100% 50%}
+  h1{font-size:13.4vw;margin-top:34px}
+  h1 .l2{padding-left:.25em}
+  .sp-low{display:flex;flex-direction:column-reverse;gap:10px;align-items:stretch;justify-content:flex-end}
+  .specimen{margin-top:-4vw;align-self:stretch}
+  .specimen figcaption{margin-top:0}
+  .intro{display:flex;flex-direction:column-reverse;gap:5vh;padding-top:9vh}
+  .chap{display:block;padding:0 0 4vh}
+  .fig-top span:last-child,.shatter .dust{display:none}
+  .head{padding:12vh var(--pad) 3vh}
+  .fig{position:sticky;top:0;height:54vh;height:54svh;background:var(--paper);padding:8px var(--pad) 8px;border-bottom:1px solid rgba(58,36,18,.3);box-shadow:0 14px 18px -14px rgba(58,36,18,.25)}
+  #oven .fig{height:62vh;height:62svh}
+  .fig-foot .cap{font-size:.82rem;line-height:1.3}
+  .beats{padding:0 var(--pad)}
+  .beat{min-height:60vh;padding-top:5vh}
+  .beat:last-child{min-height:56vh}
+  .note{white-space:normal}
+  .note::after{margin-right:0;min-width:40px}
+  .read{gap:2px 14px;margin-bottom:6px}
+  .legend{gap:6px;margin-bottom:6px}
+  .chip{padding:5px 9px 5px 7px}
+  .named{font-size:.84rem;min-height:2.7em;line-height:1.3}
+  .pull{grid-template-columns:1fr;padding:14vh var(--pad) 8vh}
+  .pull .q{line-height:.5;height:.42em}
+  .pull footer{grid-column:1}
+  .pull p span:nth-child(2){padding-left:.6em}
+  .shatter{display:block}
+  .fix{padding-top:7vh}
+  table,tbody,tr,td{display:block}
+  thead{display:none}
+  tr{border-top:1px solid rgba(58,36,18,.3);padding:10px 0}
+  td{border:0;padding:1px 8px}
+  td:first-child{font-size:1.1rem}
+  td:nth-child(2)::before{content:"Cause · ";font:500 .66rem var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--crust)}
+  td:last-child::before{content:"Next time · ";letter-spacing:.14em;text-transform:uppercase;color:var(--crust);font-size:.66rem}
+  .end .sc{text-align:left}
+}
+@media (max-width:860px) and (max-height:620px){ .fig{height:62vh} #oven .fig{height:78vh} }
+
+/* ---------- reduced motion ---------- */
+.rm .beat,.rm .beat:last-child{min-height:0;padding-bottom:5vh}
+.rm .chap{padding-bottom:8vh}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .wipe{clip-path:none;transform:none;transition:none}
+  .seg,.draw,.hint,.hint circle,.wisp,.count.pop{animation:none}
+  .draw{stroke-dashoffset:0}
+  h1 em path{transition:none;stroke-dashoffset:0}
+  .chip,.toc a,td{transition:none}
+}
+</style>
+</head>
+<body>
+
+<svg class="grain" aria-hidden="true">
+  <filter id="grainF" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency=".82" numOctaves="2" seed="14" stitchTiles="stitch"/>
+    <feColorMatrix values="0 0 0 0 .32  0 0 0 0 .2  0 0 0 0 .08  0 0 0 .62 -.16"/>
+  </filter>
+  <rect width="100%" height="100%" filter="url(#grainF)"/>
+</svg>
+
+<header class="spread" id="top">
+  <div class="mast sc">
+    <span><b>Crumb Quarterly</b></span>
+    <span>No. 14 · The Lamination Issue</span>
+    <span>Technique</span>
+    <span class="num">p. 38</span>
+  </div>
+
+  <h1 aria-label="The Anatomy of a Croissant">
+    <span class="l1 wipe" aria-hidden="true">The Anatomy</span>
+    <span class="l2 wipe" aria-hidden="true"><em>of a<svg viewBox="0 0 290 80" aria-hidden="true"><path d="M6 52 C40 78 86 76 122 56 C150 40 168 22 188 26 C206 30 200 52 184 50 C168 48 176 24 210 20 C240 17 262 30 284 22"/></svg></em>Croissant</span>
+  </h1>
+
+  <div class="sp-low">
+    <div class="sp-text">
+      <p class="dek">Three folds, twenty-seven sheets of butter and one long wait. A field guide to the geometry you can eat.</p>
+      <p class="by sc">Words &amp; diagrams · <b>Odile Marchetti</b></p>
+      <ol class="toc sc">
+        <li><a href="#block"><i>i</i>The Block</a></li>
+        <li><a href="#turns"><i>ii</i>Three Turns</a></li>
+        <li><a href="#roll"><i>iii</i>The Roll</a></li>
+        <li><a href="#oven"><i>iv</i>The Oven</a></li>
+        <li><a href="#shatter"><i>v</i>The Shatter</a></li>
+      </ol>
+    </div>
+    <figure class="specimen">
+      <svg id="cro" class="sv" viewBox="0 0 760 460" role="button" tabindex="0" aria-label="A whole croissant. Activate to tear off an end.">
+        <defs>
+          <filter id="soft" filterUnits="userSpaceOnUse" x="0" y="150" width="760" height="420"><feGaussianBlur stdDeviation="13"/></filter>
+          <linearGradient id="faceG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBF3E0"/><stop offset="1" stop-color="#F7D98B"/></linearGradient>
+        </defs>
+        <path id="croShadow" fill="none" stroke="#3A2412" stroke-opacity=".2" stroke-width="120" stroke-linecap="round" filter="url(#soft)"/>
+        <path id="croAxis" class="draft draw" stroke-dasharray="14 4 2 4"/>
+        <g id="croL"></g><g id="croR"></g><g id="croBody"></g>
+        <g id="croFaces"></g>
+        <g id="croCrumbs"></g>
+        <path id="croFocus" class="focusring"/>
+        <g class="hint" id="croHint">
+          <path class="ln" d="M704 84 L626 243" />
+          <circle cx="626" cy="243" r="3" fill="#8A4B14"/>
+          <text class="lb c" x="752" y="72" text-anchor="end" id="croHintT">TEAR HERE</text>
+        </g>
+        <g class="draft">
+          <path class="draw" style="--len:560" d="M108 436 H652 M108 428 V444 M652 428 V444"/>
+        </g>
+        <text class="lb" x="380" y="456" text-anchor="middle">14 CM, HORN TO HORN</text>
+      </svg>
+      <figcaption class="sc"><span>Fig. 1 · Whole specimen, plan view</span><span class="num">1 : 1</span></figcaption>
+    </figure>
+  </div>
+  <svg class="dust" data-n="34" data-seed="7" width="300" height="160" style="left:34%;bottom:3%"></svg>
+</header>
+
+<main>
+<section class="intro">
+  <aside class="card">
+    <h3>The author's recipe, in numbers</h3>
+    <dl class="sc">
+      <div><dt>Flour</dt><dd>500 g</dd></div>
+      <div><dt>Dough, mixed</dt><dd>840 g</dd></div>
+      <div><dt>Butter block</dt><dd>280 g</dd></div>
+      <div><dt>Butter : dough</dt><dd>1 : 3</dd></div>
+      <div><dt>Butter temp.</dt><dd>16 °C</dd></div>
+      <div><dt>Turns</dt><dd>3 × letter fold</dd></div>
+      <div><dt>Layers of butter</dt><dd>27</dd></div>
+      <div><dt>Proof</dt><dd>2 h at 26 °C</dd></div>
+      <div><dt>Oven</dt><dd>200 °C · 18 min</dd></div>
+      <div><dt>Yield</dt><dd>12</dd></div>
+    </dl>
+  </aside>
+  <div class="prose lead">
+    <p>Before it is breakfast, a croissant is arithmetic. One slab of butter, sealed inside one sheet of dough, folded in thirds three times: three, nine, twenty-seven. Nothing else about it is complicated. Everything else about it is difficult, and the difficulty is almost entirely temperature and patience, two things no recipe can lend you.</p>
+    <p>I have made these every week for eleven years; first badly, then acceptably, and lately well enough that I have stopped apologising at the table. What follows is my own recipe, drawn rather than listed, because lamination is easier to see than to read about.</p>
+  </div>
+  <svg class="dust" data-n="22" data-seed="19" width="220" height="140" style="right:6%;bottom:-40px"></svg>
+</section>
+
+<!-- ============ THE BLOCK ============ -->
+<section class="chap" id="block">
+  <header class="head"><span class="sc">Fig. 2</span><h2 class="wipe"><i>i.</i> The Block</h2></header>
+  <figure class="fig">
+    <div class="fig-top sc"><span>Fig. 2 · The envelope</span><span>Plan &amp; section</span></div>
+    <div class="stage">
+      <svg class="sv" id="bkSvg" viewBox="0 0 600 600" role="img" aria-label="A square of butter sits on a larger square of dough turned forty-five degrees; the four corners fold over it like an envelope.">
+        <defs><linearGradient id="bkB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F7D98B"/><stop offset="1" stop-color="#EFC35E"/></linearGradient></defs>
+        <path class="ln f dash" d="M300 14 V504 M52 262 H548"/>
+        <rect class="dough" x="185" y="147" width="230" height="230"/>
+        <rect x="196" y="158" width="208" height="208" fill="url(#bkB)" stroke="#E9B44C" stroke-width="1.2"/>
+        <path d="M210 172 L390 352 M238 172 L390 324 M210 200 L362 352" stroke="#FBF3E0" stroke-width="5" stroke-linecap="round" opacity=".45"/>
+        <g id="bkFlaps"></g>
+        <path id="bkPinch" class="ln" stroke-width="1.1" d="M0 0"/>
+        <path class="ln f" d="M112 52 L190 152 M452 52 L396 168"/>
+        <circle cx="190" cy="152" r="2.4" fill="#3A2412"/><circle cx="396" cy="168" r="2.4" fill="#3A2412"/>
+        <text class="lb" x="30" y="40">DOUGH · 840 G</text>
+        <text class="lb" x="590" y="40" text-anchor="end">BUTTER · 280 G · 16 °C</text>
+        <g id="bkSec">
+          <rect class="dough" x="150" y="541" width="300" height="12"/>
+          <rect x="164" y="531" width="272" height="10" fill="#F2C860" stroke="#E2A535" stroke-width=".8"/>
+          <rect id="bkTop" class="dough" x="150" y="519" width="300" height="12"/>
+          <text class="lb" x="300" y="582" text-anchor="middle" id="bkSecT">SECTION · 1 LAYER OF BUTTER</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption class="fig-foot">
+      <p class="cap">Butter 17 × 17 cm on dough turned forty-five degrees; four corners posted over it, seams pinched shut.</p>
+      <div class="stepper" data-for="block"></div>
+    </figcaption>
+  </figure>
+  <div class="beats">
+    <div class="beat prose">
+      <p>Start with the butter, because the butter is in charge. In my kitchen that is 280 g of the dry, high-fat kind, beaten flat between two sheets of parchment into a square about a centimetre thick and chilled to 16 °C: cold enough to hold an edge, warm enough to bend without cracking.</p>
+      <p class="note sc">Bends, does not snap</p>
+      <p>The dough, made from 500 g of flour and weighing three times what the butter does, is rolled into a larger square and turned forty-five degrees. Its four corners fold over the slab like an envelope. Pinch the seams. You now own one layer of butter and a great deal of responsibility.</p>
+      <p class="note sc">Butter : dough · 1 : 3</p>
+    </div>
+  </div>
+  <svg class="dust" data-n="18" data-seed="4" width="200" height="120" style="left:8%;bottom:6vh"></svg>
+</section>
+
+<!-- ============ THREE TURNS ============ -->
+<section class="chap" id="turns">
+  <header class="head"><span class="sc">Fig. 3</span><h2 class="wipe"><i>ii.</i> Three Turns</h2></header>
+  <figure class="fig">
+    <div class="fig-top sc"><span>Fig. 3 · The letter fold</span><span>Elevation, thickness exaggerated</span></div>
+    <div class="stage">
+      <svg class="sv" id="tnSvg" viewBox="0 0 600 520" role="img" aria-label="A slab of dough folds in thirds three times; the count of butter layers goes from one to three, nine and twenty-seven.">
+        <text class="lb c" x="75" y="52">LAYERS OF BUTTER</text>
+        <text class="count" id="tnCount" x="68" y="176">1</text>
+        <g id="tnFx" text-anchor="end">
+          <text class="fx" x="418" y="122" id="fx1">3</text>
+          <text class="fx" x="447" y="122" id="fx1x">×</text>
+          <text class="fx" x="476" y="122" id="fx2">3</text>
+          <text class="fx" x="505" y="122" id="fx2x">×</text>
+          <text class="fx" x="534" y="122" id="fx3">3</text>
+          <text class="fx" x="534" y="166" id="fxEq">= 27</text>
+        </g>
+        <path class="ln" d="M40 400.6 H560"/>
+        <path class="ln f" d="M60 401 l-10 10 M100 401 l-10 10 M140 401 l-10 10 M180 401 l-10 10 M220 401 l-10 10 M260 401 l-10 10 M300 401 l-10 10 M340 401 l-10 10 M380 401 l-10 10 M420 401 l-10 10 M460 401 l-10 10 M500 401 l-10 10 M540 401 l-10 10"/>
+        <g id="tnB"><rect class="dough"/><path class="btr"/></g>
+        <g id="tnC"><rect class="dough"/><path class="btr"/></g>
+        <g id="tnA"><rect class="dough"/><path class="btr"/></g>
+        <g id="tnS"><rect class="dough"/><path class="btr"/></g>
+        <g id="tnPin">
+          <rect x="-58" y="-11" width="116" height="22" rx="11" fill="#E9B44C" stroke="#8A4B14" stroke-width="1.1"/>
+          <rect x="-84" y="-4.5" width="26" height="9" rx="4.5" fill="#8A4B14"/><rect x="58" y="-4.5" width="26" height="9" rx="4.5" fill="#8A4B14"/>
+          <path d="M-44 -5 H44" stroke="#FBF3E0" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+        </g>
+        <text class="lb" x="75" y="446" id="tnStat">ONE LAYER</text>
+        <text class="lb c" x="75" y="478">REST 30 MIN · FRIDGE · BETWEEN TURNS</text>
+      </svg>
+    </div>
+    <figcaption class="fig-foot">
+      <p class="cap">Fold in thirds, roll out, rest, repeat. Each turn triples the stripes.</p>
+      <div class="stepper" data-for="turns"></div>
+    </figcaption>
+  </figure>
+  <div class="beats">
+    <div class="beat prose">
+      <h4 class="sc"><b>Turn one</b><span class="num">1 → 3</span></h4>
+      <p>Roll the parcel into a long rectangle and fold it in thirds, as you would a letter to someone you respect. That is one turn: one layer of butter has become three.</p>
+      <p class="note sc">Brush off the loose flour</p>
+    </div>
+    <div class="beat prose">
+      <h4 class="sc"><b>Turn two</b><span class="num">3 → 9</span></h4>
+      <p>Rest it in the fridge for thirty minutes, so the gluten forgives you and the butter firms up. Then turn it ninety degrees and do it again. Nine.</p>
+      <p class="note sc">Seam on your right, like a book</p>
+    </div>
+    <div class="beat prose">
+      <h4 class="sc"><b>Turn three</b><span class="num">9 → 27</span></h4>
+      <p>Rest. Once more. Twenty-seven.</p>
+      <p>People ask why I stop at three turns. Because at a fourth the sheets grow thinner than the dough can honour, the butter smears into it, and you have made a very expensive brioche.</p>
+      <p class="note sc">3 × 3 × 3, and no further</p>
+    </div>
+  </div>
+</section>
+
+<blockquote class="pull" id="pull">
+  <span class="q" aria-hidden="true">“</span>
+  <p><span class="wipe">A croissant is mostly</span><span class="wipe">a decision</span><span class="wipe">not to rush.</span></p>
+  <footer class="sc">O. M., at the bench, 5.40 a.m.</footer>
+  <svg class="dust" data-n="40" data-seed="11" width="340" height="180" style="right:9%;top:12vh"></svg>
+</blockquote>
+
+<!-- ============ THE ROLL ============ -->
+<section class="chap" id="roll">
+  <header class="head"><span class="sc">Fig. 4</span><h2 class="wipe"><i>iii.</i> The Roll</h2></header>
+  <figure class="fig">
+    <div class="fig-top sc"><span>Fig. 4 · Triangle to spiral</span><span>Plan above, elevation below</span></div>
+    <div class="stage">
+      <svg class="sv" id="rlSvg" viewBox="0 0 600 520" role="img" aria-label="A long triangle of dough rolls from its base to its point, forming seven steps in plan and a spiral in elevation.">
+        <defs><linearGradient id="rlG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#EAD6A6"/><stop offset=".45" stop-color="#FBF3E0"/><stop offset="1" stop-color="#E6CC93"/></linearGradient></defs>
+        <text class="lb c" x="70" y="34">PLAN</text>
+        <text class="lb" x="540" y="34" text-anchor="end" id="rlSteps">STEPS 0</text>
+        <path class="ln f dash" d="M40 150 H570"/>
+        <path class="ln f dash" d="M70 72 L520 150 L70 228 Z" opacity=".5"/>
+        <path id="rlTri" class="dough"/>
+        <g id="rlTiers"></g>
+        <path class="ln f" d="M46 72 V228 M39 72 H53 M39 228 H53"/>
+        <text class="lb c" transform="translate(32 150) rotate(-90)" text-anchor="middle">9 CM</text>
+        <path class="ln f" d="M70 258 H520 M70 251 V265 M520 251 V265"/>
+        <text class="lb c" x="300" y="282" text-anchor="middle">26 CM</text>
+        <path id="rlProj" class="ln f dash"/>
+        <text class="lb c" x="70" y="330">ELEVATION</text>
+        <text class="lb" x="540" y="330" text-anchor="end" id="rlRev">REV 0.00</text>
+        <path class="ln" d="M40 450.6 H570"/>
+        <path class="ln f" d="M60 451 l-10 10 M110 451 l-10 10 M160 451 l-10 10 M210 451 l-10 10 M260 451 l-10 10 M310 451 l-10 10 M360 451 l-10 10 M410 451 l-10 10 M460 451 l-10 10 M510 451 l-10 10 M560 451 l-10 10"/>
+        <path id="rlS1" fill="none" stroke="#8A4B14" stroke-width="7.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path id="rlS2" fill="none" stroke="#F5E8C9" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path id="rlS3" fill="none" stroke="#E2A535" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <figcaption class="fig-foot">
+      <p class="cap">Rolled from the wide end, never pressed. The point finishes underneath.</p>
+      <div class="stepper" data-for="roll"></div>
+    </figcaption>
+  </figure>
+  <div class="beats">
+    <div class="beat prose">
+      <p>Roll the laminated dough to the thickness of two stacked coins and cut long triangles: 9 cm across the base, 26 cm to the point. Stretch the tip gently, then roll from wide to narrow without pressing. You are winding a spring, not strangling one.</p>
+      <p class="note sc">Wide end first</p>
+    </div>
+    <div class="beat prose">
+      <p>Three full revolutions give the seven steps a croissant is supposed to show. Tuck the point underneath so it cannot unwind in the heat. In section, what you have made is a spiral: dough, butter, dough, butter, all the way to the middle.</p>
+      <p class="note sc">Seven steps, point tucked under</p>
+    </div>
+  </div>
+  <svg class="dust" data-n="16" data-seed="23" width="180" height="110" style="left:22%;bottom:10vh"></svg>
+</section>
+
+<!-- ============ THE OVEN ============ -->
+<section class="chap" id="oven">
+  <header class="head"><span class="sc">Fig. 5</span><h2 class="wipe"><i>iv.</i> The Oven</h2></header>
+  <figure class="fig">
+    <div class="fig-top sc"><span>Fig. 5 · Cross-section, cut mid-croissant</span><span>Schematic</span></div>
+    <div class="stage">
+      <svg class="sv" id="ovSvg" viewBox="0 0 600 600" role="img" aria-label="Cross-section of a croissant: a tight spiral of dough and butter lines that swells into a honeycomb of air cells as it proofs and bakes.">
+        <defs>
+          <radialGradient id="ovDiscG" cx=".5" cy=".46" r=".56"><stop id="ovD0" offset=".25"/><stop id="ovD1" offset="1"/></radialGradient>
+          <linearGradient id="ovCellG" x1="0" y1="0" x2="0" y2="1"><stop id="ovC0" offset="0"/><stop id="ovC1" offset="1"/></linearGradient>
+          <filter id="soft2" x="-20%" y="-200%" width="140%" height="500%"><feGaussianBlur stdDeviation="7"/></filter>
+        </defs>
+        <path class="ln" d="M96 541 H566"/>
+        <path class="ln f" d="M120 541 l-9 9 M170 541 l-9 9 M220 541 l-9 9 M270 541 l-9 9 M320 541 l-9 9 M370 541 l-9 9 M420 541 l-9 9 M470 541 l-9 9 M520 541 l-9 9 M560 541 l-9 9"/>
+        <ellipse id="ovShadow" cx="330" cy="542" rx="140" ry="7" fill="#3A2412" opacity=".28" filter="url(#soft2)"/>
+        <g id="ovSteam">
+          <g><path class="wisp" d="M0 0 C-14 -20 14 -38 0 -60 S-13 -96 5 -122"/></g>
+          <g><path class="wisp" d="M0 0 C12 -18 -12 -34 2 -56 S14 -84 -4 -108"/></g>
+          <g><path class="wisp" d="M0 0 C-10 -22 16 -40 2 -64 S-10 -104 8 -134"/></g>
+          <g><path class="wisp" d="M0 0 C14 -16 -10 -36 4 -54 S12 -80 -2 -98"/></g>
+          <g><path class="wisp" d="M0 0 C-12 -18 10 -30 0 -50 S-12 -78 2 -96"/></g>
+        </g>
+        <path id="ovDisc" fill="url(#ovDiscG)"/>
+        <path id="ovBand" fill="none"/>
+        <g id="ovCells"></g>
+        <path id="ovCrust" fill="none" stroke-linejoin="round"/>
+        <path id="ovSheen" fill="none" stroke="#FBF3E0" stroke-width="3" stroke-linecap="round"/>
+        <path id="ovCrustHi"/>
+        <path id="ovMem"/>
+        <g id="ovTherm">
+          <rect x="40" y="100" width="13" height="420" rx="6.5" fill="#FBF3E0" stroke="#3A2412" stroke-width="1"/>
+          <circle cx="46.500" cy="524" r="13" fill="#8A4B14" stroke="#3A2412" stroke-width="1"/>
+          <rect id="ovMerc" x="43.500" y="300" width="6" height="220" rx="3" fill="#8A4B14"/>
+          <path class="ln f" id="ovTicks"/>
+          <text class="lb" x="66" y="114">200°</text>
+          <text class="lb" x="66" y="309">100°</text>
+          <text class="lb" x="66" y="453">26°</text>
+          <path id="ovPtr" d="M0 0 l-8 -4.500 v9 z" fill="#3A2412"/>
+          <text class="lb c" x="40" y="76">°C</text>
+        </g>
+        <g id="ovTag" opacity="0">
+          <path class="ln" id="ovTagL"/>
+          <circle id="ovTagD" r="3" fill="#3A2412"/>
+          <rect id="ovTagB" fill="#FBF3E0" stroke="#3A2412" stroke-width=".9" rx="2"/>
+          <text class="lb" id="ovTagT"></text>
+        </g>
+      </svg>
+    </div>
+    <figcaption class="fig-foot">
+      <p class="read sc"><span>Stage <b id="rdStage">Shaped</b></span><span>Clock <b id="rdClock" class="num">0 h 00</b></span><span>Air <b id="rdTemp" class="num">16 °C</b></span><span>Width <b id="rdW" class="num">+0 %</b></span></p>
+      <div class="legend" role="group" aria-label="Name the layers">
+        <button class="chip sc" type="button" data-k="crust" aria-pressed="false"><i style="background:#8A4B14"></i>Crust</button>
+        <button class="chip sc" type="button" data-k="membrane" aria-pressed="false"><i style="background:#F7D98B"></i>Membrane</button>
+        <button class="chip sc" type="button" data-k="cell" aria-pressed="false"><i style="background:#E9B44C"></i><span id="chipCell">Butter line</span></button>
+      </div>
+      <p class="named" id="ovNamed" aria-live="polite"><b>Specimen</b>Point at any layer of the section, or tap it, and it will give its name.</p>
+      <div class="stepper" data-for="oven"></div>
+    </figcaption>
+  </figure>
+  <div class="beats">
+    <div class="beat prose">
+      <h4 class="sc"><b>Proof</b><span class="num">2 h · 26 °C</span></h4>
+      <p>Two hours at 26 °C and no warmer; butter gives up somewhere past thirty, and a puddle is not a layer. The yeast exhales, the spiral loosens, and the croissant wobbles like a jelly when you nudge the tray. That wobble is your only timer.</p>
+      <p class="note sc">The spiral loosens</p>
+    </div>
+    <div class="beat prose">
+      <h4 class="sc"><b>Spring</b><span class="num">0–6 min · 200 °C</span></h4>
+      <p>Then the oven. In the first six minutes the water in dough and butter flashes to steam, and every butter line becomes a tiny jack, lifting the sheet above it. The butter itself does not stay. It fries the dough on its way out and leaves a room behind. Bakers call the room an alveolus.</p>
+      <p class="note sc">Butter out, steam up</p>
+    </div>
+    <div class="beat prose">
+      <h4 class="sc"><b>Set</b><span class="num">6–12 min</span></h4>
+      <p>By minute twelve the walls have set into membranes as thin as tracing paper, and the honeycomb holds its own weight. Do not open the door to admire it.</p>
+      <p class="note sc">Half as wide again, nearly</p>
+    </div>
+    <div class="beat prose">
+      <h4 class="sc"><b>Colour</b><span class="num">12–18 min</span></h4>
+      <p>The last six minutes are for colour alone. Pull them at deep gold, a shade past where you lose your nerve.</p>
+      <p class="note sc">Crust · deep gold</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE SHATTER ============ -->
+<section class="shatter" id="shatter">
+  <div>
+    <header class="head"><span class="sc">Tasting notes</span><h2 class="wipe"><i>v.</i> The Shatter</h2></header>
+    <div class="prose">
+      <p>Wait twenty minutes. The crumb is still setting, and you have waited this long. Then tear; do not cut.</p>
+    </div>
+    <dl class="tasting">
+      <div><dt class="sc">Sound</dt><dd>A dry, papery crack, then a hush. If it bends quietly, it is yesterday's.</dd></div>
+      <div><dt class="sc">Crumb</dt><dd>Open, glossy cells in a spiral, like a cut cabbage. Pressed, it springs back.</dd></div>
+      <div><dt class="sc">Taste</dt><dd>Browned butter first, then wheat, then a faint, clean sourness from the long ferment.</dd></div>
+      <div><dt class="sc">Evidence</dt><dd>A lap covered in flakes. This is not a flaw in the design.</dd></div>
+    </dl>
+  </div>
+  <div class="fix">
+    <h3>When it goes wrong</h3>
+    <p class="sc">A short table of my own mistakes</p>
+    <table>
+      <thead><tr class="sc"><th scope="col">Symptom</th><th scope="col">Cause</th><th scope="col">Next time</th></tr></thead>
+      <tbody>
+        <tr><td>Butter leaked onto the tray</td><td>Proofed too warm</td><td>Stay under 27 °C</td></tr>
+        <tr><td>Bready, tight crumb</td><td>Under-proofed</td><td>Wait for the wobble</td></tr>
+        <tr><td>Layers smeared, no honeycomb</td><td>Butter too soft while rolling</td><td>Chill 30 min per turn</td></tr>
+        <tr><td>Butter broke into shards</td><td>Butter too cold</td><td>Let the block reach 16 °C</td></tr>
+        <tr><td>Pale and soft</td><td>Oven too cool, or too brief</td><td>200 °C, the full 18 min</td></tr>
+        <tr><td>Unrolled in the oven</td><td>Point not tucked</td><td>Point underneath</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <svg class="dust" data-n="46" data-seed="31" width="380" height="170" style="left:30%;bottom:15vh"></svg>
+  <footer class="end">
+    <p>Eat it standing up, over the tray.</p>
+    <div class="sc">Odile Marchetti · Crumb Quarterly, No. 14<br>Next issue: the ear of a baguette · <a href="#top">Back to the top</a></div>
+  </footer>
+</section>
+</main>
+
+<script>
+(function(){
+'use strict';
+var NS='http://www.w3.org/2000/svg', TAU=Math.PI*2, doc=document, root=doc.documentElement;
+function $(id){return doc.getElementById(id)}
+function el(n,a,p){var e=doc.createElementNS(NS,n);if(a)for(var k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function clamp(v,a,b){return v<a?a:v>b?b:v}
+function lerp(a,b,t){return a+(b-a)*t}
+function ss(a,b,x){var t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t)}
+function lin(a,b,x){return clamp((x-a)/(b-a),0,1)}
+function eio(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2}
+function rng(seed){var a=seed>>>0;return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function hex(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)]}
+function mix(a,b,t){return[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t]}
+function css(c){return'rgb('+Math.round(c[0])+','+Math.round(c[1])+','+Math.round(c[2])+')'}
+function f1(n){return n.toFixed(1)}
+
+var mq=window.matchMedia('(prefers-reduced-motion: reduce)'), reduced=mq.matches;
+root.classList.toggle('rm',reduced);
+
+/* ---------- tiny scheduler: runs only while something is moving ---------- */
+var jobs=[], rafId=0, last=0;
+function loop(now){
+  rafId=0; var dt=Math.min(50,now-(last||now)); last=now;
+  for(var i=jobs.length-1;i>=0;i--){ if(jobs[i](dt)===false) jobs.splice(i,1); }
+  if(jobs.length && !doc.hidden) rafId=requestAnimationFrame(loop); else last=0;
+}
+function run(fn){ if(jobs.indexOf(fn)<0) jobs.push(fn); if(!rafId && !doc.hidden) rafId=requestAnimationFrame(loop); }
+doc.addEventListener('visibilitychange',function(){ if(!doc.hidden && jobs.length && !rafId){last=0;rafId=requestAnimationFrame(loop);} });
+
+/* ---------- crumbs and flour dust ---------- */
+var CRUMB=['#8A4B14','#E9B44C','#C07A22','#8A4B14','#D9A04A'];
+function crumbShape(r,rad){var n=4+Math.floor(r()*3),s='',a0=r()*TAU;for(var i=0;i<n;i++){var a=a0+i/n*TAU,q=rad*(.55+r()*.65);s+=(i?'L':'M')+f1(Math.cos(a)*q)+' '+f1(Math.sin(a)*q)}return s+'Z'}
+Array.prototype.forEach.call(doc.querySelectorAll('.dust'),function(sv){
+  var r=rng(+sv.dataset.seed), n=+sv.dataset.n, w=+sv.getAttribute('width'), h=+sv.getAttribute('height');
+  sv.setAttribute('aria-hidden','true');
+  for(var i=0;i<n;i++){
+    var g=(r()+r()+r())/3, g2=(r()+r()+r())/3, far=r()<.22;
+    var x=far?r()*w:w*(.2+g*.6), y=far?r()*h:h*(.2+g2*.6);
+    if(r()<.42){ var rr=.6+r()*1.5; el('circle',{cx:f1(x+.7),cy:f1(y+.9),r:f1(rr),fill:'#8A4B14',opacity:.13},sv); el('circle',{cx:f1(x),cy:f1(y),r:f1(rr),fill:'#fffdf6'},sv); }
+    else el('path',{d:crumbShape(r,.9+r()*r()*3.4),transform:'translate('+f1(x)+' '+f1(y)+')',fill:CRUMB[Math.floor(r()*CRUMB.length)],opacity:(.55+r()*.45).toFixed(2)},sv);
+  }
+});
+
+/* ---------- keep SVG labels at a constant on-screen size ---------- */
+function fitLabels(){
+  Array.prototype.forEach.call(doc.querySelectorAll('svg.sv'),function(sv){
+    var vb=sv.viewBox.baseVal, b=sv.getBoundingClientRect(); if(!b.width)return;
+    var s=Math.min(b.width/vb.width,b.height/vb.height);
+    sv.style.setProperty('--s',Math.max(.3,s*(b.width<520?1:.94)).toFixed(3));
+  });
+}
+
+/* =====================================================================
+   FIG. 1  the whole croissant
+   ===================================================================== */
+(function(){
+  var sv=$('cro'), C={cx:380,cy:520,r:300,a0:205,a1:335}, r=rng(3);
+  function sp(t){var a=(C.a0+(C.a1-C.a0)*t)*Math.PI/180,c=Math.cos(a),s=Math.sin(a);return{x:C.cx+C.r*c,y:C.cy+C.r*s,nx:c,ny:s,tx:-s,ty:c}}
+  function wd(t){t=clamp(t,0,1);return 9+82*Math.pow(Math.sin(Math.PI*t),.62)}
+  var B=[0,.125,.262,.405,.595,.738,.875,1], defs=sv.querySelector('defs');
+  // drafting axis and shadow
+  var ax='',sh='';for(var i=0;i<=40;i++){var t=-.07+1.14*i/40,p=sp(t);ax+=(i?'L':'M')+f1(p.x)+' '+f1(p.y)}
+  for(i=0;i<=30;i++){p=sp(.08+.84*i/30);sh+=(i?'L':'M')+f1(p.x+6)+' '+f1(p.y+34)}
+  $('croAxis').setAttribute('d',ax);$('croShadow').setAttribute('d',sh);
+  function edge(a,b,side,a0,b0){var pts=[],n=14;for(var i=0;i<=n;i++){var t=a+(b-a)*i/n,p=sp(t),u=clamp((t-a0)/(b0-a0),0,1),k=wd(t)*(1+.1*Math.sin(Math.PI*u))*(side>0?1:.8);pts.push([p.x+p.nx*k*side,p.y+p.ny*k*side])}return pts}
+  function seg(i,parent,order){
+    var a0=B[i],b0=B[i+1],mid=(a0+b0)/2,left=i<3,right=i>3;
+    var a=right?a0-.055:a0, b=left?b0+.055:b0;
+    var top=edge(a,b,1,a0,b0), bot=edge(a,b,-1,a0,b0), pa=sp(a), pb=sp(b);
+    var capA=(i===0?10:(right?4:15)), capB=(i===6?10:(left?4:15));
+    var d='M'+top.map(function(q){return f1(q[0])+' '+f1(q[1])}).join('L');
+    d+='Q'+f1(pb.x+pb.tx*capB*2)+' '+f1(pb.y+pb.ty*capB*2)+' '+f1(bot[bot.length-1][0])+' '+f1(bot[bot.length-1][1]);
+    for(var j=bot.length-2;j>=0;j--)d+='L'+f1(bot[j][0])+' '+f1(bot[j][1]);
+    d+='Q'+f1(pa.x-pa.tx*capA*2)+' '+f1(pa.y-pa.ty*capA*2)+' '+f1(top[0][0])+' '+f1(top[0][1])+'Z';
+    var pm=sp(mid),w=wd(mid)*1.1;
+    var g1=el('linearGradient',{id:'cg'+i,gradientUnits:'userSpaceOnUse',x1:f1(pm.x+pm.nx*w),y1:f1(pm.y+pm.ny*w),x2:f1(pm.x-pm.nx*w*.8),y2:f1(pm.y-pm.ny*w*.8)},defs);
+    [[0,'#9A5516'],[.16,'#D48F2C'],[.4,'#F0BE58'],[.56,'#F7D98B'],[.76,'#E0A03A'],[1,'#8A4B14']].forEach(function(s){el('stop',{offset:s[0],'stop-color':s[1]},g1)});
+    var g=el('g',{class:'seg',style:'--i:'+order},parent);
+    el('path',{d:d,fill:'url(#cg'+i+')',stroke:'#6f3a0e','stroke-width':1.3,'stroke-linejoin':'round'},g);
+    // shadow toward the tucked end
+    if(i!==3){
+      var e0=sp(left?a0:b0), e1=sp(left?b:a);
+      var g2=el('linearGradient',{id:'cs'+i,gradientUnits:'userSpaceOnUse',x1:f1(e0.x),y1:f1(e0.y),x2:f1(e1.x),y2:f1(e1.y)},defs);
+      el('stop',{offset:.3,'stop-color':'#8A4B14','stop-opacity':0},g2);el('stop',{offset:1,'stop-color':'#5d300b','stop-opacity':.62},g2);
+      el('path',{d:d,fill:'url(#cs'+i+')'},g);
+    }
+    // flaky stroke marks, bowed the way the dough was wound
+    var m=i===3?9:6+Math.floor(r()*2), dir=left?-1:right?1:0;
+    for(j=0;j<m;j++){
+      var t=a0+(b0-a0)*((j+.6+(r()-.5)*.5)/(m+.2)), p=sp(t), k=wd(t)*(1+.1*Math.sin(Math.PI*(t-a0)/(b0-a0)));
+      var dd=dir||(t<mid?-1:1), bow=(7+r()*10)*dd, e1k=.9+r()*.07, e2k=(.72+r()*.07);
+      var s0=r()*.25, x1=p.x+p.nx*k*e1k*(1-s0), y1=p.y+p.ny*k*e1k*(1-s0), x2=p.x-p.nx*k*e2k, y2=p.y-p.ny*k*e2k;
+      var q='M'+f1(x1)+' '+f1(y1)+'Q'+f1(p.x+p.tx*bow)+' '+f1(p.y+p.ty*bow)+' '+f1(x2)+' '+f1(y2);
+      el('path',{d:q,fill:'none',stroke:'#6f3a0e','stroke-width':(.7+r()*1.5).toFixed(1),'stroke-linecap':'round',opacity:(.22+r()*.34).toFixed(2),'stroke-dasharray':f1(18+r()*50)+' '+f1(2+r()*7)+' '+f1(6+r()*20)+' '+f1(2+r()*6)},g);
+      if(r()<.7)el('path',{d:q,fill:'none',stroke:'#FBF3E0','stroke-width':(.8+r()*1.2).toFixed(1),'stroke-linecap':'round',opacity:(.25+r()*.3).toFixed(2),transform:'translate('+f1(p.tx*3.2*dd)+' '+f1(p.ty*3.2*dd)+')','stroke-dasharray':f1(10+r()*30)+' '+f1(8+r()*30)},g);
+    }
+    return g;
+  }
+  var gL=$('croL'), gR=$('croR'), gB=$('croBody');
+  seg(0,gL,0);seg(1,gL,2);seg(6,gR,1);seg(5,gR,3);seg(2,gB,4);seg(4,gB,5);seg(3,gB,6);
+  // torn faces (hidden until torn)
+  function face(t,sgn,parent){
+    var p=sp(t), w=wd(t), g=el('g',{opacity:0},parent), d='', n=22, rr=rng(Math.round(t*100)+sgn+5);
+    for(var i=0;i<n;i++){var a=i/n*TAU, ca=Math.cos(a), sa=Math.sin(a), jag=.8+rr()*.32;
+      var u=(sa*w*(sa>0?.84:.66))*jag, v=ca*11*jag+sgn*5;
+      d+=(i?'L':'M')+f1(p.x+p.nx*u+p.tx*v)+' '+f1(p.y+p.ny*u+p.ty*v)}
+    el('path',{d:d+'Z',fill:'url(#faceG)',stroke:'#8A4B14','stroke-width':1,'stroke-linejoin':'round'},g);
+    for(i=0;i<7;i++){var u2=(rr()-.42)*w*1.2, v2=(rr()-.5)*8+sgn*5;
+      el('ellipse',{cx:f1(p.x+p.nx*u2+p.tx*v2),cy:f1(p.y+p.ny*u2+p.ty*v2),rx:f1(1.6+rr()*2.4),ry:f1(3+rr()*6),transform:'rotate('+f1(Math.atan2(p.ny,p.nx)*180/Math.PI+90)+' '+f1(p.x+p.nx*u2+p.tx*v2)+' '+f1(p.y+p.ny*u2+p.ty*v2)+')',fill:'#C98A34',opacity:.75},g)}
+    return g;
+  }
+  var fc=$('croFaces');
+  var sides=[
+    {g:gR,t:B[5],sgn:1,tx:54,ty:40,rot:23,x:0,y:0,a:0,vx:0,vy:0,va:0,k:0,faces:[face(B[5]+.004,1,fc),face(B[5]-.02,-1,gR)]},
+    {g:gL,t:B[2],sgn:-1,tx:-50,ty:44,rot:-21,x:0,y:0,a:0,vx:0,vy:0,va:0,k:0,faces:[face(B[2]-.004,-1,fc),face(B[2]+.02,1,gL)]}
+  ];
+  // focus ring
+  var fr='';for(i=0;i<=24;i++){p=sp(i/24);var k=wd(i/24)+16;fr+=(i?'L':'M')+f1(p.x+p.nx*k)+' '+f1(p.y+p.ny*k)}
+  for(i=24;i>=0;i--){p=sp(i/24);k=wd(i/24)*.8+16;fr+='L'+f1(p.x-p.nx*k)+' '+f1(p.y-p.ny*k)}
+  $('croFocus').setAttribute('d',fr+'Z');
+
+  var crumbsG=$('croCrumbs'), parts=[], state=0, hintT=$('croHintT'), hint=$('croHint');
+  function spawn(s){
+    var p=sp(s.t), n=reduced?26:44, rr=rng(Math.floor(Math.random()*1e6));
+    for(var i=0;i<n;i++){
+      var u=(rr()-.45)*wd(s.t)*1.4, flour=rr()<.25;
+      var o={x:p.x+p.nx*u,y:p.y+p.ny*u,vx:(rr()-.35)*5.4*s.sgn,vy:-1-rr()*5.5,a:rr()*360,va:(rr()-.5)*26,floor:428+rr()*16,rest:false,
+        e:flour?el('circle',{r:f1(.8+rr()*1.4),fill:'#fffdf6',stroke:'#8A4B14','stroke-width':.3,'stroke-opacity':.4},crumbsG)
+               :el('path',{d:crumbShape(rr,1.4+rr()*rr()*5.5),fill:CRUMB[Math.floor(rr()*CRUMB.length)]},crumbsG)};
+      if(reduced){o.x+=o.vx*14;o.y=o.floor;o.rest=true}
+      o.e.setAttribute('transform','translate('+f1(o.x)+' '+f1(o.y)+') rotate('+f1(o.a)+')');
+      parts.push(o);
+    }
+    while(parts.length>150){var old=parts.shift();old.e.remove()}
+  }
+  function place(s){var p=sp(s.t);s.g.setAttribute('transform','translate('+f1(s.x)+' '+f1(s.y)+') rotate('+f1(s.a)+' '+f1(p.x)+' '+f1(p.y)+')')}
+  function step(dt){
+    var f=dt/16.67, busy=false;
+    sides.forEach(function(s){
+      var gx=s.k*s.tx, gy=s.k*s.ty, ga=s.k*s.rot;
+      s.vx+=(gx-s.x)*.085*f; s.vy+=(gy-s.y)*.085*f; s.va+=(ga-s.a)*.085*f;
+      var dmp=Math.pow(.8,f); s.vx*=dmp; s.vy*=dmp; s.va*=dmp;
+      s.x+=s.vx*f; s.y+=s.vy*f; s.a+=s.va*f;
+      if(Math.abs(gx-s.x)+Math.abs(gy-s.y)+Math.abs(ga-s.a)+Math.abs(s.vx)+Math.abs(s.va)>.02)busy=true; else{s.x=gx;s.y=gy;s.a=ga}
+      place(s);
+    });
+    for(var i=0;i<parts.length;i++){var o=parts[i]; if(o.rest)continue; busy=true;
+      o.vy+=.42*f; o.vx*=Math.pow(.99,f); o.x+=o.vx*f; o.y+=o.vy*f; o.a+=o.va*f;
+      if(o.y>=o.floor){o.y=o.floor; if(o.vy>1.6){o.vy*=-.3;o.vx*=.55;o.va*=.5}else{o.rest=true}}
+      o.e.setAttribute('transform','translate('+f1(o.x)+' '+f1(o.y)+') rotate('+f1(o.a)+')');
+    }
+    return busy;
+  }
+  function tear(){
+    if(state<2){
+      var s=sides[state]; s.k=1; s.vx+=s.sgn*5; s.vy-=3; s.va+=s.sgn*4;
+      s.faces.forEach(function(g){g.setAttribute('opacity',1)}); spawn(s);
+      state++; hintT.textContent=state===1?'AND THE OTHER':'BAKE ANOTHER';
+      hint.querySelector('path').style.opacity=0; hint.querySelector('circle').style.opacity=0;
+      sv.setAttribute('aria-label',state===1?'A croissant with one end torn off. Activate to tear the other.':'A croissant torn at both ends. Activate to bake another.');
+    }else{
+      sides.forEach(function(s){s.k=0;s.faces.forEach(function(g){g.setAttribute('opacity',0)})});
+      parts.forEach(function(o){o.e.style.transition='opacity .6s';o.e.style.opacity=0;setTimeout(function(){o.e.remove()},650)});
+      parts=[]; state=0; hintT.textContent='TEAR HERE';
+      hint.querySelector('path').style.opacity=''; hint.querySelector('circle').style.opacity='';
+      sv.setAttribute('aria-label','A whole croissant. Activate to tear off an end.');
+    }
+    if(reduced){sides.forEach(function(s){s.x=s.k*s.tx;s.y=s.k*s.ty;s.a=s.k*s.rot;s.vx=s.vy=s.va=0;place(s)})}
+    else run(step);
+  }
+  sv.addEventListener('click',tear);
+  sv.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();tear()}});
+})();
+
+/* =====================================================================
+   FIG. 2  the block
+   ===================================================================== */
+var block=(function(){
+  var g=$('bkFlaps'), cx=300, cy=262, flaps=[], top=$('bkTop'), pinch=$('bkPinch'), secT=$('bkSecT');
+  var A=hex('#F5E8C9'), Bc=hex('#E4CF9E');
+  // top, right, bottom, left
+  [[185,147,415,147,300,32],[415,147,415,377,530,262],[415,377,185,377,300,492],[185,377,185,147,70,262]].forEach(function(p,i){
+    flaps.push({e:el('polygon',{points:p.join(' '),class:'dough'},g),i:i});
+  });
+  var pd='';[[1,1],[1,-1],[-1,1],[-1,-1]].forEach(function(s){for(var k=1;k<=4;k++){var x=cx+s[0]*k*23,y=cy+s[1]*k*23;pd+='M'+(x-4*s[0])+' '+(y+4*s[1])+'L'+(x+4*s[0])+' '+(y-4*s[1])}});
+  pinch.setAttribute('d',pd);
+  return function(p){
+    flaps.forEach(function(f){
+      var q=eio(lin(.06+f.i*.17,.36+f.i*.17,p)), k=Math.cos(Math.PI*q), t;
+      if(f.i===0)t='translate(0 147) scale(1 '+k.toFixed(4)+') translate(0 -147)';
+      else if(f.i===1)t='translate(415 0) scale('+k.toFixed(4)+' 1) translate(-415 0)';
+      else if(f.i===2)t='translate(0 377) scale(1 '+k.toFixed(4)+') translate(0 -377)';
+      else t='translate(185 0) scale('+k.toFixed(4)+' 1) translate(-185 0)';
+      f.e.setAttribute('transform',t);
+      f.e.style.fill=css(mix(A,Bc,Math.sin(Math.PI*q)*.9+(q>.5?.12:0)));
+    });
+    var done=ss(.86,.98,p);
+    pinch.style.opacity=done; top.style.opacity=done;
+    top.setAttribute('y',f1(519-(1-done)*16));
+    secT.textContent=done>.5?'SECTION · 1 LAYER OF BUTTER':'SECTION · BUTTER ON DOUGH';
+  };
+})();
+
+/* =====================================================================
+   FIG. 3  three turns
+   ===================================================================== */
+var turns=(function(){
+  var X=75,W=450,H=42,BASE=400,Y=BASE-H;
+  var A=$('tnA'),Bm=$('tnB'),Cg=$('tnC'),S=$('tnS'),pin=$('tnPin'),cnt=$('tnCount'),stat=$('tnStat'),cur=1;
+  var fx=[$('fx1'),$('fx1x'),$('fx2'),$('fx2x'),$('fx3'),$('fxEq')];
+  function slab(g,x,y,w,h,n){
+    var r=g.firstElementChild,pth=g.lastElementChild,d='';
+    r.setAttribute('x',f1(x));r.setAttribute('y',f1(y));r.setAttribute('width',f1(w));r.setAttribute('height',f1(h));
+    for(var i=0;i<n;i++){var yy=(y+h*(i+.5)/n).toFixed(2);d+='M'+f1(x+1.2)+' '+yy+'H'+f1(x+w-1.2)}
+    pth.setAttribute('d',d);pth.setAttribute('stroke-width',Math.min(5,h/n*.5).toFixed(2));
+  }
+  return function(p){
+    var tt=Math.min(2,Math.floor(p*3+1e-6)), q=clamp(p*3-tt,0,1), n=Math.pow(3,tt);
+    var qa=eio(lin(.02,.34,q)), qb=eio(lin(.3,.63,q)), qc=eio(lin(.69,1,q)), w3=W/3;
+    if(q<.69){
+      S.style.display='none';A.style.display=Bm.style.display=Cg.style.display='';
+      slab(A,X,Y,w3,H,n);slab(Bm,X+w3,Y,w3,H,n);slab(Cg,X+2*w3,Y,w3,H,n);
+      Cg.setAttribute('transform','rotate('+f1(-180*qa)+' '+(X+2*w3)+' '+Y+')');
+      A.setAttribute('transform','rotate('+f1(180*qb)+' '+(X+w3)+' '+(Y-H/2)+')');
+    }else{
+      A.style.display=Bm.style.display=Cg.style.display='none';S.style.display='';
+      var w=lerp(w3,W,qc),h=lerp(3*H,H,qc);
+      slab(S,X+W/2-w/2,BASE-h,w,h,n*3);
+      pin.setAttribute('transform','translate('+f1(X+W/2+Math.sin(lin(.69,1,q)*Math.PI*3)*w*.36)+' '+f1(BASE-h-12.5)+')');
+    }
+    pin.style.opacity=ss(.66,.72,q)*(1-ss(.93,1,q));
+    var val=p<.002?1:(q>=.62?n*3:n);
+    if(val!==cur){cur=val;cnt.textContent=val;if(!reduced){cnt.classList.remove('pop');void cnt.getBoundingClientRect();cnt.classList.add('pop')}}
+    fx[0].classList.toggle('lit',val>=3);fx[1].classList.toggle('lit',val>=9);fx[2].classList.toggle('lit',val>=9);
+    fx[3].classList.toggle('lit',val>=27);fx[4].classList.toggle('lit',val>=27);fx[5].classList.toggle('lit',val>=27);
+    stat.textContent=p<.002?'ONE LAYER · READY TO ROLL':p>.995?'27 LAYERS · DONE':'TURN '+(tt+1)+' OF 3 · '+(q<.66?'FOLD':'ROLL OUT');
+  };
+})();
+
+/* =====================================================================
+   FIG. 4  the roll
+   ===================================================================== */
+var roll=(function(){
+  var L=450,X0=70,HW=78,BASE=450,r0=6,b=1.571;
+  var tri=$('rlTri'),tg=$('rlTiers'),proj=$('rlProj'),s1=$('rlS1'),s2=$('rlS2'),s3=$('rlS3'),tSteps=$('rlSteps'),tRev=$('rlRev'),tiers=[];
+  for(var i=0;i<5;i++)tiers.push(el('rect',{fill:'url(#rlG)',stroke:'#8A4B14','stroke-width':1.1},tg));
+  return function(p){
+    var s=L*eio(lin(.03,.95,p)), th=(-r0+Math.sqrt(r0*r0+2*b*s))/b, R=r0+b*th, xc=X0+s, cy=BASE-3.7-R;
+    var hw=HW*(1-s/L);
+    tri.setAttribute('d',s>=L-.5?'M0 0':'M'+f1(xc)+' '+f1(150-hw)+'L520 150L'+f1(xc)+' '+f1(150+hw)+'Z');
+    var wraps=0;
+    for(var k=0;k<5;k++){
+      var ph=TAU*k, t=tiers[k];
+      if(ph<th && s>.5){
+        wraps++;
+        var sk=r0*ph+b*ph*ph/2, wk=HW*(1-sk/L), rk=r0+b*Math.min(th,ph+TAU);
+        t.style.display='';t.setAttribute('x',f1(xc-rk));t.setAttribute('width',f1(rk*2));t.setAttribute('y',f1(150-wk));t.setAttribute('height',f1(wk*2));t.setAttribute('rx',f1(Math.min(rk,wk)*.6));
+      }else t.style.display='none';
+    }
+    var d='';
+    for(var ph2=0;ph2<th;ph2+=.16){var r=r0+b*ph2,a=Math.PI/2+(th-ph2);d+=(d?'L':'M')+f1(xc+r*Math.cos(a))+' '+f1(cy+r*Math.sin(a))}
+    d+=(d?'L':'M')+f1(xc)+' '+f1(cy+R);
+    if(xc<519.5)d+='L520 '+f1(BASE-3.7);
+    s1.setAttribute('d',d);s2.setAttribute('d',d);s3.setAttribute('d',d);
+    proj.setAttribute('d',s>.5?'M'+f1(xc-R)+' 296V'+f1(cy)+'M'+f1(xc+R)+' 296V'+f1(cy):'M0 0');
+    tSteps.textContent='STEPS '+(wraps?2*wraps-1:0);
+    tRev.textContent='REV '+(th/TAU).toFixed(2);
+  };
+})();
+
+/* =====================================================================
+   FIG. 5  the oven: the cross-section
+   ===================================================================== */
+var oven=(function(){
+  var sv=$('ovSvg'), Tt=14.25, U0=1, U1=13.5, R0=146, CX=330, TRAY=540;
+  var gCells=$('ovCells'), disc=$('ovDisc'), band=$('ovBand'), crust=$('ovCrust'), crustHi=$('ovCrustHi'), sheen=$('ovSheen'), mem=$('ovMem');
+  var wisps=$('ovSteam').children, steam=$('ovSteam'), shadow=$('ovShadow');
+  var merc=$('ovMerc'), ptr=$('ovPtr');
+  var rdStage=$('rdStage'), rdClock=$('rdClock'), rdTemp=$('rdTemp'), rdW=$('rdW'), named=$('ovNamed'), chipCell=$('chipCell');
+  var tag=$('ovTag'), tagL=$('ovTagL'), tagD=$('ovTagD'), tagT=$('ovTagT'), tagB=$('ovTagB');
+  var r=rng(27), cells=[], st={}, lastP=0;
+  // thermometer ticks
+  var td='';for(var T=0;T<=200;T+=20)td+='M53 '+f1(ty(T))+'h'+(T%100===0?9:5);td+='M53 '+f1(ty(26))+'h9M53 '+f1(ty(16))+'h5';
+  $('ovTicks').setAttribute('d',td);
+  function ty(T){return 508-T/200*398}
+  // butter cells along the spiral
+  var u=U0;
+  while(u<U1-.01){
+    var rad=Math.max(u/Tt*205,26), len=24+r()*r()*74+r()*12, du=Math.min(len/(TAU*rad),.36), e=Math.min(u+du,U1);
+    if(U1-e<.02)e=U1;
+    var n=clamp(Math.ceil((e-u)*TAU*rad/6.5),5,13);
+    cells.push({a:u,b:e,k:.74+r()*.4,g:.7+r()*.7,o:(r()-.5)*.09,n:n,e:el('path',{class:'cell',fill:'url(#ovCellG)'},gCells)});
+    u=e;
+  }
+  function P(uc,d){ // uc: turns along butter centreline; d: radial offset in pitches
+    var th=(uc-.5)*TAU, ur=uc+d, rho=ur/Tt, c=Math.cos(th), s=Math.sin(th);
+    var fade=1-Math.pow(clamp(rho,0,1),5);
+    rho+=st.w*fade*(.0105*Math.sin(2*th+ur*1.1)+.0085*Math.sin(3*th-ur*1.3+1)+.006*Math.sin(5*th+ur*1.7+2));
+    var S=st.S*(1+st.bump*(.011*Math.sin(3*th+.6)+.008*Math.sin(7*th+2.1)+.006*Math.sin(11*th+1)));
+    return[st.cx+c*rho*S*st.sx, st.cy+s*rho*S*lerp(1,st.by,ss(-.35,.6,s))];
+  }
+  function ring(ur,from,to,nn){var d='';for(var i=0;i<=nn;i++){var th=lerp(from,to,i/nn),q=P(th/TAU+.5,ur-(th/TAU+.5));d+=(i?'L':'M')+f1(q[0])+' '+f1(q[1])}return d}
+  var cDough0=hex('#F7EDD3'),cDough1=hex('#F6E3B1'),cDough2=hex('#F6D584'),
+      eDough0=hex('#F2E3BF'),eDough1=hex('#F1D898'),eDough2=hex('#E3A53F'),
+      cBut=hex('#F1C55E'),cHoleT=hex('#8E4F15'),cHoleB=hex('#D49A40'),
+      cCr0=hex('#CDB37F'),cCr1=hex('#C39A55'),cCr2=hex('#8A4B14');
+  var sel=null, pinAll=null, hot=null, memAt=null;
+  var NAMES={
+    crust:['Crust','the outermost turns, dried and caramelised. This is where the shatter lives.'],
+    crust0:['Skin','the outermost turn of dough. In the oven it dries, browns and becomes the crust.'],
+    membrane:['Membrane','a sheet of dough baked as thin as tracing paper, holding up the room above it.'],
+    membrane0:['Dough sheet','one of the layers that will stretch into a membrane once the steam arrives.'],
+    cell:['Alveolus','an air cell: the room a butter line leaves behind when it turns to steam.'],
+    cell0:['Butter line','solid at 16 °C and one of twenty-seven. It will melt, lift the sheet above it, and vanish.']
+  };
+  function kind(k){return (k==='cell'?st.open<.42:lastP<.5)?k+'0':k}
+  function setNamed(k){
+    if(!k){named.innerHTML='<b>Specimen</b>Point at any layer of the section, or tap it, and it will give its name.';return}
+    var nm=NAMES[kind(k)];named.innerHTML='<b></b>';named.firstChild.textContent=nm[0];named.appendChild(doc.createTextNode(nm[1].charAt(0).toUpperCase()+nm[1].slice(1)));
+  }
+  function showTag(x,y,k){
+    var nm=NAMES[kind(k)][0].toUpperCase(), flip=x>390, s=parseFloat(sv.style.getPropertyValue('--s'))||1, fs=10.5/s;
+    var ex=x+(flip?-1:1)*34, ey=Math.max(34,y-44), tw=nm.length*fs*.7+fs*1.4, bx=flip?ex-tw:ex;
+    tagL.setAttribute('d','M'+f1(x)+' '+f1(y)+'L'+f1(ex)+' '+f1(ey));
+    tagD.setAttribute('cx',f1(x));tagD.setAttribute('cy',f1(y));
+    tagB.setAttribute('x',f1(bx));tagB.setAttribute('y',f1(ey-fs*1.25));tagB.setAttribute('width',f1(tw));tagB.setAttribute('height',f1(fs*2));
+    tagT.textContent=nm;tagT.setAttribute('x',f1(bx+tw/2));tagT.setAttribute('y',f1(ey+fs*.1));tagT.setAttribute('text-anchor','middle');
+    tag.setAttribute('opacity',1);
+  }
+  function clearHot(){
+    if(hot&&hot.classList)hot.classList.remove('hi');hot=null;memAt=null;
+    crustHi.classList.remove('hi');mem.setAttribute('d','M0 0');tag.setAttribute('opacity',0);
+  }
+  function memPath(){
+    if(pinAll==='membrane'){var d='';for(var n=1;n<=13;n++){d+=ring2(n,0,TAU,54)}return d}
+    if(!memAt)return'M0 0';
+    return ring2(memAt.n,memAt.th-.75,memAt.th+.75,14);
+  }
+  function ring2(n,a,b,nn){var d='';for(var i=0;i<=nn;i++){var th=lerp(a,b,i/nn),uc=th/TAU+.5+n,q=P(uc,-.5);d+=(i?'L':'M')+f1(q[0])+' '+f1(q[1])}return d}
+  function pick(ev){
+    var m=sv.getScreenCTM();if(!m)return;
+    var x=(ev.clientX-m.e)/m.a, y=(ev.clientY-m.f)/m.d;
+    var dx=(x-st.cx)/(st.S*st.sx), dy0=(y-st.cy)/st.S, dy=dy0, kk=1;
+    for(var it=0;it<4;it++){dy=dy0/kk;kk=lerp(1,st.by,ss(-.35,.6,dy/(Math.hypot(dx,dy)||1)))}
+    var rho=Math.hypot(dx,dy), th=Math.atan2(dy,dx); if(th<0)th+=TAU;
+    clearHot(); setPinned(null);
+    if(rho>1.06){sel=null;setNamed(null);return}
+    var k;
+    if(rho>.958){k='crust';crustHi.classList.add('hi')}
+    else if(ev.target.classList&&ev.target.classList.contains('cell')){k='cell';hot=ev.target;hot.classList.add('hi')}
+    else{k='membrane';var n=clamp(Math.round(rho*Tt-th/TAU),1,13);memAt={n:n,th:th};mem.setAttribute('d',memPath())}
+    sel=k;setNamed(k);showTag(x,y,k);
+  }
+  sv.addEventListener('pointermove',function(e){if(e.pointerType==='mouse')pick(e)});
+  sv.addEventListener('pointerdown',pick);
+  sv.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse'){clearHot();sel=null;if(!pinAll)setNamed(null)}});
+  var chips=doc.querySelectorAll('.chip');
+  function setPinned(k){
+    pinAll=k;
+    Array.prototype.forEach.call(chips,function(c){c.setAttribute('aria-pressed',c.dataset.k===k?'true':'false')});
+    gCells.classList.toggle('all',k==='cell');
+    crustHi.classList.toggle('hi',k==='crust');
+    mem.setAttribute('d',memPath());
+    if(k)setNamed(k);
+  }
+  Array.prototype.forEach.call(chips,function(c){c.addEventListener('click',function(){clearHot();var k=pinAll===c.dataset.k?null:c.dataset.k;setPinned(k);if(!k)setNamed(null)})});
+
+  function render(p){
+    lastP=p;
+    var proof=ss(0,.3,p), ov=ss(.3,.8,p), col=ss(.42,1,p), ovE=1-Math.pow(1-ov,1.6);
+    var swell=.13*proof+.27*ovE;
+    st.S=R0*(1+swell); st.sx=1+.025*proof+.05*ov; st.by=1-.12*proof-.3*ov;
+    st.w=.3*proof+.7*ov; st.bump=.25*proof+.75*ov; st.open=.2*proof+.8*ovE; st.e=.5*proof+.5*ov;
+    st.cx=CX; st.cy=TRAY-3-st.S*st.by*1.005;
+    // cells
+    var e=st.e, open=st.open;
+    for(var i=0;i<cells.length;i++){
+      var c=cells[i], sp=(c.b-c.a), a=c.a+sp*.07*e, b=c.b-sp*.07*e, rho=(c.a+c.b)/2/Tt;
+      var h=lerp(.25,.445*c.k*(1-.5*Math.pow(rho,3.2))*(.72+.28*Math.min(1,rho*5)),open), off=c.o*open, top='', bot='';
+      for(var j=0;j<=c.n;j++){
+        var v=j/c.n, uc=lerp(a,b,v), pr=(1-e)+e*Math.pow(Math.max(0,Math.sin(Math.PI*Math.pow(v,c.g))),.46), hh=h*pr;
+        var q1=P(uc,hh+off), q2=P(uc,-hh+off);
+        top+=(j?'L':'M')+f1(q1[0])+' '+f1(q1[1]); bot='L'+f1(q2[0])+' '+f1(q2[1])+bot;
+      }
+      c.e.setAttribute('d',top+bot+'Z');
+    }
+    // outline, crust, sheen
+    var out=ring(Tt,0,TAU,90)+'Z';
+    disc.setAttribute('d',out); crust.setAttribute('d',out);
+    band.setAttribute('d',ring(Tt*.972,0,TAU,90)+'Z');
+    crustHi.setAttribute('d',ring(Tt*1.045,0,TAU,90)+'Z');
+    sheen.setAttribute('d',ring(Tt*.992,TAU*.6,TAU*.72,12)+ring(Tt*.992,TAU*.745,TAU*.765,4));
+    sheen.style.opacity=col*.75;
+    var cw=2+1.5*proof+6*col;
+    crust.style.stroke=css(col>0?mix(mix(cCr0,cCr1,proof),cCr2,col):mix(cCr0,cCr1,proof));
+    crust.style.strokeWidth=f1(cw);
+    band.style.stroke=css(mix(eDough1,hex('#C27F27'),col));band.style.strokeWidth=f1(st.S*.05);band.style.opacity=col*.9;
+    $('ovD0').setAttribute('stop-color',css(mix(mix(cDough0,cDough1,proof),cDough2,col)));
+    $('ovD1').setAttribute('stop-color',css(mix(mix(eDough0,eDough1,proof),eDough2,col)));
+    var melt=ss(.34,.62,p);
+    $('ovC0').setAttribute('stop-color',css(mix(cBut,cHoleT,melt)));
+    $('ovC1').setAttribute('stop-color',css(mix(cBut,cHoleB,melt)));
+    shadow.setAttribute('rx',f1(st.S*st.sx*.92));shadow.setAttribute('cx',CX);
+    // steam
+    var sa=ss(.4,.52,p)*(1-ss(.9,1,p));
+    steam.style.opacity=reduced?(p>.4&&p<.9?.6:0):sa*.75;
+    steam.style.display=(reduced?(p>.4&&p<.9):sa>.01)?'':'none';
+    for(i=0;i<wisps.length;i++){var th=TAU*(.62+i*.065),q=P(th/TAU+.5,Tt*1.03-(th/TAU+.5));wisps[i].setAttribute('transform','translate('+f1(q[0])+' '+f1(q[1]-4)+')')}
+    // thermometer
+    var temp=p<.3?lerp(16,26,ss(0,.3,p)):lerp(26,200,ss(.3,.74,p));
+    var y=ty(temp);merc.setAttribute('y',f1(y));merc.setAttribute('height',f1(520-y));ptr.setAttribute('transform','translate(38 '+f1(y)+')');
+    // readouts
+    rdStage.textContent=p<.015?'Shaped':p<.3?'Proofing':p<.62?'Oven spring':p<.82?'Setting':p<.985?'Colouring':'Baked';
+    if(p<.3){var mins=Math.round(lin(0,.3,p)*120);rdClock.textContent=Math.floor(mins/60)+' h '+('0'+mins%60).slice(-2)}
+    else{var sec=Math.round(lin(.3,1,p)*18*60/15)*15;rdClock.textContent=('0'+Math.floor(sec/60)).slice(-2)+':'+('0'+sec%60).slice(-2)+' in'}
+    rdTemp.textContent=Math.round(temp)+' °C';
+    rdW.textContent='+'+Math.round(swell*100)+' %';
+    chipCell.textContent=st.open<.42?'Butter line':'Alveolus';
+    if(pinAll||memAt)mem.setAttribute('d',memPath());
+    if(sel||pinAll)setNamed(pinAll||sel);
+    if(tag.getAttribute('opacity')==='1'&&Math.abs(p-(render.tagP||0))>.03){tag.setAttribute('opacity',0)}
+    if(tag.getAttribute('opacity')!=='1')render.tagP=p;
+  }
+  return render;
+})();
+
+/* =====================================================================
+   scroll engine: progress eases toward its target, never jumps
+   ===================================================================== */
+var figs=[
+  {id:'block',render:block,steps:[[0,'Slab on dough'],[.5,'Two corners in'],[1,'Sealed']]},
+  {id:'turns',render:turns,steps:[[0,'One layer'],[.3334,'First turn · 3'],[.6667,'Second turn · 9'],[1,'Third turn · 27']]},
+  {id:'roll',render:roll,steps:[[0,'Cut triangle'],[.5,'Halfway'],[1,'Rolled']]},
+  {id:'oven',render:oven,steps:[[0,'Shaped'],[.3,'Proofed'],[.62,'Oven spring'],[1,'Baked']]}
+];
+figs.forEach(function(f){
+  f.sec=$(f.id);f.p=-1;f.t=0;f.idx=f.steps.length-1;
+  var box=f.sec.querySelector('.stepper');
+  box.innerHTML='<button type="button" aria-label="Previous step"><svg viewBox="0 0 12 12"><path d="M8 1 3 6l5 5"/></svg></button><span class="sc" aria-live="polite"></span><button type="button" aria-label="Next step"><svg viewBox="0 0 12 12"><path d="M4 1l5 5-5 5"/></svg></button>';
+  var bs=box.querySelectorAll('button'), lab=box.querySelector('span');
+  f.sync=function(){lab.textContent='Step '+(f.idx+1)+' of '+f.steps.length+' · '+f.steps[f.idx][1];bs[0].disabled=f.idx===0;bs[1].disabled=f.idx===f.steps.length-1;if(reduced){f.t=f.steps[f.idx][0];kick()}};
+  bs[0].addEventListener('click',function(){f.idx=Math.max(0,f.idx-1);f.sync()});
+  bs[1].addEventListener('click',function(){f.idx=Math.min(f.steps.length-1,f.idx+1);f.sync()});
+});
+function measure(){
+  var vh=window.innerHeight;
+  figs.forEach(function(f){
+    var r=f.sec.getBoundingClientRect();
+    f.vis=r.bottom>-200&&r.top<vh+200;
+    if(reduced)f.t=f.steps[f.idx][0];
+    else f.t=clamp((vh*.3-r.top)/(r.height-vh),0,1);
+  });
+}
+function ease(dt){
+  var busy=false,k=1-Math.exp(-dt/105);
+  figs.forEach(function(f){
+    if(f.p<0||reduced){if(f.p!==f.t){f.p=f.t;f.render(f.p)}return}
+    var d=f.t-f.p; if(d===0)return;
+    if(!f.vis){f.p=f.t;f.render(f.p);return}
+    if(Math.abs(d)<.0005)f.p=f.t; else{f.p+=d*k;busy=true}
+    f.render(f.p);
+  });
+  return busy;
+}
+function kick(){run(ease)}
+function onScroll(){measure();kick()}
+window.addEventListener('scroll',onScroll,{passive:true});
+var rz=0;window.addEventListener('resize',function(){cancelAnimationFrame(rz);rz=requestAnimationFrame(function(){fitLabels();onScroll()})});
+function onMq(){reduced=mq.matches;root.classList.toggle('rm',reduced);figs.forEach(function(f){f.sync()});setTimeout(function(){fitLabels();onScroll()},30)}
+if(mq.addEventListener)mq.addEventListener('change',onMq);else if(mq.addListener)mq.addListener(onMq);
+
+/* ---------- headings wipe in from the left ---------- */
+var wipes=doc.querySelectorAll('main .head, .pull');
+if('IntersectionObserver' in window){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{rootMargin:'0px 0px -12% 0px',threshold:.2});
+  Array.prototype.forEach.call(wipes,function(w){io.observe(w)});
+}else Array.prototype.forEach.call(wipes,function(w){w.classList.add('in')});
+
+fitLabels();
+figs.forEach(function(f){f.sync()});
+measure();ease(16);
+requestAnimationFrame(function(){requestAnimationFrame(function(){root.classList.add('on');Array.prototype.forEach.call(doc.querySelectorAll('h1 .wipe'),function(w){w.classList.add('in')});fitLabels()})});
+window.addEventListener('load',function(){fitLabels();onScroll()});
+})();
+</script>
+</body>
+</html>

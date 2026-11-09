@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Demonstration 14 — Lines of Force</title>
+<style>
+:root{
+  --paper:#ECEBE6; --ink:#1A1A1A; --red:#D62828; --blue:#1D4E89;
+  --pencil:#3A68AA; --graphite:#56565B; --tray:#E2E0D9; --well:#D6D4CC;
+  --type:"American Typewriter","Courier New",Courier,"Nimbus Mono PS",monospace;
+  --mono:"Courier New",Courier,"Nimbus Mono PS",Menlo,Consolas,monospace;
+  --hand:"Bradley Hand","Segoe Print","Noteworthy",Georgia,"Times New Roman",serif;
+  --spring:cubic-bezier(.22,1.45,.42,1); --glide:cubic-bezier(.16,.84,.24,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--paper);color:var(--ink)}
+body{font-family:var(--mono);-webkit-font-smoothing:antialiased;overscroll-behavior:none}
+#stage{position:fixed;inset:0;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;
+  -webkit-tap-highlight-color:transparent;cursor:default}
+canvas{position:absolute;left:0;top:0;width:100%;height:100%;display:block}
+#top{pointer-events:none;z-index:3}
+
+/* ---------- worksheet lettering ---------- */
+header{position:absolute;z-index:4;left:clamp(14px,2.6vw,40px);top:clamp(14px,3vh,34px);pointer-events:none;
+  max-width:min(calc(100vw - 28px),430px);padding:13px 18px 13px 16px;background:#F7F6F1;transform:rotate(-.7deg);transform-origin:10% 0;
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 0 0 1px rgba(26,26,26,.07),1px 2px 3px rgba(30,32,42,.16),5px 12px 22px -8px rgba(30,32,42,.28);
+  animation:slipIn .9s var(--glide) both}
+header::before{content:"";position:absolute;left:50%;top:-11px;width:76px;height:22px;margin-left:-38px;transform:rotate(1.6deg);
+  background:linear-gradient(180deg,rgba(222,218,203,.86),rgba(212,208,192,.8));
+  box-shadow:0 1px 2px rgba(30,32,42,.22),inset 0 0 0 1px rgba(255,255,255,.25);
+  clip-path:polygon(0 0,3% 12%,0 25%,3% 38%,0 50%,3% 62%,0 75%,3% 88%,0 100%,100% 100%,97% 88%,100% 75%,97% 62%,100% 50%,97% 38%,100% 25%,97% 12%,100% 0)}
+@keyframes slipIn{from{opacity:0;transform:translateY(-14px) rotate(-2.6deg)}to{opacity:1;transform:rotate(-.7deg)}}
+.plate{font-family:var(--type);font-size:clamp(12px,1.05vw,15px);letter-spacing:.045em;line-height:1.3;
+  display:inline-block;font-weight:400;padding-bottom:7px;border-bottom:1px solid rgba(26,26,26,.55);white-space:nowrap;
+  animation:typeOn 1.1s steps(33,end) .15s both}
+.plate b{font-weight:400;display:inline-block;margin-right:.7em;padding:1px 6px 0;border:1px solid rgba(26,26,26,.6);
+  font-size:.78em;letter-spacing:.16em;text-transform:uppercase;vertical-align:.08em}
+.note{font-family:var(--hand);font-style:italic;font-size:clamp(14px,1.2vw,17px);line-height:1.45;color:var(--graphite);
+  margin-top:8px;transform:rotate(-.8deg);transform-origin:0 0;opacity:.92;
+  animation:writeOn 1.5s var(--glide) 1.05s both}
+.note span{display:block}
+.note .fine,.note .coarse{font-size:.86em;opacity:.8}
+.note .coarse{display:none}
+@media (hover:none),(pointer:coarse){.note .fine{display:none}.note .coarse{display:block}}
+@keyframes typeOn{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 -2% 0 0)}}
+@keyframes writeOn{from{clip-path:inset(0 100% -20% 0);opacity:0}to{clip-path:inset(0 -4% -20% 0);opacity:.92}}
+
+#readout{position:absolute;z-index:4;left:clamp(14px,2.6vw,40px);bottom:clamp(14px,3vh,30px);pointer-events:none;
+  font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(26,26,26,.62);white-space:nowrap;
+  padding:7px 11px 6px;background:#F7F6F1;box-shadow:0 0 0 1px rgba(26,26,26,.07),1px 2px 3px rgba(30,32,42,.14),4px 9px 16px -8px rgba(30,32,42,.26);
+  animation:fadeIn 1s ease 1.6s both}
+#readout em{font-style:normal;color:var(--ink)}
+#readout i{font-style:normal;margin:0 .7em;opacity:.45}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ---------- apparatus tray ---------- */
+#tray{position:absolute;z-index:2;right:0;top:0;bottom:0;width:164px;display:flex;flex-direction:column;gap:9px;
+  padding:clamp(12px,2.6vh,22px) 14px clamp(12px,2.4vh,20px);
+  background:linear-gradient(90deg,#D9D7CF 0,#E4E2DB 9px,var(--tray) 100%);
+  box-shadow:inset 1px 0 0 rgba(255,255,255,.75),-1px 0 0 rgba(26,26,26,.14),-22px 0 34px -22px rgba(40,42,52,.4);
+  animation:trayIn .95s var(--glide) .25s both}
+@keyframes trayIn{from{transform:translate3d(105%,0,0)}to{transform:none}}
+.cap{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(26,26,26,.6);
+  display:flex;justify-content:space-between;align-items:baseline;padding:0 2px 1px}
+.cap span:last-child{letter-spacing:.1em;opacity:.7}
+.slots{flex:1 1 auto;min-height:0;display:grid;grid-template-rows:repeat(4,minmax(0,1fr));gap:8px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;-webkit-appearance:none;appearance:none}
+.tool{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;min-height:0;
+  border-radius:11px;background:var(--well);padding:6px 4px 7px;touch-action:none;cursor:grab;
+  box-shadow:inset 0 2px 6px rgba(40,42,52,.26),inset 0 -1px 0 rgba(255,255,255,.75),0 1px 0 rgba(255,255,255,.6)}
+.tool svg{width:94px;height:auto;max-height:calc(100% - 20px);flex:0 1 auto;overflow:visible;
+  filter:drop-shadow(0 2px 2px rgba(30,32,40,.32));
+  transition:transform .5s var(--spring),filter .4s ease,opacity .35s ease}
+.tool:hover svg{transform:translateY(-3px) rotate(-3deg);filter:drop-shadow(0 7px 6px rgba(30,32,40,.28))}
+.tool:active svg{transform:translateY(-1px) scale(.97)}
+.tool[aria-pressed="true"] svg{opacity:.2;filter:grayscale(1) drop-shadow(0 0 0 transparent);transform:scale(.9)}
+.tool .lb{font-size:10px;letter-spacing:.14em;text-transform:uppercase;line-height:1;white-space:nowrap}
+.tool .lb::after{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;margin-left:6px;vertical-align:1px;
+  background:transparent;box-shadow:inset 0 0 0 1px rgba(26,26,26,.45);transition:background .3s,box-shadow .3s}
+.tool[aria-pressed="true"] .lb::after{background:var(--red);box-shadow:none}
+.tool[data-kind="shaker"] .lb::after{display:none}
+.tool.shook svg{animation:shake .62s var(--glide)}
+@keyframes shake{0%{transform:none}18%{transform:translateY(-7px) rotate(-22deg)}36%{transform:translateY(-2px) rotate(17deg)}
+  54%{transform:translateY(-5px) rotate(-12deg)}74%{transform:translateY(-1px) rotate(6deg)}100%{transform:none}}
+.ctl{display:grid;gap:6px;padding-top:9px;border-top:1px solid rgba(26,26,26,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 8px 8px 9px;border-radius:8px;
+  font-size:10px;letter-spacing:.14em;text-transform:uppercase;line-height:1;white-space:nowrap;
+  transition:background .25s ease}
+.sw:hover{background:rgba(255,255,255,.5)}
+.sw .short{display:none}
+.sw i{flex:none;position:relative;width:27px;height:14px;border-radius:8px;background:#C4C2BA;
+  box-shadow:inset 0 1px 2px rgba(26,26,26,.38);transition:background .3s ease}
+.sw i::after{content:"";position:absolute;left:2px;top:2px;width:10px;height:10px;border-radius:50%;background:#F8F7F3;
+  box-shadow:0 1px 2px rgba(26,26,26,.45);transition:transform .42s var(--spring)}
+.sw[aria-pressed="true"] i{background:var(--blue)}
+.sw[aria-pressed="true"] i::after{transform:translateX(13px)}
+.sw.push i{width:14px;border-radius:50%;background:var(--red);
+  box-shadow:0 2px 0 #8E1717,0 3px 3px rgba(26,26,26,.3);transition:transform .16s var(--glide),box-shadow .16s var(--glide)}
+.sw.push i::after{display:none}
+.sw.push:active i{transform:translateY(2px);box-shadow:0 0 0 #8E1717,0 1px 1px rgba(26,26,26,.3)}
+.keys{font-size:10px;letter-spacing:.12em;text-transform:uppercase;line-height:1.75;color:rgba(26,26,26,.56);padding:4px 2px 0}
+.keys kbd{font:inherit;color:var(--ink);display:inline-block;min-width:5.4em}
+:focus{outline:none}
+:focus-visible{outline:2px solid var(--pencil);outline-offset:2px}
+#objs button{position:fixed;left:0;top:0;width:1px;height:1px;opacity:0;pointer-events:none}
+
+/* tray along the bottom edge on narrow or tall screens */
+@media (max-width:819px),(max-aspect-ratio:1/1){
+  #tray{top:auto;left:0;width:auto;flex-direction:column;gap:7px;
+    padding:9px 10px calc(9px + env(safe-area-inset-bottom,0px));
+    background:linear-gradient(180deg,#D9D7CF 0,#E4E2DB 9px,var(--tray) 100%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 -1px 0 rgba(26,26,26,.14),0 -22px 34px -22px rgba(40,42,52,.4)}
+  @keyframes trayIn{from{transform:translate3d(0,105%,0)}to{transform:none}}
+  .cap,.keys{display:none}
+  header{padding:11px 13px 10px 13px}
+  .plate{font-size:11.5px;letter-spacing:.02em}
+  .note{font-size:13.5px;line-height:1.35}
+  .slots{grid-template-rows:none;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+  .tool{height:64px;gap:6px;padding:5px 2px 6px}
+  .tool svg{width:52px}
+  .tool .lb{letter-spacing:.08em}
+  .tool .lb::after{display:none}
+  .ctl{grid-template-columns:repeat(3,minmax(0,1fr));padding-top:6px;gap:4px}
+  .sw{padding:7px 8px}
+  .sw .long{display:none}.sw .short{display:inline}
+  #readout{display:none}
+}
+@media (max-height:560px) and (min-width:820px){.keys{display:none}.tool .lb{font-size:9px}}
+@media (prefers-reduced-motion:reduce){
+  .plate,.note,#readout,#tray,header,.tool.shook svg{animation:none}
+  .tool svg,.sw i::after,.sw.push i{transition:none}
+}
+</style>
+</head>
+<body>
+<main id="stage" aria-label="A sheet of paper dusted with iron filings, with magnets underneath">
+  <canvas id="paper" aria-hidden="true"></canvas>
+
+  <div id="objs"></div>
+
+  <aside id="tray" aria-label="Apparatus tray">
+    <div class="cap"><span>Apparatus</span><span>tray B</span></div>
+    <div class="slots">
+      <button class="tool" type="button" data-kind="bar2" aria-pressed="true" aria-label="Second bar magnet: place on the paper or return to the tray">
+        <svg viewBox="0 0 72 22" aria-hidden="true"><rect x="1" y="2" width="35" height="18" rx="2" fill="#1D4E89"/><rect x="36" y="2" width="35" height="18" rx="2" fill="#D62828"/><rect x="34" y="2" width="4" height="18" fill="#1D4E89"/><rect x="36" y="2" width="2" height="18" fill="#D62828"/><rect x="1" y="2" width="70" height="6" rx="2" fill="#fff" opacity=".2"/><text x="18" y="15.6" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-weight="700" font-size="11" fill="#fff">S</text><text x="54" y="15.6" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-weight="700" font-size="11" fill="#fff">N</text></svg>
+        <span class="lb">Bar magnet</span>
+      </button>
+      <button class="tool" type="button" data-kind="shoe" aria-pressed="false" aria-label="Horseshoe magnet: place on the paper or return to the tray">
+        <svg viewBox="0 0 72 44" aria-hidden="true"><path d="M60 8H26a14 14 0 0 0-14 14" fill="none" stroke="#D62828" stroke-width="11"/><path d="M12 22a14 14 0 0 0 14 14h34" fill="none" stroke="#1D4E89" stroke-width="11"/><path d="M60 6H26a16 16 0 0 0-16 16" fill="none" stroke="#fff" stroke-width="2.4" opacity=".28"/><text x="50" y="11.6" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-weight="700" font-size="8.5" fill="#fff">N</text><text x="50" y="39.6" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-weight="700" font-size="8.5" fill="#fff">S</text></svg>
+        <span class="lb">Horseshoe</span>
+      </button>
+      <button class="tool" type="button" data-kind="disc" aria-pressed="false" aria-label="Disc magnet: place on the paper or return to the tray">
+        <svg viewBox="0 0 72 36" aria-hidden="true"><circle cx="36" cy="18" r="15" fill="#D62828"/><circle cx="36" cy="18" r="10.5" fill="none" stroke="#fff" stroke-width="1" opacity=".4"/><path d="M24 12a14 14 0 0 1 18-7" fill="none" stroke="#fff" stroke-width="2" opacity=".3" stroke-linecap="round"/><text x="36" y="22.2" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-weight="700" font-size="12" fill="#fff">N</text></svg>
+        <span class="lb">Disc</span>
+      </button>
+      <button class="tool" type="button" data-kind="shaker" aria-label="Fresh shake of filings: press to re-dust the whole sheet, or drag over the paper to sprinkle">
+        <svg viewBox="0 0 72 40" aria-hidden="true"><circle cx="36" cy="20" r="17" fill="#8F8F8C"/><circle cx="36" cy="19" r="16" fill="#D4D4D0"/><circle cx="36" cy="19" r="12.5" fill="#BDBDB9"/><path d="M24 12a15 15 0 0 1 17-8" fill="none" stroke="#fff" stroke-width="2" opacity=".7" stroke-linecap="round"/><g fill="#1A1A1A"><circle cx="36" cy="19" r="1.7"/><circle cx="36" cy="11.6" r="1.6"/><circle cx="36" cy="26.4" r="1.6"/><circle cx="29.6" cy="15.3" r="1.6"/><circle cx="42.4" cy="15.3" r="1.6"/><circle cx="29.6" cy="22.7" r="1.6"/><circle cx="42.4" cy="22.7" r="1.6"/></g></svg>
+        <span class="lb">Fresh shake</span>
+      </button>
+    </div>
+    <div class="ctl">
+      <button class="sw" type="button" id="swLines" aria-pressed="false"><span><span class="long">Field lines</span><span class="short">Lines</span></span><i></i></button>
+      <button class="sw push" type="button" id="swTap"><span><span class="long">Tap paper</span><span class="short">Tap</span></span><i></i></button>
+      <button class="sw" type="button" id="swSound" aria-pressed="false"><span>Sound</span><i></i></button>
+    </div>
+    <p class="keys" aria-hidden="true"><kbd>Q / E</kbd>turn<br><kbd>F</kbd>flip<br><kbd>T</kbd>tap sheet<br><kbd>Tab</kbd>pick up</p>
+  </aside>
+
+  <canvas id="top" aria-hidden="true"></canvas>
+
+  <header>
+    <h1 class="plate"><b>Fig.</b>Demonstration 14 — Lines of Force</h1>
+    <p class="note"><span>drag the magnets. tap the paper to settle the filings.</span>
+      <span class="fine">scroll over one to turn it; double-click flips it.</span>
+      <span class="coarse">twist with two fingers; double-tap flips.</span></p>
+  </header>
+  <p id="readout" aria-hidden="true"></p>
+</main>
+
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const stage = $('#stage'), bgC = $('#paper'), topC = $('#top'), tray = $('#tray'), readout = $('#readout');
+const bg = bgC.getContext('2d'), ctx = topC.getContext('2d', { willReadFrequently: true });
+const RMQ = matchMedia('(prefers-reduced-motion: reduce)');
+let reduce = RMQ.matches;
+const RED = '#D62828', BLUE = '#1D4E89', INK = '#1A1A1A', PENCIL = '58,104,170', GRAPH = '86,86,91';
+const SANS = '"Helvetica Neue",Helvetica,Arial,sans-serif';
+const TAU = Math.PI * 2, PI = Math.PI;
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const rnd = Math.random;
+const outQuint = t => 1 - Math.pow(1 - t, 5);
+const outBack = t => { const c = 1.9, p = t - 1; return 1 + (c + 1) * p * p * p + c * p * p; };
+const wrap = d => d - TAU * Math.round(d / TAU);
+
+let W = 0, H = 0, dpr = 1, pw = 0, ph = 0, u = 1, U = 100, sideTray = true;
+
+/* ------------------------------------------------------------------ filings */
+const MAXN = 14000;
+let N = 0;
+const fx = new Float32Array(MAXN), fy = new Float32Array(MAXN), fa = new Float32Array(MAXN),
+      fvx = new Float32Array(MAXN), fvy = new Float32Array(MAXN), flen = new Float32Array(MAXN),
+      flag = new Float32Array(MAXN), foff = new Float32Array(MAXN), fstop = new Float32Array(MAXN),
+      fage = new Float32Array(MAXN), fgv = new Uint8Array(MAXN);
+const NB = 6;
+const seg = [], cnt = new Int32Array(NB);
+for (let b = 0; b < NB; b++) seg.push(new Float32Array(MAXN * 4));
+const SHADE = ['rgba(26,26,26,.5)', 'rgba(64,64,66,.46)', 'rgba(26,26,26,.8)', 'rgba(52,52,54,.76)', 'rgba(26,26,26,1)', 'rgba(40,40,42,.96)'];
+const LW = [0.85, 0.85, 1.0, 1.0, 1.3, 1.2];
+
+function seedFiling(i, x, y, age) {
+  fx[i] = x; fy[i] = y; fa[i] = rnd() * PI; fvx[i] = fvy[i] = 0;
+  flen[i] = 4 + 5 * Math.pow(rnd(), 1.4);
+  flag[i] = 0.035 + 0.2 * rnd() * rnd();
+  foff[i] = (rnd() - 0.5) * 0.3;
+  fstop[i] = rnd() < 0.7 ? 0 : 3.5 + 9.5 * Math.pow(rnd(), 1.4);
+  fgv[i] = rnd() < 0.36 ? 1 : 0;
+  fage[i] = age;
+}
+
+/* ------------------------------------------------------------------ objects */
+const objs = [];
+const byId = {};
+function makeObj(id, kind, name, returnable) {
+  const o = { id, kind, name, returnable, x: 0, y: 0, tx: 0, ty: 0, a: 0, ta: 0, pol: 1, flip: -1, lift: 0,
+              out: false, tw: null, scale: 1, na: 0, nw: 0, btn: null, tool: null };
+  const b = document.createElement('button');
+  b.type = 'button'; b.hidden = true;
+  b.setAttribute('aria-label', name + (kind === 'compass' ? '. Arrow keys move it.' : '. Arrow keys move, R rotates, F flips' + (returnable ? ', Delete returns it to the tray.' : '.')));
+  b.addEventListener('focus', () => { focusObj = o; wake(); });
+  b.addEventListener('blur', () => { if (focusObj === o) focusObj = null; wake(); });
+  b.addEventListener('keydown', e => objKey(o, e));
+  $('#objs').appendChild(b);
+  o.btn = b; objs.push(o); byId[id] = o;
+  return o;
+}
+makeObj('bar1', 'bar', 'First bar magnet', false);
+makeObj('bar2', 'bar', 'Second bar magnet', true);
+makeObj('shoe', 'shoe', 'Horseshoe magnet', true);
+makeObj('disc', 'disc', 'Disc magnet', true);
+makeObj('compass', 'compass', 'Compass', false);
+document.querySelectorAll('.tool').forEach(t => { if (byId[t.dataset.kind]) byId[t.dataset.kind].tool = t; });
+
+let focusObj = null, hoverObj = null, selObj = null;
+const BAR_L = 190, BAR_T = 46, SH_A = 76, SH_G = 36, SH_T = 28, DISC_R = 25, COMP_R = 33;
+
+function setOut(o, v) {
+  o.out = v; o.btn.hidden = !v;
+  if (o.tool) o.tool.setAttribute('aria-pressed', v ? 'true' : 'false');
+}
+function flipScale(o) { return o.flip < 0 ? 1 : Math.max(0.03, Math.abs(Math.cos(PI * o.flip))); }
+function flipObj(o) {
+  if (o.kind === 'compass' || o.flip >= 0) return;
+  if (reduce) { o.pol = -o.pol; } else { o.flip = 0; }
+  click(0.5); wake();
+}
+
+/* ------------------------------------------------------------------ poles & field */
+const PX = new Float32Array(16), PY = new Float32Array(16), PQ = new Float32Array(16), PM = new Int8Array(16);
+let np = 0, poleHash = 0, fieldDirty = true;
+const EPS2 = 0.16 * 0.16;
+function addPole(x, y, q, m) { PX[np] = x; PY[np] = y; PQ[np] = q; PM[np] = m; np++; }
+function buildPoles() {
+  np = 0;
+  for (let k = 0; k < objs.length; k++) {
+    const m = objs[k];
+    if (!m.out || m.kind === 'compass') continue;
+    const f = m.pol * flipScale(m) * clamp(m.scale, 0, 1), c = Math.cos(m.a), s = Math.sin(m.a);
+    if (m.kind === 'bar') {
+      const d = 0.41 * BAR_L * u;
+      addPole(m.x + c * d, m.y + s * d, f, k); addPole(m.x - c * d, m.y - s * d, -f, k);
+    } else if (m.kind === 'shoe') {
+      const lx = (SH_A - 9) * u, g = SH_G * u;
+      addPole(m.x + c * lx + s * g, m.y + s * lx - c * g, 0.9 * f, k);
+      addPole(m.x + c * lx - s * g, m.y + s * lx + c * g, -0.9 * f, k);
+    } else {
+      addPole(m.x, m.y, 0.9 * f, k);
+    }
+  }
+  let h = np * 7.7;
+  for (let p = 0; p < np; p++) h += (PX[p] * 1.31 + PY[p] * 2.17 + PQ[p] * 771) * (p + 1.37);
+  if (Math.abs(h - poleHash) > 0.02) { poleHash = h; fieldDirty = true; }
+}
+let BX = 0, BY = 0;
+function field(x, y) {
+  const inv = 1 / U; let bx = 0, by = 0;
+  for (let p = 0; p < np; p++) {
+    const dx = (x - PX[p]) * inv, dy = (y - PY[p]) * inv, d2 = dx * dx + dy * dy + EPS2;
+    const f = PQ[p] / (d2 * Math.sqrt(d2)); bx += dx * f; by += dy * f;
+  }
+  BX = bx; BY = by;
+}
+
+/* ------------------------------------------------------------------ paper */
+function paintPaper() {
+  const g = bg; g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.fillStyle = '#ECEBE6'; g.fillRect(0, 0, W, H);
+  // daylight falling from the upper left
+  let lg = g.createLinearGradient(0, 0, pw * 0.9, ph);
+  lg.addColorStop(0, 'rgba(255,255,255,.55)'); lg.addColorStop(0.45, 'rgba(255,255,255,.08)'); lg.addColorStop(1, 'rgba(96,90,78,.07)');
+  g.fillStyle = lg; g.fillRect(0, 0, pw, ph);
+  // fibres
+  let seed = 1234567;
+  const r = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;
+  const nf = Math.min(5200, Math.round(pw * ph / 300));
+  g.lineCap = 'round';
+  for (let i = 0; i < nf; i++) {
+    const x = r() * pw, y = r() * ph, a = r() * TAU, l = 5 + r() * 24, k = (r() - 0.5) * 9;
+    const light = r() < 0.55;
+    g.strokeStyle = light ? 'rgba(255,255,255,' + (0.3 + r() * 0.4) + ')' : 'rgba(108,98,82,' + (0.035 + r() * 0.07) + ')';
+    g.lineWidth = 0.5 + r() * 0.7;
+    g.beginPath(); g.moveTo(x, y);
+    g.quadraticCurveTo(x + Math.cos(a) * l * 0.5 - Math.sin(a) * k, y + Math.sin(a) * l * 0.5 + Math.cos(a) * k, x + Math.cos(a) * l, y + Math.sin(a) * l);
+    g.stroke();
+  }
+  // tooth
+  const tile = document.createElement('canvas'); tile.width = tile.height = 128;
+  const tg = tile.getContext('2d'), id = tg.createImageData(128, 128);
+  for (let i = 0; i < id.data.length; i += 4) {
+    const v = r(); const d = v < 0.5 ? 255 : 70;
+    id.data[i] = d; id.data[i + 1] = d; id.data[i + 2] = d - 8 * (d < 100); id.data[i + 3] = Math.pow(r(), 2.2) * 26;
+  }
+  tg.putImageData(id, 0, 0);
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  g.fillStyle = g.createPattern(tile, 'repeat'); g.fillRect(0, 0, pw * dpr, ph * dpr);
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  // vignette
+  const dg = Math.hypot(pw, ph);
+  const vg = g.createRadialGradient(pw * 0.47, ph * 0.45, dg * 0.26, pw * 0.5, ph * 0.5, dg * 0.68);
+  vg.addColorStop(0, 'rgba(70,62,50,0)'); vg.addColorStop(1, 'rgba(70,62,50,.2)');
+  g.fillStyle = vg; g.fillRect(0, 0, pw, ph);
+  // printed registration marks and a scale bar
+  const m = Math.max(12, Math.min(pw, ph) * 0.022), t = 13;
+  g.strokeStyle = 'rgba(26,26,26,.42)'; g.lineWidth = 1; g.lineCap = 'butt';
+  g.beginPath();
+  [[m, m, 1, 1], [pw - m, m, -1, 1], [m, ph - m, 1, -1], [pw - m, ph - m, -1, -1]].forEach(c => {
+    g.moveTo(c[0] + 0.5, c[1] + c[3] * t); g.lineTo(c[0] + 0.5, c[1] + 0.5); g.lineTo(c[0] + c[2] * t, c[1] + 0.5);
+  });
+  g.stroke();
+  const sbw = U, sx = pw - m - 16 - sbw, sy = ph - m - 15;
+  g.strokeStyle = 'rgba(26,26,26,.6)'; g.fillStyle = 'rgba(26,26,26,.62)';
+  g.beginPath(); g.moveTo(sx, sy + 0.5); g.lineTo(sx + sbw, sy + 0.5);
+  for (let i = 0; i <= 5; i++) { const x = Math.round(sx + sbw * i / 5) + 0.5; g.moveTo(x, sy - (i % 5 ? 3 : 6)); g.lineTo(x, sy + 0.5); }
+  g.stroke();
+  g.font = '9px "Courier New",Courier,monospace'; g.textBaseline = 'alphabetic';
+  g.textAlign = 'left'; g.fillText('0', sx - 2, sy - 9);
+  g.textAlign = 'right'; g.fillText('5 CM', sx + sbw + 3, sy - 9);
+}
+
+/* ------------------------------------------------------------------ layout */
+let firstLayout = true;
+function layout() {
+  const opw = pw, oph = ph;
+  W = window.innerWidth; H = window.innerHeight; dpr = Math.min(window.devicePixelRatio || 1, 2);
+  for (const c of [bgC, topC]) { c.width = Math.round(W * dpr); c.height = Math.round(H * dpr); }
+  sideTray = tray.offsetHeight >= H * 0.9;
+  if (sideTray) { pw = tray.offsetLeft; ph = H; } else { pw = W; ph = tray.offsetTop; }
+  u = clamp(Math.min(pw, ph) / 820, 0.6, 1.2); U = 100 * u;
+  const want = clamp(Math.round(pw * ph / 80), 4800, MAXN);
+  if (firstLayout) {
+    N = want;
+    for (let i = 0; i < N; i++) seedFiling(i, 4 + rnd() * (pw - 8), 4 + rnd() * (ph - 8), 1);
+  } else {
+    const sx = pw / opw, sy = ph / oph;
+    for (let i = 0; i < N; i++) { fx[i] *= sx; fy[i] *= sy; }
+    for (let i = N; i < want; i++) seedFiling(i, 4 + rnd() * (pw - 8), 4 + rnd() * (ph - 8), 1);
+    N = want;
+    for (const o of objs) { o.x *= sx; o.y *= sy; o.tx *= sx; o.ty *= sy; if (o.tw) { o.tw.x1 *= sx; o.tw.y1 *= sy; } }
+  }
+  firstLayout = false;
+  paintPaper(); fieldDirty = true; wake(90);
+}
+function homeOf(id) {
+  const land = pw >= ph, cx = pw / 2, cy = ph / 2 + (land ? 0 : 14 * u);
+  const off = (BAR_L / 2 + 44) * u;
+  switch (id) {
+    case 'bar1': return land ? { x: cx - off, y: cy, a: 0 } : { x: cx, y: cy - off, a: PI / 2 };
+    case 'bar2': return land ? { x: cx + off, y: cy, a: 0 } : { x: cx, y: cy + off, a: PI / 2 };
+    case 'shoe': return land ? { x: pw * 0.26, y: ph * 0.77, a: -0.5 } : { x: pw * 0.3, y: ph * 0.86, a: -PI / 2 };
+    case 'disc': return land ? { x: pw * 0.74, y: ph * 0.2, a: 0 } : { x: pw * 0.2, y: ph * 0.4, a: 0 };
+    default: return land ? { x: pw * 0.5, y: ph * 0.2, a: 0 } : { x: pw * 0.8, y: ph * 0.52, a: 0 };
+  }
+}
+function toolCentre(o) { const r = o.tool.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height * 0.42 }; }
+
+function entrance() {
+  const land = pw >= ph, span = BAR_L * u;
+  ['bar1', 'bar2'].forEach((id, k) => {
+    const o = byId[id], h = homeOf(id); setOut(o, true); o.a = o.ta = h.a;
+    if (reduce) { o.x = o.tx = h.x; o.y = o.ty = h.y; return; }
+    const sgn = k ? 1 : -1;
+    o.x = o.tx = land ? (k ? pw + span : -span) : h.x; o.y = o.ty = land ? h.y : (k ? ph + span : -span);
+    o.lift = 1;
+    o.tw = { x0: o.x, y0: o.y, x1: h.x, y1: h.y, s0: 1, s1: 1, t: 0, delay: 0.28 + k * 0.09, dur: 1.15, ease: outQuint, lift: 1 };
+    void sgn;
+  });
+  const c = byId.compass, h = homeOf('compass'); setOut(c, true);
+  c.x = c.tx = h.x; c.y = c.ty = h.y; c.na = -PI / 2;
+  if (!reduce) { c.scale = 0; c.tw = { x0: h.x, y0: h.y, x1: h.x, y1: h.y, s0: 0, s1: 1, t: 0, delay: 1.25, dur: 0.6, ease: outBack }; }
+}
+
+/* ------------------------------------------------------------------ tray actions */
+function spawnFromTray(o) {
+  const h = homeOf(o.id), c = toolCentre(o);
+  setOut(o, true); o.a = o.ta = h.a; o.flip = -1; toFront(o);
+  if (reduce) { o.x = o.tx = h.x; o.y = o.ty = h.y; o.scale = 1; }
+  else { o.x = o.tx = c.x; o.y = o.ty = c.y; o.scale = 0.4;
+    o.tw = { x0: c.x, y0: c.y, x1: h.x, y1: h.y, s0: 0.4, s1: 1, t: 0, delay: 0, dur: 0.75, ease: outQuint, lift: 1 }; }
+  selObj = o; wake();
+}
+function returnToTray(o) {
+  if (!o.returnable || !o.out) return;
+  const c = toolCentre(o), had = document.activeElement === o.btn;
+  if (selObj === o) selObj = null; if (hoverObj === o) hoverObj = null;
+  if (reduce) { setOut(o, false); if (had) o.tool.focus(); wake(); return; }
+  o.tw = { x0: o.x, y0: o.y, x1: c.x, y1: c.y, s0: o.scale, s1: 0.36, t: 0, delay: 0, dur: 0.48, ease: outQuint, lift: 1,
+           done: () => { setOut(o, false); o.scale = 1; if (had) o.tool.focus(); } };
+  wake();
+}
+function toggleTool(kind, viaKey) {
+  if (kind === 'shaker') { freshShake(); return; }
+  const o = byId[kind];
+  if (o.out) returnToTray(o); else { spawnFromTray(o); if (viaKey) o.btn.focus({ preventScroll: true }); }
+}
+function toFront(o) {
+  if (o.kind === 'compass') return;
+  const i = objs.indexOf(o); objs.splice(i, 1); objs.splice(objs.length - 1, 0, o);
+}
+function freshShake() {
+  for (let i = 0; i < N; i++) {
+    const y = 4 + rnd() * (ph - 8);
+    seedFiling(i, 4 + rnd() * (pw - 8), y, reduce ? 1 : -(y / ph) * 1.5 - rnd() * 0.5);
+  }
+  const t = document.querySelector('.tool[data-kind="shaker"]');
+  t.classList.remove('shook'); void t.offsetWidth; t.classList.add('shook');
+  hissBurst(0.9); wake(160);
+}
+let sprinkleIdx = 0;
+function sprinkle(x, y, n) {
+  if (x < 0 || x > pw || y < 0 || y > ph) return;
+  for (let k = 0; k < n; k++) {
+    const i = sprinkleIdx++ % N, a = rnd() * TAU, d = Math.sqrt(-2 * Math.log(1 - rnd() * 0.999)) * 30 * u;
+    seedFiling(i, clamp(x + Math.cos(a) * d, 4, pw - 4), clamp(y + Math.sin(a) * d, 4, ph - 4), reduce ? 1 : -rnd() * 0.25);
+  }
+}
+
+/* ------------------------------------------------------------------ tapping the sheet */
+const taps = [];
+let agit = 0, snapAll = false;
+function tapPaper(x, y) {
+  agit = 1; thump();
+  if (reduce) { snapAll = true; } else taps.push({ x, y, r0: 0, r1: 0, t: 0 });
+  wake(140);
+}
+
+/* ------------------------------------------------------------------ simulation */
+let motion = 0;
+function simulate(dt) {
+  const k = dt * 60, kc = Math.min(k, 3), inv = 1 / U;
+  const bh = 0.012 * (1 - 0.85 * agit), gmin = 85 * (1 - 0.55 * agit);
+  const creep = !reduce, nt = taps.length, jit = 3.2 * u;
+  const xmax = pw - 3, ymax = ph - 3, snap = snapAll || reduce;
+  const ease = 1 - Math.pow(0.8, k), lenK = clamp(u, 0.78, 1.12);
+  let mot = 0;
+  cnt.fill(0);
+  for (let i = 0; i < N; i++) {
+    if (fage[i] < 1) { fage[i] += dt * 2.6; if (fage[i] <= 0) continue; }
+    let x = fx[i], y = fy[i];
+    for (let t = 0; t < nt; t++) {
+      const tp = taps[t], ddx = x - tp.x, ddy = y - tp.y, d = Math.sqrt(ddx * ddx + ddy * ddy);
+      if (d >= tp.r0 && d < tp.r1) { fa[i] += (rnd() - 0.5) * 1.7; x += (rnd() - 0.5) * jit; y += (rnd() - 0.5) * jit; mot += 0.3; }
+    }
+    let bx = 0, by = 0;
+    for (let p = 0; p < np; p++) {
+      const dx = (x - PX[p]) * inv, dy = (y - PY[p]) * inv, d2 = dx * dx + dy * dy + EPS2;
+      const f = PQ[p] / (d2 * Math.sqrt(d2)); bx += dx * f; by += dy * f;
+    }
+    const B = Math.sqrt(bx * bx + by * by), sd = B / (B + 0.4);
+    if (B > 1e-6) {
+      let d = Math.atan2(by, bx) + foff[i] * (1 - sd) - fa[i];
+      d -= PI * Math.round(d / PI);
+      const rate = snap ? 1 : Math.min(1, flag[i] * Math.sqrt(B / (B + bh)) * k);
+      fa[i] += d * rate; mot += Math.abs(d) * rate;
+    }
+    let tvx = 0, tvy = 0;
+    if (creep && B > 1.6 && B < fstop[i]) {
+      let gx = 0, gy = 0;
+      for (let p = 0; p < np; p++) {
+        const dx = (x - PX[p]) * inv, dy = (y - PY[p]) * inv, d2 = dx * dx + dy * dy + EPS2;
+        const f = PQ[p] / (d2 * Math.sqrt(d2)), c = 3 * (dx * bx + dy * by) / d2;
+        gx += f * (bx - c * dx); gy += f * (by - c * dy);
+      }
+      const gl = Math.sqrt(gx * gx + gy * gy);
+      if (gl > gmin) { const sp = Math.min(2.3, 0.35 + (gl - gmin) * 0.012) * u / gl; tvx = gx * sp; tvy = gy * sp; }
+    }
+    const vx = fvx[i] += (tvx - fvx[i]) * ease, vy = fvy[i] += (tvy - fvy[i]) * ease;
+    if (vx * vx + vy * vy > 1e-4) { x += vx * kc; y += vy * kc; mot += 0.02; }
+    x = x < 3 ? 3 : x > xmax ? xmax : x; y = y < 3 ? 3 : y > ymax ? ymax : y;
+    fx[i] = x; fy[i] = y;
+    const sq = sd + foff[i] * 0.9, b = (sq < 0.1 ? 0 : sq < 0.5 ? 2 : 4) + fgv[i];
+    const l = flen[i] * (0.5 + 0.46 * sd) * (fage[i] < 1 ? fage[i] : 1) * lenK;
+    const hx = Math.cos(fa[i]) * l, hy = Math.sin(fa[i]) * l, s = seg[b], n = cnt[b]++ * 4;
+    s[n] = x - hx; s[n + 1] = y - hy; s[n + 2] = x + hx; s[n + 3] = y + hy;
+  }
+  snapAll = false;
+  motion = mot / N;
+  if (motion > 0.0006) wake(12);
+}
+
+/* ------------------------------------------------------------------ field lines & null points */
+const lines = [];
+let showLines = false, reveal = 0;
+const nulls = [];
+function traceLines() {
+  lines.length = 0;
+  const SE = 12, r0 = 0.15, h = 0.05, maxS = 900, ux = pw / U, uy = ph / U;
+  const arr = []; for (let p = 0; p < np; p++) arr.push([]);
+  const run = (p, ang, dir) => {
+    let x = PX[p] / U + Math.cos(ang) * r0, y = PY[p] / U + Math.sin(ang) * r0;
+    const pts = [x * U, y * U];
+    for (let s = 0; s < maxS; s++) {
+      field(x * U, y * U); let n = Math.hypot(BX, BY); if (n < 1e-7) break;
+      const mx = x + dir * BX / n * h * 0.5, my = y + dir * BY / n * h * 0.5;
+      field(mx * U, my * U); n = Math.hypot(BX, BY); if (n < 1e-7) break;
+      x += dir * BX / n * h; y += dir * BY / n * h; pts.push(x * U, y * U);
+      if (x < -0.7 || y < -0.7 || x > ux + 0.7 || y > uy + 0.7) break;
+      let hit = false;
+      for (let q = 0; q < np; q++) {
+        if (PQ[q] * dir >= 0) continue;
+        const ex = x - PX[q] / U, ey = y - PY[q] / U;
+        if (ex * ex + ey * ey < 0.019) { arr[q].push(Math.atan2(ey, ex)); pts.push(PX[q] + ex * U * 0.6, PY[q] + ey * U * 0.6); hit = true; break; }
+      }
+      if (hit) break;
+    }
+    if (pts.length < 8) return;
+    if (dir < 0) { const o = []; for (let i = pts.length - 2; i >= 0; i -= 2) o.push(pts[i], pts[i + 1]); lines.push(o); } else lines.push(pts);
+  };
+  const sibling = p => { for (let q = 0; q < np; q++) if (q !== p && PM[q] === PM[p] && objs[PM[p]].kind === 'bar') return q; return -1; };
+  for (let pass = 0; pass < 2; pass++) for (let p = 0; p < np; p++) {
+    if (Math.abs(PQ[p]) < 0.25 || (pass === 0) !== (PQ[p] > 0)) continue;
+    const sb = sibling(p), sa = sb < 0 ? 0 : Math.atan2(PY[sb] - PY[p], PX[sb] - PX[p]);
+    for (let s = 0; s < SE; s++) {
+      const ang = (sb < 0 ? 0 : sa) + (s + 0.5) * TAU / SE;
+      if (sb >= 0 && Math.abs(wrap(ang - sa)) < 0.3) continue;
+      if (pass === 1 && arr[p].some(a => Math.abs(wrap(a - ang)) < TAU / SE * 0.62)) continue;
+      run(p, ang, pass ? -1 : 1);
+    }
+  }
+}
+function findNulls() {
+  const found = [];
+  for (let p = 0; p < np; p++) for (let q = p + 1; q < np; q++) {
+    if (PM[p] === PM[q] || PQ[p] * PQ[q] <= 0 || Math.abs(PQ[p]) < 0.5 || Math.abs(PQ[q]) < 0.5) continue;
+    const d = Math.hypot(PX[p] - PX[q], PY[p] - PY[q]) / U; if (d < 0.5 || d > 3) continue;
+    let bx = 0, by = 0, bm = 1e9;
+    for (let s = 3; s <= 17; s++) {
+      const t = s / 20, x = PX[p] + (PX[q] - PX[p]) * t, y = PY[p] + (PY[q] - PY[p]) * t;
+      field(x, y); const b = Math.hypot(BX, BY); if (b < bm) { bm = b; bx = x; by = y; }
+    }
+    let st = d * U / 20;
+    for (let it = 0; it < 26; it++) {
+      let better = false;
+      for (let a = 0; a < 4; a++) {
+        const x = bx + (a === 0 ? st : a === 1 ? -st : 0), y = by + (a === 2 ? st : a === 3 ? -st : 0);
+        field(x, y); const b = Math.hypot(BX, BY); if (b < bm) { bm = b; bx = x; by = y; better = true; }
+      }
+      if (!better) st *= 0.5;
+    }
+    const ref = 1 / (d * d / 4 + EPS2);
+    const mxp = (PX[p] + PX[q]) / 2, myp = (PY[p] + PY[q]) / 2;
+    if (Math.hypot(bx - mxp, by - myp) > d * U * 0.3) continue;
+    if (bm < ref * 0.04 && bx > 20 && by > 20 && bx < pw - 20 && by < ph - 20) found.push([bx, by, d]);
+  }
+  found.sort((a, b) => a[2] - b[2]); found.length = Math.min(found.length, 2);
+  for (const n of nulls) n.live = false;
+  for (const f of found) {
+    let m = null;
+    for (const n of nulls) if (!n.live && Math.hypot(n.x - f[0], n.y - f[1]) < 70 * u) { m = n; break; }
+    if (!m) { m = { x: f[0], y: f[1], a: 0, live: true }; nulls.push(m); }
+    m.x = f[0]; m.y = f[1]; m.live = true;
+  }
+}
+
+/* ------------------------------------------------------------------ drawing */
+function rr(c, x, y, w, h, r) {
+  c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r);
+  c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath();
+}
+function shadowOn(c, lift, s) {
+  c.shadowColor = 'rgba(30,32,42,' + (0.34 - 0.1 * lift) + ')';
+  c.shadowBlur = (5 + 17 * lift) * dpr * s; c.shadowOffsetX = (1.5 + 6 * lift) * dpr * s; c.shadowOffsetY = (2.5 + 11 * lift) * dpr * s;
+}
+function shadowOff(c) { c.shadowColor = 'transparent'; c.shadowBlur = 0; c.shadowOffsetX = c.shadowOffsetY = 0; }
+function stamp(c, ch, x, y, size) {
+  c.font = '700 ' + size + 'px ' + SANS; c.textAlign = 'center'; c.textBaseline = 'middle';
+  c.fillStyle = 'rgba(0,0,0,.22)'; c.fillText(ch, x + 0.6, y + size * 0.07 + 0.8);
+  c.fillStyle = 'rgba(255,255,255,.96)'; c.fillText(ch, x, y + size * 0.05);
+}
+function drawMagnet(c, m) {
+  const fs = flipScale(m), lift = m.lift + (m.flip >= 0 ? Math.sin(PI * m.flip) * 0.8 : 0);
+  const sc = m.scale * (1 + 0.04 * lift);
+  c.save(); c.translate(m.x, m.y - lift * 2.5); c.rotate(m.a);
+  const cN = RED, cS = BLUE;
+  if (m.kind === 'bar') {
+    c.scale(sc * fs, sc);
+    const L = BAR_L * u, T = BAR_T * u, r = 4 * u;
+    shadowOn(c, lift, m.scale); rr(c, -L / 2, -T / 2, L, T, r); c.fillStyle = m.pol > 0 ? cS : cN; c.fill(); shadowOff(c);
+    c.save(); rr(c, -L / 2, -T / 2, L, T, r); c.clip();
+    c.fillStyle = m.pol > 0 ? cN : cS; c.fillRect(0, -T / 2, L / 2, T);
+    const g = c.createLinearGradient(0, -T / 2, 0, T / 2);
+    g.addColorStop(0, 'rgba(255,255,255,.34)'); g.addColorStop(0.16, 'rgba(255,255,255,.12)'); g.addColorStop(0.5, 'rgba(255,255,255,0)');
+    g.addColorStop(0.82, 'rgba(0,0,0,.1)'); g.addColorStop(1, 'rgba(0,0,0,.3)');
+    c.fillStyle = g; c.fillRect(-L / 2, -T / 2, L, T);
+    c.fillStyle = 'rgba(0,0,0,.28)'; c.fillRect(-0.75, -T / 2, 1.5, T);
+    c.fillStyle = 'rgba(255,255,255,.2)'; c.fillRect(0.75, -T / 2, 1, T);
+    c.restore();
+    rr(c, -L / 2 + 0.5, -T / 2 + 0.5, L - 1, T - 1, r); c.strokeStyle = 'rgba(0,0,0,.28)'; c.lineWidth = 1; c.stroke();
+    stamp(c, m.pol > 0 ? 'N' : 'S', L * 0.16, 0, T * 0.6); stamp(c, m.pol > 0 ? 'S' : 'N', -L * 0.16, 0, T * 0.6);
+  } else if (m.kind === 'shoe') {
+    c.scale(sc, sc * fs);
+    const A = SH_A * u, g = SH_G * u, T = SH_T * u;
+    const up = () => { c.beginPath(); c.moveTo(A, -g); c.lineTo(0, -g); c.arc(0, 0, g, -PI / 2, PI, true); };
+    const dn = () => { c.beginPath(); c.moveTo(-g, 0); c.arc(0, 0, g, PI, PI / 2, true); c.lineTo(A, g); };
+    const all = () => { c.beginPath(); c.moveTo(A, -g); c.lineTo(0, -g); c.arc(0, 0, g, -PI / 2, PI / 2, true); c.lineTo(A, g); };
+    c.lineCap = 'butt'; c.lineJoin = 'round';
+    shadowOn(c, lift, m.scale); all(); c.lineWidth = T; c.strokeStyle = m.pol > 0 ? cN : cS; c.stroke(); shadowOff(c);
+    dn(); c.strokeStyle = m.pol > 0 ? cS : cN; c.stroke();
+    up(); c.strokeStyle = m.pol > 0 ? cN : cS; c.stroke();
+    all(); c.lineWidth = T - 1; c.strokeStyle = 'rgba(0,0,0,.2)'; c.stroke();
+    c.save(); c.translate(-0.06 * T, -0.08 * T);
+    up(); c.lineWidth = T * 0.88; c.strokeStyle = m.pol > 0 ? cN : cS; c.stroke();
+    dn(); c.strokeStyle = m.pol > 0 ? cS : cN; c.stroke();
+    all(); c.lineWidth = T * 0.5; c.strokeStyle = 'rgba(255,255,255,.1)'; c.stroke();
+    c.lineWidth = T * 0.16; c.strokeStyle = 'rgba(255,255,255,.2)'; c.stroke();
+    c.restore();
+    c.fillStyle = 'rgba(0,0,0,.3)'; c.fillRect(-g - T / 2, -0.75, T, 1.5);
+    stamp(c, m.pol > 0 ? 'N' : 'S', A * 0.6, -g, T * 0.66); stamp(c, m.pol > 0 ? 'S' : 'N', A * 0.6, g, T * 0.66);
+  } else {
+    c.scale(sc * fs, sc);
+    const R = DISC_R * u;
+    shadowOn(c, lift, m.scale); c.beginPath(); c.arc(0, 0, R, 0, TAU); c.fillStyle = m.pol > 0 ? cN : cS; c.fill(); shadowOff(c);
+    c.rotate(-m.a);
+    const g = c.createRadialGradient(-R * 0.35, -R * 0.4, R * 0.1, 0, 0, R);
+    g.addColorStop(0, 'rgba(255,255,255,.3)'); g.addColorStop(0.55, 'rgba(255,255,255,0)'); g.addColorStop(1, 'rgba(0,0,0,.28)');
+    c.fillStyle = g; c.beginPath(); c.arc(0, 0, R, 0, TAU); c.fill();
+    c.beginPath(); c.arc(0, 0, R * 0.72, 0, TAU); c.strokeStyle = 'rgba(255,255,255,.34)'; c.lineWidth = 1; c.stroke();
+    c.beginPath(); c.arc(0, 0, R - 0.5, 0, TAU); c.strokeStyle = 'rgba(0,0,0,.28)'; c.stroke();
+    stamp(c, m.pol > 0 ? 'N' : 'S', 0, 0, R * 0.9);
+  }
+  c.restore();
+}
+function drawCompass(c, m) {
+  const R = COMP_R * u, sc = m.scale * (1 + 0.05 * m.lift);
+  if (sc <= 0.01) return;
+  c.save(); c.translate(m.x, m.y - m.lift * 3); c.scale(sc, sc);
+  shadowOn(c, 0.35 + m.lift * 0.65, m.scale);
+  let g = c.createLinearGradient(-R, -R, R, R);
+  g.addColorStop(0, '#F4F4F1'); g.addColorStop(0.45, '#9B9B98'); g.addColorStop(0.62, '#C9C9C5'); g.addColorStop(1, '#77777A');
+  c.beginPath(); c.arc(0, 0, R, 0, TAU); c.fillStyle = g; c.fill(); shadowOff(c);
+  c.beginPath(); c.arc(0, 0, R * 0.86, 0, TAU); c.fillStyle = '#F8F7F3'; c.fill();
+  c.strokeStyle = 'rgba(26,26,26,.35)'; c.lineWidth = 1; c.stroke();
+  g = c.createRadialGradient(0, 0, R * 0.6, 0, 0, R * 0.86);
+  g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(40,40,50,.16)');
+  c.fillStyle = g; c.beginPath(); c.arc(0, 0, R * 0.86, 0, TAU); c.fill();
+  c.strokeStyle = 'rgba(26,26,26,.75)'; c.beginPath();
+  for (let i = 0; i < 32; i++) {
+    const a = i * TAU / 32, r1 = R * 0.8, r2 = R * (i % 8 === 0 ? 0.64 : i % 4 === 0 ? 0.7 : 0.75);
+    c.moveTo(Math.cos(a) * r1, Math.sin(a) * r1); c.lineTo(Math.cos(a) * r2, Math.sin(a) * r2);
+  }
+  c.lineWidth = Math.max(0.7, 0.9 * u); c.stroke();
+  c.font = '700 ' + (R * 0.25) + 'px "Courier New",Courier,monospace'; c.textAlign = 'center'; c.textBaseline = 'middle';
+  c.fillStyle = RED; c.fillText('N', 0, -R * 0.46);
+  c.fillStyle = 'rgba(26,26,26,.7)'; c.fillText('S', 0, R * 0.48); c.fillText('E', R * 0.47, 0.5); c.fillText('W', -R * 0.47, 0.5);
+  c.save(); c.rotate(m.na);
+  c.shadowColor = 'rgba(26,26,26,.3)'; c.shadowBlur = 3 * dpr; c.shadowOffsetY = 2 * dpr;
+  c.beginPath(); c.moveTo(R * 0.7, 0); c.lineTo(0, R * 0.105); c.lineTo(0, -R * 0.105); c.closePath(); c.fillStyle = RED; c.fill();
+  c.beginPath(); c.moveTo(-R * 0.7, 0); c.lineTo(0, R * 0.105); c.lineTo(0, -R * 0.105); c.closePath(); c.fillStyle = '#FFFFFF'; c.fill();
+  shadowOff(c); c.strokeStyle = 'rgba(26,26,26,.7)'; c.lineWidth = 0.8; c.stroke();
+  c.beginPath(); c.moveTo(R * 0.7, 0); c.lineTo(0, 0); c.lineTo(0, -R * 0.105); c.closePath(); c.fillStyle = 'rgba(255,255,255,.2)'; c.fill();
+  c.restore();
+  c.beginPath(); c.arc(0, 0, R * 0.075, 0, TAU); c.fillStyle = INK; c.fill();
+  c.beginPath(); c.arc(-R * 0.02, -R * 0.02, R * 0.028, 0, TAU); c.fillStyle = 'rgba(255,255,255,.7)'; c.fill();
+  c.beginPath(); c.arc(0, 0, R * 0.7, -2.7, -1.5); c.strokeStyle = 'rgba(255,255,255,.75)'; c.lineWidth = R * 0.07; c.lineCap = 'round'; c.stroke();
+  c.beginPath(); c.arc(0, 0, R - 0.5, 0, TAU); c.strokeStyle = 'rgba(26,26,26,.4)'; c.lineWidth = 1; c.lineCap = 'butt'; c.stroke();
+  c.restore();
+}
+function drawShaker(c, x, y, t) {
+  const R = 27 * u;
+  c.save(); c.translate(x, y - 8); c.rotate(Math.sin(t * 0.021) * 0.2);
+  shadowOn(c, 1, 1); c.beginPath(); c.arc(0, 0, R, 0, TAU);
+  const g = c.createLinearGradient(-R, -R, R, R); g.addColorStop(0, '#F2F2EF'); g.addColorStop(0.5, '#A4A4A1'); g.addColorStop(1, '#7E7E80');
+  c.fillStyle = g; c.fill(); shadowOff(c);
+  c.beginPath(); c.arc(0, 0, R * 0.78, 0, TAU); c.fillStyle = '#C6C6C2'; c.fill(); c.strokeStyle = 'rgba(26,26,26,.3)'; c.lineWidth = 1; c.stroke();
+  c.fillStyle = INK;
+  for (let i = 0; i < 7; i++) { const a = i * TAU / 6, r = i === 6 ? 0 : R * 0.44; c.beginPath(); c.arc(Math.cos(a) * r, Math.sin(a) * r, R * 0.085, 0, TAU); c.fill(); }
+  c.beginPath(); c.arc(0, 0, R * 0.9, -2.7, -1.6); c.strokeStyle = 'rgba(255,255,255,.8)'; c.lineWidth = R * 0.08; c.lineCap = 'round'; c.stroke();
+  c.restore();
+}
+function handlePos(m) {
+  if (m.kind === 'bar') { const d = (BAR_L / 2) * u + 30; return { x: m.x + Math.cos(m.a) * d, y: m.y + Math.sin(m.a) * d, a: m.a }; }
+  if (m.kind === 'shoe') { const d = (SH_G + SH_T / 2) * u + 30; return { x: m.x - Math.cos(m.a) * d, y: m.y - Math.sin(m.a) * d, a: m.a + PI }; }
+  return null;
+}
+function handleObj() {
+  const o = (drag && drag.obj) || hoverObj || focusObj || selObj;
+  return o && o.out && !o.tw && o.kind !== 'compass' && o.kind !== 'disc' ? o : null;
+}
+let handleA = 0;
+function drawOverlays(c) {
+  const ho = handleObj();
+  handleA += ((ho ? 1 : 0) - handleA) * 0.22;
+  if (ho && handleA > 0.02) {
+    const h = handlePos(ho), ca = Math.cos(h.a), sa = Math.sin(h.a);
+    c.save(); c.globalAlpha = handleA;
+    c.setLineDash([2, 3]); c.strokeStyle = 'rgba(' + GRAPH + ',.9)'; c.lineWidth = 1;
+    c.beginPath(); c.moveTo(h.x - ca * 26, h.y - sa * 26); c.lineTo(h.x - ca * 10, h.y - sa * 10); c.stroke(); c.setLineDash([]);
+    shadowOn(c, 0.3, 1); c.beginPath(); c.arc(h.x, h.y, 9.5, 0, TAU); c.fillStyle = '#F8F7F3'; c.fill(); shadowOff(c);
+    c.strokeStyle = INK; c.lineWidth = 1.2; c.stroke();
+    c.translate(h.x, h.y); c.rotate(h.a);
+    c.beginPath(); c.arc(0, 0, 4.6, -2.2, 1.2); c.stroke();
+    c.beginPath(); c.moveTo(Math.cos(1.2) * 4.6 + 3.2, Math.sin(1.2) * 4.6 - 1.2); c.lineTo(Math.cos(1.2) * 4.6, Math.sin(1.2) * 4.6); c.lineTo(Math.cos(1.2) * 4.6 + 0.6, Math.sin(1.2) * 4.6 - 3.6); c.stroke();
+    c.restore();
+  }
+  if (focusObj && focusObj.out) {
+    const m = focusObj; c.save(); c.translate(m.x, m.y); c.rotate(m.kind === 'compass' ? 0 : m.a);
+    c.setLineDash([5, 4]); c.strokeStyle = 'rgba(' + PENCIL + ',1)'; c.lineWidth = 1.6;
+    if (m.kind === 'bar') { rr(c, -BAR_L * u / 2 - 7, -BAR_T * u / 2 - 7, BAR_L * u + 14, BAR_T * u + 14, 9); }
+    else if (m.kind === 'shoe') { const g = SH_G * u, T = SH_T * u; rr(c, -g - T / 2 - 7, -g - T / 2 - 7, g + T / 2 + SH_A * u + 14, 2 * g + T + 14, 12); }
+    else { c.beginPath(); c.arc(0, 0, (m.kind === 'disc' ? DISC_R : COMP_R) * u + 7, 0, TAU); }
+    c.stroke(); c.restore();
+  }
+}
+function drawLines(c) {
+  if (reveal <= 0.002 || !lines.length) return;
+  const e = reveal * reveal * (3 - 2 * reveal);
+  c.save(); c.beginPath(); c.rect(0, 0, pw, ph); c.clip(); c.lineJoin = 'round'; c.lineCap = 'round';
+  for (let pass = 0; pass < 2; pass++) {
+    c.beginPath();
+    for (const p of lines) {
+      const n = Math.max(2, Math.floor(p.length / 2 * e));
+      c.moveTo(p[0], p[1]);
+      for (let i = 1; i < n; i++) c.lineTo(p[i * 2], p[i * 2 + 1]);
+      if (pass) continue;
+      for (let i = 14; i < n - 3; i += 26) {
+        const x = p[i * 2], y = p[i * 2 + 1], a = Math.atan2(y - p[i * 2 - 3], x - p[i * 2 - 4]);
+        c.moveTo(x - Math.cos(a - 0.42) * 6.5, y - Math.sin(a - 0.42) * 6.5); c.lineTo(x, y);
+        c.lineTo(x - Math.cos(a + 0.42) * 6.5, y - Math.sin(a + 0.42) * 6.5);
+      }
+    }
+    c.strokeStyle = pass ? 'rgba(' + PENCIL + ',.14)' : 'rgba(' + PENCIL + ',.86)'; c.lineWidth = pass ? 2.6 : 1.05; c.stroke();
+  }
+  c.restore();
+}
+function drawNulls(c) {
+  for (let i = nulls.length - 1; i >= 0; i--) {
+    const n = nulls[i]; n.a += ((n.live ? 1 : 0) - n.a) * 0.12;
+    if (!n.live && n.a < 0.02) { nulls.splice(i, 1); continue; }
+    if (Math.abs((n.live ? 1 : 0) - n.a) > 0.01) wake(4);
+    const r = 15 * u + 3;
+    c.save(); c.globalAlpha = n.a * 0.95; c.translate(n.x, n.y);
+    c.strokeStyle = 'rgba(' + GRAPH + ',.95)'; c.lineWidth = 1.15; c.lineCap = 'round';
+    c.beginPath(); c.ellipse(0, 0, r, r * 0.93, -0.3, 0.3, 0.3 + TAU * Math.min(1, n.a * 1.15)); c.stroke();
+    c.beginPath(); c.ellipse(1, -0.5, r * 1.06, r * 0.98, 0.5, 2.2, 2.2 + 2.4 * n.a); c.globalAlpha = n.a * 0.5; c.stroke();
+    c.globalAlpha = n.a * 0.95;
+    const right = n.x < pw - 150, dx = right ? 1 : -1;
+    let vy = -1; for (const o of objs) if (hitObj(o, n.x + dx * (r + 60), n.y - r - 19, 14)) vy = 1;
+    c.beginPath(); c.moveTo(dx * r * 0.82, vy * r * 0.82); c.quadraticCurveTo(dx * (r + 12), vy * (r + 20), dx * (r + 26), vy * (r + 19)); c.stroke();
+    c.font = 'italic ' + Math.round(14 + 2 * u) + 'px "Bradley Hand","Segoe Print","Noteworthy",Georgia,serif';
+    c.fillStyle = 'rgba(' + GRAPH + ',1)'; c.textAlign = right ? 'left' : 'right'; c.textBaseline = 'middle';
+    c.lineJoin = 'round'; c.lineWidth = 6; c.strokeStyle = 'rgba(236,235,230,.9)'; c.strokeText('null point', dx * (r + 31), vy * (r + 19));
+    c.fillText('null point', dx * (r + 31), vy * (r + 19));
+    c.restore();
+  }
+}
+function drawTaps(c) {
+  for (const tp of taps) {
+    const a = Math.max(0, 0.5 - tp.r1 / 520);
+    if (a <= 0) continue;
+    c.beginPath(); c.arc(tp.x, tp.y, tp.r1, 0, TAU); c.strokeStyle = 'rgba(' + GRAPH + ',' + a + ')'; c.lineWidth = 1.2; c.stroke();
+    c.beginPath(); c.arc(tp.x, tp.y, tp.r1 * 0.62, 0, TAU); c.strokeStyle = 'rgba(' + GRAPH + ',' + a * 0.5 + ')'; c.stroke();
+  }
+}
+function draw(t) {
+  const c = ctx; c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H);
+  for (const m of objs) if (m.out && m.kind !== 'compass') drawMagnet(c, m);
+  c.lineCap = 'butt';
+  for (let b = 0; b < NB; b++) {
+    const n = cnt[b] * 4, s = seg[b]; if (!n) continue;
+    c.beginPath();
+    for (let i = 0; i < n; i += 4) { c.moveTo(s[i], s[i + 1]); c.lineTo(s[i + 2], s[i + 3]); }
+    c.strokeStyle = SHADE[b]; c.lineWidth = LW[b]; c.stroke();
+  }
+  drawLines(c); drawNulls(c); drawTaps(c);
+  const cp = byId.compass; if (cp.out) drawCompass(c, cp);
+  drawOverlays(c);
+  if (drag && drag.mode === 'shaker') drawShaker(c, drag.x, drag.y, t);
+}
+
+/* ------------------------------------------------------------------ per-frame object updates */
+function updateObjs(dt) {
+  const k = dt * 60, follow = reduce ? 1 : 1 - Math.pow(0.76, k);
+  for (const m of objs) {
+    if (!m.out) continue;
+    const dragging = drag && drag.obj === m && (drag.mode === 'move' || drag.mode === 'rot');
+    let liftT = dragging ? 1 : (hoverObj === m ? 0.2 : 0);
+    if (m.tw) {
+      const w = m.tw; w.t += dt;
+      const p = clamp((w.t - w.delay) / w.dur, 0, 1), e = w.ease(p);
+      m.x = m.tx = w.x0 + (w.x1 - w.x0) * e; m.y = m.ty = w.y0 + (w.y1 - w.y0) * e;
+      m.scale = w.s0 + (w.s1 - w.s0) * e;
+      if (w.lift) liftT = Math.max(liftT, 1 - p * p);
+      if (p >= 1) { m.tw = null; if (w.done) w.done(); }
+      wake(20);
+    } else {
+      const dx = m.tx - m.x, dy = m.ty - m.y;
+      if (Math.abs(dx) + Math.abs(dy) > 0.05) { m.x += dx * follow; m.y += dy * follow; wake(20); } else { m.x = m.tx; m.y = m.ty; }
+    }
+    const da = m.ta - m.a;
+    if (Math.abs(da) > 0.0006) { m.a += da * (reduce ? 1 : 1 - Math.pow(0.7, k)); wake(20); } else m.a = m.ta;
+    const dl = liftT - m.lift;
+    if (Math.abs(dl) > 0.004) { m.lift += dl * (1 - Math.pow(0.8, k)); wake(6); } else m.lift = liftT;
+    if (m.flip >= 0) {
+      const before = m.flip; m.flip += dt / 0.46;
+      if (before < 0.5 && m.flip >= 0.5) m.pol = -m.pol;
+      if (m.flip >= 1) m.flip = -1;
+      wake(30);
+    }
+    if (m.kind === 'compass') {
+      field(m.x, m.y); const B = Math.hypot(BX, BY);
+      if (B > 1e-6) {
+        const tgt = Math.atan2(BY, BX);
+        if (reduce) m.na = tgt;
+        else {
+          const str = Math.min(1, 0.12 + B * 9), ns = Math.ceil(dt / 0.017), h = dt / ns;
+          for (let q = 0; q < ns; q++) { m.nw += (130 * Math.sin(tgt - m.na) * str - 5.2 * m.nw) * h; m.na += m.nw * h; }
+          if (Math.abs(m.nw) > 0.01 || Math.abs(Math.sin(tgt - m.na)) > 0.002) wake(6);
+        }
+      }
+    }
+  }
+  for (let i = taps.length - 1; i >= 0; i--) {
+    const tp = taps[i]; tp.t += dt; tp.r0 = tp.r1; tp.r1 = tp.t * 2300;
+    if (tp.r0 > Math.hypot(pw, ph)) taps.splice(i, 1); else wake(4);
+  }
+  if (agit > 0.001) { agit *= Math.pow(0.975, k); wake(4); } else agit = 0;
+  const rt = showLines ? 1 : 0;
+  if (Math.abs(rt - reveal) > 0.001) { reveal = reduce ? rt : clamp(reveal + (rt ? 1 : -1.8) * dt / 0.9, 0, 1); wake(4); }
+  if (drag && drag.mode === 'shaker') { sprinkle(drag.x, drag.y + 4, Math.max(8, Math.round(N / 320))); hissBurst(0.35); wake(30); }
+}
+
+/* ------------------------------------------------------------------ loop */
+let awake = 0, raf = 0, last = 0, frameNo = 0, inFrame = false;
+function wake(n) { awake = Math.max(awake, n || 45); if (!raf && !inFrame && !document.hidden) { last = performance.now(); raf = requestAnimationFrame(frame); } }
+function frame(t) {
+  raf = 0; inFrame = true;
+  const dt = Math.min(0.25, Math.max(0.001, (t - last) / 1000)); last = t;
+  if (awake > 0) {
+    awake--; frameNo++;
+    buildPoles(); updateObjs(dt); buildPoles();
+    simulate(dt);
+    if (fieldDirty) { findNulls(); if (showLines || reveal > 0) traceLines(); fieldDirty = false; }
+    draw(t);
+    audioFrame();
+    if (frameNo % 8 === 0) writeReadout();
+  }
+  inFrame = false;
+  if (awake > 0 && !document.hidden) raf = requestAnimationFrame(frame);
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { if (raf) cancelAnimationFrame(raf); raf = 0; if (hiss) hiss.gain.setTargetAtTime(0, AC.currentTime, 0.03); }
+  else wake(30);
+});
+function writeReadout() {
+  const c = byId.compass; field(c.x, c.y);
+  const b = Math.hypot(BX, BY), deg = Math.round(((Math.atan2(BY, BX) * 180 / PI) + 450) % 360);
+  readout.innerHTML = 'Filings <em>' + N.toLocaleString('en-US') + '</em><i>/</i>Poles <em>' + np + '</em><i>/</i>Field at compass <em>' +
+    (b * 12).toFixed(1) + ' mT</em><i>/</i>Bearing <em>' + String(deg).padStart(3, '0') + '°</em>';
+}
+
+/* ------------------------------------------------------------------ pointer input */
+const ptrs = new Map();
+let drag = null, twist = null, lastTap = null;
+function local(m, x, y) { const c = Math.cos(m.a), s = Math.sin(m.a), dx = x - m.x, dy = y - m.y; return [c * dx + s * dy, -s * dx + c * dy]; }
+function hitObj(m, x, y, pad) {
+  if (!m.out || m.tw) return false;
+  if (m.kind === 'compass') return Math.hypot(x - m.x, y - m.y) < COMP_R * u + pad;
+  if (m.kind === 'disc') return Math.hypot(x - m.x, y - m.y) < DISC_R * u + pad;
+  const l = local(m, x, y);
+  if (m.kind === 'bar') return Math.abs(l[0]) < BAR_L * u / 2 + pad && Math.abs(l[1]) < BAR_T * u / 2 + pad;
+  const g = SH_G * u, T = SH_T * u;
+  return l[0] > -g - T / 2 - pad && l[0] < SH_A * u + pad && Math.abs(l[1]) < g + T / 2 + pad;
+}
+function pick(x, y, coarse) {
+  const pad = coarse ? 12 : 3, ho = handleObj();
+  if (ho) { const h = handlePos(ho); if (Math.hypot(x - h.x, y - h.y) < (coarse ? 24 : 15)) return { obj: ho, part: 'handle' }; }
+  for (let i = objs.length - 1; i >= 0; i--) if (hitObj(objs[i], x, y, pad)) return { obj: objs[i], part: 'body' };
+  return null;
+}
+function inTray(x, y) { return sideTray ? x > pw : y > ph; }
+function setCursor(v) { if (stage.style.cursor !== v) stage.style.cursor = v; }
+
+stage.addEventListener('pointerdown', e => {
+  if (e.button > 0 || e.target.closest('.sw')) return;
+  const x = e.clientX, y = e.clientY, tool = e.target.closest('.tool');
+  ptrs.set(e.pointerId, { x, y });
+  if (drag && drag.mode === 'move' && drag.obj.kind !== 'compass' && ptrs.size === 2) {
+    const p0 = ptrs.get(drag.id);
+    twist = { id: e.pointerId, pa: Math.atan2(y - p0.y, x - p0.x) }; drag.moved = true;
+    try { stage.setPointerCapture(e.pointerId); } catch (_) {}
+    return;
+  }
+  if (drag) return;
+  try { stage.setPointerCapture(e.pointerId); } catch (_) {}
+  const base = { id: e.pointerId, sx: x, sy: y, x, y, t0: performance.now(), moved: false, coarse: e.pointerType !== 'mouse' };
+  if (tool) { drag = Object.assign(base, { mode: 'pending', kind: tool.dataset.kind }); return; }
+  const h = pick(x, y, base.coarse);
+  if (!h) { drag = Object.assign(base, { mode: 'tap' }); return; }
+  const m = h.obj; selObj = m; toFront(m);
+  if (h.part === 'handle') { drag = Object.assign(base, { mode: 'rot', obj: m, pa: Math.atan2(y - m.y, x - m.x) }); }
+  else { drag = Object.assign(base, { mode: 'move', obj: m, ox: x - m.tx, oy: y - m.ty }); }
+  setCursor('grabbing'); wake();
+});
+stage.addEventListener('pointermove', e => {
+  const x = e.clientX, y = e.clientY;
+  if (ptrs.has(e.pointerId)) { const p = ptrs.get(e.pointerId); p.x = x; p.y = y; }
+  if (!drag) {
+    if (e.pointerType === 'mouse') {
+      const h = e.target.closest('#tray') ? null : pick(x, y, false);
+      const o = h ? h.obj : null;
+      if (o !== hoverObj) { hoverObj = o; wake(); }
+      setCursor(h ? 'grab' : '');
+    }
+    return;
+  }
+  if (twist && (e.pointerId === twist.id || e.pointerId === drag.id) && ptrs.has(twist.id) && ptrs.has(drag.id)) {
+    const p0 = ptrs.get(drag.id), p1 = ptrs.get(twist.id), a = Math.atan2(p1.y - p0.y, p1.x - p0.x);
+    drag.obj.ta += wrap(a - twist.pa); twist.pa = a; wake();
+  }
+  if (e.pointerId !== drag.id) return;
+  drag.x = x; drag.y = y;
+  if (!drag.moved && Math.hypot(x - drag.sx, y - drag.sy) > (drag.coarse ? 9 : 5)) drag.moved = true;
+  if (drag.mode === 'pending' && drag.moved) {
+    if (drag.kind === 'shaker') { drag.mode = 'shaker'; setCursor('grabbing'); }
+    else {
+      const o = byId[drag.kind];
+      if (!o.out) { const h = homeOf(o.id); setOut(o, true); o.a = o.ta = h.a; o.flip = -1; o.scale = 1; o.x = x; o.y = y; }
+      o.tw = null; o.scale = 1; toFront(o); selObj = o;
+      drag.mode = 'move'; drag.obj = o; drag.ox = 0; drag.oy = 0; setCursor('grabbing');
+    }
+  }
+  if (drag.mode === 'move') { drag.obj.tx = clamp(x - drag.ox, 8, W - 8); drag.obj.ty = clamp(y - drag.oy, 8, H - 8); }
+  else if (drag.mode === 'rot') {
+    const m = drag.obj, a = Math.atan2(y - m.y, x - m.x);
+    m.ta += wrap(a - drag.pa); drag.pa = a;
+  }
+  wake();
+});
+function endPointer(e) {
+  ptrs.delete(e.pointerId);
+  if (twist && e.pointerId === twist.id) { twist = null; return; }
+  if (!drag || e.pointerId !== drag.id) return;
+  const d = drag, now = performance.now(); drag = null; twist = null; setCursor('');
+  if (e.type === 'pointercancel') { if (d.obj) settle(d.obj); wake(); return; }
+  if (d.mode === 'pending') toggleTool(d.kind, false);
+  else if (d.mode === 'tap') { if (!d.moved && now - d.t0 < 500) { tapPaper(d.sx, d.sy); selObj = null; } }
+  else if (d.mode === 'move') {
+    const m = d.obj;
+    if (!d.moved) {
+      if (lastTap && lastTap.obj === m && now - lastTap.t < 360) { flipObj(m); lastTap = null; }
+      else lastTap = { obj: m, t: now };
+    } else settle(m);
+  }
+  wake();
+}
+function settle(m) {
+  if (inTray(m.tx, m.ty)) {
+    if (m.returnable) returnToTray(m);
+    else { m.tx = clamp(m.tx, 40, pw - 50 * u); m.ty = clamp(m.ty, 40, ph - 50 * u); }
+  }
+}
+stage.addEventListener('pointerup', endPointer);
+stage.addEventListener('pointercancel', endPointer);
+stage.addEventListener('pointerleave', () => { if (!drag && hoverObj) { hoverObj = null; wake(); } });
+stage.addEventListener('wheel', e => {
+  const o = (drag && drag.obj) || hoverObj || selObj;
+  if (!o || !o.out || o.kind === 'compass') return;
+  e.preventDefault();
+  o.ta += clamp(e.deltaY * (e.deltaMode ? 0.09 : 0.0032), -0.5, 0.5); wake();
+}, { passive: false });
+stage.addEventListener('contextmenu', e => e.preventDefault());
+
+/* ------------------------------------------------------------------ keyboard */
+document.querySelectorAll('.tool').forEach(t => t.addEventListener('click', e => { if (e.detail === 0) toggleTool(t.dataset.kind, true); }));
+function objKey(o, e) {
+  const step = (e.shiftKey ? 32 : 10), key = e.key.toLowerCase();
+  let used = true;
+  if (key === 'arrowleft') o.tx -= step; else if (key === 'arrowright') o.tx += step;
+  else if (key === 'arrowup') o.ty -= step; else if (key === 'arrowdown') o.ty += step;
+  else if (key === 'r' && o.kind !== 'compass') o.ta += (e.shiftKey ? -1 : 1) * PI / 12;
+  else if (key === 'f') flipObj(o);
+  else if ((key === 'delete' || key === 'backspace') && o.returnable) returnToTray(o);
+  else used = false;
+  if (used) { o.tx = clamp(o.tx, 20, pw - 20); o.ty = clamp(o.ty, 20, ph - 20); selObj = o; e.preventDefault(); e.stopPropagation(); wake(); }
+}
+window.addEventListener('keydown', e => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const key = e.key.toLowerCase(), o = (drag && drag.obj) || focusObj || hoverObj || selObj;
+  if ((key === 'q' || key === 'e') && o && o.out && o.kind !== 'compass') { o.ta += (key === 'q' ? -1 : 1) * PI / 24; wake(); }
+  else if (key === 'f' && o && o.out && !focusObj) flipObj(o);
+  else if (key === 't') tapPaper(pw / 2, ph / 2);
+  else if (key === 'l') toggleLines();
+});
+
+/* ------------------------------------------------------------------ switches */
+const swLines = $('#swLines'), swSound = $('#swSound');
+function toggleLines() {
+  showLines = !showLines; swLines.setAttribute('aria-pressed', showLines ? 'true' : 'false');
+  if (showLines) { fieldDirty = true; reveal = reduce ? 1 : 0; }
+  click(0.35); wake(90);
+}
+swLines.addEventListener('click', toggleLines);
+$('#swTap').addEventListener('click', () => tapPaper(pw / 2, ph / 2));
+
+/* ------------------------------------------------------------------ sound (off until switched on) */
+let AC = null, hiss = null, master = null, noiseBuf = null, soundOn = false, burst = 0;
+swSound.addEventListener('click', () => {
+  soundOn = !soundOn; swSound.setAttribute('aria-pressed', soundOn ? 'true' : 'false');
+  if (soundOn && !AC) {
+    const Ctor = window.AudioContext || window.webkitAudioContext;
+    if (!Ctor) { soundOn = false; swSound.setAttribute('aria-pressed', 'false'); return; }
+    AC = new Ctor();
+    noiseBuf = AC.createBuffer(1, AC.sampleRate * 2, AC.sampleRate);
+    const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    master = AC.createGain(); master.gain.value = 0.7; master.connect(AC.destination);
+    const src = AC.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
+    const bp = AC.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 3400; bp.Q.value = 0.6;
+    const hp = AC.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1500;
+    hiss = AC.createGain(); hiss.gain.value = 0;
+    src.connect(bp); bp.connect(hp); hp.connect(hiss); hiss.connect(master); src.start();
+  }
+  if (AC) { if (soundOn) AC.resume(); master.gain.setTargetAtTime(soundOn ? 0.7 : 0, AC.currentTime, 0.04); }
+  click(0.5); wake(10);
+});
+function audioFrame() {
+  if (!AC || !soundOn) return;
+  burst *= 0.9;
+  const g = awake > 1 ? Math.min(0.2, motion * 2.6 + burst * 0.2) : 0;
+  hiss.gain.setTargetAtTime(g, AC.currentTime, 0.06);
+}
+function hissBurst(v) { burst = Math.max(burst, v); }
+function click(v) {
+  if (!AC || !soundOn) return;
+  const t = AC.currentTime, s = AC.createBufferSource(), g = AC.createGain(), f = AC.createBiquadFilter();
+  s.buffer = noiseBuf; f.type = 'bandpass'; f.frequency.value = 2100; f.Q.value = 2.5;
+  g.gain.setValueAtTime(0.5 * v, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.045);
+  s.connect(f); f.connect(g); g.connect(master); s.start(t, Math.random(), 0.06);
+}
+function thump() {
+  if (!AC || !soundOn) return;
+  const t = AC.currentTime, o = AC.createOscillator(), g = AC.createGain();
+  o.frequency.setValueAtTime(170, t); o.frequency.exponentialRampToValueAtTime(58, t + 0.11);
+  g.gain.setValueAtTime(0.6, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+  o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.22);
+  click(0.9); hissBurst(1);
+}
+
+/* ------------------------------------------------------------------ start */
+const onRM = () => { reduce = RMQ.matches; wake(60); };
+if (RMQ.addEventListener) RMQ.addEventListener('change', onRM); else if (RMQ.addListener) RMQ.addListener(onRM);
+let rz = 0;
+window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(layout, 60); });
+layout();
+entrance();
+writeReadout();
+wake(240);
+})();
+</script>
+</body>
+</html>

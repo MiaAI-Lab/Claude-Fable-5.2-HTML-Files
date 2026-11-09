@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumen — Municipal Power Board, Pop. 2,140</title>
+<style>
+:root{--paper:#F6F1EA;--pink:#F9C5D1;--aqua:#A8DADC;--steel:#457B9D;--sun:#FFD166;--ink:#2B2D42;--card:#FDFBF7;--main:#B4B0BA;
+  --spring:cubic-bezier(.3,1.6,.5,1);--out:cubic-bezier(.2,.8,.2,1);
+  --sans:"Avenir Next",Futura,"Century Gothic","Trebuchet MS",system-ui,sans-serif}
+*{box-sizing:border-box}
+html{background:var(--paper)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3,p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;box-shadow:0 0 0 2px var(--ink)}
+.wrap{max-width:1400px;margin:0 auto;padding:18px 22px 40px}
+.lab{font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(43,45,66,.72)}
+/* header */
+.top{display:flex;align-items:center;gap:26px;flex-wrap:wrap;padding-bottom:14px}
+.brand{display:flex;align-items:center;gap:14px;margin-right:auto}
+.brand svg{width:50px;height:58px;flex:none}
+.brand h1{font-size:40px;line-height:.9;font-weight:800;letter-spacing:-.02em}
+.brand p{margin-top:6px}
+.quick{display:flex;gap:26px}
+.quick div b{display:block;font-size:24px;font-weight:800;line-height:1.1;white-space:nowrap}
+.quick div b small{font-size:12px;font-weight:700;margin-left:3px;opacity:.7}
+.clockbox{text-align:right;border-left:1.5px solid var(--ink);padding-left:24px}
+.clockbox b{display:block;font-size:44px;font-weight:800;line-height:.95;letter-spacing:-.01em}
+/* layout */
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px}
+.panel{background:var(--card);border:1.5px solid var(--ink);border-radius:14px;padding:14px 16px;position:relative;min-width:0}
+.sh-p{box-shadow:5px 5px 0 var(--pink)}.sh-a{box-shadow:5px 5px 0 var(--aqua)}.sh-y{box-shadow:5px 5px 0 var(--sun)}.sh-s{box-shadow:5px 5px 0 var(--steel)}
+.panel>.lab{display:block;margin-bottom:6px}
+.board{padding:0;overflow:hidden;background:var(--paper);box-shadow:5px 5px 0 var(--steel)}
+#town{display:block;width:100%;height:auto;isolation:isolate;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.side{display:grid;gap:18px;grid-template-rows:auto auto auto;align-content:start}
+.full{grid-column:1/-1}
+/* town svg */
+.f{stroke:var(--ink);stroke-width:.8;stroke-linejoin:round}
+.gnd *{vector-effect:non-scaling-stroke}
+.itx{font-family:var(--sans);font-weight:800;fill:var(--ink);letter-spacing:.14em}
+.b{cursor:pointer;outline:none}
+.b,.lg,.deco{transform-box:fill-box;transform-origin:50% 100%;transition:transform .5s var(--spring)}
+.b.sel,.lg.sel{transform:translateY(-6px)}
+.b:hover .f{stroke-width:1.25}
+.fp{fill:none;stroke:var(--sun);stroke-width:3;stroke-linejoin:round;opacity:0;transition:opacity .25s}
+.b.sel .fp,.b:focus-visible .fp{opacity:1}
+.b:focus-visible .f,.b.sel .f{stroke-width:1.5}
+.intro .b,.intro .deco{animation:pop .66s var(--spring) backwards;animation-delay:var(--d)}
+@keyframes pop{from{transform:translateY(10px) scale(.55,0);opacity:0}25%{opacity:1}to{transform:none;opacity:1}}
+.w{fill:#DDF0F1;stroke:var(--ink);stroke-width:.6}
+.lg{opacity:0;transition:opacity .7s var(--out),transform .5s var(--spring);pointer-events:none}
+.lg.on{opacity:1}
+.wl{fill:var(--sun);stroke:var(--sun);stroke-opacity:.38;stroke-width:2.6;stroke-linejoin:round}
+.lamp,.star{opacity:0;transition:opacity 1.2s}
+.dark .lamp{opacity:1}.dark .star{opacity:.9}
+.wire{fill:none;stroke:var(--ink);stroke-width:1;stroke-linejoin:round;stroke-linecap:round}
+.wire.trunk{stroke-width:1.6;animation:pulse 1.7s ease-in-out infinite}
+.wire.under{stroke-dasharray:2.5 2.5;stroke-width:1.1}
+@keyframes pulse{50%{stroke-width:2.6}}
+.intro .wire{stroke-dasharray:var(--l);stroke-dashoffset:var(--l);animation:string 1s var(--out) forwards;animation-delay:var(--d)}
+@keyframes string{to{stroke-dashoffset:0}}
+.intro .pole,.intro .fl,.intro .stub{opacity:0}
+.pole,.stub{transition:opacity .6s .2s}
+.pole{stroke:var(--ink);stroke-width:1;stroke-linecap:round}
+.stub{fill:none;stroke:var(--ink);stroke-width:.7;stroke-dasharray:1.6 1.8;opacity:.55}
+.stub.hl{stroke:var(--ink);stroke-width:1.6;opacity:1}
+.hlp{fill:none;stroke:var(--sun);stroke-width:6;stroke-linecap:round;stroke-linejoin:round;opacity:0;transition:opacity .3s}
+.hlp.hl{opacity:.95}
+.fl{fill:none;transition:opacity .8s}
+.fl .n{stroke:var(--ink)}.fl .y{stroke:var(--sun)}
+.arr{fill:var(--sun);stroke:var(--ink);stroke-width:.8;stroke-linejoin:round;display:none}
+.ripple{stroke:#fff;stroke-width:1;stroke-dasharray:.5 .9;fill:none;animation:rip 3.2s linear infinite}
+@keyframes rip{to{stroke-dashoffset:-1.4}}
+.sluice{stroke:#fff;stroke-width:1.3;stroke-dasharray:3 3;animation:slu .7s linear infinite}
+@keyframes slu{to{stroke-dashoffset:-6}}
+.puff{fill:#fff;stroke:var(--ink);stroke-width:.6;opacity:0}
+.on>.puff,.puffs.on .puff{animation:puff 2.6s linear infinite}
+.puff:nth-child(2){animation-delay:.9s!important}.puff:nth-child(3){animation-delay:1.7s!important}
+@keyframes puff{0%{opacity:0;transform:translate(0,0) scale(.5)}20%{opacity:.95}100%{opacity:0;transform:translate(7px,-17px) scale(1.5)}}
+.puff{transform-box:fill-box;transform-origin:center}
+.bang{opacity:0;transition:opacity .3s;pointer-events:none}
+.bang.on{opacity:1;animation:bob 1s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-2.5px)}}
+.rain{stroke:var(--steel);stroke-width:1;opacity:0;stroke-dasharray:7 13;animation:rain .5s linear infinite;transition:opacity .6s}
+.storm .rain{opacity:.55}
+@keyframes rain{to{stroke-dashoffset:-20}}
+#flash{opacity:0;pointer-events:none}
+#flash.go{animation:flash .7s linear}
+@keyframes flash{0%,18%{opacity:.75}10%,30%{opacity:.1}100%{opacity:0}}
+.cloud{transition:opacity 1.5s}
+/* card + tape */
+.cardbox{position:absolute;left:14px;top:14px;width:232px;background:var(--card);border:1.5px solid var(--ink);border-radius:12px;padding:12px 14px 13px;box-shadow:4px 4px 0 var(--sun)}
+.cardbox h3{font-size:18px;font-weight:800;line-height:1.15;margin:3px 22px 2px 0}
+.cardbox .big{font-size:38px;font-weight:800;line-height:1.05;white-space:nowrap}
+.cardbox .big small{font-size:14px;margin-left:4px}
+.cardbox .e{font-size:12.5px;margin-top:2px}
+.cardbox .note{font-size:13.5px;line-height:1.35;margin-top:8px;padding-top:8px;border-top:1.5px dashed rgba(43,45,66,.4);font-style:italic}
+.cardbox .x{position:absolute;right:8px;top:8px;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--ink);background:var(--pink);padding:0;line-height:0}
+.cardbox .x svg{width:10px;height:10px}
+.cardbox.swap{animation:cardin .4s var(--spring)}
+@keyframes cardin{from{transform:translateY(8px) scale(.96);opacity:0}}
+.tape{position:absolute;right:14px;bottom:12px;max-width:min(430px,calc(100% - 28px));background:var(--ink);color:var(--paper);border-radius:999px;padding:7px 15px 7px 12px;font-size:13px;display:flex;gap:9px;align-items:center;white-space:nowrap;overflow:hidden}
+.tape i{flex:none;width:8px;height:8px;border-radius:50%;background:var(--sun)}
+.tape span{overflow:hidden;text-overflow:ellipsis}
+.tape.swap span{animation:tapein .5s var(--out)}
+@keyframes tapein{from{transform:translateY(12px);opacity:0}}
+.mainland{position:absolute;left:14px;bottom:12px;font-size:12px}
+.mainland b{display:block;font-size:17px;font-weight:800;margin-top:2px;white-space:nowrap}
+/* side panels */
+.dialrow{display:flex;gap:14px;align-items:center}
+#dial{width:158px;height:158px;flex:none;touch-action:none;cursor:grab;border-radius:50%}
+#dial:active{cursor:grabbing}
+.dialrow .r{flex:1;min-width:0}
+.dialrow .r b{font-size:30px;font-weight:800;display:block;line-height:1}
+.dialrow .r p{font-size:12.5px;line-height:1.35;margin:5px 0 10px}
+.seg{display:inline-flex;border:1.5px solid var(--ink);border-radius:999px;overflow:hidden;background:var(--paper)}
+.seg button{border:0;background:none;padding:6px 11px;font-weight:800;font-size:13px;border-right:1.5px solid var(--ink);transition:background .25s var(--out)}
+.seg button:last-child{border-right:0}
+.seg button[aria-checked=true]{background:var(--sun)}
+.seg button:hover{background:var(--pink)}.seg button[aria-checked=true]:hover{background:var(--sun)}
+.fig{font-size:40px;font-weight:800;line-height:1;white-space:nowrap}
+.fig small{font-size:14px;margin-left:4px;font-weight:700}
+.sub{font-size:12.5px;line-height:1.4;margin-top:4px}
+#gauge{display:block;width:100%;max-width:250px;margin:0 auto -6px}
+.freqrow{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+#batt{display:block;width:100%;height:auto;margin:4px 0 8px}
+.bseg{transition:fill .5s var(--out)}
+/* switchboard */
+.sb{background:var(--aqua);box-shadow:5px 5px 0 var(--ink);display:grid;grid-template-columns:auto 1fr auto;gap:16px 26px;align-items:stretch;padding:16px 22px}
+.sb .screw{position:absolute;width:11px;height:11px;border-radius:50%;border:1.5px solid var(--ink);background:var(--paper)}
+.sb .screw::after{content:"";position:absolute;left:1px;right:1px;top:3.2px;height:1.5px;background:var(--ink);transform:rotate(35deg)}
+.sb .grp{display:flex;flex-direction:column;gap:8px;min-width:0}
+.sb .grp>.lab{color:var(--ink)}
+.knives{display:flex;gap:10px}
+.knife{background:var(--card);border:1.5px solid var(--ink);border-radius:10px;padding:6px 8px 8px;width:88px;text-align:center;transition:transform .2s var(--out)}
+.knife:active{transform:translateY(2px)}
+.knife svg{width:52px;height:74px;display:block;margin:0 auto}
+.knife .blade{transform-origin:26px 60px;transition:transform .42s var(--spring)}
+.knife[aria-checked=false] .blade{transform:rotate(52deg)}
+.knife[aria-checked=false] .lampk{fill:var(--paper)}
+.knife .lampk{fill:var(--sun);transition:fill .3s}
+.knife .nm{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;display:block;white-space:nowrap}
+.knife .kw{font-size:15px;font-weight:800;display:block;white-space:nowrap}
+.weather{display:flex;gap:16px 34px;align-items:center;flex-wrap:wrap}
+.wx{display:flex;gap:10px;align-items:center}
+#windk{width:84px;height:84px;touch-action:none;cursor:grab;border-radius:50%;flex:none}
+.wx .v b{font-size:22px;font-weight:800;display:block;line-height:1.1;white-space:nowrap}
+.hold{border:1.5px solid var(--ink);background:var(--card);border-radius:999px;font-size:10px;font-weight:800;letter-spacing:.12em;padding:3px 9px;margin-top:4px;text-transform:uppercase}
+.hold[aria-pressed=true]{background:var(--sun)}
+#cloudr{-webkit-appearance:none;appearance:none;width:150px;height:26px;background:none;margin:0;touch-action:pan-y}
+#cloudr::-webkit-slider-runnable-track{height:10px;border-radius:5px;border:1.5px solid var(--ink);background:var(--card)}
+#cloudr::-moz-range-track{height:8px;border-radius:5px;border:1.5px solid var(--ink);background:var(--card)}
+#cloudr::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:20px;margin-top:-7px;border-radius:10px;border:1.5px solid var(--ink);background:#fff;box-shadow:-7px 3px 0 -3px #fff,-7px 3px 0 -1.5px var(--ink);cursor:grab}
+#cloudr::-moz-range-thumb{width:28px;height:18px;border-radius:10px;border:1.5px solid var(--ink);background:#fff;cursor:grab}
+.push{display:flex;flex-direction:column;gap:16px}
+.pb{border:1.5px solid var(--ink);border-radius:12px;padding:10px 14px 10px 12px;font-weight:800;font-size:14px;text-align:left;display:flex;gap:10px;align-items:center;box-shadow:0 5px 0 var(--ink);transition:transform .16s var(--out),box-shadow .16s var(--out),background .3s;min-width:168px;line-height:1.2}
+.pb small{display:block;font-size:11px;font-weight:700;opacity:.8;white-space:nowrap}
+.pb svg{width:30px;height:30px;flex:none}
+.pb:hover{transform:translateY(-2px);box-shadow:0 7px 0 var(--ink)}
+.pb:active,.pb[aria-pressed=true]{transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
+#storm{background:var(--pink)}#storm[aria-pressed=true]{background:var(--steel);color:#fff}
+#match{background:var(--sun)}
+/* chart */
+#chart{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;margin-top:6px}
+.legend i{display:inline-block;width:12px;height:12px;border:1.5px solid var(--ink);border-radius:3px;margin-right:6px;vertical-align:-2px}
+.legend .ln i{height:0;border-width:0 0 2.5px;border-radius:0;vertical-align:4px;width:18px}
+.ax{font-size:10px;font-weight:700;fill:var(--ink);letter-spacing:.08em}
+.row3{display:grid;grid-template-columns:1fr 1fr 2fr;gap:18px}
+.ringrow{display:flex;gap:14px;align-items:center}
+#ring{width:150px;height:150px;flex:none}
+#ring circle{fill:none;stroke-width:17;transition:stroke-dasharray .6s var(--out),stroke-dashoffset .6s var(--out)}
+.ringrow ul{list-style:none;margin:0;padding:0;font-size:12.5px;line-height:1.75;flex:1;min-width:0}
+.ringrow li{display:flex;justify-content:space-between;gap:8px;white-space:nowrap}
+.ringrow li i{display:inline-block;width:10px;height:10px;border:1.5px solid var(--ink);border-radius:50%;margin-right:6px}
+.cap{font-size:21px;font-weight:800;line-height:1.2;margin-top:14px}.cap span{font-size:44px;line-height:1;display:inline-block;margin-right:2px}
+.cap+.sub{margin-top:8px}
+#log{list-style:none;margin:0;padding:0;height:128px;overflow-y:auto;font-size:13.5px;line-height:1.4;scrollbar-width:thin;scrollbar-color:var(--ink) transparent}
+#log li{display:flex;gap:12px;padding:5px 0;border-bottom:1px dashed rgba(43,45,66,.3)}
+#log li b{flex:none;width:44px}
+#log li:first-child{animation:tapein .5s var(--out)}
+.foot{margin-top:26px;display:flex;gap:10px 30px;flex-wrap:wrap;justify-content:space-between;font-size:12.5px;border-top:1.5px solid var(--ink);padding-top:12px}
+@media (max-width:1080px){
+  .grid{grid-template-columns:1fr}
+  .side{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:none}
+  .sb{grid-template-columns:1fr}
+  .row3{grid-template-columns:1fr 1fr}.row3 .logp{grid-column:1/-1}
+  .dialrow{flex-direction:column;align-items:flex-start}
+}
+@media (max-width:760px){
+  .wrap{padding:12px 12px 30px}
+  .top{gap:12px 18px}.brand h1{font-size:32px}.brand svg{width:40px;height:47px}
+  .clockbox{border:0;padding:0;text-align:left;order:3}.clockbox b{font-size:34px}
+  .quick{gap:16px;width:100%;order:4;justify-content:space-between}.quick div b{font-size:19px}
+  .side,.row3{grid-template-columns:1fr}
+  .dialrow{flex-direction:row;align-items:center}
+  .cardbox{position:relative;left:auto;top:auto;width:auto;margin:10px;box-shadow:3px 3px 0 var(--sun)}
+  .tape{position:relative;right:auto;bottom:auto;margin:0 10px 10px;max-width:none}
+  .mainland{position:relative;left:auto;bottom:auto;margin:0 12px 10px;display:flex;gap:10px;align-items:baseline}
+  .knives{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.knife{width:auto;padding:5px 2px 7px}.knife .nm{font-size:8.5px;letter-spacing:.04em}
+  .push{flex-wrap:wrap}.pb{flex:1;min-width:140px}
+  .sb{padding:16px 14px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .arr{display:block}.fl{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="brand">
+    <svg viewBox="0 0 50 58" aria-hidden="true"><path d="M3 3h44v28c0 13-10 20-22 24C13 51 3 44 3 31z" fill="#A8DADC" stroke="#2B2D42" stroke-width="2.4" stroke-linejoin="round"/><path d="M25 10a10 10 0 0 0-6 18v4h12v-4a10 10 0 0 0-6-18z" fill="#FFD166" stroke="#2B2D42" stroke-width="2"/><path d="M20 36h10M21.5 40h7M22 22l3 4 3-4" fill="none" stroke="#2B2D42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div><h1>Lumen</h1><p class="lab">Municipal Power Board · Pop. 2,140</p></div>
+  </div>
+  <div class="quick">
+    <div><span class="lab">Town is using</span><b><span id="qd">0</span><small>kW</small></b></div>
+    <div><span class="lab">Town is making</span><b><span id="qs">0</span><small>kW</small></b></div>
+    <div><span class="lab" id="qml">Mainland</span><b><span id="qm">0</span><small>kW</small></b></div>
+  </div>
+  <div class="clockbox"><span class="lab" id="dayl">Tuesday</span><b id="clock">16:30</b></div>
+</header>
+
+<main class="grid">
+  <section class="panel board" aria-label="Model of the town of Lumen">
+    <svg id="town" viewBox="-352 -92 704 506" class="intro" role="group" aria-label="Isometric model town. Use arrow keys to move between buildings, Enter to read a meter."></svg>
+    <div class="cardbox" id="card" aria-live="polite"></div>
+    <div class="mainland"><span class="lab" id="mll">Sold to the mainland</span><b id="mlv">£0.00</b></div>
+    <div class="tape" id="tape"><i></i><span id="tapet">The board is warming up.</span></div>
+  </section>
+
+  <aside class="side">
+    <div class="panel sh-y">
+      <span class="lab">Day dial · drag the sun</span>
+      <div class="dialrow">
+        <svg id="dial" viewBox="0 0 200 200" role="slider" tabindex="0" aria-label="Time of day" aria-valuemin="0" aria-valuemax="24" aria-valuenow="16.5"></svg>
+        <div class="r"><b id="dclock">16:30</b><p id="dphase">Late afternoon. The school has emptied.</p>
+          <div class="seg" role="radiogroup" aria-label="Simulation speed" id="speed">
+            <button role="radio" aria-checked="true" data-s="1">×1</button><button role="radio" aria-checked="false" data-s="4">×4</button><button role="radio" aria-checked="false" data-s="16">×16</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel sh-a">
+      <span class="lab">Grid frequency</span>
+      <svg id="gauge" viewBox="0 0 220 122" aria-hidden="true"></svg>
+      <div class="freqrow"><div class="fig"><span id="hz">50.00</span><small>Hz</small></div><p class="sub" id="hzn" style="text-align:right">Steady as the town clock.</p></div>
+    </div>
+    <div class="panel sh-p">
+      <span class="lab">Battery barn · 1,000 kWh</span>
+      <svg id="batt" viewBox="0 0 300 62" aria-hidden="true"></svg>
+      <div class="freqrow"><div class="fig"><span id="soc">62</span><small>%</small></div><p class="sub" id="socn" style="text-align:right">Idle.</p></div>
+    </div>
+  </aside>
+
+  <section class="panel sb full" aria-label="Switchboard">
+    <i class="screw" style="left:7px;top:7px"></i><i class="screw" style="right:7px;top:7px"></i><i class="screw" style="left:7px;bottom:7px"></i><i class="screw" style="right:7px;bottom:7px"></i>
+    <div class="grp"><span class="lab">District feeders · flip to isolate</span><div class="knives" id="knives"></div></div>
+    <div class="grp"><span class="lab">Weather desk · take the controls</span>
+      <div class="weather">
+        <div class="wx"><svg id="windk" viewBox="0 0 84 84" role="slider" tabindex="0" aria-label="Wind speed" aria-valuemin="0" aria-valuemax="25" aria-valuenow="10"></svg>
+          <div class="v"><span class="lab">Wind on the ridge</span><b id="windv">9 m/s</b><button class="hold" id="windh" aria-pressed="false">Forecast</button></div></div>
+        <div class="wx"><div class="v"><span class="lab">Cloud over the sun field</span><b id="cloudv">20%</b>
+          <input type="range" id="cloudr" min="0" max="100" value="20" aria-label="Cloud cover"><br><button class="hold" id="cloudh" aria-pressed="false">Forecast</button></div></div>
+      </div>
+    </div>
+    <div class="grp"><span class="lab">Occasions</span>
+      <div class="push">
+        <button class="pb" id="storm" aria-pressed="false"><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M8 17a5 5 0 0 1 1-10 7 7 0 0 1 13 2 4 4 0 0 1 0 8z" fill="#fff" stroke="#2B2D42" stroke-width="1.6" stroke-linejoin="round"/><path d="M15 15l-4 7h4l-2 6 6-8h-4l2-5z" fill="#FFD166" stroke="#2B2D42" stroke-width="1.4" stroke-linejoin="round"/></svg><span><span id="stormt">Storm</span><small id="storms">Trips the mainland line</small></span></button>
+        <button class="pb" id="match"><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M6 12h14v8a5 5 0 0 1-5 5h-4a5 5 0 0 1-5-5z" fill="#fff" stroke="#2B2D42" stroke-width="1.6" stroke-linejoin="round"/><path d="M20 14h3a3 3 0 0 1 0 6h-3M10 8c0-2 2-2 2-4M15 8c0-2 2-2 2-4" fill="none" stroke="#2B2D42" stroke-width="1.6" stroke-linecap="round"/></svg><span><span id="matcht">Tonight's big match</span><small id="matchs">Kick off now</small></span></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel sh-s">
+    <span class="lab">The last 24 hours · supply by source against demand</span>
+    <svg id="chart" viewBox="0 0 760 270" role="img" aria-label="Stacked area chart of supply by source with the demand line"></svg>
+    <div class="legend"><span><i style="background:#A8DADC"></i>Weir</span><span><i style="background:#457B9D"></i>Ridge wind</span><span><i style="background:#FFD166"></i>Sun field</span><span><i style="background:#F9C5D1"></i>Battery barn</span><span><i style="background:#B4B0BA"></i>Mainland</span><span class="ln"><i style="border-color:#2B2D42"></i>Demand. Anything above the line is stored or sold.</span></div>
+  </section>
+  <div class="panel sh-y">
+    <span class="lab">Today's mix</span>
+    <div class="ringrow"><svg id="ring" viewBox="0 0 120 120" aria-hidden="true"></svg><ul id="mixl"></ul></div>
+    <p class="cap"><span id="mixp">0</span>% from the hill and the sky</p><p class="sub">Counted since midnight. The weir has not missed a day since 1926.</p>
+  </div>
+
+  <div class="row3 full">
+    <div class="panel sh-a"><span class="lab">Carbon-free streak</span><div class="fig"><span id="streak">0</span><small>hours</small></div><p class="sub" id="streakn">Best this week: 0 h</p></div>
+    <div class="panel sh-p"><span class="lab">Mainland account · today</span><div class="fig" id="net">£0.00</div><p class="sub" id="netn">Sold £0.00 · bought £0.00</p></div>
+    <div class="panel sh-s logp"><span class="lab">The board's log</span><ul id="log" aria-live="off"></ul></div>
+  </div>
+</main>
+<footer class="foot"><span>Lumen Municipal Power Board · 1 Substation Lane · Open to visitors on the first Saturday of the month.</span><span>Every figure on this board is simulated. The town, regrettably, is fictional.</span></footer>
+</div>
+
+<script>
+(()=>{'use strict';
+const NS='http://www.w3.org/2000/svg',$=id=>document.getElementById(id);
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const C={paper:'#F6F1EA',pink:'#F9C5D1',aqua:'#A8DADC',steel:'#457B9D',sun:'#FFD166',ink:'#2B2D42',white:'#FFFFFF'};
+const U=16,CX=.866;
+const P=(x,y,z=0)=>[(x-y)*CX*U,(x+y)*.5*U-z*U];
+const pts=a=>a.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+function el(tag,at,par){const e=document.createElementNS(NS,tag);for(const k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e}
+const hx=h=>[1,3,5].map(i=>parseInt(h.substr(i,2),16));
+const mix=(a,b,t)=>{a=hx(a);b=hx(b);return '#'+a.map((v,i)=>Math.round(v+(b[i]-v)*t).toString(16).padStart(2,'0')).join('')};
+const clamp=(v,a=0,b=1)=>v<a?a:v>b?b:v;
+const smooth=(a,b,x)=>{x=clamp((x-a)/(b-a));return x*x*(3-2*x)};
+const hash=n=>{const s=Math.sin(n*127.1+311.7)*43758.5453;return s-Math.floor(s)};
+const vn=x=>{const i=Math.floor(x),f=x-i,u=f*f*(3-2*f);return hash(i)*(1-u)+hash(i+1)*u};
+const bump=(t,c,w)=>{let d=Math.abs(t-c);if(d>12)d=24-d;return Math.exp(-(d*d)/(w*w))};
+const hrs=(t,a,b)=>clamp((t-a)/.25)*clamp((b-t)/.25);
+const BLUE=mix(C.steel,C.white,.45),CREAM=mix(C.sun,C.paper,.62),ROSE=mix(C.pink,C.steel,.22),SLATE=mix(C.steel,C.white,.12),WHITE='#FBF8F3';
+const shade=h=>[mix(h,C.white,.5),h,mix(h,C.ink,.2)];
+const fmt=k=>{const a=Math.abs(k);return a<10?a.toFixed(1):Math.round(a).toLocaleString('en-GB')};
+const hhmm=t=>{t=((t%24)+24)%24;let h=Math.floor(t),m=Math.floor((t-h)*60);return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')};
+
+/* ---------- scene scaffolding ---------- */
+const svg=$('town');
+el('rect',{x:-352,y:-92,width:704,height:506,fill:C.paper},svg);
+const MAT=`matrix(${CX*U},${.5*U},${-CX*U},${.5*U},0,0)`;
+const defsEl=el('defs',{},svg);el('rect',{x:0,y:0,width:24,height:24},el('clipPath',{id:'bclip'},defsEl));
+const gEdge=el('g',{},svg),gG=el('g',{transform:MAT,class:'gnd'},svg),gS=el('g',{},svg),gG2=el('g',{transform:MAT,class:'gnd','clip-path':'url(#bclip)'},svg),
+      gStub=el('g',{},svg),gB=el('g',{},svg),gW=el('g',{},svg),
+      night=el('rect',{x:-352,y:-92,width:704,height:506,fill:'#FFFFFF',style:'mix-blend-mode:multiply;pointer-events:none'},svg),
+      gL=el('g',{style:'pointer-events:none'},svg),gF=el('g',{style:'pointer-events:none'},svg),gT=el('g',{style:'pointer-events:none'},svg);
+let cur={g:gS,lg:gL,z:0};
+const poly=(g,a,fill,cls)=>el('polygon',{points:pts(a),fill,class:cls||'f'},g);
+function box(x,y,w,d,h,hue,z=0){z+=cur.z;const s=shade(hue);
+  poly(cur.g,[P(x,y+d,z),P(x+w,y+d,z),P(x+w,y+d,z+h),P(x,y+d,z+h)],s[1]);
+  poly(cur.g,[P(x+w,y,z),P(x+w,y+d,z),P(x+w,y+d,z+h),P(x+w,y,z+h)],s[2]);
+  poly(cur.g,[P(x,y,z+h),P(x+w,y,z+h),P(x+w,y+d,z+h),P(x,y+d,z+h)],s[0])}
+function gable(x,y,w,d,h,rh,hue,wall,ax){const z=cur.z+h,s=shade(hue),ws=shade(wall);
+  if(ax==='x'){const m=y+d/2;
+    poly(cur.g,[P(x,y,z),P(x+w,y,z),P(x+w,m,z+rh),P(x,m,z+rh)],s[0]);
+    poly(cur.g,[P(x,y+d,z),P(x+w,y+d,z),P(x+w,m,z+rh),P(x,m,z+rh)],s[1]);
+    poly(cur.g,[P(x+w,y,z),P(x+w,y+d,z),P(x+w,m,z+rh)],ws[2]);
+  }else{const m=x+w/2;
+    poly(cur.g,[P(x,y,z),P(x,y+d,z),P(m,y+d,z+rh),P(m,y,z+rh)],s[0]);
+    poly(cur.g,[P(x+w,y,z),P(x+w,y+d,z),P(m,y+d,z+rh),P(m,y,z+rh)],s[2]);
+    poly(cur.g,[P(x,y+d,z),P(x+w,y+d,z),P(m,y+d,z+rh)],ws[1])}}
+const qL=(x,z,w,h,Y)=>{z+=cur.z;return[P(x,Y,z),P(x+w,Y,z),P(x+w,Y,z+h),P(x,Y,z+h)]};
+const qR=(y,z,d,h,X)=>{z+=cur.z;return[P(X,y,z),P(X,y+d,z),P(X,y+d,z+h),P(X,y,z+h)]};
+function winL(x,z,w,h,Y){const q=qL(x,z,w,h,Y);poly(cur.g,q,'', 'w');poly(cur.lg,q,'','wl')}
+function winR(y,z,d,h,X){const q=qR(y,z,d,h,X);poly(cur.g,q,'','w');poly(cur.lg,q,'','wl')}
+const doorL=(x,w,h,Y,c)=>poly(cur.g,qL(x,0,w,h,Y),c||C.steel);
+const line=(g,a,b,cls,extra)=>el('line',Object.assign({x1:a[0].toFixed(1),y1:a[1].toFixed(1),x2:b[0].toFixed(1),y2:b[1].toFixed(1),class:cls},extra||{}),g);
+function ftext(g,s,x,Y,z,size,fill,side){const p=P(side==='R'?Y:x,side==='R'?x:Y,z+cur.z);const t=el('text',{transform:`matrix(.866,${side==='R'?-.5:.5},0,1,${p[0].toFixed(1)},${p[1].toFixed(1)})`,'font-size':size,class:'itx',style:'fill:'+(fill||C.ink)},g);t.textContent=s;return t}
+function gtext(s,x,y,size,op,z){const g=el('g',{transform:`translate(0,${-(z||0)*U})`},svg.insertBefore(el('g',{}),gStub));
+  const t=el('text',{'font-size':size*10,class:'itx',opacity:op||.5},el('g',{transform:`translate(${x},${y}) scale(.1)`},el('g',{transform:MAT},g)));t.textContent=s}
+const elev=(x,y)=>(x>=14.8&&y>=.6&&y<=7.2)?.8:(x>=2&&x<=13&&y>=.5&&y<=2.4)?1.2:0;
+
+/* ---------- ground ---------- */
+poly(gEdge,[P(0,24),P(24,24),P(24,24,-.9),P(0,24,-.9)],mix(C.steel,C.white,.3));
+poly(gEdge,[P(24,0),P(24,24),P(24,24,-.9),P(24,0,-.9)],C.steel);
+const R=(x,y,w,h,fill,extra)=>el('rect',Object.assign({x,y,width:w,height:h,fill},extra||{}),gG);
+R(0,0,24,24,'#FDFBF7',{stroke:C.ink,'stroke-width':1.2});
+R(1.8,4.2,10.4,3.1,mix(C.pink,C.paper,.62));R(1.8,8.7,10.4,3.2,mix(C.pink,C.paper,.62));
+R(14.9,8.5,8.8,3.3,mix(C.aqua,C.paper,.6));R(11.1,17.7,5.5,5.4,mix(C.steel,C.paper,.82));
+R(18.2,17.7,5.4,5.6,mix(C.aqua,C.paper,.7));R(1.2,17.7,8.9,5.3,mix(C.sun,C.paper,.7));
+R(0,13,24,2,C.aqua,{stroke:C.ink,'stroke-width':.8});
+[13.45,14.05,14.6].forEach((y,i)=>el('path',{d:`M${4.6+i*.2} ${y}H24`,class:'ripple',style:`animation-delay:${-i*.9}s`},gG));
+const ROAD='#FFFFFF';
+R(12.5,2.9,1,20.4,ROAD);R(.6,12,23,1,ROAD);R(.6,16,23,1,ROAD);R(2,7.45,10.5,1.1,ROAD);R(22.5,7.4,1,9.6,ROAD);R(13.5,7.4,9,1,ROAD);
+el('path',{d:'M13 3.4V23M1 12.5H12.3M1 16.5H12.4M2.4 8H12.3',fill:'none',stroke:C.ink,'stroke-width':.7,'stroke-dasharray':'3 4',opacity:.35},gG);
+/* allotments */
+[[18.6,20.5,C.pink],[19.6,20.5,C.sun],[20.6,20.5,C.aqua],[18.6,21.8,C.aqua],[19.6,21.8,C.pink],[20.6,21.8,C.sun]].forEach(a=>{R(a[0],a[1],.8,1.1,mix(a[2],C.white,.25),{stroke:C.ink,'stroke-width':.7});
+  el('path',{d:`M${a[0]+.2} ${a[1]+.1}v.9M${a[0]+.4} ${a[1]+.1}v.9M${a[0]+.6} ${a[1]+.1}v.9`,stroke:C.ink,'stroke-width':.5,opacity:.4,fill:'none'},gG)});
+R(13.4,17.9,2.4,1.5,mix(C.steel,C.paper,.66),{stroke:C.ink,'stroke-width':.8,'stroke-dasharray':'1.5 1.5'});
+/* slabs: ridge and hill */
+cur={g:gS,lg:gL,z:0};
+box(2,.5,11,1.9,1.2,mix(C.aqua,C.paper,.35));box(14.8,.6,9,6.6,.8,mix(C.sun,C.paper,.72));
+/* bridges */
+[12.4,22.4].forEach(x=>{box(x,12.95,1.2,2.1,.14,WHITE);line(gS,P(x+1.2,13,.5),P(x+1.2,15,.5),'pole');[13,14,15].forEach(y=>line(gS,P(x+1.2,y,.14),P(x+1.2,y,.5),'pole'))});
+/* tram track + cloud shadow */
+el('rect',{x:13,y:12.5,width:10,height:4,fill:'none',stroke:C.ink,'stroke-width':2.2,'stroke-dasharray':'1 3',opacity:.55},gG2);
+el('rect',{x:13,y:12.5,width:10,height:4,fill:'none',stroke:C.ink,'stroke-width':.7},gG2);
+const shadow=el('ellipse',{cx:-8,cy:20,rx:4.2,ry:2.6,fill:C.ink,opacity:0},gG2);
+/* lettering on the board */
+gtext('OLD TOWN',2.3,9.42,.72);gtext('MILLSIDE',15.2,9.0,.5,.45);gtext('HILLTOP',19.4,6.3,.72,.5,.8);gtext('RIVERSIDE',18.4,23.75,.62);
+gtext('THE WORKS',11.2,23.75,.62);gtext('SUN FIELD',1.4,23.75,.62);gtext('RIVER AMP',6.6,14.45,.6,.55);gtext('THE RIDGE',5,2.25,.5,.5,1.2);
+cur={g:gEdge,lg:gL,z:0};
+ftext(gEdge,'LUMEN MUNICIPAL POWER BOARD  ·  EST. 1926',1.2,24,-.62,7.2,'#FDFBF7').setAttribute('opacity','.95');
+ftext(gEdge,'600 kW WIND · 420 kW SUN · 170 kW WATER',23.2,24,-.62,7.2,'#FDFBF7','R');
+
+/* ---------- state ---------- */
+const S={T:16.5,t:16.5,speed:1,w:.5,c:.2,sun:0,dark:0,shade:0,cx:-8,windHold:null,cloudHold:null,storm:false,island:false,shed:0,shedT:-9,
+  wind:0,solar:0,hydro:170,batt:0,imp:0,demand:0,gen:0,unmet:0,curt:0,soc:620,cap:1000,surge:0,match:null,tramKw:0,
+  sw:{old:true,mill:true,hill:true,river:true},dist:{old:0,mill:0,hill:0,river:0},
+  E:{h:0,w:0,s:0,b:0,i:0},sold:0,bought:0,streak:0,best:0,quiet:false};
+const DN={old:'Old Town',mill:'Millside',hill:'Hilltop',river:'Riverside',gen:'Generation',works:'The Works'};
+const blds=[],byId={},sorted=[];
+let nB=0;
+function B(o,draw){
+  o.z=o.z||0;o.kw=0;o.kwh=0;o.lit=false;o.pw=true;
+  const wrap=el('g',{}),g=el('g',{class:'b',tabindex:-1,role:'button','aria-label':o.name,style:`--d:${150+nB*26+({old:0,mill:140,hill:280,river:420,works:560,gen:640}[o.dist]||0)}ms`},wrap);
+  const lg=el('g',{class:'lg'},gL);nB++;
+  o.g=g;o.lg=lg;o.wrap=wrap;o.depth=o.x+o.w/2+o.y+o.d/2+(o.dz||0);
+  const e=.18,z=o.z;el('polygon',{class:'fp',points:pts([P(o.x-e,o.y-e,z),P(o.x+o.w+e,o.y-e,z),P(o.x+o.w+e,o.y+o.d+e,z),P(o.x-e,o.y+o.d+e,z)])},g);
+  cur={g,lg,z};draw(o);blds.push(o);byId[o.id]=o;sorted.push({d:o.depth,e:wrap});return o}
+function puffs(g,p){const pg=el('g',{class:'puffs'},g);for(let i=0;i<3;i++)el('circle',{cx:p[0],cy:p[1],r:2.6,class:'puff'},pg);return pg}
+
+/* ---------- Old Town ---------- */
+const HUES=[C.pink,CREAM,C.aqua,BLUE,C.pink,CREAM,C.aqua];
+const houseLoad=s=>(t,T)=>{const o=(hash(s)-.5)*.8;let k=.12+.9*bump(t,7.2+o,.6)+1.3*bump(t,18.8+o,1.6);if(t>6&&t<23&&hash(Math.floor(T*6)+s*13)>.86)k+=2.1;return k+2.3*S.surge};
+const houseLit=s=>(t,dk)=>{const wake=6.1+hash(s+5)*1.2,bed=21.7+hash(s+9)*2;return dk>.3+hash(s+2)*.6&&((t>wake&&t<9)||(t>16&&t<bed)||t<bed-24)};
+function house(o,i){const {x,y}=o,hue=HUES[i%7],Y=y+o.d;box(x,y,o.w,o.d,1.1,hue);gable(x,y,o.w,o.d,1.1,.65,i%2?SLATE:ROSE,hue,'x');
+  doorL(x+.18,.3,.58,Y,i%3?C.steel:C.sun);winL(x+.72,.42,.42,.42,Y);if(o.end)winR(y+.6,.42,.5,.42,x+o.w);
+  box(x+.95,y+.45,.24,.24,.42,hue,1.38)}
+const TN=[['No. 4 Tanner Row','Someone is ironing in front of the news.','Asleep, or at least quiet about it.'],['No. 6 Tanner Row','The oven is on. It smells of Sunday.','One hallway bulb, left on for the cat.'],['No. 8 Tanner Row','A tumble dryer, doing its level best.','Fridge, clock radio, nothing else.'],['No. 10 Tanner Row','Two teenagers, one hairdryer.','The router blinks alone.'],['No. 12 Tanner Row','Immersion heater. A long bath is planned.','Out at the allotment, by the look of it.'],['No. 14 Tanner Row','Kettle. Again.','Between kettles.']];
+TN.forEach((n,i)=>B({id:'t'+i,name:n[0],dist:'old',x:2.2+i*1.4,y:9.5,w:1.4,d:1.8,pr:9,load:houseLoad(i+1),litf:houseLit(i+1),hot:1.6,notes:[n[2],n[1]]},o=>house(o,i)));
+B({id:'pub',name:'The Filament Arms',dist:'old',x:10.6,y:9.5,w:1.4,d:1.8,pr:5,load:t=>1.4+8*hrs(t,11.5,23.2)+3*bump(t,20.5,1.5)+6*S.surge,litf:(t,dk)=>dk>.4&&t>16&&t<23.4,hot:6,
+  notes:['Cellar cooler ticking over. Doors at half eleven.','Pumps, fryer, jukebox. Quiz night runs long.']},o=>{const {x,y}=o,Y=y+1.8;box(x,y,1.4,1.8,1.25,BLUE);gable(x,y,1.4,1.8,1.25,.65,ROSE,BLUE,'x');doorL(x+.2,.32,.62,Y,C.sun);winL(x+.7,.4,.5,.5,Y);winR(y+.3,.4,.45,.5,x+1.4);winR(y+1.05,.4,.45,.5,x+1.4);
+  poly(o.g,qR(y+.55,1.0,.7,.3,x+1.42),C.sun)});
+const CN=[['No. 1 Coulomb Terrace','A piano lesson under a bright lamp.','Curtains drawn. Storage heater sulking.'],['No. 3 Coulomb Terrace','Washing machine on its noisy spin.','Nobody home but the freezer.'],['No. 5 Coulomb Terrace','Toaster, kettle, radio: breakfast in stereo.','A single nightlight on the landing.'],['No. 7 Coulomb Terrace','The retired linesman is welding in the shed.','He is watching the board from his window.']];
+CN.forEach((n,i)=>B({id:'c'+i,name:n[0],dist:'old',x:2.2+i*1.4,y:4.8,w:1.4,d:1.8,pr:9,end:i===3,load:houseLoad(i+11),litf:houseLit(i+11),hot:1.6,notes:[n[2],n[1]]},o=>house(o,i+3)));
+let handH,handM,clockC;
+B({id:'clock',name:'The Town Clock',dist:'old',x:8.4,y:5.2,w:1,d:1,pr:12,load:()=>.2+.4*S.dark,litf:(t,dk)=>dk>.4,hot:.4,
+  notes:['Synchronous motor, kept honest by the grid itself.','Face lit. Still right, give or take the frequency.']},o=>{const {x,y}=o;box(x,y,1,1,3.2,CREAM);box(x-.08,y-.08,1.16,1.16,.14,WHITE,3.2);
+  const z=3.34,ap=P(x+.5,y+.5,z+1.1);poly(o.g,[P(x-.08,y+1.08,z),P(x+1.08,y+1.08,z),ap],SLATE);poly(o.g,[P(x+1.08,y-.08,z),P(x+1.08,y+1.08,z),ap],mix(SLATE,C.ink,.2));
+  const face=[];for(let i=0;i<20;i++){const a=i/20*6.283;face.push(P(x+.5+Math.cos(a)*.36,y+1,2.55+Math.sin(a)*.36))}
+  poly(o.g,face,'#fff');poly(o.lg,face,'','wl');clockC=[x+.5,y+1.01,2.55];
+  handH=el('line',{stroke:C.ink,'stroke-width':1.5,'stroke-linecap':'round'},gT);handM=el('line',{stroke:C.ink,'stroke-width':.9,'stroke-linecap':'round'},gT);
+  doorL(x+.32,.36,.6,y+1);winL(x+.38,1.3,.24,.4,y+1)});
+let bakeSmoke;
+B({id:'bakery',name:'Crumb & Current, bakers',dist:'old',x:10,y:4.8,w:1.8,d:1.8,pr:11,load:t=>2.5+20*hrs(t,3,9.4)+5*hrs(t,9.4,16),litf:(t,dk)=>(t>=3&&t<9&&dk>.3)||(dk>.5&&t>16&&t<17.5),hot:12,
+  notes:['Ovens cold. The sourdough is thinking.','Deck ovens at 230 degrees. First loaves at five.']},o=>{const {x,y}=o,Y=y+1.8;box(x,y,1.8,1.8,1.3,CREAM);gable(x,y,1.8,1.8,1.3,.75,ROSE,CREAM,'y');
+  winL(x+.75,.3,.85,.6,Y);doorL(x+.2,.36,.66,Y,C.steel);winR(y+.5,.45,.7,.45,x+1.8);
+  for(let i=0;i<4;i++)poly(o.g,[P(x+.12+i*.39,Y,1.12),P(x+.51+i*.39,Y,1.12),P(x+.51+i*.39,Y+.4,.92),P(x+.12+i*.39,Y+.4,.92)],i%2?'#fff':C.pink);
+  box(x+1.25,y+.35,.3,.3,1.05,BLUE,1.45);bakeSmoke=puffs(o.g,P(x+1.4,y+.5,2.7))});
+
+/* ---------- Millside ---------- */
+B({id:'factory',name:'Ohm & Daughters, enamelware',dist:'mill',x:15.2,y:8.8,w:3,d:2.6,pr:3,load:t=>6+82*hrs(t,7,17),litf:(t,dk)=>dk>.3&&((t>6.5&&t<17.4)),hot:40,
+  notes:['Presses still. One security light, one night watchman.','Three presses and a kiln. Four hundred teapots a day.']},o=>{const {x,y}=o,Y=y+2.6;box(x,y,3,2.6,1.25,BLUE);
+  for(let i=0;i<3;i++){const a=x+i,z=1.25;poly(o.g,[P(a,y,z),P(a,Y,z),P(a+1,Y,z+.6),P(a+1,y,z+.6)],shade(SLATE)[0]);
+    const q=[P(a+1,y,z),P(a+1,Y,z),P(a+1,Y,z+.6),P(a+1,y,z+.6)];poly(o.g,q,'','w');poly(o.lg,q,'','wl');poly(o.g,[P(a,Y,z),P(a+1,Y,z),P(a+1,Y,z+.6)],BLUE)}
+  doorL(x+.3,.7,.8,Y,C.steel);winL(x+1.3,.45,.4,.4,Y);winL(x+1.95,.45,.4,.4,Y);winL(x+2.5,.45,.3,.4,Y);
+  winR(y+.4,.45,.5,.4,x+3);winR(y+1.3,.45,.5,.4,x+3);box(x+.3,y+.2,.34,.34,1.6,ROSE,1.25)});
+[['ws1','Voltaire Cycles, repairs',18.6,C.pink,13,'A truing stand and a radio. Compressor resting.','Compressor running. Somebody has a puncture and a deadline.'],['ws2','Brass & Bobbin, joiners',20.2,CREAM,10,'Sawdust settling. Kettle on the bench.','The band saw is singing.']].forEach((w,i)=>
+ B({id:w[0],name:w[1],dist:'mill',x:w[2],y:9.6,w:1.3,d:1.8,pr:3,load:(t,T)=>.6+w[4]*hrs(t,8,17)*(.6+.4*vn(T*5+i*7)),litf:(t,dk)=>dk>.4&&t>7.5&&t<17.3,hot:5,notes:[w[5],w[6]]},o=>{const {x,y}=o,Y=y+1.8;box(x,y,1.3,1.8,1.05,w[3]);gable(x,y,1.3,1.8,1.05,.55,SLATE,w[3],'y');doorL(x+.2,.55,.7,Y,C.steel);winL(x+.88,.45,.28,.36,Y);winR(y+.6,.45,.5,.36,x+1.3)}));
+let laundrySteam;
+B({id:'laundry',name:'The Wringer, steam laundry',dist:'mill',x:21.8,y:9.6,w:1.4,d:1.8,pr:2,load:(t,T)=>1.5+24*hrs(t,6,20)*(.7+.3*Math.sin(T*9)),litf:(t,dk)=>dk>.35&&t>5.8&&t<20.2,hot:10,
+  notes:['Drums empty. The whole street smells faintly of soap.','Eight drums turning. Hotel sheets by the hundredweight.']},o=>{const {x,y}=o,Y=y+1.8;box(x,y,1.4,1.8,1.3,C.aqua);box(x-.06,y-.06,1.52,1.92,.12,WHITE,1.3);doorL(x+.18,.34,.62,Y,C.pink);winL(x+.68,.35,.5,.55,Y);
+  winR(y+.3,.4,.45,.5,x+1.4);winR(y+1,.4,.45,.5,x+1.4);box(x+.2,y+.3,.28,.28,.5,BLUE,1.42);laundrySteam=puffs(o.g,P(x+.34,y+.44,2.05))});
+
+/* ---------- Hilltop ---------- */
+B({id:'school',name:'Faraday Road Primary',dist:'hill',z:.8,x:15.4,y:1.4,w:3,d:2.2,pr:4,load:t=>2+32*hrs(t,8,15.8)+8*hrs(t,15.8,18),litf:(t,dk)=>dk>.3&&t>7.6&&t<18,hot:15,
+  notes:['Empty. The caretaker is polishing the bell.','Thirty-two radiators and one very old projector.']},o=>{const {x,y}=o,Y=y+2.2;box(x,y,3,2.2,1.35,C.pink);box(x-.07,y-.07,3.14,2.34,.13,WHITE,1.35);
+  for(let i=0;i<4;i++)if(i!==1)winL(x+.25+i*.7,.5,.42,.5,Y);doorL(x+.92,.5,.72,Y,C.steel);winR(y+.35,.5,.5,.5,x+3);winR(y+1.3,.5,.5,.5,x+3);
+  box(x+1.25,y+.8,.5,.5,.5,CREAM,1.48);const ap=P(x+1.5,y+1.05,2.5+o.z);poly(o.g,[P(x+1.25,y+1.3,1.98+o.z),P(x+1.75,y+1.3,1.98+o.z),ap],SLATE);poly(o.g,[P(x+1.75,y+.8,1.98+o.z),P(x+1.75,y+1.3,1.98+o.z),ap],mix(SLATE,C.ink,.2));
+  const f=P(x+2.7,y+2,1.48+o.z),ft=P(x+2.7,y+2,2.7+o.z);line(o.g,f,ft,'pole');el('path',{d:`M${ft[0]} ${ft[1]}l9 2.5-9 3.5z`,fill:C.sun,class:'f'},o.g)});
+B({id:'library',name:'Lumen Free Library',dist:'hill',z:.8,x:19,y:1.6,w:1.6,d:1.8,pr:4,load:t=>.8+8.5*hrs(t,9,19),litf:(t,dk)=>dk>.35&&t>8.8&&t<19.1,hot:4,
+  notes:['Closed. The overdue notices print themselves at midnight.','Reading lamps on. Somebody has the atlas out again.']},o=>{const {x,y}=o,Y=y+1.8;box(x,y,1.6,1.8,1.4,CREAM);gable(x,y,1.6,1.8,1.4,.5,WHITE,CREAM,'y');
+  winL(x+.3,.3,.3,.8,Y);winL(x+1,.3,.3,.8,Y);doorL(x+.66,.28,.7,Y);[.15,.62,.98,1.45].forEach(a=>line(o.g,P(x+a,Y+.02,o.z),P(x+a,Y+.02,1.4+o.z),'pole',{'stroke-width':1.6,stroke:WHITE}));
+  winR(y+.6,.4,.6,.6,x+1.6)});
+let marquee;
+B({id:'cinema',name:'The Bijou',dist:'hill',z:.8,x:21.2,y:1.2,w:2.2,d:3.2,pr:1,load:t=>1.2+13*hrs(t,17.4,23.5)+(S.dark>.5&&t>17&&t<23.5?3.1:0),litf:(t,dk)=>dk>.5&&t>17&&t<23.5,hot:8,
+  notes:['Dark until dusk. Tonight: "The Long Wire Home", 7.30.','Projector, popcorn, marquee. 3.1 kW of that is pure civic pride.']},o=>{const {x,y}=o,Y=y+3.2;box(x,y,2.2,3.2,2.0,C.pink);box(x+.2,y+.2,1.8,2.8,.2,ROSE,2.0);
+  doorL(x+.45,.5,.7,Y,C.steel);doorL(x+1.2,.5,.7,Y,C.steel);
+  poly(o.g,qL(x+.25,1.15,1.7,.6,Y),'#fff');poly(o.lg,qL(x+.25,1.15,1.7,.6,Y),'','wl');
+  ftext(o.g,'BIJOU',x+.42,Y+.01,1.24,7.2,C.ink);marquee=ftext(o.lg,'BIJOU',x+.42,Y+.01,1.24,7.2,C.ink);
+  box(x+.15,Y,1.9,.45,.12,WHITE,.92);for(let i=0;i<6;i++){const p=P(x+.3+i*.32,Y+.45,.98+o.z);el('circle',{cx:p[0],cy:p[1],r:1.1,class:'w'},o.g);el('circle',{cx:p[0],cy:p[1],r:1.3,class:'wl'},o.lg)}
+  poly(o.g,qR(y+1.2,.5,.8,1.1,x+2.2),C.sun)});
+[['hh1','The Schoolmaster\'s House',15.6,'Marking by lamplight, with the wireless on low.','A slow cooker, quietly ahead of schedule.'],['hh2','No. 2 Hilltop Villas',17.2,'Electric blanket, pre-warming.','Gone to the pictures.']].forEach((h,i)=>
+ B({id:h[0],name:h[1],dist:'hill',z:.8,x:h[2],y:4.4,w:1.2,d:1.3,pr:9,load:houseLoad(30+i),litf:houseLit(30+i),hot:1.6,notes:[h[4],h[3]]},o=>{const {x,y}=o,Y=y+1.3,hue=i?C.aqua:BLUE;box(x,y,1.2,1.3,1.0,hue);gable(x,y,1.2,1.3,1.0,.55,i?ROSE:SLATE,hue,'y');doorL(x+.15,.28,.55,Y,C.sun);winL(x+.62,.4,.38,.38,Y);winR(y+.4,.4,.5,.38,x+1.2)}));
+
+/* ---------- Riverside ---------- */
+B({id:'pump',name:'Amp Lane Pump House',dist:'river',x:19.2,y:15.1,w:1,d:.7,pr:10,load:(t,T)=>3+15*(vn(T*2.2+3)>.55?1:0)+22*hrs(t,1,4),litf:(t,dk)=>dk>.6,hot:10,
+  notes:['Reservoir topped up. Pumps resting on their float switch.','Lifting the town\'s water up to the Hilltop tank.']},o=>{const {x,y}=o;box(x,y,1,.7,.8,BLUE);box(x-.05,y-.05,1.1,.8,.1,WHITE,.8);winL(x+.55,.3,.28,.3,y+.7);doorL(x+.15,.26,.5,y+.7);
+  line(o.g,P(x+.5,y,.3),P(x+.5,y-.25,.05),'pole',{'stroke-width':2.4})});
+B({id:'depot',name:'Tram Depot, Quay Road',dist:'river',x:19,y:18.6,w:3,d:1.5,pr:6,load:t=>3.5+9*hrs(t,23.6,24)+9*hrs(t,0,5.5),litf:(t,dk)=>dk>.4,hot:7,
+  notes:['One fitter, one tea urn, an empty inspection pit.','Car No. 1 is home, being washed and greased.']},o=>{const {x,y}=o,Y=y+1.5;box(x,y,3,1.5,1.05,C.aqua);gable(x,y,3,1.5,1.05,.5,CREAM,C.aqua,'x');
+  doorL(x+.3,.9,.82,Y,C.steel);doorL(x+1.5,.9,.82,Y,C.steel);winL(x+2.55,.45,.3,.36,Y);winR(y+.5,.45,.5,.36,x+3)});
+B({id:'shed',name:'Allotment Society Hut',dist:'river',x:21.8,y:21.6,w:.8,d:.8,pr:8,load:t=>.05+.5*hrs(t,9,17.5),litf:()=>false,hot:.3,
+  notes:['Padlocked. The marrows are unsupervised.','A radio, one bulb and a strongly worded seed catalogue.']},o=>{const {x,y}=o;box(x,y,.8,.8,.6,C.pink);gable(x,y,.8,.8,.6,.35,SLATE,C.pink,'y');doorL(x+.25,.28,.45,y+.8)});
+
+/* ---------- The Works ---------- */
+B({id:'sub',name:'Lumen Substation',dist:'works',x:13.4,y:17.9,w:2.4,d:1.5,
+  notes:['Three transformers, 11 kV down to 400 V. Polished every Friday.','Three transformers, 11 kV down to 400 V. Polished every Friday.']},o=>{const {x,y}=o;
+  line(o.g,P(x+.15,y+.3,0),P(x+.15,y+.3,1.3),'pole');line(o.g,P(x+2.25,y+.3,0),P(x+2.25,y+.3,1.3),'pole');line(o.g,P(x+.15,y+.3,1.3),P(x+2.25,y+.3,1.3),'pole',{'stroke-width':1.4});
+  for(let i=0;i<3;i++){const a=x+.35+i*.7;box(a,y+.55,.45,.6,.55,i===1?C.aqua:BLUE);poly(o.g,qL(a+.06,.2,.33,.1,y+1.15),C.sun);
+    [.12,.33].forEach(d=>{const p=P(a+d,y+.85,.55),q=P(a+d,y+.85,.85);line(o.g,p,q,'pole');el('circle',{cx:q[0],cy:q[1],r:1.2,fill:C.sun,class:'f'},o.g)})}});
+const bsegs=[];
+B({id:'batt',name:'The Battery Barn',dist:'works',x:13.4,y:20.7,w:2.2,d:1.8,
+  notes:['Soaking up the surplus for later.','Paying the afternoon back, a kilowatt at a time.']},o=>{const {x,y}=o,Y=y+1.8;box(x,y,2.2,1.8,1.3,C.pink);gable(x,y,2.2,1.8,1.3,.6,SLATE,C.pink,'x');
+  poly(o.g,qL(x+.25,.3,1.7,.62,Y),'#fff');poly(o.g,qL(x+1.95,.48,.1,.26,Y),C.ink);
+  for(let i=0;i<5;i++)bsegs.push(poly(o.g,qL(x+.32+i*.32,.37,.26,.48,Y),C.sun,'f bseg'));
+  winR(y+.6,.5,.6,.4,x+2.2)});
+let kioskLamp;
+B({id:'inter',name:'Mainland Interconnector',dist:'works',x:16.5,y:18.3,w:.6,d:.5,
+  notes:['Selling the surplus across the water at 4.5p a unit.','Buying from the mainland at 21p a unit. The treasurer winces.']},o=>{const {x,y}=o;box(x,y,.6,.5,.75,CREAM);const p=P(x+.3,y+.5,.5);kioskLamp=el('circle',{cx:p[0],cy:p[1],r:1.8,fill:C.sun,class:'f'},o.g)});
+
+/* ---------- Generation ---------- */
+const blades=[];
+[4,7.5,11].forEach((x,i)=>B({id:'wt'+i,name:['Turbine No. 1, "Gusty"','Turbine No. 2, "Breezy"','Turbine No. 3, "Mabel"'][i],dist:'gen',gen:1,z:1.2,x:x-.3,y:1.1,w:.6,d:.6,
+  notes:['Feathered and waiting for a breeze.',['Named by Class 4 in a ballot. It was close.','The quiet one. Never tripped once.','Mabel was the first chair of the Board, 1926.'][i]]},o=>{const y=1.4,b=P(x,y,1.2),t=P(x,y,4.5);
+  el('polygon',{points:pts([[b[0]-2.2,b[1]],[b[0]+2.2,b[1]],[t[0]+1,t[1]],[t[0]-1,t[1]]]),fill:'#fff',class:'f'},o.g);
+  const r=el('g',{},o.g);for(let k=0;k<3;k++)el('path',{d:'M-1.6 0L-.5 -25L1.6 0Z',fill:'#fff',class:'f',transform:`rotate(${k*120})`},r);
+  el('circle',{r:2.2,fill:C.sun,class:'f'},r);blades.push({r,x:t[0],y:t[1],a:i*40})}));
+const pv=[];
+B({id:'solar',name:'The Sun Field',dist:'gen',gen:1,x:1.6,y:18,w:8,d:4.6,dz:-1.2,
+  notes:['Dark. 1,260 panels dreaming of June.','1,260 panels tilted at 32 degrees, grazed by six sheep.']},o=>{for(let r=0;r<3;r++)for(let c=0;c<5;c++){const x=1.9+c*1.55,y=18.3+r*1.5;
+  poly(o.g,[P(x,y+.9,.12),P(x+1.3,y+.9,.12),P(x+1.3,y+.9,0),P(x,y+.9,0)],C.paper);
+  pv.push(poly(o.g,[P(x,y,.6),P(x+1.3,y,.6),P(x+1.3,y+.9,.12),P(x,y+.9,.12)],C.steel));
+  line(o.g,P(x+.65,y,.6),P(x+.65,y+.9,.12),'pole',{'stroke-width':.5});line(o.g,P(x,y+.45,.36),P(x+1.3,y+.45,.36),'pole',{'stroke-width':.5})}});
+B({id:'hydro',name:'Amp Weir Hydro',dist:'gen',gen:1,x:0,y:13,w:5.8,d:2.9,dz:-4,
+  notes:['A steady 170 kW since 1926, flood or drought.','A steady 170 kW since 1926, flood or drought.']},o=>{box(0,13,3.6,2,.55,C.aqua);box(3.6,12.9,.7,2.2,.95,CREAM);
+  [13.4,14,14.6].forEach(y=>line(o.g,P(4.3,y,.85),P(4.3,y,.02),'sluice'));
+  box(4.5,15.1,1.2,.75,.7,BLUE);gable(4.5,15.1,1.2,.75,.7,.35,ROSE,BLUE,'x');winL(4.7,.25,.3,.3,15.85);winL(5.2,.25,.3,.3,15.85)});
+
+/* tram */
+const tram={s:17,v:0,dwell:0,park:true,kw:0};
+const tramO=B({id:'tram',name:'Tram No. 1, the Circle',dist:'river',x:-.7,y:-.25,w:1.4,d:.5,pr:6,load:()=>S.tramKw,litf:(t,dk)=>dk>.4&&!tram.park,hot:8,
+  notes:['At a stop, doors open, heater on.','Under way. Next stop: somewhere on a very small loop.']},o=>{
+  const gx=el('g',{},o.g),gy=el('g',{},o.g),lx=el('g',{},o.lg),ly=el('g',{},o.lg);o.gx=gx;o.gy=gy;o.lx=lx;o.ly=ly;
+  cur={g:gx,lg:lx,z:.1};box(-.7,-.25,1.4,.5,.55,C.sun);box(-.7,-.25,1.4,.5,.07,WHITE,.55);for(let i=0;i<4;i++)winL(-.6+i*.32,.24,.24,.22,.25);
+  line(gx,P(0,0,.72),P(.3,0,1.0),'pole');
+  cur={g:gy,lg:ly,z:.1};box(-.25,-.7,.5,1.4,.55,C.sun);box(-.25,-.7,.5,1.4,.07,WHITE,.55);for(let i=0;i<4;i++)winR(-.6+i*.32,.24,.24,.22,.25);
+  line(gy,P(0,0,.72),P(0,.3,1.0),'pole')});
+tramO.wrap.dataset.tram='1';
+
+/* trees */
+[[1.1,4.6],[1.2,6.3],[1.1,10],[1.3,11.4],[19.3,5.3],[20.6,5.6],[22.4,5.4],[12,21.4],[12.1,22.9],[10.6,23],[23.1,20.4],[23.2,22.9],[16.4,15.5],[8,15.5],[10.2,15.4],[14.6,11.6],[1.2,15.5],[16.6,22.6],[18.3,3.9]].forEach((p,i)=>{
+  const z=elev(p[0],p[1]),b=P(p[0],p[1],z),t=P(p[0],p[1],z+.55),wrap=el('g',{}),g=el('g',{class:'deco',style:`--d:${500+i*45}ms;pointer-events:none`},wrap);
+  line(g,b,t,'pole');el('circle',{cx:t[0],cy:t[1]-4,r:4.6+hash(i)*1.6,fill:mix(C.aqua,C.steel,.22+hash(i+3)*.2),class:'f'},g);sorted.push({d:p[0]+p[1],e:wrap})});
+sorted.sort((a,b)=>a.d-b.d).forEach(s=>gB.appendChild(s.e));
+const statics=sorted.filter(s=>!s.e.dataset.tram);
+
+/* ---------- wires ---------- */
+const wires={};
+function wire(id,nodes,o){o=o||{};const z0=o.under?.03:.7;const n=nodes.map(p=>[p[0],p[1],p[2]==null?z0:p[2]]);
+  const d='M'+n.map(p=>{const q=P(p[0],p[1],p[2]);return q[0].toFixed(1)+' '+q[1].toFixed(1)}).join('L');
+  const hl=el('path',{d,class:'hlp'},gW);
+  const base=el('path',{d,class:'wire'+(o.trunk?' trunk':'')+(o.under?' under':'')},gW);const len=base.getTotalLength();
+  base.style.setProperty('--l',len.toFixed(0));base.style.setProperty('--d',(1500+Object.keys(wires).length*70)+'ms');
+  if(!o.under&&!o.nopole)for(let i=0;i<n.length;i++){const a=n[i],b=n[i+1];const add=(x,y,z)=>{const e=elev(x,y),p=P(x,y,e),q=P(x,y,z);line(gW,p,q,'pole');line(gW,[q[0]-2.4,q[1]-.6],[q[0]+2.4,q[1]-.6],'pole')};
+    add(a[0],a[1],a[2]);if(b){const L=Math.hypot(b[0]-a[0],b[1]-a[1]),k=Math.floor(L/2.7);for(let j=1;j<=k;j++){const f=j/(k+1);add(a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f,a[2]+(b[2]-a[2])*f)}}}
+  const fl=el('g',{class:'fl'},gF),ws=o.trunk?3:2.2,ls=[];
+  [['7 28 1 0','6 30'],['0 11 8 17','0 12 6 18'],['0 23 8 5','0 24 6 6']].forEach(pt=>{const g=el('g',{opacity:0},fl);el('path',{d,class:'n','stroke-width':ws+1.5,'stroke-dasharray':pt[0]},g);el('path',{d,class:'y','stroke-width':ws,'stroke-dasharray':pt[1]},g);ls.push({g,o:0})});
+  const arrs=[];if(RM){const k=Math.max(1,Math.round(len/75));for(let i=0;i<k;i++){const L=len*(i+.5)/k,p=base.getPointAtLength(L),q=base.getPointAtLength(Math.min(len,L+2));arrs.push({e:el('path',{d:'M-5 -4L5 0L-5 4Z',class:'arr'},gT),p,a:Math.atan2(q.y-p.y,q.x-p.x)*180/Math.PI})}}
+  wires[id]={id,n,base,hl,fl,ls,arrs,cap:o.cap,kw:0,f:0,off:0};}
+wire('wind',[[3.6,2.2,1.85],[13,2.2,1.85],[13.75,3,.7],[13.75,17.4],[14.2,17.95]],{trunk:1,cap:600});
+wire('solar',[[9.7,20],[11.5,20],[11.5,19.2],[13.4,19.2]],{trunk:1,cap:420});
+wire('hydro',[[5.2,15.95],[5.2,17.4],[10.6,17.4],[10.6,18.6],[13.4,18.6]],{trunk:1,cap:200});
+wire('batt',[[14.5,20.7],[14.5,19.4]],{under:1,trunk:0,cap:250});
+wire('inter',[[17,29.6,2.2],[17,23,2.2],[17,21,2.2],[17,19,2.2],[16.8,18.8,.8],[15.9,18.6,.7]],{trunk:1,cap:500,nopole:1});
+wire('old',[[13.4,18],[12.25,18],[12.25,7.9],[2.4,7.9]],{cap:500});
+wire('river',[[15.8,18],[15.8,17.3],[22.25,17.3]],{cap:500});
+wire('bridge',[[22.25,17.3],[22.25,12.3]],{cap:400});
+wire('mill',[[22.25,12.3],[15.3,12.3]],{cap:300});
+wire('hill',[[22.25,12.3],[23.6,12.3],[23.6,7.6],[23.6,6.9,1.5],[15.4,6.9,1.5]],{cap:250});
+/* pylons */
+[19,21,23].forEach(y=>{const t=P(17,y,2.3);line(gW,P(16.7,y,0),t,'pole');line(gW,P(17.3,y,0),t,'pole');[[1.9,.5],[1.45,.4]].forEach(a=>line(gW,P(17-a[1],y,a[0]),P(17+a[1],y,a[0]),'pole'));line(gW,P(16.85,y,1.1),P(17.15,y,1.1),'pole')});
+{const p=P(17,29.6,2.2);const t=el('text',{x:p[0]-12,y:p[1]+5,'font-size':8,class:'itx','text-anchor':'end'},gT);t.textContent='TO THE MAINLAND';
+ el('path',{d:'M-1 -4.5L7 0L-1 4.5Z',fill:C.sun,stroke:C.ink,'stroke-width':1.1,'stroke-linejoin':'round',transform:`translate(${p[0].toFixed(1)},${p[1].toFixed(1)}) rotate(150)`},gT)}
+const FEED={old:['old'],mill:['mill','bridge','river'],hill:['hill','bridge','river'],river:['river']};
+const GENW={wt0:'wind',wt1:'wind',wt2:'wind',solar:'solar',hydro:'hydro',batt:'batt',inter:'inter'};
+blds.forEach(b=>{b.feed=FEED[b.dist]||(GENW[b.id]?[GENW[b.id]]:[]);if(!FEED[b.dist]||b.id==='tram')return;
+  const cx=b.x+b.w/2,cy=b.y+b.d/2,n=wires[b.feed[0]].n;let best=null,bd=1e9;
+  for(let i=0;i<n.length-1;i++){const a=n[i],c=n[i+1],dx=c[0]-a[0],dy=c[1]-a[1],L=dx*dx+dy*dy,f=clamp(((cx-a[0])*dx+(cy-a[1])*dy)/L),px=a[0]+dx*f,py=a[1]+dy*f,dd=Math.hypot(px-cx,py-cy);if(dd<bd){bd=dd;best=[px,py]}}
+  b.stub=line(gStub,P(cx,cy,b.z+.02),P(best[0],best[1],elev(best[0],best[1])+.02),'stub')});
+/* lamps, stars, bangs, cloud, rain */
+[[13.62,5.5],[13.62,10.2],[4.6,8.7],[8.6,8.7],[3,11.9],[7,11.9],[10.6,11.9],[16.5,13.05],[20,13.05],[8,15.92],[17.6,15.92],[21,15.92],[13.62,21],[19.4,7.3]].forEach(p=>{const b=P(p[0],p[1]),t=P(p[0],p[1],.95);line(gW,b,t,'pole');
+  el('circle',{cx:t[0],cy:t[1],r:1.5,fill:'#fff',class:'f'},gW);el('circle',{cx:t[0],cy:t[1],r:1.9,class:'wl lamp'},gL)});
+for(let i=0;i<26;i++){const x=-340+hash(i*3+1)*680,y=-84+hash(i*7+2)*150;if(Math.abs(x)<300-(y+84)*1.2&&y>-40)continue;const r=1.2+hash(i)*1.6;el('path',{d:`M${x} ${y-r}l${r*.3} ${r*.7} ${r*.7} ${r*.3}-${r*.7} ${r*.3}-${r*.3} ${r*.7}-${r*.3}-${r*.7}-${r*.7}-${r*.3} ${r*.7}-${r*.3}z`,fill:C.sun,class:'star'},gL)}
+const bangs={};[['old','bakery',2.6],['mill','factory',2.5],['hill','cinema',3.6],['river','depot',2.1]].forEach(a=>{const b=byId[a[1]],p=P(b.x+b.w/2,b.y+b.d/2,a[2]);const g=el('g',{class:'bang'},gT);
+  el('path',{d:`M${p[0]-7} ${p[1]-17}h14a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-4l-3 4-3-4h-4a3 3 0 0 1-3-3v-9a3 3 0 0 1 3-3z`,fill:C.pink,stroke:C.ink,'stroke-width':1.2},g);
+  const t=el('text',{x:p[0],y:p[1]-5.2,'text-anchor':'middle','font-size':11,class:'itx'},g);t.textContent='!';bangs[a[0]]=g});
+const cloud=el('g',{class:'cloud',opacity:0},gT);
+el('path',{d:'M-30 6a10 10 0 0 1 4-19 15 15 0 0 1 28-5 11 11 0 0 1 20 6 9 9 0 0 1 2 18z',fill:'#fff',stroke:C.ink,'stroke-width':1.1,'stroke-linejoin':'round'},cloud);
+for(let i=0;i<34;i++){const x=-340+hash(i+50)*700,y=-90+hash(i+90)*460;el('line',{x1:x,y1:y,x2:x-9,y2:y+20,class:'rain',style:`animation-delay:${-hash(i)*.5}s`},gT)}
+const flash=el('rect',{id:'flash',x:-352,y:-92,width:704,height:506,fill:'#fff'},gT);
+const tripTag=el('g',{opacity:0},gT);{const p=P(17,21,3);el('rect',{x:p[0]-27,y:p[1]-9,width:54,height:14,rx:7,fill:C.pink,stroke:C.ink,'stroke-width':1.1},tripTag);const t=el('text',{x:p[0],y:p[1]+1.6,'text-anchor':'middle','font-size':7.5,class:'itx'},tripTag);t.textContent='TRIPPED'}
+
+/* ---------- simulation ---------- */
+const REST=[{dist:'old',pr:9,f:t=>120+200*bump(t,7.5,1.1)+290*bump(t,18.8,1.9)+240*S.surge},{dist:'mill',pr:7,f:t=>28+150*hrs(t,7.3,17.4)},
+  {dist:'hill',pr:7,f:t=>40+60*bump(t,8,1)+95*bump(t,19,2)+60*S.surge},{dist:'river',pr:8,f:t=>36+52*bump(t,18.5,2)+6*S.dark+40*S.surge}];
+const SHED=['','The Bijou','the steam laundry','the Millside works','the school and the library','The Filament Arms','the tram','homes in Millside and Hilltop','Riverside','Old Town\'s homes','the pump house','the bakery'];
+const loads=blds.filter(b=>b.load);
+const H=new Array(144).fill(null);let chartDirty=true;
+const windAuto=T=>clamp((.17+.56*(vn(T*.35)*.6+vn(T*1.1+40)*.4))*(1-.8*bump(T%24,19.3,1.8)));
+const cloudAuto=T=>clamp(vn(T*.5+9)*1.3-.3);
+const sunAt=t=>t>6.7&&t<17.8?Math.pow(Math.sin(Math.PI*(t-6.7)/11.1),1.15):0;
+const prev={b:0,i:0,lit:0};const lastLog={};
+function log(msg,key,gap){if(S.quiet)return;if(key){if(lastLog[key]!=null&&S.T-lastLog[key]<(gap||.5))return;lastLog[key]=S.T}
+  const li=document.createElement('li');li.innerHTML='<b>'+hhmm(S.t)+'</b><span></span>';li.lastChild.textContent=msg;const L=$('log');L.insertBefore(li,L.firstChild);while(L.children.length>40)L.removeChild(L.lastChild);
+  $('tapet').textContent=hhmm(S.t)+'  '+msg;const tp=$('tape');tp.classList.remove('swap');void tp.offsetWidth;tp.classList.add('swap')}
+function step(dt){
+  const d0=Math.floor(S.T/24),t0=S.t;S.T+=dt;const T=S.T,t=T%24;S.t=t;
+  if(Math.floor(T/24)!==d0){log(`Midnight. Meters read: sold £${S.sold.toFixed(2)}, bought £${S.bought.toFixed(2)}.`);S.E={h:0,w:0,s:0,b:0,i:0};S.sold=0;S.bought=0;blds.forEach(b=>b.kwh=0)}
+  const cross=h=>(t0<h&&t>=h);
+  S.w=S.storm?1:(S.windHold!=null?S.windHold:windAuto(T));S.c=S.storm?1:(S.cloudHold!=null?S.cloudHold:cloudAuto(T));
+  S.sun=sunAt(t);S.dark=clamp((t<12?1-smooth(6.2,7.1,t):smooth(17.3,18.2,t))+(S.storm?.35:0));
+  S.cx=-8+((T/2.2)%1)*40;S.shade=clamp(1-Math.abs(S.cx-5.6)/5.5)*(S.c>.06?.35+.65*S.c:0);
+  S.surge=0;if(S.match){const x=T-S.match.ko;if(x>=.75&&x<1.1)S.surge=Math.exp(-(x-.75)/.11);else if(x>=1.75&&x<2)S.surge=.45*Math.exp(-(x-1.75)/.1);
+    if(x>=.75&&!S.match.ht){S.match.ht=1;log('Half-time. Two thousand kettles go on at once.')}if(x>=1.75&&!S.match.ft){S.match.ft=1;log('Full time. 2–1. The fridge doors of Lumen open as one.')}if(x>2.1)S.match=null}
+  const D=S.dist;D.old=D.mill=D.hill=D.river=0;let pend=0;
+  for(const b of loads){const raw=b.load(t,T);b.pw=S.sw[b.dist]&&b.pr>S.shed;if(S.sw[b.dist]&&b.pr===S.shed)pend+=raw;b.kw=b.pw?raw:0;b.kwh+=b.kw*dt;D[b.dist]+=b.kw}
+  for(const r of REST){const raw=r.f(t),on=S.sw[r.dist];if(on&&r.pr===S.shed)pend+=raw;if(on&&r.pr>S.shed)D[r.dist]+=raw}
+  const demand=D.old+D.mill+D.hill+D.river;
+  let wind=S.storm?0:600*Math.pow(clamp((S.w-.08)/.72),1.7),solar=420*S.sun*(1-.6*S.c)*(1-.75*S.shade),hydro=170+3*Math.sin(T*3);
+  let net=wind+solar+hydro-demand,batt=0,imp=0;S.unmet=0;S.curt=0;
+  if(net>0){const ch=Math.min(net,250,(S.cap-S.soc)/dt);batt=-ch;const rest=net-ch;if(S.island){S.curt=rest;const cw=Math.min(wind,rest);wind-=cw;solar-=Math.min(solar,rest-cw)}else imp=-rest}
+  else{const di=Math.min(-net,250,Math.max(0,S.soc-40)/dt);batt=di;const rest=-net-di;if(S.island)S.unmet=rest;else imp=rest}
+  S.soc=clamp(S.soc-batt*dt,0,S.cap);
+  if(S.island){const avail=wind+solar+hydro+(S.soc>60?250:0);
+    if(S.unmet>1&&S.shed<11&&T-S.shedT>.07){S.shed++;S.shedT=T;log(`Load shed, step ${S.shed}: ${SHED[S.shed]} goes dark so the ovens stay hot.`)}
+    else if(S.shed>0&&T-S.shedT>.35&&demand+pend*1.25+20<avail){log(`Enough to spare. ${SHED[S.shed].charAt(0).toUpperCase()+SHED[S.shed].slice(1)} restored.`);S.shed--;S.shedT=T}}
+  S.wind=wind;S.solar=solar;S.hydro=hydro;S.batt=batt;S.imp=imp;S.demand=demand;S.gen=wind+solar+hydro;
+  const E=S.E;E.h+=hydro*dt;E.w+=wind*dt;E.s+=solar*dt;E.b+=Math.max(0,batt)*dt;E.i+=Math.max(0,imp)*dt;
+  if(imp>0)S.bought+=imp*dt*.21;else S.sold+=-imp*dt*.045;
+  if(imp>1)S.streak=0;else{S.streak+=dt;if(S.streak>S.best)S.best=S.streak}
+  byId.wt0.kw=wind*.35;byId.wt1.kw=wind*.33;byId.wt2.kw=wind*.32;byId.solar.kw=solar;byId.hydro.kw=hydro;byId.batt.kw=batt;byId.inter.kw=imp;byId.sub.kw=wind+solar+hydro+Math.max(0,batt)+Math.max(0,imp);
+  ['wt0','wt1','wt2','solar','hydro'].forEach(k=>byId[k].kwh+=byId[k].kw*dt);byId.batt.kwh+=Math.abs(batt)*dt;byId.inter.kwh+=Math.abs(imp)*dt;byId.sub.kwh+=byId.sub.kw*dt;
+  const W=wires;W.wind.kw=wind;W.solar.kw=solar;W.hydro.kw=hydro;W.batt.kw=batt;W.inter.kw=imp;W.old.kw=D.old;W.river.kw=D.river+D.mill+D.hill;W.bridge.kw=D.mill+D.hill;W.mill.kw=D.mill;W.hill.kw=D.hill;
+  H[Math.floor(t*6)%144]={h:hydro,w:wind,s:solar,b:Math.max(0,batt),i:Math.max(0,imp),d:demand};chartDirty=true;
+  if(S.quiet)return;
+  const bs=batt>8?1:batt<-8?-1:0;if(bs&&bs!==prev.b){prev.b=bs;log(bs>0?`The battery barn turns round and starts paying out: ${fmt(batt)} kW.`:`Surplus on the bars. The battery barn is charging at ${fmt(batt)} kW.`,'batt',.6)}
+  const is=imp>8?1:imp<-8?-1:0;if(is&&is!==prev.i){prev.i=is;log(is>0?`Lumen is importing ${fmt(imp)} kW from the mainland.`:`Exporting ${fmt(imp)} kW. The mainland is welcome.`,'imp',.6)}
+  if(cross(3)&&S.sw.old)log('Crumb & Current fire the ovens. 20 kW of tomorrow\'s bread.');
+  if(cross(6))log('First tram out of the depot. Mind the doors.');
+  if(cross(8.75)&&S.sw.hill)log('The school bell. Thirty-two radiators groan awake.');
+  if(cross(15.75))log('School\'s out. Demand on Hilltop drops like a satchel.');
+  if(cross(17.7)&&S.sw.hill&&S.shed<1)log('The Bijou\'s marquee is on. 3.1 kW of civic pride.');
+  if(cross(18.1))log('Streetlamps lit, all fourteen of them.');
+  if(cross(23.5))log('Last tram back to the depot. The Bijou sweeps up.');
+  if(S.w<.22&&prev.w>=.22)log('The wind has dropped on the ridge. Gusty, Breezy and Mabel slow to a stroll.','wdrop',3);prev.w=S.w;
+  if(S.shade>.5&&(prev.sh||0)<=.5&&S.sun>.2)log('A cloud crosses the sun field. Output dips, sheep unbothered.','cloud',1.5);prev.sh=S.shade;
+}
+function advance(h){if(h<=0)return;const n=Math.max(1,Math.ceil(h*30));for(let i=0;i<n;i++)step(h/n)}
+function scrubTo(t){let d=((t-S.t)%24+24)%24;if(d<.02||d>23.98)return;S.quiet=true;const n=Math.ceil(d*6);for(let i=0;i<n;i++)step(d/n);S.quiet=false;lastDemand=S.demand;renderSlow(true)}
+
+/* ---------- panels: build ---------- */
+const arc=(cx,cy,r,a0,a1)=>{const p=a=>[cx+r*Math.sin(a*Math.PI/180),cy-r*Math.cos(a*Math.PI/180)],s=p(a0),e=p(a1);return `M${s[0].toFixed(1)} ${s[1].toFixed(1)}A${r} ${r} 0 ${Math.abs(a1-a0)>180?1:0} ${a1>a0?1:0} ${e[0].toFixed(1)} ${e[1].toFixed(1)}`};
+/* day dial */
+const dial=$('dial');let dHand,dKnob,dSun,dMoon;
+{el('circle',{cx:100,cy:100,r:92,fill:C.card||'#FDFBF7',stroke:C.ink,'stroke-width':1.5},dial);
+ const ang=t=>(t-12)*15;el('path',{d:arc(100,100,78,ang(6.7),ang(17.8)),fill:'none',stroke:mix(C.sun,C.white,.45),'stroke-width':20},dial);
+ el('path',{d:arc(100,100,78,ang(17.8),ang(30.7)),fill:'none',stroke:'#A9A8D9','stroke-width':20},dial);
+ el('path',{d:arc(100,100,78,ang(16.9),ang(18.4)),fill:'none',stroke:C.pink,'stroke-width':20},dial);el('path',{d:arc(100,100,78,ang(6.1),ang(7.3)),fill:'none',stroke:C.pink,'stroke-width':20},dial);
+ el('circle',{cx:100,cy:100,r:88,fill:'none',stroke:C.ink,'stroke-width':1},dial);el('circle',{cx:100,cy:100,r:68,fill:'none',stroke:C.ink,'stroke-width':1},dial);
+ for(let h=0;h<24;h++){const a=ang(h)*Math.PI/180,r1=h%6?84:88,r0=h%6?79:68;el('line',{x1:100+r0*Math.sin(a),y1:100-r0*Math.cos(a),x2:100+r1*Math.sin(a),y2:100-r1*Math.cos(a),stroke:C.ink,'stroke-width':h%6?1:1.6},dial)}
+ [['12',100,49],['18',153,104],['00',100,158],['06',47,104]].forEach(l=>{const t=el('text',{x:l[1],y:l[2],'text-anchor':'middle',class:'ax','font-size':11},dial);t.textContent=l[0]});
+ dHand=el('g',{},dial);el('line',{x1:100,y1:100,x2:100,y2:34,stroke:C.ink,'stroke-width':2.4,'stroke-linecap':'round'},dHand);
+ dKnob=el('g',{transform:'translate(100,22)'},dHand);dSun=el('g',{},dKnob);for(let i=0;i<8;i++)el('line',{x1:0,y1:-13.5,x2:0,y2:-17.5,stroke:C.ink,'stroke-width':1.8,'stroke-linecap':'round',transform:`rotate(${i*45})`},dSun);
+ el('circle',{r:11,fill:C.sun,stroke:C.ink,'stroke-width':1.6},dSun);dMoon=el('g',{},dKnob);el('circle',{r:12,fill:'#fff',stroke:C.ink,'stroke-width':1.6},dMoon);el('path',{d:'M3 -9a10 10 0 1 0 6 13a8 8 0 0 1-6-13z',fill:C.sun,stroke:C.ink,'stroke-width':1.3,'stroke-linejoin':'round'},dMoon);
+ el('circle',{cx:100,cy:100,r:6,fill:C.ink},dial)}
+/* gauge */
+let needle;{const g=$('gauge');el('path',{d:arc(110,108,84,-80,80),fill:'none',stroke:C.pink,'stroke-width':15},g);el('path',{d:arc(110,108,84,-40,40),fill:'none',stroke:C.aqua,'stroke-width':15},g);
+ el('path',{d:arc(110,108,92,-80,80),fill:'none',stroke:C.ink,'stroke-width':1.4},g);el('path',{d:arc(110,108,76,-80,80),fill:'none',stroke:C.ink,'stroke-width':1},g);
+ for(let i=-10;i<=10;i++){const a=i*8*Math.PI/180,r0=i%5?86:76,r1=92;el('line',{x1:110+r0*Math.sin(a),y1:108-r0*Math.cos(a),x2:110+r1*Math.sin(a),y2:108-r1*Math.cos(a),stroke:C.ink,'stroke-width':i%5?1:1.6},g)}
+ [['49.90',-80],['49.95',-40],['50.00',0],['50.05',40],['50.10',80]].forEach(l=>{const a=l[1]*Math.PI/180,t=el('text',{x:110+62*Math.sin(a),y:112-62*Math.cos(a),'text-anchor':'middle',class:'ax','font-size':8.5},g);t.textContent=l[0]});
+ needle=el('g',{},g);el('path',{d:'M107.6 108L110 22L112.4 108Z',fill:C.ink},needle);el('circle',{cx:110,cy:108,r:7,fill:C.sun,stroke:C.ink,'stroke-width':1.6},g)}
+/* battery */
+const bs2=[];{const g=$('batt');el('rect',{x:2,y:6,width:280,height:50,rx:9,fill:'#fff',stroke:C.ink,'stroke-width':1.6},g);el('rect',{x:282,y:21,width:12,height:20,rx:3,fill:C.ink},g);
+ for(let i=0;i<10;i++)bs2.push(el('rect',{x:9+i*27,y:13,width:22,height:36,rx:4,fill:C.paper,stroke:C.ink,'stroke-width':1.2,class:'bseg'},g))}
+/* ring */
+const MIX=[['h','Weir',C.aqua],['w','Ridge wind',C.steel],['s','Sun field',C.sun],['b','Battery',C.pink],['i','Mainland','#B4B0BA']];const rc=[];
+{const g=$('ring');el('circle',{cx:60,cy:60,r:42,stroke:C.paper},g);MIX.forEach(m=>{rc.push(el('circle',{cx:60,cy:60,r:42,stroke:m[2],transform:'rotate(-90 60 60)','stroke-dasharray':'0 264'},g));
+  const li=document.createElement('li');li.innerHTML=`<span><i style="background:${m[2]}"></i>${m[1]}</span><b></b>`;$('mixl').appendChild(li);m[3]=li.lastChild});
+ el('circle',{cx:60,cy:60,r:51,fill:'none',stroke:C.ink,style:'stroke-width:1.4'},g);el('circle',{cx:60,cy:60,r:33,fill:'none',stroke:C.ink,style:'stroke-width:1.4'},g);
+ el('path',{d:'M60 46a9 9 0 0 0-5 16v4h10v-4a9 9 0 0 0-5-16zM56 70h8',fill:C.sun,stroke:C.ink,'stroke-width':1.5,'stroke-linecap':'round'},g)}
+/* chart */
+const CH={x0:44,x1:728,y0:232,y1:14,max:1200},chart=$('chart');const cA=[];let cD,cNow,cVeil,cNowT;
+{const X=h=>CH.x0+(CH.x1-CH.x0)*h/24,Y=k=>CH.y0-(CH.y0-CH.y1)*k/CH.max;
+ el('rect',{x:CH.x0,y:CH.y1,width:CH.x1-CH.x0,height:CH.y0-CH.y1,fill:'#fff',stroke:C.ink,'stroke-width':1.2},chart);
+ [['h',C.aqua],['w',C.steel],['s',C.sun],['b',C.pink],['i','#B4B0BA']].forEach(s=>cA.push({k:s[0],e:el('path',{fill:s[1],stroke:C.ink,'stroke-width':.9,'stroke-linejoin':'round'},chart)}));cA.reverse();cA.forEach(a=>chart.appendChild(a.e));cA.reverse();
+ for(let k=300;k<1200;k+=300){el('line',{x1:CH.x0,x2:CH.x1,y1:Y(k),y2:Y(k),stroke:C.ink,'stroke-width':.6,'stroke-dasharray':'2 4',opacity:.5},chart);const t=el('text',{x:CH.x0-6,y:Y(k)+3.5,'text-anchor':'end',class:'ax'},chart);t.textContent=k}
+ const u=el('text',{x:CH.x0-6,y:CH.y1+8,'text-anchor':'end',class:'ax'},chart);u.textContent='kW';
+ for(let h=0;h<=24;h+=3){el('line',{x1:X(h),x2:X(h),y1:CH.y0,y2:CH.y0+5,stroke:C.ink,'stroke-width':1},chart);const t=el('text',{x:X(h),y:CH.y0+17,'text-anchor':'middle',class:'ax'},chart);t.textContent=String(h%24).padStart(2,'0')+':00'}
+ cVeil=el('rect',{y:CH.y1+.6,height:CH.y0-CH.y1-1.2,fill:'#fff',opacity:.62},chart);
+ cD=el('path',{fill:'none',stroke:C.ink,'stroke-width':2.6,'stroke-linejoin':'round'},chart);
+ cNow=el('g',{},chart);el('line',{x1:0,x2:0,y1:CH.y1-6,y2:CH.y0,stroke:C.ink,'stroke-width':1.6},cNow);el('circle',{cx:0,cy:CH.y1-6,r:5,fill:C.sun,stroke:C.ink,'stroke-width':1.5},cNow);
+ cNowT=el('text',{x:9,y:CH.y1+12,class:'ax','font-size':11},cNow);
+ const yt=el('text',{y:CH.y1+12,class:'ax',opacity:.7},chart);yt.textContent='YESTERDAY';CH.yt=yt;CH.X=X;CH.Y=Y}
+function drawChart(){const X=CH.X,Y=CH.Y,acc=new Array(144).fill(0);
+  for(const a of cA){let top='',bot='';for(let i=0;i<144;i++){const h=H[i];if(!h)continue;const x=X((i+.5)/6).toFixed(1);bot=`L${x} ${Y(Math.min(acc[i],CH.max)).toFixed(1)}`+bot;acc[i]+=h[a.k];top+=`L${x} ${Y(Math.min(acc[i],CH.max)).toFixed(1)}`}
+    a.e.setAttribute('d',top?('M'+top.slice(1)+bot+'Z'):'')}
+  let d='';for(let i=0;i<144;i++){const h=H[i];if(h)d+=(d?'L':'M')+X((i+.5)/6).toFixed(1)+' '+Y(Math.min(h.d,CH.max)).toFixed(1)}cD.setAttribute('d',d);
+  const nx=X(S.t);cNow.setAttribute('transform',`translate(${nx.toFixed(1)},0)`);cNowT.textContent=hhmm(S.t);cNowT.setAttribute('x',nx>CH.x1-50?-42:9);
+  cVeil.setAttribute('x',nx+1);cVeil.setAttribute('width',Math.max(0,CH.x1-nx-1.6));CH.yt.setAttribute('x',nx+60>CH.x1-60?-999:CH.x1-70)}
+/* knife switches */
+const kn={};Object.keys(S.sw).forEach(k=>{const b=document.createElement('button');b.className='knife';b.setAttribute('role','switch');b.setAttribute('aria-checked','true');b.setAttribute('aria-label',DN[k]+' feeder');
+  b.innerHTML=`<svg viewBox="0 0 52 74" aria-hidden="true"><rect x="5" y="3" width="42" height="68" rx="6" fill="#F6F1EA" stroke="#2B2D42" stroke-width="1.4"/><circle class="lampk" cx="40" cy="11" r="3.4" stroke="#2B2D42" stroke-width="1.2"/><path d="M21 14h10v9h-3v-5h-4v5h-3z" fill="#457B9D" stroke="#2B2D42" stroke-width="1.2" stroke-linejoin="round"/><g class="blade"><rect x="23.8" y="16" width="4.4" height="46" rx="2" fill="#FFD166" stroke="#2B2D42" stroke-width="1.3"/><rect x="19" y="5" width="14" height="12" rx="4" fill="#F9C5D1" stroke="#2B2D42" stroke-width="1.4"/></g><circle cx="26" cy="60" r="5.4" fill="#457B9D" stroke="#2B2D42" stroke-width="1.3"/><circle cx="26" cy="60" r="1.6" fill="#2B2D42"/></svg><span class="nm">${DN[k]}</span><span class="kw">0 kW</span>`;
+  b.addEventListener('click',()=>{S.sw[k]=!S.sw[k];b.setAttribute('aria-checked',S.sw[k]);
+    const off={old:'Old Town isolated. The bakery would like a word.',mill:'Millside is off. Four hundred teapots stand unglazed.',hill:'Hilltop dark. The projectionist is reading by torch.',river:'Riverside isolated. The tram coasts to a stop, embarrassed.'},
+          on={old:'Old Town back on. The kettles forgive you.',mill:'Millside re-energised. The presses pick up mid-teapot.',hill:'Hilltop restored. The film resumes, slightly out of sync.',river:'Riverside back. The tram rings its bell twice.'};
+    log((S.sw[k]?on:off)[k]);step(1e-4);renderSlow(true)});
+  $('knives').appendChild(b);kn[k]=b.querySelector('.kw')});
+/* wind knob */
+const windk=$('windk');let wNeedle;{el('circle',{cx:42,cy:42,r:39,fill:'#FDFBF7',stroke:C.ink,'stroke-width':1.5},windk);el('path',{d:arc(42,42,32,-135,135),fill:'none',stroke:C.paper,'stroke-width':7,'stroke-linecap':'round'},windk);
+ wNeedle=el('path',{fill:'none',stroke:C.steel,'stroke-width':7,'stroke-linecap':'round'},windk);
+ for(let i=0;i<=10;i++){const a=(-135+i*27)*Math.PI/180;el('line',{x1:42+36*Math.sin(a),y1:42-36*Math.cos(a),x2:42+39*Math.sin(a),y2:42-39*Math.cos(a),stroke:C.ink,'stroke-width':1},windk)}
+ windk.knob=el('g',{},windk);el('circle',{cx:42,cy:42,r:21,fill:C.pink,stroke:C.ink,'stroke-width':1.5},windk.knob);el('rect',{x:40,y:23,width:4,height:13,rx:2,fill:C.ink},windk.knob)}
+
+/* ---------- interaction ---------- */
+function dragAngle(elm,cb){const ang=e=>{const r=elm.getBoundingClientRect();return Math.atan2(e.clientX-(r.left+r.width/2),-(e.clientY-(r.top+r.height/2)))*180/Math.PI};
+  elm.addEventListener('pointerdown',e=>{elm.setPointerCapture(e.pointerId);elm.dragging=true;cb(ang(e));e.preventDefault()});
+  elm.addEventListener('pointermove',e=>{if(elm.dragging)cb(ang(e))});
+  const up=()=>{elm.dragging=false};elm.addEventListener('pointerup',up);elm.addEventListener('pointercancel',up)}
+dragAngle(dial,a=>scrubTo(((a+180)%360+360)%360/15));
+dial.addEventListener('keydown',e=>{const d={ArrowRight:.25,ArrowUp:.25,ArrowLeft:-.25,ArrowDown:-.25,PageUp:1,PageDown:-1}[e.key];if(d){e.preventDefault();scrubTo(((S.t+d)%24+24)%24)}});
+const setHold=(k,v)=>{S[k+'Hold']=v;const b=$(k+'h');b.setAttribute('aria-pressed',v!=null);b.textContent=v!=null?'Held · release':'Forecast'};
+dragAngle(windk,a=>{setHold('wind',clamp((clamp(a,-135,135)+135)/270));renderSlow(true)});
+windk.addEventListener('keydown',e=>{const d={ArrowRight:.04,ArrowUp:.04,ArrowLeft:-.04,ArrowDown:-.04}[e.key];if(d){e.preventDefault();setHold('wind',clamp(S.w+d));renderSlow(true)}});
+$('windh').addEventListener('click',()=>{setHold('wind',S.windHold!=null?null:S.w);log(S.windHold!=null?'Wind held by the weather desk.':'Wind handed back to the forecast.')});
+$('cloudr').addEventListener('input',e=>{setHold('cloud',e.target.value/100);renderSlow(true)});
+$('cloudh').addEventListener('click',()=>{setHold('cloud',S.cloudHold!=null?null:S.c);log(S.cloudHold!=null?'Cloud held by the weather desk.':'The sky is its own again.')});
+$('speed').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;S.speed=+b.dataset.s;[...$('speed').children].forEach(c=>c.setAttribute('aria-checked',c===b))});
+$('speed').addEventListener('keydown',e=>{const d={ArrowRight:1,ArrowLeft:-1}[e.key];if(!d)return;const c=[...$('speed').children],i=c.findIndex(x=>x.getAttribute('aria-checked')==='true'),n=c[(i+d+3)%3];n.focus();n.click()});
+$('storm').addEventListener('click',()=>{S.storm=!S.storm;S.island=S.storm;$('storm').setAttribute('aria-pressed',S.storm);svg.classList.toggle('storm',S.storm);
+  $('stormt').textContent=S.storm?'Storm overhead':'Storm';$('storms').textContent=S.storm?'Press to reclose the line':'Trips the mainland line';
+  if(S.storm){flash.classList.remove('go');void flash.getBBox();flash.classList.add('go');fdev-=.05;log('Lightning on the pylon line. Interconnector tripped: Lumen is an island.');log('Gale on the ridge. Turbines feathered for their own good.')}
+  else{S.shed=0;log('Storm passed. Interconnector reclosed, every load restored.')}
+  step(1e-4);renderSlow(true)});
+$('match').addEventListener('click',()=>{if(S.match)return;S.match={ko:S.T};log('Kick-off. Lumen Rovers v. Mainland Athletic. The streets empty.');renderSlow(true)});
+/* building selection */
+let sel=null;const focusOrder=blds.slice();
+function select(b){if(sel){sel.g.classList.remove('sel');sel.lg.classList.remove('sel')}
+  document.querySelectorAll('.hl').forEach(e=>e.classList.remove('hl'));sel=b;
+  if(b){if(b.id!=='tram'){b.g.classList.add('sel');b.lg.classList.add('sel')}b.feed.forEach(w=>wires[w].hl.classList.add('hl'));if(b.stub)b.stub.classList.add('hl')}
+  const c=$('card');c.classList.remove('swap');void c.offsetWidth;c.classList.add('swap');card(true)}
+function card(full){const c=$('card');
+  if(!sel){if(full)c.innerHTML='<span class="lab">Meter reader</span><h3 style="margin-right:0">Pick any building</h3><p class="note" style="font-style:normal">Tap a roof, a turbine or the tram to read its meter and trace its wire back to the substation.</p>';return}
+  const b=sel;if(full){c.innerHTML=`<button class="x" aria-label="Close meter"><svg viewBox="0 0 10 10"><path d="M1 1l8 8M9 1l-8 8" stroke="#2B2D42" stroke-width="1.8" stroke-linecap="round"/></svg></button><span class="lab"></span><h3></h3><div class="big"><span></span><small>kW</small></div><p class="e"></p><p class="note"></p>`;
+    c.querySelector('h3').textContent=b.name;c.querySelector('.x').addEventListener('click',()=>select(null))}
+  let tag=DN[b.dist]+(b.gen?' · output':b.dist==='works'?'':' · draw'),note=b.notes[b.kw>(b.hot||1)?1:0],k=b.kw;
+  if(b.id==='batt'){tag='The Works · '+(k>1?'discharging':k<-1?'charging':'idle');note=b.notes[k>1?1:0]+` ${Math.round(S.soc/10)}% full.`}
+  if(b.id==='inter'){tag='The Works · '+(S.island?'tripped':k>1?'importing':'exporting');note=S.island?'Breaker open. The mainland can keep its electrons.':b.notes[k>1?1:0]}
+  if(b.id==='sub'){tag='The Works · throughput'}
+  if(b.gen&&b.id[0]==='w'){note=S.storm?'Feathered against the gale. Safe, sulking.':b.kw>4?b.notes[1]:b.notes[0]}
+  if(b.id==='solar')note=b.notes[b.kw>4?1:0];
+  if(b.load&&!b.pw)note=S.sw[b.dist]?'Shed by the Board to keep the bakery lit. They understand. Mostly.':'Feeder switched out at the Board. Candles are being found.';
+  if(b.id==='tram')note=tram.park?'Tucked up in the depot until the 06:00.':b.notes[tram.v>.2?1:0];
+  c.querySelector('.lab').textContent=tag;c.querySelector('.big span').textContent=fmt(k);c.querySelector('.e').innerHTML=`Today <b>${b.kwh<100?b.kwh.toFixed(1):Math.round(b.kwh).toLocaleString('en-GB')} kWh</b>`;
+  const n=c.querySelector('.note');if(n.textContent!==note)n.textContent=note}
+blds.forEach((b,i)=>{b.g.addEventListener('click',()=>select(sel===b?null:b));
+  b.g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();select(sel===b?null:b)}else if(e.key==='Escape')select(null);
+    else{const d={ArrowRight:1,ArrowDown:1,ArrowLeft:-1,ArrowUp:-1}[e.key];if(d){e.preventDefault();const n=focusOrder[(i+d+focusOrder.length)%focusOrder.length];b.g.tabIndex=-1;n.g.tabIndex=0;n.g.focus()}}})});
+focusOrder[0].g.tabIndex=0;
+
+/* ---------- rendering ---------- */
+const NK=[[0,'#A9A8D9'],[5.7,'#A9A8D9'],[6.6,'#F6CFCB'],[7.6,'#FFF0D2'],[10.5,'#FFFFFF'],[15.2,'#FFFFFF'],[17,'#FDEEE2'],[17.8,'#F9C5D1'],[18.9,'#B9AEDB'],[19.8,'#A9A8D9'],[24,'#A9A8D9']];
+function nightCol(t){let i=0;while(NK[i+1][0]<t)i++;let c=mix(NK[i][1],NK[i+1][1],(t-NK[i][0])/(NK[i+1][0]-NK[i][0]||1));return S.storm?mix(c,'#97A3C2',.55):c}
+let fdev=0,fvel=0,lastDemand=0,rt=0,slowAcc=0,lastNight='',pvCol='';
+const PH=[[0,'The small hours. Only the bakery is thinking about work.'],[5.5,'First light. Kettles, toasters, the 06:00 tram.'],[9,'Morning shift. Millside is at full song.'],[12,'Midday. The sun field earns its keep.'],[15.5,'Late afternoon. The school has emptied.'],[17.5,'Dusk. Windows come on, house by house.'],[20,'Evening. Everyone is home and cooking.'],[22.5,'Bedtime. The town turns in, lamp by lamp.']];
+const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+function renderSlow(force){
+  const t=S.t;
+  const nc=nightCol(t);if(nc!==lastNight){night.setAttribute('fill',nc);lastNight=nc}
+  svg.classList.toggle('dark',S.dark>.5);
+  for(const b of blds){if(!b.load)continue;const lit=b.pw&&b.litf(t,S.dark);if(lit!==b.lit){b.lit=lit;b.lg.classList.toggle('on',lit)}}
+  for(const k in bangs)bangs[k].classList.toggle('on',!S.sw[k]);
+  bakeSmoke.classList.toggle('on',byId.bakery.kw>12);laundrySteam.classList.toggle('on',byId.laundry.kw>10);
+  const pc=mix(C.steel,'#CFE9F2',clamp(S.solar/330));if(pc!==pvCol){pvCol=pc;pv.forEach(p=>p.setAttribute('fill',pc))}
+  shadow.setAttribute('cx',S.cx.toFixed(2));shadow.setAttribute('opacity',(S.c>.06?.1+.14*S.c:0).toFixed(2));
+  const cp=P(S.cx,20,5.2);cloud.setAttribute('transform',`translate(${cp[0].toFixed(1)},${cp[1].toFixed(1)})`);cloud.setAttribute('opacity',S.c>.06&&S.cx>-3&&S.cx<27?(.55+.4*S.c).toFixed(2):0);
+  bsegs.forEach((s,i)=>s.setAttribute('fill',S.soc/S.cap>(i+.5)/5?C.sun:C.paper));
+  kioskLamp.setAttribute('fill',S.island?C.pink:C.sun);tripTag.setAttribute('opacity',S.island?1:0);wires.inter.base.style.strokeDasharray=S.island?'4 5':'';
+  /* clock tower */
+  {const c=clockC,o=P(c[0],c[1],c[2]+.8),h=(t%12)/12*6.283,m=(t%1)*6.283;const hp=P(c[0]+Math.sin(h)*.19,c[1],c[2]+.8+Math.cos(h)*.19),mp=P(c[0]+Math.sin(m)*.3,c[1],c[2]+.8+Math.cos(m)*.3);
+   [[handH,hp],[handM,mp]].forEach(a=>{a[0].setAttribute('x1',o[0]);a[0].setAttribute('y1',o[1]-12.8+12.8);a[0].setAttribute('x2',a[1][0]);a[0].setAttribute('y2',a[1][1])})}
+  /* header + panels */
+  $('clock').textContent=$('dclock').textContent=hhmm(t);$('dayl').textContent=DAYS[Math.floor(S.T/24)%7];
+  let ph=PH[0][1];for(const p of PH)if(t>=p[0])ph=p[1];if(S.storm)ph='Storm overhead. The town is on its own.';if($('dphase').textContent!==ph)$('dphase').textContent=ph;
+  $('qd').textContent=fmt(S.demand);$('qs').textContent=fmt(S.gen+Math.max(0,S.batt));
+  $('qml').textContent=S.island?'Mainland · tripped':S.imp>1?'Buying from mainland':'Selling to mainland';$('qm').textContent=S.island?'0':fmt(S.imp);
+  dHand.setAttribute('transform',`rotate(${((t-12)*15).toFixed(1)} 100 100)`);dKnob.setAttribute('transform',`translate(100,22) rotate(${(-(t-12)*15).toFixed(1)})`);
+  const isDay=t>6.7&&t<17.8;dSun.setAttribute('opacity',isDay?1:0);dMoon.setAttribute('opacity',isDay?0:1);dial.setAttribute('aria-valuenow',t.toFixed(2));dial.setAttribute('aria-valuetext',hhmm(t));
+  const sp=S.soc/S.cap;$('soc').textContent=Math.round(sp*100);bs2.forEach((r,i)=>r.setAttribute('fill',sp>(i+.5)/10?(S.batt<-1?C.sun:S.batt>1?C.pink:C.aqua):C.paper));
+  const hm=h=>h>48?'days':Math.floor(h)+' h '+String(Math.round((h%1)*60)).padStart(2,'0');
+  $('socn').textContent=S.batt>1?`Discharging ${fmt(S.batt)} kW. ${hm((S.soc-40)/S.batt)} remaining.`:S.batt<-1?`Charging ${fmt(S.batt)} kW. Full in ${hm((S.cap-S.soc)/-S.batt)}.`:sp>.99?'Full to the rafters.':sp<.05?'Empty. Mind the peak.':'Idle. Waiting for a reason.';
+  const E=S.E,tot=E.h+E.w+E.s+E.b+E.i||1;let o=0;MIX.forEach((m,i)=>{const f=E[m[0]]/tot,L=f*263.9;rc[i].setAttribute('stroke-dasharray',`${L.toFixed(1)} ${(263.9-L).toFixed(1)}`);rc[i].setAttribute('stroke-dashoffset',(-o).toFixed(1));o+=L;m[3].textContent=Math.round(f*100)+'%'});
+  $('mixp').textContent=Math.round((E.w+E.s)/tot*100);
+  $('streak').textContent=S.streak<10?S.streak.toFixed(1):Math.round(S.streak);$('streakn').textContent=(S.streak<.1?'Reset: mainland power on the bars. ':'')+`Best this week: ${Math.round(S.best)} h`;
+  const net=S.sold-S.bought;$('net').textContent=(net<0?'−£':'£')+Math.abs(net).toFixed(2);$('netn').textContent=`Sold to the mainland: £${S.sold.toFixed(2)} · bought back: £${S.bought.toFixed(2)}`;
+  $('mlv').textContent='£'+S.sold.toFixed(2);
+  for(const k in kn)kn[k].textContent=S.sw[k]?fmt(S.dist[k])+' kW':'OFF';
+  const ws=Math.round(S.w*25);$('windv').textContent=(S.storm?'31':ws)+' m/s';windk.setAttribute('aria-valuenow',ws);const wa=-135+S.w*270;wNeedle.setAttribute('d',arc(42,42,32,-135,Math.max(-134,wa)));windk.knob.setAttribute('transform',`rotate(${wa.toFixed(1)} 42 42)`);
+  $('cloudv').textContent=Math.round(S.c*100)+'%';if(S.cloudHold==null)$('cloudr').value=Math.round(S.c*100);
+  if(S.match){const x=S.T-S.match.ko;$('matchs').textContent=x<.75?`Half-time in ${Math.ceil((.75-x)*60)} min`:x<1?'Half-time. Kettles on.':x<1.75?`Second half, ${Math.ceil((1.75-x)*60)} min left`:'Full time';$('match').setAttribute('aria-pressed','true')}else{$('matchs').textContent='Kick off now';$('match').removeAttribute('aria-pressed')}
+  $('hzn').textContent=S.unmet>1?'Sagging. The Board is shedding load.':S.island?'Islanded. Every kettle shows.':Math.abs(fdev)>.03?'A big load just landed.':'Steady as the town clock.';
+  card(false);if(chartDirty||force){drawChart();chartDirty=false}
+  if(RM)for(const k in wires){const w=wires[k];w.arrs.forEach(a=>{a.e.style.display=Math.abs(w.kw)<.5?'none':'block';a.e.setAttribute('transform',`translate(${a.p.x.toFixed(1)},${a.p.y.toFixed(1)}) rotate(${(a.a+(w.kw<0?180:0)).toFixed(0)})`)})}
+}
+const TR=[[13,12.5],[23,12.5],[23,16.5],[13,16.5]],STOPS=[0,5,17];
+function tramTick(dr){const t=S.t,svc=t>5.95&&t<23.55,pw=S.sw.river&&S.shed<6;let kw=0;const k=Math.sqrt(S.speed);
+  if(tram.park){if(svc&&pw){tram.park=false;tram.dwell=.5}kw=.6}
+  else if(tram.dwell>0){tram.dwell-=dr*k;kw=2.5;tram.v=0}
+  else{const vmax=1.9;if(pw){if(tram.v<vmax){tram.v=Math.min(vmax,tram.v+dr*k*1.3);kw=44}else kw=15}else{tram.v=Math.max(0,tram.v-dr*2)}
+    const s0=tram.s;tram.s=(tram.s+tram.v*dr*k)%28;for(const st of STOPS)if((s0<st&&tram.s>=st)||(st===0&&tram.s<s0)){tram.s=st;tram.v=0;tram.dwell=2.3;if(st===17&&!svc){tram.park=true;tram.dwell=0}}}
+  S.tramKw=pw?kw:0;
+  let s=tram.s,x,y,ax;if(s<10){x=13+s;y=12.5;ax=1}else if(s<14){x=23;y=12.5+s-10;ax=0}else if(s<24){x=23-(s-14);y=16.5;ax=1}else{x=13;y=16.5-(s-24);ax=0}
+  const p=P(x,y),tr=`translate(${p[0].toFixed(1)},${p[1].toFixed(1)})`;tramO.wrap.setAttribute('transform',tr);tramO.lg.setAttribute('transform',tr);
+  tramO.gx.style.display=tramO.lx.style.display=ax?'':'none';tramO.gy.style.display=tramO.ly.style.display=ax?'none':'';
+  const d=x+y;let nx=null;for(const st of statics)if(st.d>d){nx=st.e;break}if(tramO.wrap.nextSibling!==nx)gB.insertBefore(tramO.wrap,nx)}
+function fast(dr){
+  for(const k in wires){const w=wires[k];w.f+=(w.kw-w.f)*Math.min(1,dr*3.2);const a=Math.abs(w.f),r=a/w.cap;
+    if(a>.4){w.off-=Math.sign(w.f)*(9+62*Math.sqrt(Math.min(1,r)))*dr;w.off=((w.off%36)+36)%36;w.fl.style.strokeDashoffset=w.off.toFixed(2)}
+    const o=[clamp(a/3),clamp((r-.22)*5),clamp((r-.55)*5)];for(let i=0;i<3;i++)if(Math.abs(o[i]-w.ls[i].o)>.04||(o[i]===0&&w.ls[i].o)||(o[i]===1&&w.ls[i].o<1)){w.ls[i].o=o[i];w.ls[i].g.setAttribute('opacity',o[i].toFixed(2))}}
+  const spin=S.storm?0:(S.wind+S.curt>3?40+S.w*330:0);blades.forEach((b,i)=>{b.a=(b.a+spin*dr*(1-i*.06))%360;b.r.setAttribute('transform',`translate(${b.x.toFixed(1)},${b.y.toFixed(1)}) rotate(${b.a.toFixed(1)})`)});
+  gaugeTick(dr)}
+function gaugeTick(dr){const dP=S.demand-lastDemand;lastDemand=S.demand;if(Math.abs(dP)>9)fdev-=clamp(dP,-500,500)*(S.island?.00032:.00014);
+  const tgt=S.unmet>1?-.07:0;fvel+=(-(fdev-tgt)*26-fvel*3.4)*dr;fdev+=fvel*dr;fdev=clamp(fdev,-.12,.12);
+  const show=clamp(fdev+(vn(rt*1.7)-.5)*(S.island?.035:.016),-.098,.098);$('hz').textContent=(50+show).toFixed(2);needle.setAttribute('transform',`rotate(${(show*800).toFixed(2)} 110 108)`)}
+
+/* ---------- boot ---------- */
+S.quiet=true;S.T=16.5;for(let i=0;i<144;i++){S.tramKw=(S.T%24>6&&S.T%24<23.5)?18:.6;step(1/6)}S.quiet=false;S.t=S.T%24;lastDemand=S.demand;
+for(const k in wires)wires[k].f=wires[k].kw;
+select(null);tramTick(0);renderSlow(true);fast(0);
+log('Good afternoon from the Board. All feeders closed, all three turbines turning.');
+setTimeout(()=>svg.classList.remove('intro'),RM?0:2700);
+let last=0,raf=0,acc=0,started=performance.now();
+function frame(ts){raf=requestAnimationFrame(frame);const dr=Math.min(.06,(ts-last)/1000||0);last=ts;rt+=dr;
+  const run=ts-started>(RM?0:2300);
+  if(RM){acc+=dr;if(acc>=1.5){tramTick(acc);advance(acc*S.speed/6);acc=0;renderSlow();fast(.3)}gaugeTick(dr);return}
+  tramTick(run?dr:0);if(run)advance(dr*S.speed/6);fast(dr);slowAcc+=dr;if(slowAcc>.2){slowAcc=0;renderSlow()}}
+raf=requestAnimationFrame(frame);
+document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);raf=0}else if(!raf){last=0;raf=requestAnimationFrame(frame)}});
+})();
+</script>
+</body>
+</html>
