@@ -13,6 +13,8 @@ python3 scripts/capture_screenshots.py
 
 Open `index.html` directly or serve this directory with a static web server. Real screenshots are saved to `thumbs/`. Before capture, the preview area links to the study and explains that its screenshot is pending. The capture script also verifies search, prompt expansion, and mobile overflow.
 
+The capture script reuses committed screenshots only when both HTML and image SHA-256 hashes match `thumbs/manifest.json`. Changed or missing images are regenerated. Pass `--refresh` to recapture every study.
+
 The source numbering is preserved. Files 076–078 are absent from the supplied collection; no studies or prompts are invented.
 
 ## Publish the repository and GitHub Pages
@@ -25,7 +27,7 @@ bash scripts/publish.sh
 
 This creates a public repository if needed, preserves the visibility of an existing repository, pushes the collection without force, configures Pages to use Actions, and starts the deployment workflow. It uses a temporary Git checkout and preserves the supplied source directory.
 
-The workflow captures screenshots of every study in Chromium, verifies the gallery, and deploys only HTML, prompt files, screenshots, and the favicon. Screenshots are also available as a `gallery-screenshots` workflow artifact. A failed capture or check prevents deployment. If Pages is not enabled, the workflow completes the screenshots and checks and skips deployment. Once Pages is enabled with Actions, rerun the workflow to publish.
+The workflow verifies existing screenshots, captures changed studies in Chromium, checks the gallery, and deploys only HTML, prompt files, screenshots, and the favicon. Screenshots are also available as a `gallery-screenshots` workflow artifact. A failed capture or check prevents deployment. If Pages is not enabled, the workflow completes the screenshots and checks and skips deployment. Once Pages is enabled with Actions, rerun the workflow to publish.
 
 The repository and gallery are public. GitHub Pages supports public repositories on GitHub Free; private repositories require a supporting paid plan.
 
