@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     outputs:
       pages_enabled: ${{ steps.pages-status.outputs.enabled }}
@@ -57,7 +57,7 @@ jobs:
   deploy:
     needs: build
     if: needs.build.outputs.pages_enabled == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       pages: write
       id-token: write

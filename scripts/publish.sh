@@ -6,12 +6,7 @@ source_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 command -v gh >/dev/null || { echo 'Install GitHub CLI (gh) and run gh auth login first.' >&2; exit 1; }
 gh auth status
 if ! gh repo view "$repo" --json name >/dev/null 2>&1; then
-  gh repo create "$repo" --private --description 'Claude Fable 5.2 HTML Files — visual studies with screenshots and original prompts'
-fi
-visibility="$(gh repo view "$repo" --json visibility --jq .visibility)"
-if [[ "$visibility" != 'PRIVATE' ]]; then
-  echo 'The target repository is not private; stopping without changing its visibility.' >&2
-  exit 1
+  gh repo create "$repo" --public --description 'Claude Fable 5.2 HTML Files — visual studies with screenshots and original prompts'
 fi
 checkout="$(mktemp -d /tmp/claude-fable-publish.XXXXXX)"
 trap 'rm -rf -- "$checkout"' EXIT
